@@ -297,10 +297,10 @@ def _main_manifest(
         max_max_hold_count=args.max_max_hold_count,
     )
     relaxed_ns = argparse.Namespace(
-        min_trades=30,
-        min_profit_factor=1.0,
-        min_total_r=-5.0,
-        max_drawdown_r=-50.0,
+        min_trades=int(args.relaxed_min_trades),
+        min_profit_factor=float(args.relaxed_min_profit_factor),
+        min_total_r=float(args.relaxed_min_total_r),
+        max_drawdown_r=float(args.relaxed_max_drawdown_r),
         max_avg_bars_held=args.max_avg_bars_held,
         max_eod_count=args.max_eod_count,
         max_end_of_data_count=args.max_end_of_data_count,
@@ -416,6 +416,30 @@ def main(argv: list[str] | None = None) -> int:
         "--allow-relaxed-fallback",
         action="store_true",
         help="If strict filters yield no rows, retry with relaxed thresholds (manifest mode).",
+    )
+    p.add_argument(
+        "--relaxed-min-trades",
+        type=int,
+        default=80,
+        help="Manifest relaxed fallback: min trades (default 80).",
+    )
+    p.add_argument(
+        "--relaxed-min-profit-factor",
+        type=float,
+        default=1.0,
+        help="Manifest relaxed fallback: min profit factor (default 1.0).",
+    )
+    p.add_argument(
+        "--relaxed-min-total-r",
+        type=float,
+        default=-10.0,
+        help="Manifest relaxed fallback: min total R (default -10).",
+    )
+    p.add_argument(
+        "--relaxed-max-drawdown-r",
+        type=float,
+        default=-100.0,
+        help="Manifest relaxed fallback: max drawdown R floor (default -100).",
     )
     args = p.parse_args(argv)
 
