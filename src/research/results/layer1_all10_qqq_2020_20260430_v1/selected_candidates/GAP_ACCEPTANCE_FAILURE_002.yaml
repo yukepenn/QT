@@ -1,0 +1,74 @@
+candidate_id: GAP_ACCEPTANCE_FAILURE_002
+strategy: gap_acceptance_failure
+asset: equity
+symbol: QQQ
+strategy_family: gap_behavior
+conflict_group: QQQ_directional
+default_priority: 78
+default_active_start_minute: 5
+default_active_end_minute: 120
+metadata:
+  family: gap_behavior
+  conflict_group: QQQ_directional
+  default_priority: 78
+  default_active_start_minute: 5
+  default_active_end_minute: 120
+selection:
+  score: 1.5055876024121309
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\gap_acceptance_failure\sweep_20260505_050732_layer1_qqq_2020_20260430_v1\results.csv
+  row_index: 14
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\gap_acceptance_failure\sweep_20260505_050732_layer1_qqq_2020_20260430_v1
+metrics:
+  trades: 403
+  profit_factor: 1.2809731074149096
+  total_r: 41.561842152564
+  win_rate: 0.5086848635235732
+  total_net_pnl: 72.30000000000342
+  avg_r: 0.10313112196666
+  avg_net_pnl: 0.1794044665012492
+  max_drawdown_pnl: -24.82249999999988
+  max_drawdown_r: -12.26366371615957
+  avg_bars_held: 30.90322580645161
+  stop_count: 183
+  target_count: 174
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 46
+config:
+  strategy: gap_acceptance_failure
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+    opening_hold_minutes: 10
+  signal:
+    side: long_only
+    mode: gap_failure
+    entry_start_minute: 5
+    entry_end_minute: 60
+    min_gap_norm: 0.2
+    require_vwap_side: true
+    confirm_mode: reclaim_vwap
+    require_open_hold: true
+  risk:
+    stop_mode: failed_extreme
+    open_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.25
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 90
