@@ -1,16 +1,5 @@
 # Equity data coverage
 
-## Backfill run status (automated)
-
-- A full pull was started: `SPY` + `QQQ`, **2020-01-01 → 2026-04-30**, `--rth`, `TRADES`, `--chunk-days 5`, `--sleep 1.0`, `127.0.0.1:4002`.
-- **Run aborted** mid-`SPY` (around **chunk 165/464**, Mar–Apr 2022) with **Socket disconnect**, then **Connection refused** on reconnect (IB Gateway/TWS likely closed or port blocked). **`QQQ` was not started** in that run.
-- **Partial `SPY` parquet** from this session was merged incrementally; **`QQQ`** on disk may be **smoke-only** (e.g. 2026-04) until you rerun the full command with Gateway stable.
-- **Rerun** (safe to upsert/dedupe per month):  
-  `python src/data/pull_ibkr_1min.py --asset equity --symbols SPY QQQ --start 2020-01-01 --end 2026-04-30 --rth --chunk-days 5 --sleep 1.0 --client-id 101`  
-  Reconnect logic in `pull_ibkr_1min.py` now retries with backoff (see `ensure_ib_connected`).
-
----
-
 - Range: **2020-01-01** — **2026-04-30** (NY calendar months for file check)
 - Data dir: `D:/OneDrive - Washington University in St. Louis/QT/data/raw/ibkr`
 
@@ -25,13 +14,13 @@
 - **sessions with row_count < 300:** 3
 - **sessions with row_count > 400:** 0
 
-**First 10 low-row sessions:**
+**First 20 low-row sessions:**
 
 ```
 [('2020-11-27', 210), ('2020-12-24', 210), ('2021-11-26', 210)]
 ```
 
-**Last 10 low-row sessions:**
+**Last 20 low-row sessions:**
 
 ```
 [('2020-11-27', 210), ('2020-12-24', 210), ('2021-11-26', 210)]
@@ -50,13 +39,13 @@
 - **sessions with row_count < 300:** 0
 - **sessions with row_count > 400:** 0
 
-**First 10 low-row sessions:**
+**First 20 low-row sessions:**
 
 ```
 []
 ```
 
-**Last 10 low-row sessions:**
+**Last 20 low-row sessions:**
 
 ```
 []

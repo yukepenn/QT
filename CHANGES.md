@@ -1,3 +1,10 @@
+### [Unreleased] – 2026-05-02
+
+- Feat(research): `select_candidates.py` — manifest relaxed fallback thresholds configurable via **`--relaxed-min-trades`**, **`--relaxed-min-profit-factor`**, **`--relaxed-min-total-r`**, **`--relaxed-max-drawdown-r`** (defaults match 2020-window spec: 80 / 1.0 / -10 / -100).
+- Feat(research): `equity_data_coverage_report.py` — **first/last 20** low-row session lists in CSV and summary MD.
+- Feat(combiner): configs for 2020-window v2 relaxed grid — `layer2_qqq_2020_20260430_v2_relaxed.yaml`, `layer2_sweep_qqq_2020_20260430_v2_relaxed.yaml` (candidate_root → `layer1_all10_qqq_2020_20260430_v1/selected_candidates`).
+- Docs(progress): Phase 1 coverage refresh; **QQQ backfill incomplete** on disk — Layer 1 2020 rebuild deferred until parquet complete.
+
 ### [Unreleased] – 2026-05-05
 
 - Fix(data): `pull_ibkr_1min.py` — `reqHistoricalData` on **qualified** equity contract; **3** request retries; **reconnect backoff** (multi-attempt `ensure_ib_connected`).
