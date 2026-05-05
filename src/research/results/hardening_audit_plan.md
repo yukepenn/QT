@@ -2,7 +2,7 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: includes **Commit D** (combiner postprocess diagnostics: behavior hash, cost-as-R, leaderboards); Commit C was `validate_config` + context keys.
+- **Current HEAD**: **Commit D** at `75bb620` (combiner postprocess diagnostics: behavior hash, cost-as-R, leaderboards); Commit C was `a1b995f` (`validate_config` + context keys).
 - **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 

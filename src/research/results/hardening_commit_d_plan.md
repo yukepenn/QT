@@ -2,7 +2,7 @@
 
 ## HEAD
 
-Record the git hash after push in your clone (`git rev-parse HEAD`).
+`75bb620` — Add behavior dedupe and cost-aware diagnostics (pushed to `main`).
 
 ## Files touched
 
