@@ -33,6 +33,7 @@ src/combiner/results/**/sweep_*/
 # Strategy sweep heavy outputs
 src/strategies/testing_parameters_results/**/trades.csv
 src/strategies/testing_parameters_results/**/equity.csv
+src/strategies/testing_parameters_results/**/sweep_*/
 
 # Curated Layer 2 / research summaries (force-include)
 !src/combiner/results/layer2_qqq_v1/layer2_summary.md
@@ -50,3 +51,21 @@ src/strategies/testing_parameters_results/**/equity.csv
 !src/research/results/layer1_all10_qqq_v1/sweep_manifest.csv
 !src/research/results/layer1_all10_qqq_v1/candidate_summary.md
 !src/research/results/recovery_status_before.md
+
+# Curated v2020 outputs (force-include)
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_run_summary.csv
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_run_summary.md
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/top_unique_systems.csv
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/top_unique_systems.md
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/top_unique_run_map.csv
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/cost_stress/cost_stress_results.csv
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/cost_stress/cost_stress_summary.md
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/diagnostics/diagnostics_summary.md
+!src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/layer2_v2_2020_summary.md
+
+!src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates/*.yaml
+!src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates.csv
+!src/research/results/layer1_all10_qqq_2020_20260430_v1/sweep_manifest.csv
+!src/research/results/layer1_all10_qqq_2020_20260430_v1/candidate_summary.md
+!src/research/results/layer1_all10_qqq_2020_20260430_v1/layer1_2020_summary.md

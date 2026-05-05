@@ -7,6 +7,7 @@
 
 ### [Unreleased] – 2026-05-05
 
+- Fix(combiner): speed up diagnostics by vectorizing same-bar and same-day overlap; replace slow minute-diff loop with an approximate median-minute diff; add progress prints and safe partial writes.
 - Fix(data): `pull_ibkr_1min.py` — `reqHistoricalData` on **qualified** equity contract; **3** request retries; **reconnect backoff** (multi-attempt `ensure_ib_connected`).
 - Feat(research): `equity_data_coverage_report.py` — session/month stats + `data_coverage.csv` / `data_coverage_summary.md` for SPY/QQQ windows.
 - Docs(readme/progress): long-history pull + coverage command; backfill notes under `src/research/results/data_backfill_spy_qqq_2020_20260430/`.
