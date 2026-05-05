@@ -7,6 +7,15 @@
 
 ### [Unreleased] – 2026-05-05
 
+- Feat(combiner): behavior-level dedupe and stable trade-sequence hash (`behavior.py`, `behavior_unique_*` postprocess artifacts).
+- Feat(metrics): cost-as-R helpers, `profit_factor_r`, daily and monthly/quarterly `period_breakdown`, extended `summarize_trades` kwargs for execution cost.
+- Feat(postprocess): period CSV exports, rank leaderboards, cost-robust research filter, optional fixed-vs-sweep comparison; CLI flags for behavior dedupe and cost thresholds.
+- Feat(combiner/metrics): pass execution slippage/commission/quantity into `summarize_combiner`; daily_trade_number and extra rejection attribution JSON.
+- Test(combiner): `test_combiner_behavior.py`, `test_cost_as_r_metrics.py`, `test_daily_metrics.py`, `test_combiner_postprocess.py`.
+- Docs(research): `hardening_commit_d_plan.md`; `hardening_audit_plan.md` marks Commit D complete and points to Commit E.
+
+### [Unreleased] – 2026-05-05
+
 - Feat(strategies): `validate_config` hooks and shared `src/utils/config_validation.py` (strategy + combiner YAML checks).
 - Fix(cache): `context_key` audit for ATR/window/buffer params used in `prepare_signal_context`; combiner/run/sweep validate base YAML.
 - Chore(config): remove unused `features.midday_window` from afternoon continuation YAMLs; reject fake axes in validation.

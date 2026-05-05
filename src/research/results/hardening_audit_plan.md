@@ -2,7 +2,7 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: includes **Commit C** (`validate_config` + context keys); end of Commit B was `a049a11`.
+- **Current HEAD**: includes **Commit D** (combiner postprocess diagnostics: behavior hash, cost-as-R, leaderboards); Commit C was `validate_config` + context keys.
 - **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 
@@ -53,11 +53,10 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### P3 (diagnostics)
 
-- postprocess “top unique” is config-level, not behavior-level
-- cost-as-R diagnostics missing
-- R-based PF/expectancy distribution missing
-- daily_trade_number breakdown missing (also blocked by P0 daily_trade_number in fast combiner)
-- monthly/quarterly breakdowns missing
+**Status:** Commit D implemented (behavior-level dedupe, cost-as-R, R distribution, daily/period breakdowns, leaderboards).
+
+- Config-level **`top_unique_systems.*`** remains for backward compatibility; **`behavior_unique_systems.*`** dedupes on trade-sequence hashes from detailed **`trades.csv`**.
+- Pre-hardening Layer 1/Layer 2 **saved CSV rankings remain stale** until intentional reruns.
 
 ---
 
@@ -139,11 +138,13 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### Commit D — Combiner/postprocess diagnostics (P3) + tests
 
-- Behavior-level dedupe (stable behavior hash from trades)
-- Cost-as-R diagnostics + R-based PF/expectancy distribution
-- Daily trade number breakdown, daily/monthly/quarterly breakdowns (top systems only)
-- Cost-aware leaderboards and “cost robust” filters (configurable thresholds)
-- Add tests: behavior_hash + cost metrics + daily metrics
+**Done** (see `hardening_commit_d_plan.md`).
+
+- `src/combiner/behavior.py` + postprocess **`behavior_unique_*`** outputs
+- `src/backtest/metrics.py` — `profit_factor_r`, cost-as-R, daily + `period_breakdown`
+- `src/combiner/metrics.py` — execution cost wiring, daily_trade_number JSON, rejection counts
+- `postprocess.py` — period CSVs, rank leaderboards, cost-robust filter, fixed vs sweep comparison
+- Tests: `test_combiner_behavior.py`, `test_cost_as_r_metrics.py`, `test_daily_metrics.py`, `test_combiner_postprocess.py`
 
 ### Commit E — Consolidation + docs/closeout
 
@@ -156,6 +157,6 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ## Next action to start implementation safely
 
-1. Proceed to **Commit D** (P3): behavior-level dedupe, cost-as-R diagnostics, R-based PF/expectancy, daily/monthly breakdowns.
+1. Proceed to **Commit E**: test/docs consolidation, hardening closeout, post-hardening rerun plan.
 2. Old Layer 1/Layer 2 rankings remain **stale** relative to post-hardening code until intentionally rerun.
 

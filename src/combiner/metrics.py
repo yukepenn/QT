@@ -5,11 +5,26 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
-from src.backtest.metrics import summarize_trades
+import numpy as np
+
+from src.backtest.metrics import profit_factor_r, summarize_trades
 from src.combiner.simulator import REJ_NAMES
+
+
+def execution_config_from_parts(
+    slippage_per_share: float,
+    commission_per_trade: float,
+    quantity_per_candidate: np.ndarray | None,
+) -> dict[str, Any]:
+    arr = np.asarray(quantity_per_candidate, dtype=float) if quantity_per_candidate is not None else np.array([])
+    qmean = float(np.mean(arr)) if len(arr) else 1.0
+    return {
+        "slippage_per_share": float(slippage_per_share),
+        "commission_per_trade": float(commission_per_trade),
+        "quantity": qmean,
+    }
 
 
 def _json_group_sum(
@@ -26,6 +41,51 @@ def _json_group_count(trades_df: pd.DataFrame, col: str) -> dict[str, int]:
         return {}
     g = trades_df.groupby(col, dropna=False).size()
     return {str(k): int(v) for k, v in g.items()}
+
+
+def _daily_trade_number_profiles(trades_df: pd.DataFrame) -> dict[str, str]:
+    empty_json = "{}"
+    keys = [
+        "trades_by_daily_trade_number_json",
+        "r_by_daily_trade_number_json",
+        "pnl_by_daily_trade_number_json",
+        "profit_factor_r_by_daily_trade_number_json",
+        "avg_r_by_daily_trade_number_json",
+        "win_rate_by_daily_trade_number_json",
+    ]
+    if trades_df is None or len(trades_df) == 0 or "daily_trade_number" not in trades_df.columns:
+        return dict.fromkeys(keys, empty_json)
+    g = trades_df.groupby("daily_trade_number", dropna=False)
+    trades_c: dict[str, int] = {}
+    r_sum: dict[str, float] = {}
+    pnl_sum: dict[str, float] = {}
+    pfr: dict[str, float] = {}
+    avgr: dict[str, float] = {}
+    wr: dict[str, float] = {}
+    for k, sub in g:
+        kk = str(int(k))
+        trades_c[kk] = int(len(sub))
+        if "r_multiple" in sub.columns:
+            rs = sub["r_multiple"].astype(float)
+            r_sum[kk] = float(rs.sum())
+            pfr[kk] = profit_factor_r(rs)
+            avgr[kk] = float(rs.mean())
+        if "net_pnl" in sub.columns:
+            net = sub["net_pnl"].astype(float)
+            pnl_sum[kk] = float(net.sum())
+            w = int((net > 0).sum())
+            n = len(sub)
+            wr[kk] = float(w / n) if n else 0.0
+    return {
+        "trades_by_daily_trade_number_json": json.dumps(trades_c, sort_keys=True),
+        "r_by_daily_trade_number_json": json.dumps(r_sum, sort_keys=True),
+        "pnl_by_daily_trade_number_json": json.dumps(pnl_sum, sort_keys=True),
+        "profit_factor_r_by_daily_trade_number_json": json.dumps(
+            {k: (v if v != float("inf") else 9999.0) for k, v in pfr.items()}, sort_keys=True
+        ),
+        "avg_r_by_daily_trade_number_json": json.dumps(avgr, sort_keys=True),
+        "win_rate_by_daily_trade_number_json": json.dumps(wr, sort_keys=True),
+    }
 
 
 def combiner_score(metrics: dict[str, Any]) -> tuple[float, bool]:
@@ -67,11 +127,27 @@ def summarize_combiner(
     candidate_signal_log_df: pd.DataFrame,
     *,
     rejection_counts: np.ndarray | None = None,
+    execution_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    ec = execution_config or {}
+    slip = ec.get("slippage_per_share")
+    comm = ec.get("commission_per_trade")
+    qty = ec.get("quantity")
+
     if trades_df is None or len(trades_df) == 0:
-        base = summarize_trades(pd.DataFrame(columns=["net_pnl", "r_multiple", "exit_reason", "bars_held"]))
+        base = summarize_trades(
+            pd.DataFrame(columns=["net_pnl", "r_multiple", "exit_reason", "bars_held"]),
+            slippage_per_share=slip,
+            commission_per_trade=comm,
+            quantity=qty,
+        )
     else:
-        base = summarize_trades(trades_df)
+        base = summarize_trades(
+            trades_df,
+            slippage_per_share=slip,
+            commission_per_trade=comm,
+            quantity=qty,
+        )
 
     er = (
         trades_df["exit_reason"].astype(str).str.lower()
@@ -129,6 +205,7 @@ def summarize_combiner(
         return int(rejected_by_reason.get(name, 0))
 
     cs, low_tc = combiner_score(base)
+    dtn_prof = _daily_trade_number_profiles(trades_df)
 
     out: dict[str, Any] = dict(base)
     out.update(
@@ -153,13 +230,21 @@ def summarize_combiner(
             "existing_position_rejections": _rej_code("existing_position"),
             "daily_loss_limit_rejections": _rej_code("daily_loss_limit"),
             "max_trades_rejections": _rej_code("max_trades_reached"),
+            "max_trades_reached_rejections": _rej_code("max_trades_reached"),
             "cooldown_rejections": _rej_code("cooldown_after_loss"),
+            "cooldown_after_loss_rejections": _rej_code("cooldown_after_loss"),
             "no_new_after_rejections": _rej_code("no_new_after"),
             "risk_too_small_rejections": _rej_code("risk_too_small"),
             "lower_priority_rejections": _rej_code("lower_priority_conflict"),
             "last_bar_no_entry_rejections": _rej_code("last_bar_no_entry"),
             "session_boundary_no_entry_rejections": _rej_code("session_boundary_no_entry"),
             "disabled_candidate_rejections": _rej_code("disabled_candidate"),
+            "opposite_direction_conflict_rejections": _rej_code("opposite_direction_conflict"),
+            "invalid_stop_side_rejections": _rej_code("invalid_stop_side"),
+            "invalid_target_side_rejections": _rej_code("invalid_target_side"),
+            "invalid_target_r_rejections": _rej_code("invalid_target_r"),
+            "invalid_price_nan_rejections": _rej_code("invalid_price_nan"),
         }
     )
+    out.update(dtn_prof)
     return out

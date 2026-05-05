@@ -25,9 +25,11 @@ from src.combiner.candidate import (
     load_candidates,
     precompute_candidate_signal_matrices,
 )
-from src.combiner.metrics import summarize_combiner
+from src.combiner.behavior import behavior_hash_from_trades, behavior_summary_from_trades, dedupe_behavior_rows
+from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml
 from src.combiner.simulator import simulate_combiner_numba
+from src.backtest.metrics import period_breakdown, summarize_trades, summarize_r_distribution, total_r_over_abs_dd
 
 SLIPPAGE_GRID = (0.005, 0.01, 0.02, 0.03)
 COMMISSION_GRID = (0.0,)
@@ -342,11 +344,13 @@ def cost_stress(
                     active_start=ast,
                     active_end=aen,
                 )
+                exec_cfg = execution_config_from_parts(float(slip), float(comm), qty)
                 metrics = summarize_combiner(
                     sim_out["trades_df"],
                     pd.DataFrame(),
                     pd.DataFrame(),
                     rejection_counts=sim_out.get("rejection_counts"),
+                    execution_config=exec_cfg,
                 )
                 metrics_by_slip[float(slip)] = metrics
 
@@ -385,6 +389,8 @@ def cost_stress(
                         "profit_factor": m.get("profit_factor", 0),
                         "max_drawdown_r": m.get("max_drawdown_r", 0),
                         "avg_bars_held": m.get("avg_bars_held", 0),
+                        "avg_cost_r": m.get("avg_cost_r"),
+                        "median_cost_r": m.get("median_cost_r"),
                         "combiner_score": csf,
                         "robust_positive_at_0_02": bool(tr02 > 0 and pf02 > 1.0),
                         "robust_positive_at_0_03": bool(tr03 > 0 and pf03 > 1.0),
@@ -586,6 +592,495 @@ def map_unique_to_top_runs(
     pd.DataFrame(maps).to_csv(output_root / "top_unique_run_map.csv", index=False)
 
 
+def _trades_dt_series(df: pd.DataFrame) -> pd.Series:
+    if "session_date" in df.columns:
+        return pd.to_datetime(df["session_date"], errors="coerce")
+    if "entry_ts_utc" in df.columns:
+        return pd.to_datetime(df["entry_ts_utc"], utc=True, errors="coerce")
+    if "exit_ts_utc" in df.columns:
+        return pd.to_datetime(df["exit_ts_utc"], utc=True, errors="coerce")
+    return pd.Series(pd.NaT, index=df.index)
+
+
+def _period_breakdown_by_field(trades_df: pd.DataFrame, freq: str, field: str) -> pd.DataFrame:
+    base_cols = [
+        "period",
+        "trades",
+        "total_r",
+        "total_net_pnl",
+        "profit_factor",
+        "profit_factor_r",
+        "max_drawdown_r",
+        "win_rate",
+        "avg_r",
+        "median_r",
+    ]
+    out_cols = ["period", field] + base_cols[1:]
+    if trades_df is None or len(trades_df) == 0 or field not in trades_df.columns:
+        return pd.DataFrame(columns=out_cols)
+    df = trades_df.copy()
+    df["_dt"] = _trades_dt_series(df)
+    df["_period"] = df["_dt"].dt.to_period(freq)
+    rows: list[dict[str, Any]] = []
+    for (per, fv), sub in df.groupby(["_period", field], dropna=False):
+        if per is pd.NaT or str(per) == "NaT":
+            continue
+        m = summarize_trades(sub)
+        rd = summarize_r_distribution(sub)
+        rows.append(
+            {
+                "period": str(per),
+                field: fv,
+                "trades": m["trades"],
+                "total_r": m["total_r"],
+                "total_net_pnl": m["total_net_pnl"],
+                "profit_factor": m["profit_factor"],
+                "profit_factor_r": rd["profit_factor_r"],
+                "max_drawdown_r": m["max_drawdown_r"],
+                "win_rate": m["win_rate"],
+                "avg_r": m["avg_r"],
+                "median_r": rd["median_r"],
+            }
+        )
+    return pd.DataFrame(rows, columns=out_cols)
+
+
+def write_period_breakdowns_for_run(run_dir: Path) -> None:
+    p = run_dir / "trades.csv"
+    if not p.exists():
+        return
+    df = pd.read_csv(p)
+    period_breakdown(df, "M").to_csv(run_dir / "monthly_r.csv", index=False)
+    period_breakdown(df, "Q").to_csv(run_dir / "quarterly_r.csv", index=False)
+    if "strategy" in df.columns:
+        _period_breakdown_by_field(df, "M", "strategy").to_csv(run_dir / "strategy_by_month.csv", index=False)
+    if "candidate_id" in df.columns:
+        _period_breakdown_by_field(df, "M", "candidate_id").to_csv(run_dir / "candidate_by_month.csv", index=False)
+
+
+def write_period_breakdowns_for_sweep_top_runs(sweep_dir: Path) -> None:
+    top = sweep_dir / "top_runs"
+    if not top.is_dir():
+        return
+    for rdir in sorted(top.iterdir()):
+        if rdir.is_dir() and rdir.name.startswith("rank_"):
+            write_period_breakdowns_for_run(rdir)
+
+
+def write_period_breakdowns_for_fixed_runs(fixed_root: Path) -> None:
+    if not fixed_root.is_dir():
+        return
+    for d in sorted(fixed_root.iterdir()):
+        if d.is_dir() and d.name.startswith("run_"):
+            write_period_breakdowns_for_run(d)
+
+
+def _execution_from_resolved_yaml(cfg_path: Path) -> dict[str, Any]:
+    if not cfg_path.exists():
+        return {}
+    y = yaml.safe_load(cfg_path.read_text(encoding="utf-8")) or {}
+    ex = y.get("execution")
+    if ex is None and isinstance(y.get("combiner_yaml"), dict):
+        ex = (y["combiner_yaml"] or {}).get("execution")
+    ex = ex or {}
+    return {
+        "slippage_per_share": ex.get("slippage_per_share"),
+        "commission_per_trade": ex.get("commission_per_trade"),
+        "quantity": float(ex.get("quantity", 1.0) or 1.0),
+    }
+
+
+def _row_from_trades_and_config(
+    urow: pd.Series,
+    trades_path: Path,
+    *,
+    config_yaml: Path | None,
+    source_rank: int,
+    config_rank: int,
+) -> dict[str, Any] | None:
+    if not trades_path.exists():
+        return None
+    tdf = pd.read_csv(trades_path)
+    ec = _execution_from_resolved_yaml(config_yaml) if config_yaml else {}
+    slip = ec.get("slippage_per_share")
+    comm = ec.get("commission_per_trade")
+    qty = ec.get("quantity")
+    sm = summarize_trades(
+        tdf,
+        slippage_per_share=float(slip) if slip is not None else None,
+        commission_per_trade=float(comm) if comm is not None else None,
+        quantity=float(qty) if qty is not None else None,
+    )
+    bsum = behavior_summary_from_trades(tdf)
+    base = {k: urow.get(k) for k in urow.index}
+    out: dict[str, Any] = dict(base)
+    out.update(sm)
+    out["behavior_hash"] = bsum["behavior_hash"]
+    out["behavior_hash_quality"] = bsum["behavior_hash_quality"]
+    out["source_rank"] = int(source_rank)
+    out["config_rank"] = int(config_rank)
+    return out
+
+
+def write_behavior_unique_systems(
+    *,
+    unique_df: pd.DataFrame,
+    sweep_dir: Path,
+    output_root: Path,
+    behavior_dedupe_top: int,
+    behavior_source: str,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    map_path = output_root / "top_unique_run_map.csv"
+    run_map = pd.read_csv(map_path) if map_path.exists() else pd.DataFrame()
+
+    head = unique_df.head(behavior_dedupe_top)
+    rows: list[dict[str, Any]] = []
+    weak_quality = 0
+    missing_trades = 0
+    if behavior_source != "top_runs":
+        behavior_source = "top_runs"
+    for config_rank, (_, urow) in enumerate(head.iterrows(), start=1):
+        ur = int(urow["unique_rank"])
+        folder_str = ""
+        if len(run_map) and "unique_rank" in run_map.columns:
+            sub = run_map[run_map["unique_rank"] == ur]
+            if len(sub):
+                folder_str = str(sub.iloc[0].get("detailed_folder", "") or "")
+        run_dir = Path(folder_str) if folder_str else None
+        trades_path = (run_dir / "trades.csv") if run_dir else None
+        cfg_yaml = (run_dir / "config_resolved.yaml") if run_dir else None
+        if trades_path is None or not trades_path.exists():
+            missing_trades += 1
+            continue
+        rec = _row_from_trades_and_config(
+            urow,
+            trades_path,
+            config_yaml=cfg_yaml,
+            source_rank=int(urow.get("source_rank", config_rank)),
+            config_rank=config_rank,
+        )
+        if rec is None:
+            missing_trades += 1
+            continue
+        if rec.get("behavior_hash_quality") == "weak":
+            weak_quality += 1
+        rows.append(rec)
+
+    if not rows:
+        empty = pd.DataFrame()
+        stats = {
+            "config_rows_considered": len(head),
+            "rows_with_trades": 0,
+            "behavior_unique_count": 0,
+            "weak_behavior_hash_rows": 0,
+            "missing_trades_rows": missing_trades,
+        }
+        return empty, stats
+
+    df = pd.DataFrame(rows)
+    sort_cols: list[str] = []
+    for c in ("combiner_score", "total_r", "profit_factor_r"):
+        if c in df.columns:
+            sort_cols.append(c)
+    if sort_cols:
+        df = df.sort_values(by=sort_cols, ascending=[False] * len(sort_cols), na_position="last")
+    df = dedupe_behavior_rows(df)
+    df.insert(0, "behavior_rank", range(1, len(df) + 1))
+
+    stats = {
+        "config_rows_considered": len(head),
+        "rows_with_trades": len(rows),
+        "behavior_unique_count": len(df),
+        "weak_behavior_hash_rows": weak_quality,
+        "missing_trades_rows": missing_trades,
+    }
+
+    want_cols = [
+        "behavior_rank",
+        "source_rank",
+        "config_rank",
+        "behavior_hash",
+        "behavior_hash_quality",
+        "candidate_set",
+        "top_per_strategy",
+        "max_trades_per_day",
+        "daily_max_loss_r",
+        "cooldown_after_loss_minutes",
+        "priority_policy",
+        "candidate_ids_json",
+        "candidates_short",
+        "trades",
+        "total_r",
+        "total_net_pnl",
+        "profit_factor",
+        "profit_factor_r",
+        "max_drawdown_r",
+        "avg_bars_held",
+        "avg_cost_r",
+        "median_cost_r",
+        "p90_cost_r",
+        "pct_trades_cost_r_gt_0_50",
+        "active_days",
+        "positive_day_rate",
+        "avg_daily_r",
+        "worst_day_r",
+        "trades_by_strategy_json",
+        "r_by_strategy_json",
+        "trades_by_candidate_json",
+        "r_by_candidate_json",
+        "trades_by_daily_trade_number_json",
+        "r_by_daily_trade_number_json",
+        "profit_factor_r_by_daily_trade_number_json",
+    ]
+    cols = [c for c in want_cols if c in df.columns]
+    df[cols].to_csv(output_root / "behavior_unique_systems.csv", index=False)
+
+    maps: list[dict[str, Any]] = []
+    for _, r in df.iterrows():
+        maps.append(
+            {
+                "behavior_rank": int(r["behavior_rank"]),
+                "behavior_hash": r.get("behavior_hash"),
+                "unique_rank": r.get("unique_rank"),
+                "source_rank": r.get("source_rank"),
+                "config_rank": r.get("config_rank"),
+                "combiner_score": r.get("combiner_score"),
+                "total_r": r.get("total_r"),
+            }
+        )
+    pd.DataFrame(maps).to_csv(output_root / "behavior_unique_run_map.csv", index=False)
+
+    top10 = df.head(10)
+    md = [
+        "# Behavior-unique combiner systems",
+        "",
+        "Deduplication uses **actual trade sequences** (`behavior_hash_from_trades`), not YAML alone.",
+        "",
+        f"- Config rows inspected: **{stats['config_rows_considered']}**",
+        f"- Rows with `trades.csv` loaded: **{stats['rows_with_trades']}**",
+        f"- Behavior-unique systems: **{stats['behavior_unique_count']}**",
+        f"- Rows with weak hash quality (missing id/entry/exit columns): **{stats['weak_behavior_hash_rows']}**",
+        f"- Missing detailed trades (no matched `top_runs` folder): **{stats['missing_trades_rows']}**",
+        "",
+        "## Top 10 behavior-unique",
+        "",
+    ]
+    try:
+        md.append(top10[cols].to_markdown(index=False))
+    except Exception:
+        md.append(top10[cols].to_string(index=False))
+    md.append("")
+    (output_root / "behavior_unique_systems.md").write_text("\n".join(md), encoding="utf-8")
+    return df, stats
+
+
+def _add_total_r_over_dd(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if "total_r" not in out.columns or "max_drawdown_r" not in out.columns:
+        out["total_r_over_abs_dd"] = float("nan")
+        return out
+    out["total_r_over_abs_dd"] = [
+        total_r_over_abs_dd(float(r.get("total_r", 0) or 0), float(r.get("max_drawdown_r", 0) or 0))
+        for _, r in out.iterrows()
+    ]
+    return out
+
+
+def write_rank_leaderboards(sweep_results: pd.DataFrame, output_root: Path, *, min_trades_cost_rank: int) -> None:
+    df = _add_total_r_over_dd(sweep_results)
+    root = output_root
+    root.mkdir(parents=True, exist_ok=True)
+
+    def _rank_csv(sub: pd.DataFrame, col: str, path: Path, ascending: bool = False) -> None:
+        if col not in sub.columns:
+            return
+        s = sub.sort_values(by=col, ascending=ascending, na_position="last").reset_index(drop=True)
+        s.insert(0, "rank", range(1, len(s) + 1))
+        s.to_csv(path, index=False)
+
+    _rank_csv(df, "combiner_score", root / "rank_by_combiner_score.csv")
+    _rank_csv(df, "total_r", root / "rank_by_total_r.csv")
+    _rank_csv(df, "profit_factor", root / "rank_by_profit_factor.csv")
+    if "profit_factor_r" in df.columns:
+        _rank_csv(df, "profit_factor_r", root / "rank_by_profit_factor_r.csv")
+    _rank_csv(df, "total_r_over_abs_dd", root / "rank_by_total_r_over_abs_dd.csv")
+
+    sub_cost = (
+        df[df["trades"].fillna(0).astype(float) >= float(min_trades_cost_rank)]
+        if "trades" in df.columns
+        else df
+    )
+    _rank_csv(sub_cost, "avg_cost_r", root / "rank_by_avg_cost_r.csv", ascending=True)
+    _rank_csv(sub_cost, "median_cost_r", root / "rank_by_median_cost_r.csv", ascending=True)
+
+    stress_path = root / "cost_stress" / "cost_stress_results.csv"
+    if stress_path.exists():
+        cs = pd.read_csv(stress_path)
+        slip = cs[np.isclose(cs["slippage_per_share"].astype(float), 0.02)]
+        if len(slip):
+            _rank_csv(slip, "total_r", root / "rank_by_cost_0_02_total_r.csv")
+
+
+def write_cost_robust_systems(
+    output_root: Path,
+    *,
+    min_trades: int,
+    slip: float,
+    min_total_r: float,
+    min_pf: float,
+    max_dd_r: float,
+    max_median_cost_r: float,
+) -> None:
+    stress_path = output_root / "cost_stress" / "cost_stress_results.csv"
+    lines = ["# Cost-robust systems (research filters)", "",]
+    if not stress_path.exists():
+        lines += [
+            "*Cost stress results not found — skipped `cost_robust_systems` filter.*",
+            "",
+        ]
+        (output_root / "cost_robust_systems.md").write_text("\n".join(lines), encoding="utf-8")
+        pd.DataFrame().to_csv(output_root / "cost_robust_systems.csv", index=False)
+        return
+
+    cs = pd.read_csv(stress_path)
+    sub = cs[np.isclose(cs["slippage_per_share"].astype(float), float(slip))]
+    if "median_cost_r" not in sub.columns:
+        sub = sub.copy()
+        sub["median_cost_r"] = float("nan")
+    mask = (
+        (sub["trades"].astype(int) >= int(min_trades))
+        & (sub["total_r"].astype(float) > float(min_total_r))
+        & (sub["profit_factor"].astype(float) > float(min_pf))
+        & (sub["max_drawdown_r"].astype(float) > float(max_dd_r))
+    )
+    med = sub["median_cost_r"].astype(float)
+    mask_m = med.isna() | (med <= float(max_median_cost_r))
+    out = sub[mask & mask_m].sort_values(by="total_r", ascending=False)
+    out.to_csv(output_root / "cost_robust_systems.csv", index=False)
+    lines += [
+        "Thresholds (not trading advice):",
+        f"- min_trades >= {min_trades}",
+        f"- slippage_per_share = {slip}",
+        f"- total_r > {min_total_r}",
+        f"- profit_factor > {min_pf}",
+        f"- max_drawdown_r > {max_dd_r}",
+        f"- median_cost_r <= {max_median_cost_r} (or missing)",
+        "",
+        f"- Matching rows: **{len(out)}**",
+        "",
+    ]
+    if len(out):
+        try:
+            lines.append(out.head(30).to_markdown(index=False))
+        except Exception:
+            lines.append(out.head(30).to_string(index=False))
+    (output_root / "cost_robust_systems.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_fixed_vs_sweep_comparison(
+    *,
+    fixed_summary_csv: Path,
+    sweep_results: pd.DataFrame,
+    unique_df: pd.DataFrame | None,
+    behavior_df: pd.DataFrame | None,
+    cost_robust_csv: Path,
+    output_root: Path,
+) -> None:
+    rows: list[dict[str, Any]] = []
+    fx = pd.read_csv(fixed_summary_csv)
+    cols_pick = [
+        "source",
+        "label",
+        "candidate_set",
+        "top_per_strategy",
+        "trades",
+        "total_r",
+        "profit_factor",
+        "profit_factor_r",
+        "max_drawdown_r",
+        "total_r_over_abs_dd",
+        "avg_cost_r",
+        "median_cost_r",
+        "candidate_ids_json",
+        "trades_by_strategy_json",
+        "r_by_strategy_json",
+    ]
+
+    def _add_row(source: str, label: str, r: pd.Series | dict[str, Any]) -> None:
+        d = dict(r) if isinstance(r, dict) else r.to_dict()
+        if "candidate_ids_json" not in d and d.get("candidates_used_json") is not None:
+            d["candidate_ids_json"] = d.get("candidates_used_json")
+        tr = float(d.get("total_r", 0) or 0)
+        dd = float(d.get("max_drawdown_r", 0) or 0)
+        d["total_r_over_abs_dd"] = total_r_over_abs_dd(tr, dd)
+        d["source"] = source
+        d["label"] = label
+        rows.append({k: d.get(k) for k in cols_pick})
+
+    if len(fx):
+        fx2 = _add_total_r_over_dd(fx)
+        for col, lbl in [
+            ("total_r", "top_fixed_by_total_r"),
+            ("profit_factor", "top_fixed_by_profit_factor"),
+            ("total_r_over_abs_dd", "top_fixed_by_total_r_over_abs_dd"),
+        ]:
+            if col not in fx2.columns:
+                continue
+            best = fx2.sort_values(by=col, ascending=False, na_position="last").iloc[0]
+            _add_row("fixed", lbl, best)
+
+    if len(sweep_results):
+        uq = dedupe_sweep_from_results(_add_total_r_over_dd(sweep_results))
+        if len(uq):
+            best = uq.sort_values(by="combiner_score", ascending=False, na_position="last").iloc[0]
+            _add_row("sweep", "top_config_unique_by_combiner_score", best)
+
+    if unique_df is not None and len(unique_df):
+        best = unique_df.sort_values(by="combiner_score", ascending=False, na_position="last").iloc[0]
+        _add_row("sweep", "top_from_top_unique_systems", best)
+
+    if behavior_df is not None and len(behavior_df):
+        best = behavior_df.sort_values(by="combiner_score", ascending=False, na_position="last").iloc[0]
+        _add_row("sweep", "top_behavior_unique", best)
+
+    if cost_robust_csv.exists():
+        cr = pd.read_csv(cost_robust_csv)
+        if len(cr):
+            best = cr.sort_values(by="total_r", ascending=False, na_position="last").iloc[0]
+            _add_row("sweep", "top_cost_robust", best)
+
+    out = pd.DataFrame(rows)
+    out.to_csv(output_root / "fixed_vs_sweep_comparison.csv", index=False)
+    md = [
+        "# Fixed runs vs sweep (illustrative)",
+        "",
+        "Broad fixed runs may show higher **total_r** with lower **profit factor** or worse **drawdown**; sweep winners may have higher **combiner_score** but fewer trades. "
+        "These tables are for diagnostics only.",
+        "",
+    ]
+    try:
+        md.append(out.to_markdown(index=False))
+    except Exception:
+        md.append(out.to_string(index=False))
+    (output_root / "fixed_vs_sweep_comparison.md").write_text("\n".join(md), encoding="utf-8")
+
+
+def dedupe_sweep_from_results(df: pd.DataFrame) -> pd.DataFrame:
+    """Config-level dedupe on full sweep results (same key as top_unique)."""
+    if len(df) == 0:
+        return df
+    d = _sort_sweep_df(df)
+    seen: set[tuple[Any, ...]] = set()
+    out_rows: list[pd.Series] = []
+    for _, row in d.iterrows():
+        key = _full_dedupe_key(row)
+        if key in seen:
+            continue
+        seen.add(key)
+        out_rows.append(row)
+    return pd.DataFrame(out_rows).reset_index(drop=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Layer 2 combiner postprocess (dedupe, cost stress, diagnostics summary).")
     p.add_argument("--sweep-dir", type=Path, default=None)
@@ -602,6 +1097,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--diagnostics-dir", type=Path, default=None)
     p.add_argument("--diagnostics-date-range", default="2025-01-01 — 2026-04-30")
     p.add_argument("--collect-fixed-runs", type=Path, default=None, help="Scan run_* folders and write fixed_run_summary.")
+    p.add_argument("--fixed-runs-dir", type=Path, default=None, help="Root with run_* folders for period CSV exports.")
+    p.add_argument("--write-period-breakdowns", action="store_true", help="Write monthly/quarterly CSVs for top_runs / fixed runs.")
+    p.add_argument("--behavior-dedupe-top", type=int, default=0, help="Top N config-unique rows to hash; 0 = same as --dedupe-top.")
+    p.add_argument("--write-behavior-unique", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--behavior-source", default="top_runs", help="Only top_runs is implemented (detailed trades under sweep top_runs).")
+    p.add_argument("--behavior-top-rerun", type=int, default=100, help="Reserved for future detailed reruns.")
+    p.add_argument("--min-trades-cost-rank", type=int, default=300, help="Min trades for cost-r leaderboards.")
+    p.add_argument("--cost-robust-min-trades", type=int, default=300)
+    p.add_argument("--cost-robust-slip", type=float, default=0.02)
+    p.add_argument("--cost-robust-min-total-r", type=float, default=0.0)
+    p.add_argument("--cost-robust-min-pf", type=float, default=1.0)
+    p.add_argument("--cost-robust-max-dd-r", type=float, default=-100.0)
+    p.add_argument("--cost-robust-max-median-cost-r", type=float, default=0.50)
+    p.add_argument("--compare-fixed-runs", type=Path, default=None, help="Path to fixed_run_summary.csv for sweep comparison.")
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -609,39 +1118,49 @@ def main(argv: list[str] | None = None) -> int:
     if not out_root.is_absolute():
         out_root = cwd / out_root
 
+    def _abs(path: Path | None) -> Path | None:
+        if path is None:
+            return None
+        return path if path.is_absolute() else cwd / path
+
+    sweep_dir = _abs(args.sweep_dir)
+    _ = args.behavior_top_rerun
+
     if args.collect_fixed_runs:
-        fr = args.collect_fixed_runs
-        if not fr.is_absolute():
-            fr = cwd / fr
+        fr = _abs(args.collect_fixed_runs)
+        assert fr is not None
         collect_fixed_run_summary(fr, out_root)
         print(f"[postprocess] collected fixed runs from {fr}", flush=True)
 
     if args.diagnostics_dir:
-        ddir = args.diagnostics_dir
-        if not ddir.is_absolute():
-            ddir = cwd / ddir
+        ddir = _abs(args.diagnostics_dir)
+        assert ddir is not None
         write_diagnostics_summary(ddir, date_range=args.diagnostics_date_range)
         print(f"[postprocess] wrote {ddir / 'diagnostics_summary.md'}", flush=True)
 
+    if args.write_period_breakdowns and args.fixed_runs_dir:
+        frd = _abs(args.fixed_runs_dir)
+        assert frd is not None
+        write_period_breakdowns_for_fixed_runs(frd)
+        print(f"[postprocess] period breakdowns under fixed runs {frd}", flush=True)
+
     unique_df: pd.DataFrame | None = None
-    if args.dedupe_top and args.sweep_dir:
-        sd = args.sweep_dir
-        if not sd.is_absolute():
-            sd = cwd / sd
-        unique_df, stats = dedupe_sweep(sd, out_root, dedupe_top=args.dedupe_top)
+    if args.dedupe_top and sweep_dir is not None:
+        unique_df, stats = dedupe_sweep(sweep_dir, out_root, dedupe_top=args.dedupe_top)
         print(f"[postprocess] dedupe: {stats}", flush=True)
-        map_unique_to_top_runs(unique_df, sd, out_root, max_rank=50)
+        map_unique_to_top_runs(unique_df, sweep_dir, out_root, max_rank=50)
+
+    if args.write_period_breakdowns and sweep_dir is not None:
+        write_period_breakdowns_for_sweep_top_runs(sweep_dir)
+        print(f"[postprocess] period breakdowns under {sweep_dir / 'top_runs'}", flush=True)
 
     if args.cost_stress_top and unique_df is None and (out_root / "top_unique_systems.csv").exists():
         unique_df = pd.read_csv(out_root / "top_unique_systems.csv")
 
     if args.cost_stress_top and unique_df is not None and args.candidate_root and args.config:
-        cr = args.candidate_root
-        cf = args.config
-        if not cr.is_absolute():
-            cr = cwd / cr
-        if not cf.is_absolute():
-            cf = cwd / cf
+        cr = _abs(args.candidate_root)
+        cf = _abs(args.config)
+        assert cr is not None and cf is not None
         cost_stress(
             unique_df=unique_df,
             output_root=out_root,
@@ -655,6 +1174,62 @@ def main(argv: list[str] | None = None) -> int:
             top_n=args.cost_stress_top,
         )
         print(f"[postprocess] wrote {out_root / 'cost_stress'}", flush=True)
+
+    behavior_df: pd.DataFrame | None = None
+    bh_top = int(args.behavior_dedupe_top) if args.behavior_dedupe_top > 0 else int(args.dedupe_top)
+    if (
+        args.write_behavior_unique
+        and bh_top > 0
+        and unique_df is not None
+        and sweep_dir is not None
+    ):
+        behavior_df, bh_stats = write_behavior_unique_systems(
+            unique_df=unique_df,
+            sweep_dir=sweep_dir,
+            output_root=out_root,
+            behavior_dedupe_top=bh_top,
+            behavior_source=args.behavior_source,
+        )
+        print(f"[postprocess] behavior dedupe: {bh_stats}", flush=True)
+
+    sweep_results: pd.DataFrame | None = None
+    if sweep_dir is not None:
+        rp = sweep_dir / "results.csv"
+        if rp.exists():
+            sweep_results = pd.read_csv(rp)
+            write_rank_leaderboards(
+                sweep_results,
+                out_root,
+                min_trades_cost_rank=int(args.min_trades_cost_rank),
+            )
+            print(f"[postprocess] rank leaderboards -> {out_root}", flush=True)
+
+    write_cost_robust_systems(
+        out_root,
+        min_trades=int(args.cost_robust_min_trades),
+        slip=float(args.cost_robust_slip),
+        min_total_r=float(args.cost_robust_min_total_r),
+        min_pf=float(args.cost_robust_min_pf),
+        max_dd_r=float(args.cost_robust_max_dd_r),
+        max_median_cost_r=float(args.cost_robust_max_median_cost_r),
+    )
+
+    if args.compare_fixed_runs and sweep_dir is not None and sweep_results is not None:
+        cfixed = _abs(args.compare_fixed_runs)
+        assert cfixed is not None
+        if unique_df is None and (out_root / "top_unique_systems.csv").exists():
+            unique_df = pd.read_csv(out_root / "top_unique_systems.csv")
+        if behavior_df is None and (out_root / "behavior_unique_systems.csv").exists():
+            behavior_df = pd.read_csv(out_root / "behavior_unique_systems.csv")
+        write_fixed_vs_sweep_comparison(
+            fixed_summary_csv=cfixed,
+            sweep_results=sweep_results,
+            unique_df=unique_df,
+            behavior_df=behavior_df,
+            cost_robust_csv=out_root / "cost_robust_systems.csv",
+            output_root=out_root,
+        )
+        print(f"[postprocess] wrote fixed_vs_sweep_comparison under {out_root}", flush=True)
 
     return 0
 

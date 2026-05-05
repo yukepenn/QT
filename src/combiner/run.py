@@ -29,7 +29,7 @@ from src.combiner.candidate import (
     write_candidate_diagnostics,
     write_candidates_used,
 )
-from src.combiner.metrics import summarize_combiner
+from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
 from src.utils.config_validation import validate_common_combiner_config
@@ -275,11 +275,17 @@ def main(argv: list[str] | None = None) -> int:
     rej_df = sim_out["rejected_signals_df"]
     rej_counts = sim_out.get("rejection_counts")
 
+    exec_cfg = execution_config_from_parts(
+        comb_cfg.slippage_per_share,
+        comb_cfg.commission_per_trade,
+        qty,
+    )
     metrics = summarize_combiner(
         trades_df,
         rej_df,
         log_df,
         rejection_counts=rej_counts,
+        execution_config=exec_cfg,
     )
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")

@@ -29,7 +29,7 @@ from src.combiner.candidate import (
     select_candidate_set,
     write_candidates_used,
 )
-from src.combiner.metrics import summarize_combiner
+from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
 from src.combiner.simulator import simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.utils.config_validation import validate_common_combiner_config
@@ -216,11 +216,17 @@ def main(argv: list[str] | None = None) -> int:
         trades_df = sim_out["trades_df"]
         rej_counts = sim_out.get("rejection_counts")
         empty_log = pd.DataFrame()
+        exec_cfg = execution_config_from_parts(
+            comb_cfg.slippage_per_share,
+            comb_cfg.commission_per_trade,
+            qty,
+        )
         metrics = summarize_combiner(
             trades_df,
             pd.DataFrame(),
             empty_log,
             rejection_counts=rej_counts,
+            execution_config=exec_cfg,
         )
         elapsed_ms = int((time.perf_counter() - row_start) * 1000)
         cs = float(metrics.get("combiner_score", 0.0) or 0.0)
@@ -317,11 +323,17 @@ def main(argv: list[str] | None = None) -> int:
             sim_out["candidate_signal_log_df"].to_csv(rdir / "candidate_signal_log.csv", index=False)
             sim_out["rejected_signals_df"].to_csv(rdir / "rejected_signals.csv", index=False)
             write_candidates_used(selected, rdir / "candidates_used.csv")
+            exec_cfg_d = execution_config_from_parts(
+                comb_cfg.slippage_per_share,
+                comb_cfg.commission_per_trade,
+                qty,
+            )
             metrics_d = summarize_combiner(
                 sim_out["trades_df"],
                 sim_out["rejected_signals_df"],
                 sim_out["candidate_signal_log_df"],
                 rejection_counts=None,
+                execution_config=exec_cfg_d,
             )
             (rdir / "metrics.json").write_text(json.dumps(metrics_d, indent=2, default=str), encoding="utf-8")
             (rdir / "config_resolved.yaml").write_text(yaml.safe_dump(merged_cfg, sort_keys=False), encoding="utf-8")

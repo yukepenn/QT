@@ -434,6 +434,19 @@ python src/combiner/postprocess.py --sweep-dir src/combiner/results/layer2_qqq_v
 python src/combiner/postprocess.py --collect-fixed-runs src/combiner/results/layer2_qqq_v1/fixed_runs --output-root src/combiner/results/layer2_qqq_v1
 ```
 
+#### Layer 2 postprocess diagnostics (hardened)
+
+- **Config-level dedupe** (`top_unique_systems.csv`): one row per distinct combiner **grid + candidate list** (same as sweep dedupe key).
+- **Behavior-level dedupe** (`behavior_unique_systems.csv`): hashes the **actual trade sequence** from detailed `trades.csv` (`behavior_hash_from_trades` in `src/combiner/behavior.py`). Strong hashes prefer `candidate_id` / `entry_idx` / `exit_idx`; weak hashes fall back when columns are missing (called out in the markdown summary).
+- **Cost-as-R**: `summarize_trades` / combiner metrics accept execution **slippage**, **commission**, and representative **quantity**; reports `avg_cost_r`, `median_cost_r`, etc.
+- **R-multiple distribution**: `profit_factor_r` (gross R wins / gross R losses), quantiles, daily aggregates, and **`daily_trade_number`** JSON breakdowns on combiner runs.
+- **Period breakdowns** (detailed folders only): `--write-period-breakdowns` writes `monthly_r.csv`, `quarterly_r.csv`, and optional `strategy_by_month.csv` / `candidate_by_month.csv` under each `top_runs/rank_*` or fixed `run_*` folder (not for every sweep row by default).
+- **Leaderboards**: `rank_by_*.csv` (combiner score, total R, PF, PF_R, R/|DD|, cost-sorted ranks with `--min-trades-cost-rank`, and `rank_by_cost_0_02_total_r.csv` when cost stress exists).
+- **Cost-robust filter**: `cost_robust_systems.csv` + `.md` with CLI thresholds (`--cost-robust-*`); research filters only.
+- **Fixed vs sweep**: `--compare-fixed-runs path/to/fixed_run_summary.csv` (with `--sweep-dir`) emits `fixed_vs_sweep_comparison.*`.
+
+Saved Layer 1/Layer 2 **result folders from before these diagnostics are still stale** until you rerun sweeps with the hardened code; use postprocess outputs only on **fresh** sweep exports.
+
 Artifacts default under **`src/combiner/results/layer2_qqq_v1/`** (`run_<timestamp>_<tag>/`, `diagnostics/`, `sweep_<timestamp>_<tag>/`).
 
 **MVP combiner behavior (legacy ORB+VWAP sample `orb_vwap_simple.yaml`):** one symbol, **max one** open position, session/day caps from YAML, **`no_new_after_minute`**, **`slippage_per_share: 0.01`**, **`commission_per_trade: 0.0`**. Priorities in that sample favor ORB over VWAP when both fire.
