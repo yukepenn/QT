@@ -1,6 +1,6 @@
 # Research platform hardening — current status
 
-*Snapshot: 2026-05-05. **Commit E HEAD:** `a37cca4` — Document hardening closeout and rerun plan.*
+*Snapshot: 2026-05-05. **Commit E:** `a37cca4` (closeout docs) + `e9b9a71` (hash note); **`git rev-parse HEAD`** → `e9b9a71`.*
 
 ## 1. Git
 
@@ -8,7 +8,7 @@
 |------|--------|
 | Branch | `main` (typical) |
 | Remote | `origin` → `https://github.com/yukepenn/QT.git` |
-| Latest commits (see `git log --oneline -15`) | A `6bc1c7c` · B `a049a11` · C `a1b995f` · D `75bb620` · **E** `a37cca4` |
+| Latest commits (see `git log --oneline -15`) | A `6bc1c7c` · B `a049a11` · C `a1b995f` · D `75bb620` · **E** `a37cca4` + `e9b9a71` |
 | Working tree | Should be **clean** after Commit E push (`git status --short` empty) |
 
 ## 2. Data status

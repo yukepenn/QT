@@ -2,7 +2,7 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: **`a37cca4`** — Commit E (hardening closeout + rerun plan); **Commit D** feature `75bb620`; Commit C `a1b995f` (`validate_config` + context keys).
+- **Current HEAD**: **`e9b9a71`** — Commit E (closeout + hash note); substantive E docs in **`a37cca4`**; **Commit D** `75bb620`; Commit C `a1b995f`.
 - **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 
