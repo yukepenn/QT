@@ -2,7 +2,7 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: **Commit D** at `75bb620` (combiner postprocess diagnostics: behavior hash, cost-as-R, leaderboards); Commit C was `a1b995f` (`validate_config` + context keys).
+- **Current HEAD**: **Commit E** documents hardening closeout + rerun plan (on top of **Commit D** `75bb620`); Commit C was `a1b995f` (`validate_config` + context keys).
 - **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 
@@ -148,15 +148,16 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### Commit E — Consolidation + docs/closeout
 
-- Add/standardize pytest config and tests docs
-- Run light suite: `pytest`, `compileall`, loader list, small parity smoke, small combiner smoke
-- Update README/PROGRESS/CHANGES and write closeout + rerun plan docs
-- Document that **old Layer 1/Layer 2 outputs are pre-hardening and rankings are stale** after fixes
+**Done** (documentation and markers only; no research reruns).
+
+- `hardening_status_current.md`, `hardening_closeout_20260505.md`, `hardening_validation_20260505.md`, `rerun_plan_after_hardening.md`
+- `tests/README.md`; `PRE_HARDENING_STALE.md` on pre-hardening Layer 1/2 roots; README hardening section
+- Light validation recorded in `hardening_validation_20260505.md`
 
 ---
 
 ## Next action to start implementation safely
 
-1. Proceed to **Commit E**: test/docs consolidation, hardening closeout, post-hardening rerun plan.
-2. Old Layer 1/Layer 2 rankings remain **stale** relative to post-hardening code until intentionally rerun.
+1. **User approval** for **`rerun_plan_after_hardening.md`** (post-hardening Layer 1 / Layer 2).
+2. Old Layer 1/Layer 2 rankings remain **stale** until that rerun completes.
 

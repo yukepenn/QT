@@ -7,6 +7,11 @@
 
 ### [Unreleased] – 2026-05-05
 
+- Docs(research): hardening closeout (`hardening_closeout_20260505.md`), live status (`hardening_status_current.md`), validation log (`hardening_validation_20260505.md`).
+- Docs(research): post-hardening **`rerun_plan_after_hardening.md`** (commands documented only; not executed).
+- Docs(results): **`PRE_HARDENING_STALE.md`** for pre-hardening Layer 1 / Layer 2 roots; stale banners on `layer1_2020_summary.md` / `layer2_v2_2020_summary.md`.
+- Test(docs): **`tests/README.md`** — test groups and light smoke commands.
+- Chore(research): **`hardening_audit_plan.md`** — Commit E consolidation noted.
 - Feat(combiner): behavior-level dedupe and stable trade-sequence hash (`behavior.py`, `behavior_unique_*` postprocess artifacts).
 - Feat(metrics): cost-as-R helpers, `profit_factor_r`, daily and monthly/quarterly `period_breakdown`, extended `summarize_trades` kwargs for execution cost.
 - Feat(postprocess): period CSV exports, rank leaderboards, cost-robust research filter, optional fixed-vs-sweep comparison; CLI flags for behavior dedupe and cost thresholds.

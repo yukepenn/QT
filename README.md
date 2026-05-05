@@ -7,6 +7,37 @@ This is a **local research framework** for IBKR historical 1-minute data.
 
 Data pull into Parquet is already solved; ongoing work centers on **strategy plugins**, **backtesting**, and **sweeps**.
 
+## Research platform hardening (before Layer 3)
+
+**Current state**
+
+- Layer **1** (per-strategy sweeps + candidate YAMLs) and Layer **2** (combiner run/sweep/postprocess) **exist** on `main`.
+- Layer **3** (walk-forward / OOS harness) is **intentionally deferred** until post-hardening Layer 1/2 reruns justify it.
+- **QQQ** is the **complete** research symbol for 2020–2026 RTH on a typical backfill; **SPY** is often **incomplete** — do not use SPY for robustness until coverage matches.
+
+**Hardening completed (Commits A–D)**
+
+- Execution validation, **max_drawdown** from **zero**, stop/target/finite checks, combiner cooldown + **`daily_trade_number`**
+- No-lookahead hygiene: **`full_session_*_LOOKAHEAD`**, intraday **so-far** columns, ORB **`*_known`**, centralized **`FeatureBuildConfig` / `feature_key`**
+- **`BaseStrategy.validate_config`** + **`src/utils/config_validation.py`**, **`context_key`** / **`normalized_param_key`** audit
+- Combiner **behavior-level dedupe**, **cost-as-R**, **`profit_factor_r`**, period breakdowns, cost-aware leaderboards (research filters only)
+
+**Conventions (summary)**
+
+- **Next-bar open** execution model per engine/combiner docs; validate stop/target **sides** and **finite** prices.
+- Strategies must **not** require LOOKAHEAD columns in **`required_features`**; prefer ORB **`*_known`** for gated logic.
+- **`context_key`**: any config field that changes **`prepare_signal_context`** outputs belongs in the key.
+- **`normalized_param_key`**: any field that changes **final signals** belongs in the key.
+- Layer 2 postprocess: **`top_unique_*`** = config dedupe; **`behavior_unique_*`** = trade-sequence dedupe from **`trades.csv`**.
+
+**Rerun warning**
+
+- Saved Layer 1 / Layer 2 roots from **before** A–D (e.g. `layer1_all10_qqq_2020_20260430_v1`, `layer2_qqq_2020_20260430_v2_relaxed`) are marked **`PRE_HARDENING_STALE.md`**. **Do not use their rankings for Layer 3** until you rerun from **`rerun_plan_after_hardening.md`**.
+
+**Next phase**
+
+- User-approved **post-hardening** Layer 1 → selection → Layer 2 strict/relaxed → postprocess; then decide on Layer 3 smoke. Details: `src/research/results/hardening_closeout_20260505.md`, `rerun_plan_after_hardening.md`, `tests/README.md`.
+
 ## 0. Current project status
 
 **Implemented**

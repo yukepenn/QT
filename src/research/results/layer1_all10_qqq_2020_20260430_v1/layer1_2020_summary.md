@@ -1,3 +1,5 @@
+**NOTE:** This summary was generated before Commit A–D hardening and should be treated as **stale for ranking purposes**. See `PRE_HARDENING_STALE.md`.
+
 # Layer 1 (QQQ) — 2020-01-01 to 2026-04-30
 
 ## 1. Data window
