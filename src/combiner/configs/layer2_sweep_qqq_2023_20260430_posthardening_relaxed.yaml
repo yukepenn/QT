@@ -1,0 +1,50 @@
+name: layer2_sweep_qqq_2023_20260430_posthardening_relaxed
+base_config: src/combiner/configs/layer2_qqq_2023_20260430_posthardening_relaxed.yaml
+
+grid:
+  candidate_set:
+    - trap_family
+    - opening_family
+    - core5_no_vwap
+    - strict_core
+    - vwap_control_family
+    - all_strict
+    - all_with_relaxed
+
+  top_per_strategy:
+    - 1
+    - 2
+    - 3
+    - 5
+
+  system.max_trades_per_day:
+    - 1
+    - 2
+    - 3
+    - 5
+    - 10
+
+  system.daily_max_loss_r:
+    - -1.5
+    - -2.0
+    - -3.0
+    - -5.0
+
+  system.cooldown_after_loss_minutes:
+    - 0
+    - 15
+    - 30
+
+  conflict.priority_policy:
+    - metadata_priority
+    - score_adjusted_priority
+
+fixed:
+  execution.commission_per_trade: 0.0
+  execution.slippage_per_share: 0.01
+  execution.eod_exit_minute: 389
+  execution.no_new_after_minute: 360
+  execution.recompute_target_from_entry: true
+  execution.min_risk_per_share: 0.03
+  system.max_open_positions: 1
+  system.cooldown_scope: session
