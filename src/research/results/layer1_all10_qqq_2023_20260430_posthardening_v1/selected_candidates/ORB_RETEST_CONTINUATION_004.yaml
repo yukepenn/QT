@@ -1,0 +1,72 @@
+candidate_id: ORB_RETEST_CONTINUATION_004
+strategy: orb_retest_continuation
+asset: equity
+symbol: QQQ
+strategy_family: opening_momentum
+conflict_group: QQQ_directional
+default_priority: 82
+default_active_start_minute: 10
+default_active_end_minute: 120
+metadata:
+  family: opening_momentum
+  conflict_group: QQQ_directional
+  default_priority: 82
+  default_active_start_minute: 10
+  default_active_end_minute: 120
+selection:
+  score: 1.418407330793166
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_retest_continuation\sweep_20260505_224340_layer1_qqq_2023_20260430_posthardening_v1\results.csv
+  row_index: 126
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_retest_continuation\sweep_20260505_224340_layer1_qqq_2023_20260430_posthardening_v1
+metrics:
+  trades: 547
+  profit_factor: 1.1230024041861388
+  total_r: 51.611932268152586
+  win_rate: 0.4259597806215722
+  total_net_pnl: 34.79000000000684
+  avg_r: 0.0943545379673721
+  avg_net_pnl: 0.0636014625228644
+  max_drawdown_pnl: -26.72999999999797
+  max_drawdown_r: -15.101182779168075
+  avg_bars_held: 25.73857404021938
+  stop_count: 295
+  target_count: 145
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 107
+config:
+  strategy: orb_retest_continuation
+  features:
+    orb_open_minutes: 5
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 10
+    entry_end_minute: 90
+    retest_tolerance_atr: 0.5
+    max_retest_bars: 5
+    require_vwap_side: true
+    require_vwap_slope: true
+    require_pullback_volume_dryup: false
+  risk:
+    stop_mode: retest_low
+    target_mode: fixed_r
+    target_r: 2.0
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

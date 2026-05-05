@@ -69,3 +69,27 @@ src/strategies/testing_parameters_results/**/sweep_*/
 !src/research/results/layer1_all10_qqq_2020_20260430_v1/sweep_manifest.csv
 !src/research/results/layer1_all10_qqq_2020_20260430_v1/candidate_summary.md
 !src/research/results/layer1_all10_qqq_2020_20260430_v1/layer1_2020_summary.md
+
+# Post-hardening QQQ 2023–2026 window (curated only; sweeps remain ignored)
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates/*.yaml
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates.csv
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/sweep_manifest.csv
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/sweep_manifest.md
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/candidate_summary.md
+!src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/layer1_2023_posthardening_summary.md
+
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/*.md
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/diagnostics/*.md
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/cost_stress/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/cost_stress/*.md
+
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/*.md
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/diagnostics/*.md
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/cost_stress/*.csv
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/cost_stress/*.md
+
+!src/combiner/results/layer2_qqq_2023_20260430_posthardening_comparison.md
