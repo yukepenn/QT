@@ -15,6 +15,7 @@
 - Fix(backtest): start max_drawdown from zero; validate stop/target side + finite prices.
 - Fix(combiner): prevent cooldown leaking across sessions; add fast daily_trade_number; add explicit rejection reasons for invalid stop/target and opposite-direction conflicts.
 - Test(unit): add pytest + initial execution/drawdown tests.
+- Docs(research): refresh hardening plan for HEAD `6bc1c7c` (mark Commit A done; prep Commit B).
 
 ### [Unreleased] – 2026-05-02
 

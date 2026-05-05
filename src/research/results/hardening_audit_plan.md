@@ -2,8 +2,8 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: `3c38c1b` (Feat(research): finish QQQ 2020 layer2 v2)
-- **Working tree**: untracked doc(s) only (see `git status --short`)
+- **Current HEAD**: `6bc1c7c` (Fix(backtest): validate exec and drawdown)
+- **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 
 ### Data status (current, confirmed)
@@ -22,15 +22,20 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### P0 (execution correctness)
 
-- max_drawdown baseline starts at first cum value (should start at 0)
-- risk uses `abs(entry-stop)` before validating correct stop side
-- target validation incomplete (fixed_r target_r and fixed_price target side)
-- finite price validation incomplete
-- common config validation incomplete
-- combiner cooldown can leak across sessions (cooldown not reset on new session)
-- fast combiner `daily_trade_number` is placeholder (0)
-- combiner supports only 1 open position but config exposes `max_open_positions`
-- opposite-direction conflict not cleanly separated from lower-priority conflict in fast path reasons/counts
+**Status:** Commit A (P0) completed at `6bc1c7c`:
+
+- drawdown baseline starts at 0 (pandas + numba)
+- stop-side correctness enforced before risk computation
+- fixed_r / fixed_price target validation enforced + finite price checks
+- combiner cooldown resets at session boundary
+- fast combiner emits real `daily_trade_number`
+- combiner explicitly guards `max_open_positions != 1`
+- opposite-direction conflicts separated from lower-priority conflicts (rejection reasons + counts)
+
+**Remaining P0 follow-ups (still worth hardening):**
+
+- legacy/detailed combiner path parity: ensure `simulate_combiner_legacy_logs` has the same entry validation + rejection reason codes as the fast path (avoid drift)
+- centralized “shared config validation” across Layer 1 engine / Layer 1 sweep / Layer 2 precompute (avoid scattered, inconsistent validation)
 
 ### P1 (no-lookahead + cache)
 
@@ -111,14 +116,7 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### Commit A — Engine correctness (P0) + core tests
 
-- Add shared execution validation helpers (Python + Numba-compatible)
-- Fix drawdown baseline to start from 0 in both pandas and numba
-- Enforce stop-side correctness before risk/targets
-- Enforce fixed_r/fixed_price target validation and finite price checks
-- Combiner: reset cooldown at session boundary; implement real fast `daily_trade_number`
-- Guard `max_open_positions != 1` with explicit error
-- Split opposite-direction conflict vs lower-priority conflict (fast path counts + labels)
-- Add tests for drawdown + validation + combiner invariants
+**Done at `6bc1c7c`.**
 
 ### Commit B — Feature no-lookahead + feature_key hardening (P1) + tests
 
@@ -158,6 +156,6 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ## Next action to start implementation safely
 
-1. Commit a lightweight checkpoint including Phase 0 docs (no code changes yet), then proceed to Commit A.
-2. Do not run full Layer 1/Layer 2 until all tests pass through Commit C/D and smoke checks succeed.
+1. Proceed to **Commit B** (P1): feature no-lookahead columns + centralized feature_key + tests.
+2. Do not rerun full Layer 1/Layer 2 until tests pass through Commit C and smoke checks succeed (Commit D can follow for deeper diagnostics).
 
