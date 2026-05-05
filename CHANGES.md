@@ -1,3 +1,7 @@
+### [Unreleased] – 2026-05-05
+
+- Docs(results): post-hardening QQQ 2023–2026 Layer 2 **strict** + **relaxed** sweep outputs, comparison MD, and Layer 1 summary linkage under `layer1_all10_qqq_2023_20260430_posthardening_v1/` and `layer2_qqq_2023_20260430_posthardening_{strict,relaxed}_v1/` (curated CSV/MD only; large sweep logs remain ignored).
+
 ### [Unreleased] – 2026-05-02
 
 - Feat(research): `select_candidates.py` — manifest relaxed fallback thresholds configurable via **`--relaxed-min-trades`**, **`--relaxed-min-profit-factor`**, **`--relaxed-min-total-r`**, **`--relaxed-max-drawdown-r`** (defaults match 2020-window spec: 80 / 1.0 / -10 / -100).
