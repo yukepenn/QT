@@ -1,6 +1,6 @@
 # Research platform hardening — current status
 
-*Snapshot: 2026-05-05. **Commit E:** `a37cca4` (closeout docs) + `e9b9a71` (hash note); **`git rev-parse HEAD`** → `e9b9a71`.*
+*Snapshot: 2026-05-05. **Authoritative HEAD:** run `git rev-parse HEAD` on `main`. Commit E landed as a small doc series ending with hash-pointer sync commits after `a37cca4` (main closeout bundle).*
 
 ## 1. Git
 
@@ -8,7 +8,7 @@
 |------|--------|
 | Branch | `main` (typical) |
 | Remote | `origin` → `https://github.com/yukepenn/QT.git` |
-| Latest commits (see `git log --oneline -15`) | A `6bc1c7c` · B `a049a11` · C `a1b995f` · D `75bb620` · **E** `a37cca4` + `e9b9a71` |
+| Latest commits (see `git log --oneline -15`) | A `6bc1c7c` · B `a049a11` · C `a1b995f` · D `75bb620` · **E** (docs) from `a37cca4` onward |
 | Working tree | Should be **clean** after Commit E push (`git status --short` empty) |
 
 ## 2. Data status
