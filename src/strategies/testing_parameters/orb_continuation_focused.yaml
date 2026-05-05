@@ -1,0 +1,21 @@
+strategy: orb_continuation
+
+grid:
+  features.orb_open_minutes: [3, 5, 7, 10]
+  signal.side: [long_only]
+  signal.entry_end_minute: [45, 60, 90, 120]
+  signal.require_vwap_side: [true]
+  signal.require_vwap_slope: [true, false]
+  signal.daily_signal_mode: [first_signal]
+  risk.stop_mode: [orb_mid]
+  risk.target_r: [1.25, 1.5, 1.75, 2.0]
+  backtest.max_hold_minutes: [30, 45, 60, 90]
+
+fixed:
+  signal.entry_start_minute: null
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

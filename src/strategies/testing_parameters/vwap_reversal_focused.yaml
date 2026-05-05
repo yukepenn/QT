@@ -1,0 +1,33 @@
+strategy: vwap_reversal
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [45, 60, 75, 90]
+  signal.entry_end_minute: [150, 180, 210]
+  signal.extension_band: [1.0]
+  signal.confirm_mode: [momentum_turn, one_bar_reclaim]
+  signal.daily_signal_mode: [first_signal]
+  signal.require_vwap_slope_filter: [false]
+  signal.slope_filter_mode: [none]
+  risk.stop_mode: [band_extreme]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.5, 1.75, 2.0, 2.25, 2.5]
+  backtest.max_hold_minutes: [45, 60, 90, 120]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.vwap_bands: [1.0, 2.0]
+  features.vol_windows: [5, 15, 30]
+  signal.max_abs_vwap_slope: null
+  signal.min_band_width_pct: null
+  signal.max_band_width_pct: null
+  risk.stop_buffer: 0.0
+  risk.swing_lookback: 5
+  risk.stop_pct: 0.003
+  risk.target_ref: vwap
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

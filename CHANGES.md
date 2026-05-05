@@ -1,0 +1,65 @@
+### [Unreleased] – 2026-05-02
+
+- Feat(combiner): restore generic `postprocess.py` (grid dedupe key, `top_unique_*`, `top_unique_run_map.csv`, diagnostics MD, fixed-run collector, cost stress with generic `cost_robustness_label`).
+- Chore(repo): `.gitignore` — ignore `data/raw/`, caches, heavy combiner/sweep outputs; un-ignore curated summaries and Layer 1 `selected_candidates/*.yaml`.
+- Docs(readme/progress/results): recovery notes, postprocess CLI, `recovery_status_before.md`, `layer2_summary.md` regeneration template; cost stress placeholder.
+
+### [Unreleased] – 2026-05-05
+
+- Docs(results): `layer2_summary.md` Phase 18 report; full-date sweep artifacts under `sweep_20260505_020834_sweep_v1_full/`.
+
+### [Unreleased] – 2026-05-02
+
+- Feat(combiner): Layer 2 v1 — Numba combiner core, `precompute_candidate_signal_matrices` once per sweep, `build_enabled_mask`, candidate-set profiles in YAML, `sweep.py` grid (`layer2_sweep_qqq_v1.yaml`), diagnostics (`diagnostics/`), `combiner_score` in `metrics.py`, `run.py` / `sweep.py` CLIs, results under `src/combiner/results/layer2_qqq_v1/`.
+- Docs(readme/progress): Layer 2 workflow commands.
+
+### [Unreleased] – 2026-05-05
+
+- Feat(research): **`run_layer1_focused.py`** — generic multi-strategy sweep orchestration, incremental **`sweep_manifest.csv` / `.md`**, resume.
+- Feat(research): **`select_candidates.py`** — **`--manifest`**, **`--output-root`**, **`--top-per-strategy`**, **`--allow-relaxed-fallback`**; candidate YAML includes **`metadata`** / **`selection`**.
+- Refactor(loader): **`load_testing_config`** falls back to **`{name}_focused.yaml`** when **`{name}.yaml`** is missing.
+- Refactor(strategies): remove **`df_signal_strategy.py`** (superseded by true fast cores).
+- Docs(readme/progress): Layer 1 bundle commands; artifact cleanup note.
+
+### [Unreleased] – 2026-05-02
+
+- Refactor(strategies): migrate eight Strategy Library v1 plugins from **`DfSignalStrategy`** to **`BaseStrategy`** true context + Numba cores (`failed_orb`, `orb_retest_continuation`, `vwap_trend_pullback`, `vwap_reclaim_reject`, `prior_day_level_trap`, `gap_acceptance_failure`, `midday_compression_breakout`, `afternoon_continuation`); shared helpers in **`fast_utils.py`** only; **`df_signal_strategy`** documented as MVP adapter (**`B_df_adapter_fast_compatible`**).
+- Feat(research): generic **`check_strategy_fast_parity.py`** (readable `generate_signals` vs fast arrays).
+- Docs(readme/progress): migration note, parity command, **`strategy_fast_core_migration_v1_*.csv`** results.
+
+### [Unreleased] – 2026-05-04
+
+- Docs(progress/readme): Strategy Library v1 health audit artifact paths (`strategy_library_v1_health.csv`, `strategy_library_v1_audit_report.md`).
+
+### [Unreleased] – 2026-05-02
+
+- Feat(features): `price_action`, `volume`, `gap_prior_range_norm`, VWAP slopes (20/30/60), close above/below VWAP, session VWAP persistence (10/20/30/60); `build_basic_features` wires all modules.
+- Feat(strategies): eight new plugins (`failed_orb`, `orb_retest_continuation`, `vwap_trend_pullback`, `vwap_reclaim_reject`, `prior_day_level_trap`, `gap_acceptance_failure`, `midday_compression_breakout`, `afternoon_continuation`) plus shared `DfSignalStrategy` / defaults / focused testing YAMLs (QQQ, slippage **0.01**, `min_risk_per_share` **0.03** in grids).
+- Feat(strategies): `metadata.yaml` + `metadata.py`; **Layer 1 candidate selector reads metadata** instead of hardcoded ORB/VWAP-only defaults (`conflict_group` optional on exported YAML).
+- Feat(risk): **`risk.min_risk_per_share`** helpers and filtering on ORB/VWAP + new strategies; combiner rejects **`risk_too_small`**; **`risk_too_small_rejections`** in metrics.
+- Docs(readme): Strategy Library v1 section and **`min_risk_per_share`** semantics.
+- Feat(backtest): `backtest.max_hold_minutes` with exit reason `max_hold`; metrics `max_hold_count` (readable `engine.py` + Numba `fast.py`).
+- Feat(sweep): `--testing-config`, `--tag`, display-only execution-style filters (`--max-avg-bars-held`, `--max-eod-count`, `--max-end-of-data-count`, `--min-profit-factor`, `--min-total-r`, `--max-drawdown-r`); broader console columns when present (`max_hold_count`, `avg_bars_held`, EOD counts).
+- Feat(strategies): `normalized_param_key` includes `max_hold_minutes` for ORB and VWAP (sweep dedupe).
+- Research(config): add `orb_continuation_focused.yaml` and `vwap_reversal_focused.yaml` (do not replace broad grids).
+- Docs(readme): max-hold semantics, focused grids, focused sweep examples and interpretation.
+- Initial strategy / backtest framework: `BaseStrategy`, ORB plugin, YAML configs, readable engine, generic Numba execution in `fast.py`, sweep runner, loader.
+
+### [Unreleased] – 2026-05-04
+
+- Feat(research): `select_candidates.py` + `scoring.py` to build a Layer 1 candidate library (`selected_candidates.csv` + per-candidate YAML) from sweep `results.csv` (glob-friendly paths).
+- Feat(combiner): MVP Layer 2 (`candidate.py`, `simulator.py`, `metrics.py`, `run.py`) — one open position, YAML routing (`configs/orb_vwap_simple.yaml`), daily limits, priority selection, **`candidate_signal_log.csv`** / **`rejected_signals.csv`**, slippage default **0.01** / commission **0**; no strategy params hardcoded in combiner code.
+- Docs(readme): Layer 1 → Layer 2 workflow and example commands.
+
+### [Unreleased] – 2026-05-03
+
+- Feat(strategies): add `vwap_reversal` plugin with readable and context-based Numba fast paths.
+- Feat(strategies): add `vwap_reversal` default + sweep YAML and loader registration.
+- Refactor(strategies): add context-based fast interface (`prepare_signal_context`, `context_key`, `generate_signal_arrays_from_context`, `normalized_param_key`) on `BaseStrategy`.
+- Feat(strategies): add `fast_utils.py` for session prev / rolling / thinning Numba helpers (not in `backtest/fast.py`).
+- Refactor(orb): ORB fast path uses `ORBContinuationContext` and shared thinning helpers.
+- Refactor(vwap): VWAP fast path uses `VWAPReversalContext` and Numba signal core (sweep no longer calls readable pandas for signal arrays).
+- Refactor(sweep): cache strategy signal contexts; skip duplicate effective parameter sets via `normalized_param_key` per symbol.
+- Refactor(sweep): flatten all `features` / `signal` / `risk` / `backtest` params into `results.csv`; narrow display columns for console and `summary.txt`.
+- Perf(vwap): full-range capped VWAP sweep dropped from ~564s / 300 combos to seconds-level (context cache + Numba).
+- Docs(readme): context fast path, sweep caching, dynamic results columns, VWAP full sweep save command.

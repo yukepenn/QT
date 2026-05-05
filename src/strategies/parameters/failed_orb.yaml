@@ -1,0 +1,33 @@
+strategy: failed_orb
+
+features:
+  orb_open_minutes: 5
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 30]
+
+signal:
+  side: long_only
+  entry_start_minute: 5
+  entry_end_minute: 90
+  fail_window_bars: 5
+  confirm_mode: close_reclaim
+  require_vwap_reclaim: false
+  require_volume_climax: false
+  min_close_location: 0.55
+  min_volume_mult: 1.5
+
+risk:
+  stop_mode: failed_extreme
+  atr_buffer: 0.10
+  target_mode: fixed_r
+  target_r: 1.5
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 45

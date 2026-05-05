@@ -1,0 +1,30 @@
+strategy: orb_continuation
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 30]
+
+signal:
+  side: both
+  entry_start_minute: 15
+  entry_end_minute: 120
+  require_vwap_side: true
+  require_vwap_slope: true
+  min_orb_width_pct:
+  max_orb_width_pct:
+  daily_signal_mode: first_signal
+
+risk:
+  stop_mode: orb_mid
+  stop_buffer: 0.0
+  target_mode: fixed_r
+  target_r: 2.0
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.0
+  recompute_target_from_entry: true

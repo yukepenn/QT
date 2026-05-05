@@ -1,0 +1,26 @@
+strategy: vwap_trend_pullback
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [60]
+  signal.entry_end_minute: [180, 270]
+  signal.trend_window: [30, 60]
+  signal.min_vwap_persistence: [0.7, 0.8]
+  signal.pullback_tolerance_atr: [0.25, 0.5]
+  signal.confirm_mode: [close_reclaim, momentum_turn]
+  risk.stop_mode: [pullback_low]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.25, 1.5, 1.75, 2.0]
+  backtest.max_hold_minutes: [30, 45, 60, 90]
+
+fixed:
+  signal.require_volume_dryup: false
+  signal.max_pullback_volume_ratio: 0.8
+  risk.vwap_buffer_atr: 0.10
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

@@ -1,0 +1,30 @@
+strategy: orb_retest_continuation
+
+features:
+  orb_open_minutes: 10
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 30]
+
+signal:
+  side: long_only
+  entry_start_minute: 10
+  entry_end_minute: 90
+  retest_tolerance_atr: 0.5
+  max_retest_bars: 10
+  require_vwap_side: true
+  require_vwap_slope: false
+
+risk:
+  stop_mode: retest_low
+  target_mode: fixed_r
+  target_r: 1.5
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 60

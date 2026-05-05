@@ -1,0 +1,24 @@
+strategy: vwap_reclaim_reject
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [30, 60]
+  signal.entry_end_minute: [120, 180]
+  signal.min_bars_wrong_side: [5, 10]
+  signal.confirm_mode: [close_reclaim, momentum_turn]
+  signal.require_volume_surge: [false]
+  risk.stop_mode: [reclaim_candle, vwap_buffer]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.25, 1.5, 1.75, 2.0]
+  backtest.max_hold_minutes: [15, 30, 45, 60]
+
+fixed:
+  signal.min_volume_mult: 1.5
+  risk.vwap_buffer_atr: 0.10
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

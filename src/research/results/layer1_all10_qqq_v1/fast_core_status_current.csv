@@ -1,0 +1,11 @@
+strategy,registered,metadata_ok,params_yaml_exists,focused_yaml_exists,supports_fast,inherits_df_signal_strategy,has_context_dataclass,has_njit_core,performance_tier_current,parity_status_recent,notes
+afternoon_continuation,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+failed_orb,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+gap_acceptance_failure,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+midday_compression_breakout,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+orb_continuation,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Numba via fast_utils kernels; no local @njit
+orb_retest_continuation,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+prior_day_level_trap,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+vwap_reclaim_reject,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+vwap_reversal,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep
+vwap_trend_pullback,True,True,True,True,True,False,True,True,A_true_context_fast_core,pass,Layer 1 v1 prep

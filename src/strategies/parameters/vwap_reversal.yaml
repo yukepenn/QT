@@ -1,0 +1,36 @@
+strategy: vwap_reversal
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 30]
+
+signal:
+  side: both
+  entry_start_minute: 30
+  entry_end_minute: 240
+  extension_band: 2.0
+  confirm_mode: one_bar_reclaim
+  daily_signal_mode: first_signal
+  require_vwap_slope_filter: false
+  slope_filter_mode: none
+  max_abs_vwap_slope: null
+  min_band_width_pct: null
+  max_band_width_pct: null
+
+risk:
+  stop_mode: band_extreme
+  stop_buffer: 0.0
+  swing_lookback: 5
+  stop_pct: 0.003
+  target_mode: fixed_price
+  target_ref: vwap
+  target_r: 1.5
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.0
+  recompute_target_from_entry: true

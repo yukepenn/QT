@@ -1,0 +1,52 @@
+# Secrets / env
+.env
+.venv/
+venv/
+.env.*
+
+# Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.nbc
+*.nbi
+
+# Jupyter / OS
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Raw market data (do not commit)
+data/raw/
+
+# Heavy generated combiner outputs (keep curated CSV/MD via negation below)
+src/combiner/results/**/trades.csv
+src/combiner/results/**/equity.csv
+src/combiner/results/**/candidate_signal_log.csv
+src/combiner/results/**/rejected_signals.csv
+src/combiner/results/**/top_runs/
+src/combiner/results/**/run_*/
+src/combiner/results/**/fixed_runs/
+src/combiner/results/**/sweep_*/
+
+# Strategy sweep heavy outputs
+src/strategies/testing_parameters_results/**/trades.csv
+src/strategies/testing_parameters_results/**/equity.csv
+
+# Curated Layer 2 / research summaries (force-include)
+!src/combiner/results/layer2_qqq_v1/layer2_summary.md
+!src/combiner/results/layer2_qqq_v1/fixed_run_summary.csv
+!src/combiner/results/layer2_qqq_v1/fixed_run_summary.md
+!src/combiner/results/layer2_qqq_v1/top_unique_systems.csv
+!src/combiner/results/layer2_qqq_v1/top_unique_systems.md
+!src/combiner/results/layer2_qqq_v1/top_unique_run_map.csv
+!src/combiner/results/layer2_qqq_v1/cost_stress/cost_stress_results.csv
+!src/combiner/results/layer2_qqq_v1/cost_stress/cost_stress_summary.md
+!src/combiner/results/layer2_qqq_v1/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_v1/diagnostics/diagnostics_summary.md
+!src/research/results/layer1_all10_qqq_v1/selected_candidates/*.yaml
+!src/research/results/layer1_all10_qqq_v1/selected_candidates.csv
+!src/research/results/layer1_all10_qqq_v1/sweep_manifest.csv
+!src/research/results/layer1_all10_qqq_v1/candidate_summary.md
+!src/research/results/recovery_status_before.md

@@ -1,0 +1,69 @@
+orb_continuation:
+  family: opening_momentum
+  conflict_group: QQQ_directional
+  default_priority: 90
+  default_active_start_minute: 0
+  default_active_end_minute: 90
+
+vwap_reversal:
+  family: mean_reversion
+  conflict_group: QQQ_directional
+  default_priority: 60
+  default_active_start_minute: 60
+  default_active_end_minute: 180
+
+failed_orb:
+  family: opening_reversal
+  conflict_group: QQQ_directional
+  default_priority: 85
+  default_active_start_minute: 5
+  default_active_end_minute: 90
+
+orb_retest_continuation:
+  family: opening_momentum
+  conflict_group: QQQ_directional
+  default_priority: 82
+  default_active_start_minute: 10
+  default_active_end_minute: 120
+
+vwap_trend_pullback:
+  family: vwap_trend
+  conflict_group: QQQ_directional
+  default_priority: 75
+  default_active_start_minute: 60
+  default_active_end_minute: 300
+
+vwap_reclaim_reject:
+  family: vwap_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 70
+  default_active_start_minute: 30
+  default_active_end_minute: 240
+
+prior_day_level_trap:
+  family: key_level_trap
+  conflict_group: QQQ_directional
+  default_priority: 72
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+
+gap_acceptance_failure:
+  family: gap_behavior
+  conflict_group: QQQ_directional
+  default_priority: 78
+  default_active_start_minute: 5
+  default_active_end_minute: 120
+
+midday_compression_breakout:
+  family: midday_compression
+  conflict_group: QQQ_directional
+  default_priority: 65
+  default_active_start_minute: 120
+  default_active_end_minute: 300
+
+afternoon_continuation:
+  family: afternoon_trend
+  conflict_group: QQQ_directional
+  default_priority: 68
+  default_active_start_minute: 240
+  default_active_end_minute: 360

@@ -1,0 +1,31 @@
+strategy: midday_compression_breakout
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 30]
+  compression_window: 30
+
+signal:
+  side: long_only
+  entry_start_minute: 150
+  entry_end_minute: 270
+  max_range_atr: 1.5
+  require_volume_dryup: false
+  breakout_volume_mult: 1.2
+  require_vwap_side: false
+
+risk:
+  stop_mode: range_mid
+  target_mode: fixed_r
+  target_r: 1.5
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 60

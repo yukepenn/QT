@@ -1,0 +1,31 @@
+name: orb_vwap_simple
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -2.0
+  cooldown_after_loss_minutes: 0
+
+strategy_rules:
+  orb_continuation:
+    enabled: true
+    priority: 90
+    active_start_minute: 0
+    active_end_minute: 90
+
+  vwap_reversal:
+    enabled: true
+    priority: 60
+    active_start_minute: 60
+    active_end_minute: 180
+
+conflict:
+  policy: priority
+  same_direction_policy: take_highest_priority
+  opposite_direction_policy: skip_all
