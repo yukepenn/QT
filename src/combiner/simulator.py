@@ -24,6 +24,11 @@ REJ_LOWER_PRIORITY_CONFLICT = 8
 REJ_DISABLED_CANDIDATE = 9
 REJ_LAST_BAR_NO_ENTRY = 10
 REJ_SESSION_BOUNDARY_NO_ENTRY = 11
+REJ_OPPOSITE_DIRECTION_CONFLICT = 12
+REJ_INVALID_STOP_SIDE = 13
+REJ_INVALID_TARGET_SIDE = 14
+REJ_INVALID_TARGET_R = 15
+REJ_INVALID_PRICE_NAN = 16
 
 # Exit reason codes
 EX_STOP = 1
@@ -54,6 +59,11 @@ REJ_NAMES: dict[int, str] = {
     REJ_DISABLED_CANDIDATE: "disabled_candidate",
     REJ_LAST_BAR_NO_ENTRY: "last_bar_no_entry",
     REJ_SESSION_BOUNDARY_NO_ENTRY: "session_boundary_no_entry",
+    REJ_OPPOSITE_DIRECTION_CONFLICT: "opposite_direction_conflict",
+    REJ_INVALID_STOP_SIDE: "invalid_stop_side",
+    REJ_INVALID_TARGET_SIDE: "invalid_target_side",
+    REJ_INVALID_TARGET_R: "invalid_target_r",
+    REJ_INVALID_PRICE_NAN: "invalid_price_nan",
 }
 
 PRIORITY_METADATA_ONLY = 1
@@ -149,6 +159,7 @@ def _simulate_combiner_numba(
     np.ndarray,
     np.ndarray,
     np.ndarray,
+    np.ndarray,
 ]:
     max_tr = n
     t_sig = np.empty(max_tr, dtype=np.int32)
@@ -165,9 +176,10 @@ def _simulate_combiner_numba(
     t_r = np.empty(max_tr, dtype=np.float64)
     t_bh = np.empty(max_tr, dtype=np.int32)
     t_exr = np.empty(max_tr, dtype=np.int32)
+    t_dtn = np.empty(max_tr, dtype=np.int32)
     tc = 0
 
-    rej = np.zeros(16, dtype=np.int64)
+    rej = np.zeros(32, dtype=np.int64)
 
     in_pos = 0
     entry_idx = -1
@@ -184,6 +196,7 @@ def _simulate_combiner_numba(
     daily_r = 0.0
     prev_sess = -999999
     cooldown_until = -1
+    cur_dtn = 0
 
     i = 0
     while i < n:
@@ -191,6 +204,7 @@ def _simulate_combiner_numba(
         if prev_sess == -999999 or sid != prev_sess:
             daily_trades = 0
             daily_r = 0.0
+            cooldown_until = -1
             prev_sess = sid
 
         m = int(minute[i])
@@ -243,10 +257,12 @@ def _simulate_combiner_numba(
                         break
 
             if opposite_skip != 0 and sides_diff != 0:
-                rej[REJ_LOWER_PRIORITY_CONFLICT] += ne
+                rej[REJ_OPPOSITE_DIRECTION_CONFLICT] += ne
                 i += 1
                 continue
 
+            elig_idx = np.empty(nc, dtype=np.int32)
+            elig_n = 0
             for t in range(ne):
                 ci = int(raw_idx[t])
                 rr = REJ_NONE
@@ -260,6 +276,8 @@ def _simulate_combiner_numba(
                 if rr != REJ_NONE:
                     rej[rr] += 1
                     continue
+                elig_idx[elig_n] = ci
+                elig_n += 1
 
                 if priority_policy == PRIORITY_SCORE_ADJUSTED:
                     eff = float(priority[ci]) + _clip_score_adj(float(score[ci]))
@@ -302,32 +320,70 @@ def _simulate_combiner_numba(
                 ent_price = ent_raw + slip
             else:
                 ent_price = ent_raw - slip
-            act_risk = abs(ent_price - stop_px)
             tm = int(tmc_m[ci, i])
             trv = float(tr_m[ci, i])
             tprev = float(tp_m[ci, i])
             tgt_px = 0.0
-            bad = act_risk <= 0.0 or (tm != 1 and tm != 2)
-            if not bad:
-                if tm == 1:
-                    if int(recomp_flag[ci]) != 0:
-                        tgt_px = ent_price + trv * act_risk if sd == 1 else ent_price - trv * act_risk
+            bad_code = 0
+            act_risk = 0.0
+            if not (np.isfinite(ent_price) and np.isfinite(stop_px)):
+                bad_code = REJ_INVALID_PRICE_NAN
+            else:
+                if sd == 1:
+                    if not (stop_px < ent_price):
+                        bad_code = REJ_INVALID_STOP_SIDE
                     else:
-                        tgt_px = tprev
+                        act_risk = ent_price - stop_px
+                else:
+                    if not (stop_px > ent_price):
+                        bad_code = REJ_INVALID_STOP_SIDE
+                    else:
+                        act_risk = stop_px - ent_price
+            if bad_code == 0 and (not np.isfinite(act_risk) or act_risk <= 0.0):
+                bad_code = REJ_INVALID_PRICE_NAN
+            if bad_code == 0 and (tm != 1 and tm != 2):
+                bad_code = REJ_INVALID_PRICE_NAN
+            if bad_code == 0:
+                if tm == 1:
+                    if not (np.isfinite(trv) and trv > 0.0):
+                        bad_code = REJ_INVALID_TARGET_R
+                    else:
+                        if int(recomp_flag[ci]) != 0:
+                            tgt_px = ent_price + trv * act_risk if sd == 1 else ent_price - trv * act_risk
+                        else:
+                            tgt_px = tprev
                 else:
                     tgt_px = tprev
+            if bad_code == 0 and (not np.isfinite(tgt_px)):
+                bad_code = REJ_INVALID_PRICE_NAN
+            if bad_code == 0 and tm == 2:
+                if sd == 1:
+                    if not (tgt_px > ent_price):
+                        bad_code = REJ_INVALID_TARGET_SIDE
+                else:
+                    if not (tgt_px < ent_price):
+                        bad_code = REJ_INVALID_TARGET_SIDE
 
             mr = float(min_risk_c[ci])
-            risk_small = (not bad) and mr > 0.0 and act_risk < mr
+            risk_small = (bad_code == 0) and mr > 0.0 and act_risk < mr
 
-            if bad or risk_small:
+            if bad_code != 0 or risk_small:
                 if risk_small:
                     rej[REJ_RISK_TOO_SMALL] += 1
-                rej[REJ_LOWER_PRIORITY_CONFLICT] += max(0, n_elig - 1)
+                else:
+                    rej[bad_code] += 1
                 i += 1
                 continue
 
-            rej[REJ_LOWER_PRIORITY_CONFLICT] += max(0, n_elig - 1)
+            # Count rejections for non-selected eligible candidates.
+            for t in range(elig_n):
+                cj = int(elig_idx[t])
+                if cj == ci:
+                    continue
+                if int(side_m[cj, i]) != sd:
+                    rej[REJ_OPPOSITE_DIRECTION_CONFLICT] += 1
+                else:
+                    rej[REJ_LOWER_PRIORITY_CONFLICT] += 1
 
             in_pos = 1
             entry_idx = i + 1
@@ -338,6 +394,7 @@ def _simulate_combiner_numba(
             mh = int(max_hold[ci])
             max_hold_m = mh if mh > 0 else -1
             daily_trades += 1
+            cur_dtn = daily_trades
             i = entry_idx
             continue
 
@@ -436,6 +493,7 @@ def _simulate_combiner_numba(
             t_r[tc] = r_mult
             t_bh[tc] = i - entry_idx + 1
             t_exr[tc] = exr
+            t_dtn[tc] = cur_dtn
             tc += 1
 
             in_pos = 0
@@ -447,7 +505,24 @@ def _simulate_combiner_numba(
 
         i += 1
 
-    return t_sig[:tc], t_ent[:tc], t_ex[:tc], t_ci[:tc], t_side[:tc], t_ep[:tc], t_xp[:tc], t_sp[:tc], t_tg[:tc], t_risk[:tc], t_net[:tc], t_r[:tc], t_bh[:tc], t_exr[:tc], rej
+    return (
+        t_sig[:tc],
+        t_ent[:tc],
+        t_ex[:tc],
+        t_ci[:tc],
+        t_side[:tc],
+        t_ep[:tc],
+        t_xp[:tc],
+        t_sp[:tc],
+        t_tg[:tc],
+        t_risk[:tc],
+        t_net[:tc],
+        t_r[:tc],
+        t_bh[:tc],
+        t_exr[:tc],
+        t_dtn[:tc],
+        rej,
+    )
 
 
 def simulate_combiner_numba(
@@ -503,6 +578,7 @@ def simulate_combiner_numba(
         t_r,
         t_bh,
         t_exr,
+        t_dtn,
         rej,
     ) = _simulate_combiner_numba(
         o,
@@ -573,7 +649,7 @@ def simulate_combiner_numba(
                 "exit_reason": EXIT_NAMES.get(int(t_exr[k]), str(int(t_exr[k]))),
                 "bars_held": int(t_bh[k]),
                 "priority": sp.default_priority,
-                "daily_trade_number": 0,
+                "daily_trade_number": int(t_dtn[k]),
             }
         )
 

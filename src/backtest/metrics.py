@@ -18,7 +18,8 @@ def max_drawdown(series: pd.Series) -> float:
     if len(series) == 0:
         return 0.0
     x = series.astype(float).values
-    peak = x[0]
+    # Drawdown is measured from an initial equity baseline of 0.0.
+    peak = 0.0
     dd = 0.0
     for v in x:
         peak = max(peak, v)

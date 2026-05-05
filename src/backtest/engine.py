@@ -18,6 +18,12 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.backtest.metrics import summarize_trades
+from src.backtest.execution import (
+    is_finite_price,
+    valid_fixed_price_target_side,
+    valid_stop_side,
+    valid_target_r,
+)
 from src.data.read_bars import read_bars
 from src.features.build_features import build_basic_features
 from src.strategies.loader import deep_update, load_strategy, load_strategy_config
@@ -140,25 +146,56 @@ def run_backtest(
                         continue
 
                     ent_open_raw = float(next_row[cfg.open_col])
-                    stop_px = float(row[cfg.stop_col])
+                    stop_raw = row[cfg.stop_col]
+                    if pd.isna(stop_raw):
+                        i += 1
+                        continue
+                    stop_px = float(stop_raw)
                     if sd == 1:
                         entry_price = ent_open_raw + cfg.slippage_per_share
                     else:
                         entry_price = ent_open_raw - cfg.slippage_per_share
+                    if not (is_finite_price(entry_price) and is_finite_price(stop_px)):
+                        i += 1
+                        continue
+                    if not valid_stop_side(sd, entry_price, stop_px):
+                        i += 1
+                        continue
 
-                    actual_risk = abs(entry_price - stop_px)
-                    if actual_risk <= 0:
+                    actual_risk = (entry_price - stop_px) if sd == 1 else (stop_px - entry_price)
+                    if not is_finite_price(actual_risk) or actual_risk <= 0:
+                        i += 1
+                        continue
+
+                    min_r = 0.0
+                    try:
+                        min_r = float((row.get(cfg.risk_col) if cfg.risk_col in row.index else 0.0) or 0.0)
+                    except Exception:
+                        min_r = 0.0
+                    # Prefer config-defined min_risk_per_share when present.
+                    try:
+                        cfg_min = float((df.attrs.get("_min_risk_per_share") or 0.0))
+                        if cfg_min > 0:
+                            min_r = max(min_r, cfg_min)
+                    except Exception:
+                        pass
+                    if min_r > 0 and actual_risk < min_r:
                         i += 1
                         continue
 
                     tm = str(row[cfg.target_mode_col] or "").strip().lower()
                     tr_raw = row[cfg.target_r_col]
                     tr = float(tr_raw) if not pd.isna(tr_raw) else float("nan")
-                    sig_preview = float(row[cfg.target_col])
+                    tgt_raw = row[cfg.target_col]
+                    if pd.isna(tgt_raw):
+                        i += 1
+                        continue
+                    sig_preview = float(tgt_raw)
 
                     if tm == "fixed_r":
-                        if math.isnan(tr) or tr <= 0:
-                            raise ValueError("fixed_r requires positive sig_target_r")
+                        if not valid_target_r(tr):
+                            i += 1
+                            continue
                         if cfg.recompute_target_from_entry:
                             if sd == 1:
                                 tgt_px = entry_price + tr * actual_risk
@@ -168,6 +205,9 @@ def run_backtest(
                             tgt_px = sig_preview
                     elif tm == "fixed_price":
                         tgt_px = sig_preview
+                        if not (is_finite_price(tgt_px) and valid_fixed_price_target_side(sd, entry_price, tgt_px)):
+                            i += 1
+                            continue
                     else:
                         raise ValueError(f"unknown sig_target_mode: {row[cfg.target_mode_col]!r}")
 
@@ -432,6 +472,12 @@ def run_strategy_backtest(
 
     sig_df = strat.generate_signals(feat, cfg)
     validate_standard_signal_columns(sig_df)
+
+    # Provide config-level min_risk_per_share to the backtest loop (signal-level may differ).
+    try:
+        sig_df.attrs["_min_risk_per_share"] = float((cfg.get("risk") or {}).get("min_risk_per_share") or 0.0)
+    except Exception:
+        sig_df.attrs["_min_risk_per_share"] = 0.0
 
     btc = _bt_cfg_from_dict(cfg)
     trades_df, equity_df, metrics = run_backtest(sig_df, config=btc)

@@ -127,8 +127,21 @@ def _simulate_numba(
                     ent_price = ent_raw + slippage_per_share
                 else:
                     ent_price = ent_raw - slippage_per_share
-                act_risk = abs(ent_price - stop_px)
-                if act_risk <= 0.0:
+                # Validate finite prices and correct stop side before computing risk.
+                if not (np.isfinite(ent_price) and np.isfinite(stop_px)):
+                    i += 1
+                    continue
+                if sd == 1:
+                    if not (stop_px < ent_price):
+                        i += 1
+                        continue
+                    act_risk = ent_price - stop_px
+                else:
+                    if not (stop_px > ent_price):
+                        i += 1
+                        continue
+                    act_risk = stop_px - ent_price
+                if not np.isfinite(act_risk) or act_risk <= 0.0:
                     i += 1
                     continue
 
@@ -137,6 +150,9 @@ def _simulate_numba(
                 tprev = tgt_preview_a[i]
 
                 if tm == 1:
+                    if not (np.isfinite(tr) and tr > 0.0):
+                        i += 1
+                        continue
                     if recompute_target_from_entry != 0:
                         if sd == 1:
                             tgt_px = ent_price + tr * act_risk
@@ -149,6 +165,20 @@ def _simulate_numba(
                 else:
                     i += 1
                     continue
+
+                if not np.isfinite(tgt_px):
+                    i += 1
+                    continue
+                # For fixed_price targets, enforce correct side vs entry.
+                if tm == 2:
+                    if sd == 1:
+                        if not (tgt_px > ent_price):
+                            i += 1
+                            continue
+                    else:
+                        if not (tgt_px < ent_price):
+                            i += 1
+                            continue
 
                 in_pos = 1
                 entry_idx = i + 1
@@ -300,7 +330,8 @@ def _profit_factor_numba(net: np.ndarray) -> float:
 def _max_dd_numba(cum: np.ndarray) -> float:
     if len(cum) == 0:
         return 0.0
-    peak = cum[0]
+    # Drawdown is measured from an initial equity baseline of 0.0.
+    peak = 0.0
     dd = 0.0
     for i in range(len(cum)):
         v = cum[i]

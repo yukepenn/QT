@@ -43,7 +43,7 @@ def _combiner_cfg_from_yaml(cfg: dict[str, Any]) -> CombinerConfig:
     ex = cfg.get("execution") or {}
     sy = cfg.get("system") or {}
     cf = cfg.get("conflict") or {}
-    return CombinerConfig(
+    out = CombinerConfig(
         max_open_positions=int(sy.get("max_open_positions", 1)),
         max_trades_per_day=int(sy.get("max_trades_per_day", 2)),
         daily_max_loss_r=float(sy.get("daily_max_loss_r", -2.0)),
@@ -57,6 +57,9 @@ def _combiner_cfg_from_yaml(cfg: dict[str, Any]) -> CombinerConfig:
         opposite_direction_skip_all=str(cf.get("opposite_direction_policy", "")).lower() == "skip_all",
         min_risk_per_share=float(ex.get("min_risk_per_share", 0.0) or 0.0),
     )
+    if out.max_open_positions != 1:
+        raise NotImplementedError("Layer 2 simulator supports max_open_positions=1 only")
+    return out
 
 
 def _resolve_paths(cfg_path: Path, cwd: Path) -> Path:
