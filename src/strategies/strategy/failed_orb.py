@@ -13,6 +13,13 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_PX, TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_minute_range,
+    validate_nonnegative_number,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -196,6 +203,39 @@ class FailedOrbStrategy(BaseStrategy):
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
 
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        side = str(sig.get("side", "long_only"))
+        if side not in ("long_only", "short_only", "both"):
+            raise ValueError(f"signal.side must be long_only, short_only, or both, got {side!r}")
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        validate_int_at_least("signal.fail_window_bars", sig.get("fail_window_bars", 5), 1)
+        confirm = str(sig.get("confirm_mode", "close_reclaim"))
+        if confirm not in ("close_reclaim", "wick_reclaim", "momentum_turn"):
+            raise ValueError(f"signal.confirm_mode invalid: {confirm!r}")
+        stop_mode = str(risk.get("stop_mode", "failed_extreme"))
+        if stop_mode not in ("failed_extreme", "swing_buffered"):
+            raise ValueError(f"risk.stop_mode invalid: {stop_mode!r}")
+        target_mode = str(risk.get("target_mode", "fixed_r"))
+        if target_mode not in ("fixed_r", "orb_mid", "vwap"):
+            raise ValueError(f"risk.target_mode invalid: {target_mode!r}")
+        if target_mode == "fixed_r":
+            validate_positive_number("risk.target_r", risk.get("target_r", 1.0))
+        validate_nonnegative_number("risk.atr_buffer", risk.get("atr_buffer", 0.1))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
+        validate_nonnegative_number("signal.min_close_location", sig.get("min_close_location", 0.55))
+        validate_nonnegative_number("signal.min_volume_mult", sig.get("min_volume_mult", 1.5))
+
     def required_features(self) -> list[str]:
         return [
             "session_date",
@@ -221,7 +261,8 @@ class FailedOrbStrategy(BaseStrategy):
         sig = config.get("signal") or {}
         fw = int(sig.get("fail_window_bars", 5))
         ww = max(fw * 3, 5)
-        return ("failed_orb_ctx", fw, ww)
+        atr_col = str(sig.get("atr_column", "atr_like_15"))
+        return ("failed_orb_ctx", fw, ww, atr_col)
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> FailedOrbContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -382,6 +423,7 @@ class FailedOrbStrategy(BaseStrategy):
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             int(sig.get("fail_window_bars", 5)),
+            str(sig.get("atr_column", "atr_like_15")),
             str(sig.get("confirm_mode", "close_reclaim")),
             bool(sig.get("require_vwap_reclaim", False)),
             bool(sig.get("require_volume_climax", False)),

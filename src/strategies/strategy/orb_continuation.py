@@ -20,6 +20,7 @@ from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.data.read_bars import read_bars
 from src.features.build_features import build_basic_features
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import validate_common_strategy_config
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_arrays,
     apply_min_risk_filter_df,
@@ -89,26 +90,10 @@ class ORBContinuationStrategy(BaseStrategy):
 
         stop_mode = str(risk_cfg.get("stop_mode", "orb_mid"))
         stop_buffer = float(risk_cfg.get("stop_buffer", 0.0))
-        target_mode = str(risk_cfg.get("target_mode", "fixed_r"))
         target_r = float(risk_cfg["target_r"])
         max_trades = int(risk_cfg.get("max_trades_per_day", 1))
 
-        if side not in ("long_only", "short_only", "both"):
-            raise ValueError(f"side must be long_only, short_only, or both, got {side!r}")
-        if daily_mode not in ("first_signal", "per_side"):
-            raise ValueError(f"daily_signal_mode must be first_signal or per_side, got {daily_mode!r}")
-        if stop_mode not in ("orb_mid", "orb_opposite"):
-            raise ValueError(f"stop_mode must be orb_mid or orb_opposite, got {stop_mode!r}")
-        if stop_buffer < 0:
-            raise ValueError("stop_buffer must be >= 0")
-        if target_mode != "fixed_r":
-            raise ValueError(f"ORBContinuationStrategy only supports target_mode fixed_r, got {target_mode!r}")
-        if target_r <= 0:
-            raise ValueError("target_r must be > 0 when target_mode is fixed_r")
-        if max_trades < 1:
-            raise ValueError("max_trades_per_day must be >= 1")
-        if entry_end <= entry_start:
-            raise ValueError("entry_end_minute must be > entry_start_minute")
+        self.validate_config(config)
 
         missing = [c for c in self.required_features() if c not in df.columns]
         if missing:
@@ -240,6 +225,36 @@ class ORBContinuationStrategy(BaseStrategy):
             float(risk.get("min_risk_per_share") or 0.0),
         )
 
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        sig_cfg = config.get("signal") or {}
+        risk_cfg = config.get("risk") or {}
+        side = str(sig_cfg.get("side", "both"))
+        entry_start = int(sig_cfg["entry_start_minute"])
+        entry_end = int(sig_cfg["entry_end_minute"])
+        daily_mode = str(sig_cfg.get("daily_signal_mode", "first_signal"))
+        stop_mode = str(risk_cfg.get("stop_mode", "orb_mid"))
+        stop_buffer = float(risk_cfg.get("stop_buffer", 0.0))
+        target_mode = str(risk_cfg.get("target_mode", "fixed_r"))
+        target_r = float(risk_cfg["target_r"])
+        max_trades = int(risk_cfg.get("max_trades_per_day", 1))
+        if side not in ("long_only", "short_only", "both"):
+            raise ValueError(f"side must be long_only, short_only, or both, got {side!r}")
+        if daily_mode not in ("first_signal", "per_side"):
+            raise ValueError(f"daily_signal_mode must be first_signal or per_side, got {daily_mode!r}")
+        if stop_mode not in ("orb_mid", "orb_opposite"):
+            raise ValueError(f"stop_mode must be orb_mid or orb_opposite, got {stop_mode!r}")
+        if stop_buffer < 0:
+            raise ValueError("stop_buffer must be >= 0")
+        if target_mode != "fixed_r":
+            raise ValueError(f"ORBContinuationStrategy only supports target_mode fixed_r, got {target_mode!r}")
+        if target_r <= 0:
+            raise ValueError("target_r must be > 0 when target_mode is fixed_r")
+        if max_trades < 1:
+            raise ValueError("max_trades_per_day must be >= 1")
+        if entry_end <= entry_start:
+            raise ValueError("entry_end_minute must be > entry_start_minute")
+
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> ORBContinuationContext:
         if "ts_utc" in df.columns:
             work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -270,6 +285,7 @@ class ORBContinuationStrategy(BaseStrategy):
         )
 
     def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+        self.validate_config(config)
         if isinstance(ctx, pd.DataFrame):
             return super().generate_signal_arrays_from_context(ctx, config)
         if not isinstance(ctx, ORBContinuationContext):
@@ -343,26 +359,8 @@ def _orb_signal_arrays_from_context(ctx: ORBContinuationContext, config: dict[st
 
     stop_mode = str(risk_cfg.get("stop_mode", "orb_mid"))
     stop_buffer = float(risk_cfg.get("stop_buffer", 0.0))
-    target_mode = str(risk_cfg.get("target_mode", "fixed_r"))
     target_r = float(risk_cfg["target_r"])
     max_trades = int(risk_cfg.get("max_trades_per_day", 1))
-
-    if side not in ("long_only", "short_only", "both"):
-        raise ValueError(f"side must be long_only, short_only, or both, got {side!r}")
-    if daily_mode not in ("first_signal", "per_side"):
-        raise ValueError(f"daily_signal_mode must be first_signal or per_side, got {daily_mode!r}")
-    if stop_mode not in ("orb_mid", "orb_opposite"):
-        raise ValueError(f"stop_mode must be orb_mid or orb_opposite, got {stop_mode!r}")
-    if stop_buffer < 0:
-        raise ValueError("stop_buffer must be >= 0")
-    if target_mode != "fixed_r":
-        raise ValueError(f"ORB continuation supports target_mode fixed_r only, got {target_mode!r}")
-    if target_r <= 0:
-        raise ValueError("target_r must be > 0 when target_mode is fixed_r")
-    if max_trades < 1:
-        raise ValueError("max_trades_per_day must be >= 1")
-    if entry_end <= entry_start:
-        raise ValueError("entry_end_minute must be > entry_start_minute")
 
     n = ctx.n
     after_orb = ctx.after_orb

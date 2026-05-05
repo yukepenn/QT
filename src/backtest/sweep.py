@@ -141,6 +141,22 @@ def _finalize_combo_config(cfg: dict[str, Any]) -> None:
         set_nested(cfg, "signal.entry_start_minute", orb_m)
 
 
+def validate_testing_grid_for_strategy(strategy: str, testing: dict[str, Any]) -> None:
+    """Validate every combo from a testing_parameters YAML before launching sweep subprocesses."""
+    strat = load_strategy(strategy)
+    base = load_strategy_config(strategy)
+    grid_list = expand_grid(testing)
+    fixed = testing.get("fixed") or {}
+    for i, combo_flat in enumerate(grid_list):
+        cfg = apply_overrides(base, combo_flat)
+        cfg = apply_overrides(cfg, fixed)
+        _finalize_combo_config(cfg)
+        try:
+            strat.validate_config(cfg)
+        except Exception as e:
+            raise ValueError(f"{strategy} testing grid combo[{i}] {combo_flat!r}: {e}") from e
+
+
 def _metrics_row(
     *,
     strategy: str,
@@ -279,6 +295,7 @@ def main(argv: list[str] | None = None) -> int:
             cfg = apply_overrides(base, combo_flat)
             cfg = apply_overrides(cfg, fixed)
             _finalize_combo_config(cfg)
+            strat.validate_config(cfg)
 
             dup_key = (sym, strat.normalized_param_key(cfg))
             if dup_key in seen_param_keys:

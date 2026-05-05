@@ -13,6 +13,16 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    has_nested,
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_long_only_mvp,
+    validate_minute_range,
+    validate_minute_value,
+    validate_nonnegative_number,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -124,9 +134,47 @@ def _afternoon_numba(
 
 
 class AfternoonContinuationStrategy(BaseStrategy):
+    """Afternoon continuation — long-only MVP; `features.midday_window` is not used."""
+
     name = "afternoon_continuation"
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
+
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        validate_long_only_mvp(config, strategy_name=self.name)
+        if has_nested(config, "features.midday_window"):
+            raise ValueError(
+                f"{self.name}: features.midday_window is not used by the engine; remove it from YAML"
+            )
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        feat = config.get("features") or {}
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        mem = int(feat.get("morning_end_minute", 120))
+        validate_minute_value("features.morning_end_minute", mem)
+        es = int(sig["entry_start_minute"])
+        if es <= mem:
+            raise ValueError(
+                f"signal.entry_start_minute ({es}) must be > features.morning_end_minute ({mem})"
+            )
+        validate_nonnegative_number("signal.min_morning_return_atr", sig.get("min_morning_return_atr", 1.0))
+        validate_nonnegative_number("signal.min_vwap_persistence", sig.get("min_vwap_persistence", 0.7))
+        validate_nonnegative_number("signal.breakout_volume_mult", sig.get("breakout_volume_mult", 1.2))
+        sm = str(risk.get("stop_mode", "midday_mid"))
+        if sm not in ("midday_mid", "midday_low", "vwap_buffer"):
+            raise ValueError(f"risk.stop_mode invalid: {sm!r}")
+        validate_positive_number("risk.target_r", risk.get("target_r"))
+        validate_nonnegative_number("risk.vwap_buffer_atr", risk.get("vwap_buffer_atr", 0.1))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
 
     def required_features(self) -> list[str]:
         return [
@@ -146,7 +194,12 @@ class AfternoonContinuationStrategy(BaseStrategy):
 
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         feat = config.get("features") or {}
-        return ("afternoon_ctx", int(feat.get("morning_end_minute", 120)))
+        sig = config.get("signal") or {}
+        return (
+            "afternoon_ctx",
+            int(feat.get("morning_end_minute", 120)),
+            str(sig.get("atr_column", "atr_like_15")),
+        )
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> AfternoonContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -257,7 +310,7 @@ class AfternoonContinuationStrategy(BaseStrategy):
 
         return (
             int(feat.get("morning_end_minute", 120)),
-            int(feat.get("midday_window", 60)),
+            str(sig.get("atr_column", "atr_like_15")),
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             float(sig.get("min_morning_return_atr", 1.0)),

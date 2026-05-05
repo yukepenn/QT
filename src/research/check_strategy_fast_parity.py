@@ -83,6 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     miss_total = 0
     for ix, combo_flat in enumerate(combos):
         cfg = _merge_cfg(base, combo_flat, fixed)
+        strat.validate_config(cfg)
         df_r = strat.generate_signals(feat, cfg)
         from src.strategies.strategy.base import validate_standard_signal_columns
 

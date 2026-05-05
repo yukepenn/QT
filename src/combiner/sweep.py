@@ -32,6 +32,7 @@ from src.combiner.candidate import (
 from src.combiner.metrics import summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
 from src.combiner.simulator import simulate_combiner_legacy_logs, simulate_combiner_numba
+from src.utils.config_validation import validate_common_combiner_config
 
 
 def _deep_set(cfg: dict[str, Any], dotted: str, value: Any) -> None:
@@ -188,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         profile = dict(sets_cfg[cs_name])
         merged_cfg = _apply_combo_to_cfg(base_cfg, combo, reserved=reserved)
+        validate_common_combiner_config(merged_cfg)
         comb_cfg = _combiner_cfg_from_yaml(merged_cfg)
         max_hold, recomp, qty, min_risk = _build_execution_arrays(universe, merged_cfg, comb_cfg)
 

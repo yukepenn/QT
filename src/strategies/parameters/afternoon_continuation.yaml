@@ -5,7 +5,6 @@ features:
   vwap_bands: [1.0, 2.0]
   vol_windows: [5, 15, 30]
   morning_end_minute: 120
-  midday_window: 60
 
 signal:
   side: long_only

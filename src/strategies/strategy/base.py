@@ -52,6 +52,10 @@ class BaseStrategy(ABC):
 
         return (_freeze(config.get("features") or {}), _freeze(config.get("signal") or {}), _freeze(config.get("risk") or {}), _freeze(config.get("backtest") or {}))
 
+    def validate_config(self, config: dict[str, Any]) -> None:
+        """Optional hook: raise ValueError (or NotImplementedError) if config is invalid."""
+        return None
+
     def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
         if isinstance(ctx, pd.DataFrame):
             return self.generate_signal_arrays(ctx, config)

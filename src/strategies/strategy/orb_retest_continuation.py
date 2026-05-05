@@ -13,6 +13,14 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_long_only_mvp,
+    validate_minute_range,
+    validate_nonnegative_number,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -111,9 +119,33 @@ def _orb_retest_numba(
 
 
 class OrbRetestContinuationStrategy(BaseStrategy):
+    """ORB breakout + shallow retest — long-only MVP."""
+
     name = "orb_retest_continuation"
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
+
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        validate_long_only_mvp(config, strategy_name=self.name)
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        validate_int_at_least("signal.max_retest_bars", sig.get("max_retest_bars", 10), 1)
+        validate_nonnegative_number("signal.retest_tolerance_atr", sig.get("retest_tolerance_atr", 0.5))
+        stop_mode = str(risk.get("stop_mode", "retest_low"))
+        if stop_mode not in ("retest_low", "orb_mid"):
+            raise ValueError(f"risk.stop_mode invalid: {stop_mode!r}")
+        validate_positive_number("risk.target_r", risk.get("target_r"))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
 
     def required_features(self) -> list[str]:
         return [
@@ -134,7 +166,11 @@ class OrbRetestContinuationStrategy(BaseStrategy):
 
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         sig = config.get("signal") or {}
-        return ("orb_retest_ctx", int(sig.get("max_retest_bars", 10)))
+        return (
+            "orb_retest_ctx",
+            int(sig.get("max_retest_bars", 10)),
+            str(sig.get("atr_column", "atr_like_15")),
+        )
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> OrbRetestContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -248,6 +284,7 @@ class OrbRetestContinuationStrategy(BaseStrategy):
         return (
             int(feat.get("orb_open_minutes", 15)),
             str(sig.get("side", "long_only")),
+            str(sig.get("atr_column", "atr_like_15")),
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             float(sig.get("retest_tolerance_atr", 0.5)),

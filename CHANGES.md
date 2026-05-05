@@ -7,6 +7,10 @@
 
 ### [Unreleased] – 2026-05-05
 
+- Feat(strategies): `validate_config` hooks and shared `src/utils/config_validation.py` (strategy + combiner YAML checks).
+- Fix(cache): `context_key` audit for ATR/window/buffer params used in `prepare_signal_context`; combiner/run/sweep validate base YAML.
+- Chore(config): remove unused `features.midday_window` from afternoon continuation YAMLs; reject fake axes in validation.
+- Test(strategies): `test_strategy_config_validation.py`, `test_strategy_context_keys.py`.
 - Fix(combiner): speed up diagnostics by vectorizing same-bar and same-day overlap; replace slow minute-diff loop with an approximate median-minute diff; add progress prints and safe partial writes.
 - Fix(data): `pull_ibkr_1min.py` — `reqHistoricalData` on **qualified** equity contract; **3** request retries; **reconnect backoff** (multi-attempt `ensure_ib_connected`).
 - Feat(research): `equity_data_coverage_report.py` — session/month stats + `data_coverage.csv` / `data_coverage_summary.md` for SPY/QQQ windows.

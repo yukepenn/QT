@@ -452,9 +452,11 @@ def run_strategy_backtest(
     if raw.empty:
         raise ValueError("no bars loaded")
 
+    strat = load_strategy(strategy_name)
+    strat.validate_config(cfg)
+
     feat = build_features_from_config(raw, cfg)
 
-    strat = load_strategy(strategy_name)
     miss = [c for c in strat.required_features() if c not in feat.columns]
     if miss:
         raise ValueError(f"feature build missing columns for {strategy_name}: {miss}")

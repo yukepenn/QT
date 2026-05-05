@@ -15,7 +15,6 @@ grid:
   backtest.max_hold_minutes: [45, 60, 90, 120]
 
 fixed:
-  features.midday_window: 60
   risk.vwap_buffer_atr: 0.10
   risk.min_risk_per_share: 0.03
   risk.max_trades_per_day: 1

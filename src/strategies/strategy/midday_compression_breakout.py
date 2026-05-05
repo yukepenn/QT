@@ -13,6 +13,13 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_long_only_mvp,
+    validate_minute_range,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -122,9 +129,34 @@ def _midday_comp_numba(
 
 
 class MiddayCompressionBreakoutStrategy(BaseStrategy):
+    """Midday range compression breakout — long-only MVP."""
+
     name = "midday_compression_breakout"
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
+
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        validate_long_only_mvp(config, strategy_name=self.name)
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        feat = config.get("features") or {}
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        validate_int_at_least("features.compression_window", feat.get("compression_window", 30), 1)
+        validate_positive_number("signal.max_range_atr", sig.get("max_range_atr", 1.5))
+        sm = str(risk.get("stop_mode", "range_mid"))
+        if sm not in ("range_mid", "range_opposite", "breakout_candle"):
+            raise ValueError(f"risk.stop_mode invalid: {sm!r}")
+        validate_positive_number("risk.target_r", risk.get("target_r"))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
 
     def required_features(self) -> list[str]:
         return [
@@ -146,7 +178,12 @@ class MiddayCompressionBreakoutStrategy(BaseStrategy):
 
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         feat = config.get("features") or {}
-        return ("midday_comp_ctx", int(feat.get("compression_window", 30)))
+        sig = config.get("signal") or {}
+        return (
+            "midday_comp_ctx",
+            int(feat.get("compression_window", 30)),
+            str(sig.get("atr_column", "atr_like_15")),
+        )
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> MiddayCompressionContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -248,6 +285,7 @@ class MiddayCompressionBreakoutStrategy(BaseStrategy):
 
         return (
             int(feat.get("compression_window", 30)),
+            str(sig.get("atr_column", "atr_like_15")),
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             float(sig.get("max_range_atr", 1.5)),

@@ -56,6 +56,13 @@ Optional YAML under `risk`: **`min_risk_per_share`**. If set **> 0**, Layer 1 pr
 - `sweep.py` is dynamic at the strategy **interface** level, but a strategy must set **`supports_fast = True`** and implement the fast array contract (typically **`generate_signal_arrays`** delegating to **`prepare_signal_context`** + **`generate_signal_arrays_from_context`**) to be sweepable.
 - New strategies are registered in **`loader.py`** (`_STRATEGY_BY_NAME` → **`available_strategies()`** / **`load_strategy()`**).
 
+### Strategy config and context-cache validation
+
+- Every strategy plugin may implement **`validate_config(config)`** (optional hook on `BaseStrategy`); invalid combos fail early in the readable backtest, Layer 1 sweep, Layer 2 precompute, parity checks, and `run_layer1_focused` grid preflight.
+- Shared rules live in **`src/utils/config_validation.py`** (`validate_common_strategy_config`, `validate_common_combiner_config`, etc.).
+- **`context_key(config)`** must include any parameter that changes arrays built in **`prepare_signal_context`** (so sweep/combiner context caches stay correct). **`normalized_param_key(config)`** should include parameters that change final signals or gating; unsupported or ignored YAML axes are removed or rejected (no fake grid uniqueness).
+- Several plugins are **long-only (or single-level) MVPs**; mis-specified `side` / `level_type` / unused keys (e.g. former `features.midday_window` on `afternoon_continuation`) are rejected with clear errors.
+
 ## 1. Architecture overview
 
 ```

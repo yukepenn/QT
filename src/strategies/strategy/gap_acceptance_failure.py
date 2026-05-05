@@ -13,6 +13,14 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_long_only_mvp,
+    validate_minute_range,
+    validate_nonnegative_number,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -132,9 +140,41 @@ def _gap_af_numba(
 
 
 class GapAcceptanceFailureStrategy(BaseStrategy):
+    """Gap acceptance / failure MVP: long-only signals (both gap-up and gap-down branches)."""
+
     name = "gap_acceptance_failure"
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
+
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        validate_long_only_mvp(config, strategy_name=self.name)
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        feat = config.get("features") or {}
+        mode = str(sig.get("mode", "gap_acceptance"))
+        if mode not in ("gap_acceptance", "gap_failure"):
+            raise ValueError(f"signal.mode must be gap_acceptance or gap_failure, got {mode!r}")
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        validate_nonnegative_number("signal.min_gap_norm", sig.get("min_gap_norm", 0.3))
+        confirm = str(sig.get("confirm_mode", "break_pullback"))
+        if confirm not in ("break_pullback", "reclaim_open", "reclaim_vwap"):
+            raise ValueError(f"signal.confirm_mode invalid: {confirm!r}")
+        stop_mode = str(risk.get("stop_mode", "pullback_extreme"))
+        if stop_mode not in ("pullback_extreme", "session_open_buffer", "failed_extreme"):
+            raise ValueError(f"risk.stop_mode invalid: {stop_mode!r}")
+        validate_positive_number("risk.target_r", risk.get("target_r"))
+        validate_nonnegative_number("risk.open_buffer_atr", risk.get("open_buffer_atr", 0.1))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        validate_int_at_least("features.opening_hold_minutes", feat.get("opening_hold_minutes", 10), 0)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
 
     def required_features(self) -> list[str]:
         return [
@@ -155,7 +195,12 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         sig = config.get("signal") or {}
         feat = config.get("features") or {}
-        return ("gap_af_ctx", str(sig.get("mode", "gap_acceptance")), int(feat.get("opening_hold_minutes", 10)))
+        return (
+            "gap_af_ctx",
+            str(sig.get("mode", "gap_acceptance")),
+            int(feat.get("opening_hold_minutes", 10)),
+            str(sig.get("atr_column", "atr_like_15")),
+        )
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> GapAfContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -282,6 +327,7 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
             bool(sig.get("require_vwap_side", False)),
             str(sig.get("confirm_mode", "break_pullback")),
             int(feat.get("opening_hold_minutes", 10)),
+            str(sig.get("atr_column", "atr_like_15")),
             str(risk.get("stop_mode", "pullback_extreme")),
             float(risk["target_r"]),
             float(risk.get("min_risk_per_share") or 0.0),

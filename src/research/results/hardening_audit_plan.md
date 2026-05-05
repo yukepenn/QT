@@ -2,7 +2,7 @@
 
 - **Branch**: `main`
 - **Remote**: `origin` configured (`https://github.com/yukepenn/QT`)
-- **Current HEAD**: `6bc1c7c` (Fix(backtest): validate exec and drawdown)
+- **Current HEAD**: includes **Commit C** (`validate_config` + context keys); end of Commit B was `a049a11`.
 - **Working tree**: clean (`git status --short` is empty)
 - **Python**: 3.11.4
 
@@ -130,14 +130,12 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ### Commit C — Strategy validation + context cache correctness (P2) + tests
 
-- Add `BaseStrategy.validate_config()`
-- Add shared config validation module and call it from engines/sweeps/combiner precompute
-- Make hidden behavior explicit:
-  - gap_acceptance_failure: reject unsupported sides unless implemented
-  - prior_day_level_trap: reject unsupported levels/sides unless implemented
-  - afternoon_continuation: remove fake uniqueness or wire param correctly (prefer explicit)
-- Audit `context_key()` for every strategy vs params used inside `prepare_signal_context`
-- Add tests: validate_config + context_key changes
+**Done** (see `hardening_commit_c_plan.md`).
+
+- `BaseStrategy.validate_config()` + `src/utils/config_validation.py`
+- Wired into `engine`, `sweep`, combiner `run`/`sweep`, `candidate` precompute, `check_strategy_fast_parity`, `run_layer1_focused`
+- Long-only / single-level MVPs explicit; afternoon `midday_window` removed/rejected; `context_key` includes ATR/window/buffer params where needed
+- Tests: `test_strategy_config_validation.py`, `test_strategy_context_keys.py`
 
 ### Commit D — Combiner/postprocess diagnostics (P3) + tests
 
@@ -158,6 +156,6 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 
 ## Next action to start implementation safely
 
-1. Proceed to **Commit B** (P1): feature no-lookahead columns + centralized feature_key + tests.
-2. Do not rerun full Layer 1/Layer 2 until tests pass through Commit C and smoke checks succeed (Commit D can follow for deeper diagnostics).
+1. Proceed to **Commit D** (P3): behavior-level dedupe, cost-as-R diagnostics, R-based PF/expectancy, daily/monthly breakdowns.
+2. Old Layer 1/Layer 2 rankings remain **stale** relative to post-hardening code until intentionally rerun.
 

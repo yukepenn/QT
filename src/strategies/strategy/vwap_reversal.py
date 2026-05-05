@@ -924,6 +924,12 @@ class VWAPReversalStrategy(BaseStrategy):
             "vwap_lower_2.0",
         ]
 
+    def validate_config(self, config: dict[str, Any]) -> None:
+        from src.utils.config_validation import validate_common_strategy_config
+
+        validate_common_strategy_config(config)
+        _validate_vwap_reversal_config(config.get("signal") or {}, config.get("risk") or {})
+
     def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
         out = generate_vwap_reversal_signals(df, config, strategy_name=self.name)
         validate_standard_signal_columns(out)

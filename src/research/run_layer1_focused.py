@@ -12,11 +12,13 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import yaml
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from src.backtest.sweep import validate_testing_grid_for_strategy
 from src.strategies.loader import available_strategies, grid_size, load_testing_config, strategy_root
 
 SWEEP_PY = _ROOT / "src" / "backtest" / "sweep.py"
@@ -254,6 +256,43 @@ def main(argv: list[str] | None = None) -> int:
             gs = grid_size(testing) if testing else ""
         except Exception:
             gs = ""
+
+        try:
+            with focused.open(encoding="utf-8") as f:
+                testing_doc = yaml.safe_load(f)
+            if not isinstance(testing_doc, dict) or testing_doc.get("strategy") != strategy:
+                raise ValueError(f"testing YAML strategy mismatch in {focused}")
+            validate_testing_grid_for_strategy(strategy, testing_doc)
+        except Exception as e:
+            print(f"[ERROR] {strategy} grid validation failed: {e}", flush=True)
+            row = {
+                "strategy": strategy,
+                "status": "grid_validation_failed",
+                "sweep_folder": "",
+                "results_csv": "",
+                "summary_txt": "",
+                "testing_config_used": str(focused),
+                "grid_size": gs,
+                "combinations_completed": "",
+                "combinations_skipped_duplicate": "",
+                "elapsed_sec": "",
+                "result_rows": "",
+                "best_profit_factor": "",
+                "best_total_r": "",
+                "best_total_net_pnl": "",
+                "best_trades": "",
+                "best_max_drawdown_r": "",
+                "best_avg_bars_held": "",
+                "best_max_hold_count": "",
+                "best_eod_count": "",
+                "best_end_of_data_count": "",
+                "notes": str(e),
+            }
+            manifest_by[strategy] = row
+            rows = _manifest_list(manifest_by, priority_order)
+            _write_manifest_csv(manifest_csv, rows)
+            _write_manifest_md(manifest_md, rows)
+            continue
 
         cmd = [
             sys.executable,

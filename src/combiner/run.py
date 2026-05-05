@@ -32,6 +32,7 @@ from src.combiner.candidate import (
 from src.combiner.metrics import summarize_combiner
 from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
+from src.utils.config_validation import validate_common_combiner_config
 
 
 def _safe_tag(tag: str) -> str:
@@ -119,6 +120,7 @@ def main(argv: list[str] | None = None) -> int:
     with cfg_path.open(encoding="utf-8") as f:
         combiner_yaml = yaml.safe_load(f)
 
+    validate_common_combiner_config(combiner_yaml)
     comb_cfg = _combiner_cfg_from_yaml(combiner_yaml)
     strategy_rules = combiner_yaml.get("strategy_rules") or {}
 

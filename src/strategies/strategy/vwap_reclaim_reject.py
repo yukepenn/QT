@@ -13,6 +13,14 @@ from numba import njit
 from src.backtest.fast import TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
+from src.utils.config_validation import (
+    validate_common_strategy_config,
+    validate_int_at_least,
+    validate_long_only_mvp,
+    validate_minute_range,
+    validate_nonnegative_number,
+    validate_positive_number,
+)
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
@@ -121,9 +129,36 @@ def _vwap_reclaim_numba(
 
 
 class VwapReclaimRejectStrategy(BaseStrategy):
+    """VWAP reclaim continuation — long-only MVP."""
+
     name = "vwap_reclaim_reject"
     supports_fast = True
     performance_tier = "A_true_context_fast_core"
+
+    def validate_config(self, config: dict[str, Any]) -> None:
+        validate_common_strategy_config(config)
+        validate_long_only_mvp(config, strategy_name=self.name)
+        sig = config.get("signal") or {}
+        risk = config.get("risk") or {}
+        validate_minute_range(
+            "signal.entry_start_minute",
+            sig.get("entry_start_minute"),
+            "signal.entry_end_minute",
+            sig.get("entry_end_minute"),
+        )
+        validate_int_at_least("signal.min_bars_wrong_side", sig.get("min_bars_wrong_side", 10), 1)
+        confirm = str(sig.get("confirm_mode", "close_reclaim"))
+        if confirm not in ("close_reclaim", "break_3bar_high", "momentum_turn"):
+            raise ValueError(f"signal.confirm_mode invalid: {confirm!r}")
+        stop_mode = str(risk.get("stop_mode", "reclaim_candle"))
+        if stop_mode not in ("reclaim_candle", "vwap_buffer", "swing_low"):
+            raise ValueError(f"risk.stop_mode invalid: {stop_mode!r}")
+        validate_positive_number("risk.target_r", risk.get("target_r"))
+        validate_nonnegative_number("risk.vwap_buffer_atr", risk.get("vwap_buffer_atr", 0.1))
+        validate_int_at_least("risk.max_trades_per_day", risk.get("max_trades_per_day", 1), 1)
+        ac = str(sig.get("atr_column", "atr_like_15") or "").strip()
+        if not ac:
+            raise ValueError("signal.atr_column must be a non-empty string when set")
 
     def required_features(self) -> list[str]:
         return [
@@ -143,7 +178,8 @@ class VwapReclaimRejectStrategy(BaseStrategy):
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         sig = config.get("signal") or {}
         mb = int(sig.get("min_bars_wrong_side", 10))
-        return ("vwap_reclaim_ctx", mb)
+        w = max(mb + 5, 15)
+        return ("vwap_reclaim_ctx", mb, w, str(sig.get("atr_column", "atr_like_15")))
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> VwapReclaimContext:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
@@ -264,6 +300,7 @@ class VwapReclaimRejectStrategy(BaseStrategy):
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             int(sig.get("min_bars_wrong_side", 10)),
+            str(sig.get("atr_column", "atr_like_15")),
             str(sig.get("confirm_mode", "close_reclaim")),
             bool(sig.get("require_volume_surge", False)),
             str(risk.get("stop_mode", "reclaim_candle")),

@@ -310,6 +310,7 @@ def precompute_candidate_signal_matrices(
         if not strat.supports_fast:
             raise ValueError(f"{spec.strategy} does not support fast path")
         cfg = merged_strategy_config(spec)
+        strat.validate_config(cfg)
         fk = feature_key_from_config(cfg)
         feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
 
