@@ -1,12 +1,14 @@
+### [Unreleased] – 2026-05-05
+
+- Fix(data): `pull_ibkr_1min.py` — `reqHistoricalData` on **qualified** equity contract; **3** request retries; **reconnect backoff** (multi-attempt `ensure_ib_connected`).
+- Feat(research): `equity_data_coverage_report.py` — session/month stats + `data_coverage.csv` / `data_coverage_summary.md` for SPY/QQQ windows.
+- Docs(readme/progress): long-history pull + coverage command; backfill notes under `src/research/results/data_backfill_spy_qqq_2020_20260430/`.
+
 ### [Unreleased] – 2026-05-02
 
 - Feat(combiner): restore generic `postprocess.py` (grid dedupe key, `top_unique_*`, `top_unique_run_map.csv`, diagnostics MD, fixed-run collector, cost stress with generic `cost_robustness_label`).
 - Chore(repo): `.gitignore` — ignore `data/raw/`, caches, heavy combiner/sweep outputs; un-ignore curated summaries and Layer 1 `selected_candidates/*.yaml`.
 - Docs(readme/progress/results): recovery notes, postprocess CLI, `recovery_status_before.md`, `layer2_summary.md` regeneration template; cost stress placeholder.
-
-### [Unreleased] – 2026-05-05
-
-- Docs(results): `layer2_summary.md` Phase 18 report; full-date sweep artifacts under `sweep_20260505_020834_sweep_v1_full/`.
 
 ### [Unreleased] – 2026-05-02
 

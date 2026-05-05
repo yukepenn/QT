@@ -185,6 +185,12 @@ Pull SPY and QQQ (example):
 python src/data/pull_ibkr_1min.py --asset equity --symbols SPY QQQ --start 2025-01-01 --end 2026-04-30 --rth --chunk-days 5 --sleep 1.0 --client-id 101
 ```
 
+Long history (e.g. main research window **2020-01-01 → 2026-04-30**) uses the same CLI; writes **monthly** `data.parquet` incrementally. If IB disconnects, restart Gateway and rerun the same command (months are **merge + dedupe**). After a large pull, summarize coverage:
+
+```bash
+python src/research/equity_data_coverage_report.py --symbols SPY QQQ --start 2020-01-01 --end 2026-04-30 --output-dir src/research/results/data_backfill_spy_qqq_2020_20260430
+```
+
 Read SPY, January 2025:
 
 ```bash

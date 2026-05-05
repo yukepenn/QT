@@ -98,7 +98,15 @@ def connect_ib(host: str, port: int, client_id: int, timeout: float) -> tuple[IB
     raise RuntimeError(msg)
 
 
-def ensure_ib_connected(ib: IB, host: str, port: int, client_id: int, timeout: float) -> None:
+def ensure_ib_connected(
+    ib: IB,
+    host: str,
+    port: int,
+    client_id: int,
+    timeout: float,
+    *,
+    max_attempts: int = 8,
+) -> None:
     if ib.isConnected():
         return
     print("WARN IB disconnected; reconnecting...", flush=True)
@@ -106,7 +114,28 @@ def ensure_ib_connected(ib: IB, host: str, port: int, client_id: int, timeout: f
         ib.disconnect()
     except Exception:
         pass
-    ib.connect(host, port, clientId=client_id, timeout=timeout, readonly=True)
+    last_err: Exception | None = None
+    for attempt in range(max_attempts):
+        try:
+            wait = min(2.0 * (attempt + 1), 45.0)
+            if attempt:
+                print(f"RECONNECT sleep={wait:.1f}s attempt {attempt + 1}/{max_attempts}", flush=True)
+                time.sleep(wait)
+            ib.connect(host, port, clientId=client_id, timeout=timeout, readonly=True)
+            if ib.isConnected():
+                print(f"RECONNECTED client_id={client_id} attempt={attempt + 1}", flush=True)
+                return
+        except Exception as e:  # noqa: BLE001
+            last_err = e
+            print(f"WARN reconnect failed ({attempt + 1}/{max_attempts}): {e}", flush=True)
+            try:
+                ib.disconnect()
+            except Exception:
+                pass
+    msg = f"Failed to reconnect to {host}:{port} after {max_attempts} attempts"
+    if last_err is not None:
+        msg += f"; last error: {last_err}"
+    raise RuntimeError(msg)
 
 
 def parse_ny_date_bounds(start_ymd: str, end_ymd: str) -> DateBounds:
@@ -491,7 +520,7 @@ def download_for_label(
         )
 
         bars = None
-        for attempt in range(2):
+        for attempt in range(3):
             try:
                 bars = ib.reqHistoricalData(
                     contract=contract,
@@ -505,7 +534,10 @@ def download_for_label(
                 )
                 break
             except Exception as e:  # noqa: BLE001
-                print(f"ERROR request failed for {label} chunk {i}/{n} (try {attempt + 1}/2): {e}", flush=True)
+                print(
+                    f"ERROR request failed for {label} chunk {i}/{n} (try {attempt + 1}/3): {e}",
+                    flush=True,
+                )
                 ensure_ib_connected(ib, host, port, client_id, connect_timeout)
                 time.sleep(max(0.0, sleep_s))
         if bars is None:
@@ -613,7 +645,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 label = symbol
                 df = download_for_label(
                     ib,
-                    contract=c,
+                    contract=q,
                     asset="equity",
                     label=label,
                     bounds=bounds,
