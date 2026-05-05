@@ -66,3 +66,12 @@ Timestamp: emergency recovery audit (local workspace).
 ## Blockers
 
 - **Cannot** run combiner diagnostics, sweep, fixed runs, or cost stress until **`selected_candidates/*.yaml`** exist (and bar data available locally under `data/raw/ibkr` without running IBKR pull).
+
+---
+
+## After recovery actions (automated)
+
+- Restored **`src/combiner/postprocess.py`** (generic; grid dedupe key; cost labels `robust_positive_at_0_03` / `robust_positive_at_0_02` / `positive_but_sensitive` / `cost_fragile`).
+- Added **`.gitignore`**, **README** postprocess block, **`layer2_summary.md`** (recovery template), **`cost_stress_summary.md`** placeholder (no `cost_stress_results.csv` on disk).
+- **`git init`**, commit **`42af00c`**, **`git push -u origin main`** to `https://github.com/yukepenn/QT.git` succeeded.
+- **Layer 1 YAML library still empty** — restore from backup or re-run selector after approval; parity/combiner smoke need local bars + candidates.
