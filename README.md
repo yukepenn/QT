@@ -78,6 +78,11 @@ data/raw parquet
 
 - `src/features/build_features.py` — builds reusable **market-state** columns in memory (time/session, VWAP, ORB, levels, volatility).
 - Feature code is **strategy-agnostic**; strategies declare what they need via `required_features()`.
+- **No-lookahead conventions (Commit B hardening):**
+  - Full-session aggregates are explicitly named **`full_session_*_LOOKAHEAD`** and must **not** be used by intraday strategies.
+  - Intraday-safe cumulative anchors are available as **`intraday_high_so_far`** / **`intraday_low_so_far`**.
+  - ORB broadcast anchors are safe only when gated by `after_orb`; prefer **`orb_*_known`** columns (NaN/False before ORB completion).
+  - Feature cache keys are centralized in `src/features/feature_key.py` (`FeatureBuildConfig` + `feature_key_from_config`).
 
 ### Strategy layer
 

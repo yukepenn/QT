@@ -20,7 +20,7 @@ if str(_ROOT) not in sys.path:
 
 from src.backtest.fast import prepare_backtest_arrays, run_fast_backtest_from_arrays
 from src.data.read_bars import read_bars
-from src.features.build_features import build_basic_features
+from src.features.feature_key import build_features_from_config, feature_key_from_config
 from src.strategies.loader import (
     apply_overrides,
     expand_grid,
@@ -132,15 +132,6 @@ def _display_columns(df: pd.DataFrame, _strategy: str) -> list[str]:
         "end_of_data_count",
     ]
     return [c for c in preferred if c in df.columns]
-
-
-# TODO: when more strategies require different feature parameters, move feature_key into strategy plugin.
-def _feat_key(feat: dict[str, Any]) -> tuple[Any, ...]:
-    return (
-        int(feat.get("orb_open_minutes", 15)),
-        tuple(feat.get("vwap_bands") or (1.0, 2.0)),
-        tuple(feat.get("vol_windows") or (5, 15, 30)),
-    )
 
 
 def _finalize_combo_config(cfg: dict[str, Any]) -> None:
@@ -299,18 +290,10 @@ def main(argv: list[str] | None = None) -> int:
                 stop_symbol = True
                 break
 
-            feat_cfg = cfg.get("features") or {}
-            fk = _feat_key(feat_cfg)
+            fk = feature_key_from_config(cfg)
             if fk not in feat_cache:
                 t_f0 = time.perf_counter()
-                feat_cache[fk] = build_basic_features(
-                    raw,
-                    orb_open_minutes=fk[0],
-                    vwap_bands=fk[1],
-                    vol_windows=fk[2],
-                    copy=True,
-                    allow_overwrite=False,
-                ).sort_values("ts_utc", ignore_index=True)
+                feat_cache[fk] = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
                 t_feat += time.perf_counter() - t_f0
                 t_p0 = time.perf_counter()
                 array_cache[fk] = prepare_backtest_arrays(feat_cache[fk])

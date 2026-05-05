@@ -357,6 +357,34 @@ def first_value_when_minute_ge(
 
 
 @njit(cache=True)
+def first_value_when_minute_ge_with_known(
+    values: np.ndarray,
+    minute: np.ndarray,
+    session_id: np.ndarray,
+    target_minute: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Per session:
+    - `anchor`: broadcast first values[i] where minute[i] >= target_minute
+    - `known`: False before target_minute; True at/after target_minute if anchor exists for that session
+    """
+    n = len(values)
+    n_sess = int(session_id.max()) + 1 if n else 0
+    anchors = np.full(n_sess, np.nan)
+    for i in range(n):
+        sid = session_id[i]
+        if minute[i] >= target_minute and np.isnan(anchors[sid]):
+            anchors[sid] = values[i]
+    anchor_out = np.empty(n, dtype=np.float64)
+    known_out = np.zeros(n, dtype=np.bool_)
+    for i in range(n):
+        sid = session_id[i]
+        anchor_out[i] = anchors[sid]
+        known_out[i] = (minute[i] >= target_minute) and (anchors[sid] == anchors[sid])
+    return anchor_out, known_out
+
+
+@njit(cache=True)
 def apply_min_risk_filter_numba_kernel(
     valid: np.ndarray,
     side: np.ndarray,

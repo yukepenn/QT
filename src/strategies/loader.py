@@ -17,7 +17,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.strategies.strategy.afternoon_continuation import AfternoonContinuationStrategy
-from src.strategies.strategy.base import BaseStrategy
+from src.strategies.strategy.base import BaseStrategy, validate_required_features_no_lookahead
 from src.strategies.strategy.failed_orb import FailedOrbStrategy
 from src.strategies.strategy.gap_acceptance_failure import GapAcceptanceFailureStrategy
 from src.strategies.strategy.midday_compression_breakout import MiddayCompressionBreakoutStrategy
@@ -59,7 +59,9 @@ def load_strategy(name: str) -> BaseStrategy:
     cls = _STRATEGY_BY_NAME.get(name)
     if cls is None:
         raise ValueError(f"unknown strategy: {name!r}")
-    return cls()
+    s = cls()
+    validate_required_features_no_lookahead(strategy_name=s.name, required_features=s.required_features())
+    return s
 
 
 def load_strategy_config(name: str) -> dict[str, Any]:

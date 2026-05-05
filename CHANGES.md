@@ -16,6 +16,9 @@
 - Fix(combiner): prevent cooldown leaking across sessions; add fast daily_trade_number; add explicit rejection reasons for invalid stop/target and opposite-direction conflicts.
 - Test(unit): add pytest + initial execution/drawdown tests.
 - Docs(research): refresh hardening plan for HEAD `6bc1c7c` (mark Commit A done; prep Commit B).
+- Feat(features): make full-session aggregates explicit (`full_session_*_LOOKAHEAD`); add intraday-safe `intraday_high_so_far` / `intraday_low_so_far`; add ORB `*_known` columns.
+- Fix(cache): centralize feature cache key (`FeatureBuildConfig` + `feature_key_from_config`) and use across backtest sweep, combiner precompute, and research parity.
+- Test(features): add no-lookahead and feature-key unit tests.
 
 ### [Unreleased] – 2026-05-02
 

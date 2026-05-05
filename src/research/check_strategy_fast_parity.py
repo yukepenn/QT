@@ -18,7 +18,7 @@ if str(_ROOT) not in sys.path:
 
 from src.backtest.sweep import _finalize_combo_config
 from src.data.read_bars import read_bars
-from src.features.build_features import build_basic_features
+from src.features.feature_key import build_features_from_config
 from src.strategies.loader import apply_overrides, expand_grid, load_strategy, load_strategy_config
 from src.strategies.strategy.fast_utils import pack_signal_arrays_from_df
 
@@ -74,12 +74,11 @@ def main(argv: list[str] | None = None) -> int:
         print("ERROR empty bars", file=sys.stderr)
         return 2
 
-    feat = build_basic_features(
-        raw,
-        orb_open_minutes=args.orb_open_minutes,
-        copy=True,
-        allow_overwrite=False,
-    ).sort_values("ts_utc", ignore_index=True)
+    # Build features using config-derived knobs; optionally override orb_open_minutes for parity runs.
+    cfg0 = load_strategy_config(args.strategy)
+    if args.orb_open_minutes is not None:
+        cfg0 = apply_overrides(cfg0, {"features.orb_open_minutes": int(args.orb_open_minutes)})
+    feat = build_features_from_config(raw, cfg0).sort_values("ts_utc", ignore_index=True)
 
     miss_total = 0
     for ix, combo_flat in enumerate(combos):

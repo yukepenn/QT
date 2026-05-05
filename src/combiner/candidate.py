@@ -22,26 +22,8 @@ if str(_ROOT) not in sys.path:
 
 from src.backtest.fast import prepare_backtest_arrays
 from src.data.read_bars import read_bars
-from src.features.build_features import build_basic_features
+from src.features.feature_key import build_features_from_config, feature_key_from_config
 from src.strategies.loader import deep_update, load_strategy, load_strategy_config
-
-
-def _feat_key(feat: dict[str, Any]) -> tuple[Any, ...]:
-    vb = feat.get("vwap_bands") or (1.0, 2.0)
-    vw = feat.get("vol_windows") or (5, 15, 30)
-    if isinstance(vb, list):
-        vb = tuple(float(x) for x in vb)
-    elif isinstance(vb, tuple):
-        vb = tuple(float(x) for x in vb)
-    else:
-        vb = (1.0, 2.0)
-    if isinstance(vw, list):
-        vw = tuple(int(x) for x in vw)
-    elif isinstance(vw, tuple):
-        vw = tuple(int(x) for x in vw)
-    else:
-        vw = (5, 15, 30)
-    return (int(feat.get("orb_open_minutes", 15)), vb, vw)
 
 
 def _finalize_entry_start(cfg: dict[str, Any]) -> None:
@@ -328,16 +310,8 @@ def precompute_candidate_signal_matrices(
         if not strat.supports_fast:
             raise ValueError(f"{spec.strategy} does not support fast path")
         cfg = merged_strategy_config(spec)
-        feat_cfg = cfg.get("features") or {}
-        fk = _feat_key(feat_cfg)
-        feat_df = build_basic_features(
-            raw,
-            orb_open_minutes=int(fk[0]),
-            vwap_bands=tuple(fk[1]),
-            vol_windows=tuple(fk[2]),
-            copy=True,
-            allow_overwrite=False,
-        ).sort_values("ts_utc", ignore_index=True)
+        fk = feature_key_from_config(cfg)
+        feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
 
         ts = feat_df["ts_utc"]
         if canonical_ts is None:

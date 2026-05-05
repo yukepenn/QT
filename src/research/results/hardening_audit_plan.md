@@ -126,6 +126,8 @@ Reference: `src/research/results/hardening_audit_20260505.md`
 - Centralize `FeatureBuildConfig` + feature_key and use across engine/sweep/combiner/research
 - Add tests for no-lookahead and feature_key determinism
 
+**Status:** Done (see new plan note `hardening_commit_b_plan.md` and unit tests under `tests/`).
+
 ### Commit C — Strategy validation + context cache correctness (P2) + tests
 
 - Add `BaseStrategy.validate_config()`

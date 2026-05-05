@@ -16,7 +16,7 @@ from src.strategies.strategy.base import BaseStrategy, init_standard_signal_colu
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,
     apply_min_risk_filter_numba_kernel,
-    first_value_when_minute_ge,
+    first_value_when_minute_ge_with_known,
     get_min_risk_per_share,
     session_id_from_dates,
     thin_first_signal_per_session_numba,
@@ -37,6 +37,7 @@ class AfternoonContext:
     volr: np.ndarray
     atr: np.ndarray
     mor_close: np.ndarray
+    mor_close_known: np.ndarray
 
 
 @njit(cache=True)
@@ -53,6 +54,7 @@ def _afternoon_numba(
     volr: np.ndarray,
     atr: np.ndarray,
     mor_close: np.ndarray,
+    mor_close_known: np.ndarray,
     es: int,
     ee: int,
     min_ret: float,
@@ -79,6 +81,8 @@ def _afternoon_numba(
         mid_mid[i] = (hi60[i] + lo60[i]) * 0.5
     for i in range(n):
         if minute[i] < es or minute[i] > ee:
+            continue
+        if not mor_close_known[i]:
             continue
         mc = mor_close[i]
         morning_ok = False
@@ -151,7 +155,7 @@ class AfternoonContinuationStrategy(BaseStrategy):
         session_id = session_id_from_dates(work["session_date"])
         minute = work["minute_from_open"].to_numpy(dtype=np.int32)
         close = work["close"].to_numpy(dtype=np.float64)
-        mor_close = first_value_when_minute_ge(close, minute, session_id, mem)
+        mor_close, mor_close_known = first_value_when_minute_ge_with_known(close, minute, session_id, mem)
         atr = atr_series(work, config).to_numpy(dtype=np.float64)
         return AfternoonContext(
             n=len(work),
@@ -166,6 +170,7 @@ class AfternoonContinuationStrategy(BaseStrategy):
             volr=work["volume_ratio_20"].to_numpy(dtype=np.float64),
             atr=atr,
             mor_close=mor_close,
+            mor_close_known=mor_close_known,
         )
 
     def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
@@ -199,6 +204,7 @@ class AfternoonContinuationStrategy(BaseStrategy):
             ctx.volr,
             ctx.atr,
             ctx.mor_close,
+            ctx.mor_close_known,
             es,
             ee,
             min_ret,

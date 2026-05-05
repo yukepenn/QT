@@ -15,6 +15,13 @@ def add_prior_day_levels(
     copy: bool = True,
     allow_overwrite: bool = False,
 ) -> pd.DataFrame:
+    """
+    Notes on lookahead:
+
+    - `full_session_*_LOOKAHEAD` columns are **full-session aggregates** (unsafe intraday).
+      They are retained only for offline diagnostics and must not be required by intraday strategies.
+    - `intraday_*_so_far` columns are safe intraday (cumulative by `session_date`).
+    """
     module_name = "levels"
     cols = FEATURE_COLUMNS[module_name]
     add_or_overwrite_columns(df, cols, module_name=module_name, allow_overwrite=allow_overwrite)
@@ -27,26 +34,26 @@ def add_prior_day_levels(
         out.groupby("session_date", sort=False)
         .agg(
             session_open=("open", "first"),
-            session_high=("high", "max"),
-            session_low=("low", "min"),
-            session_close=("close", "last"),
+            full_session_high_LOOKAHEAD=("high", "max"),
+            full_session_low_LOOKAHEAD=("low", "min"),
+            full_session_close_LOOKAHEAD=("close", "last"),
         )
         .reset_index()
         .sort_values("session_date")
     )
 
     sess["prior_day_open"] = sess["session_open"].shift(1)
-    sess["prior_day_high"] = sess["session_high"].shift(1)
-    sess["prior_day_low"] = sess["session_low"].shift(1)
-    sess["prior_day_close"] = sess["session_close"].shift(1)
+    sess["prior_day_high"] = sess["full_session_high_LOOKAHEAD"].shift(1)
+    sess["prior_day_low"] = sess["full_session_low_LOOKAHEAD"].shift(1)
+    sess["prior_day_close"] = sess["full_session_close_LOOKAHEAD"].shift(1)
     sess["prior_day_range"] = sess["prior_day_high"] - sess["prior_day_low"]
 
     merge_cols = [
         "session_date",
         "session_open",
-        "session_high",
-        "session_low",
-        "session_close",
+        "full_session_high_LOOKAHEAD",
+        "full_session_low_LOOKAHEAD",
+        "full_session_close_LOOKAHEAD",
         "prior_day_open",
         "prior_day_high",
         "prior_day_low",
@@ -56,6 +63,10 @@ def add_prior_day_levels(
     sess = sess[merge_cols]
 
     out = out.merge(sess, on="session_date", how="left")
+
+    g = out.groupby("session_date", sort=False)
+    out["intraday_high_so_far"] = g["high"].cummax().astype(float)
+    out["intraday_low_so_far"] = g["low"].cummin().astype(float)
 
     out["gap_from_prior_close"] = out["session_open"] - out["prior_day_close"]
     out["gap_pct_from_prior_close"] = out["gap_from_prior_close"] / out["prior_day_close"]

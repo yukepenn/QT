@@ -70,6 +70,14 @@ def validate_standard_signal_columns(df: pd.DataFrame) -> None:
         raise ValueError(f"missing standard signal columns: {missing}")
 
 
+def validate_required_features_no_lookahead(*, strategy_name: str, required_features: list[str]) -> None:
+    bad = [c for c in required_features if "LOOKAHEAD" in str(c)]
+    if bad:
+        raise ValueError(
+            f"strategy {strategy_name!r} requires LOOKAHEAD feature columns (not allowed): {bad}"
+        )
+
+
 def init_standard_signal_columns(
     df: pd.DataFrame,
     *,

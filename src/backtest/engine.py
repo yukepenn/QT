@@ -25,7 +25,7 @@ from src.backtest.execution import (
     valid_target_r,
 )
 from src.data.read_bars import read_bars
-from src.features.build_features import build_basic_features
+from src.features.feature_key import build_features_from_config
 from src.strategies.loader import deep_update, load_strategy, load_strategy_config
 from src.strategies.strategy.base import validate_standard_signal_columns
 
@@ -452,18 +452,7 @@ def run_strategy_backtest(
     if raw.empty:
         raise ValueError("no bars loaded")
 
-    feat_cfg = cfg.get("features") or {}
-    orb_m = int(feat_cfg.get("orb_open_minutes", 15))
-    vb = tuple(feat_cfg.get("vwap_bands") or (1.0, 2.0))
-    vw = tuple(feat_cfg.get("vol_windows") or (5, 15, 30))
-    feat = build_basic_features(
-        raw,
-        orb_open_minutes=orb_m,
-        vwap_bands=vb,
-        vol_windows=vw,
-        copy=True,
-        allow_overwrite=False,
-    )
+    feat = build_features_from_config(raw, cfg)
 
     strat = load_strategy(strategy_name)
     miss = [c for c in strat.required_features() if c not in feat.columns]
