@@ -1,0 +1,75 @@
+candidate_id: PRIOR_DAY_LEVEL_TRAP_005
+strategy: prior_day_level_trap
+asset: equity
+symbol: QQQ
+strategy_family: key_level_trap
+conflict_group: QQQ_directional
+default_priority: 72
+default_active_start_minute: 30
+default_active_end_minute: 330
+metadata:
+  family: key_level_trap
+  conflict_group: QQQ_directional
+  default_priority: 72
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+selection:
+  score: 0.6681674443535451
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\prior_day_level_trap\sweep_20260506_004507_layer1_qqq_2020_20260430_posthardening_v1\results.csv
+  row_index: 26
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\prior_day_level_trap\sweep_20260506_004507_layer1_qqq_2020_20260430_posthardening_v1
+metrics:
+  trades: 365
+  profit_factor: 1.1097276853252878
+  total_r: 11.477630436239473
+  win_rate: 0.4136986301369863
+  total_net_pnl: 18.132500000003404
+  avg_r: 0.0314455628390122
+  avg_net_pnl: 0.0496780821917901
+  max_drawdown_pnl: -16.222499999999286
+  max_drawdown_r: -19.76616571626458
+  avg_bars_held: 20.73972602739726
+  stop_count: 201
+  target_count: 110
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 54
+config:
+  strategy: prior_day_level_trap
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    level_type: prior_day_low
+    entry_start_minute: 30
+    entry_end_minute: 180
+    fail_window_bars: 1
+    level_buffer_atr: 0.0
+    confirm_mode: momentum_turn
+    require_vwap_alignment: false
+    require_volume_surge: false
+    min_volume_mult: 1.5
+  risk:
+    stop_mode: failed_extreme
+    atr_buffer: 0.1
+    target_mode: fixed_r
+    target_r: 1.75
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

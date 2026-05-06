@@ -1,3 +1,7 @@
+### [Unreleased] – 2026-05-06
+
+- Docs(results): Layer 1 QQQ **2020-01-01 → 2026-04-30** post-hardening candidate library — `layer1_all10_qqq_2020_20260430_posthardening_v1/` (manifest, **27** YAMLs, `layer1_2020_posthardening_summary.md`).
+
 ### [Unreleased] – 2026-05-05
 
 - Feat(combiner): Layer 2 precompute — candidate-level progress logs, optional `candidate_precompute_profile.csv`, in-memory feature/context reuse, generic `resolve_candidate_universe_for_grid` wired into `sweep.py`; `run.py` (diagnostics + saved runs) and `postprocess.py` cost stress emit profile CSVs.
