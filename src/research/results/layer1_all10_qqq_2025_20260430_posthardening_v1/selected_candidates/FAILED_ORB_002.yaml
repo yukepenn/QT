@@ -1,0 +1,74 @@
+candidate_id: FAILED_ORB_002
+strategy: failed_orb
+asset: equity
+symbol: QQQ
+strategy_family: opening_reversal
+conflict_group: QQQ_directional
+default_priority: 85
+default_active_start_minute: 5
+default_active_end_minute: 90
+metadata:
+  family: opening_reversal
+  conflict_group: QQQ_directional
+  default_priority: 85
+  default_active_start_minute: 5
+  default_active_end_minute: 90
+selection:
+  score: 1.7874382627296366
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\failed_orb\sweep_20260506_022144_layer1_qqq_2025_20260430_posthardening_v1\results.csv
+  row_index: 275
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\failed_orb\sweep_20260506_022144_layer1_qqq_2025_20260430_posthardening_v1
+metrics:
+  trades: 234
+  profit_factor: 1.5274621212121542
+  total_r: 48.090015211482594
+  win_rate: 0.4401709401709401
+  total_net_pnl: 66.84000000000276
+  avg_r: 0.2055128855191564
+  avg_net_pnl: 0.2856410256410374
+  max_drawdown_pnl: -21.57999999999913
+  max_drawdown_r: -14.776714569403566
+  avg_bars_held: 18.07264957264957
+  stop_count: 125
+  target_count: 79
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 30
+config:
+  strategy: failed_orb
+  features:
+    orb_open_minutes: 3
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 5
+    entry_end_minute: 60
+    fail_window_bars: 3
+    confirm_mode: momentum_turn
+    require_vwap_reclaim: false
+    require_volume_climax: false
+    min_close_location: 0.55
+    min_volume_mult: 1.5
+  risk:
+    stop_mode: failed_extreme
+    atr_buffer: 0.1
+    target_mode: fixed_r
+    target_r: 2.0
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

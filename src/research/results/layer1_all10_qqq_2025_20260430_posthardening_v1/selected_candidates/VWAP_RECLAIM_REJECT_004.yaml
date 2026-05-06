@@ -1,0 +1,72 @@
+candidate_id: VWAP_RECLAIM_REJECT_004
+strategy: vwap_reclaim_reject
+asset: equity
+symbol: QQQ
+strategy_family: vwap_reclaim
+conflict_group: QQQ_directional
+default_priority: 70
+default_active_start_minute: 30
+default_active_end_minute: 240
+metadata:
+  family: vwap_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 70
+  default_active_start_minute: 30
+  default_active_end_minute: 240
+selection:
+  score: 0.9550599579414633
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_reclaim_reject\sweep_20260506_022345_layer1_qqq_2025_20260430_posthardening_v1\results.csv
+  row_index: 172
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_reclaim_reject\sweep_20260506_022345_layer1_qqq_2025_20260430_posthardening_v1
+metrics:
+  trades: 246
+  profit_factor: 1.0813466072832438
+  total_r: 22.46859425386951
+  win_rate: 0.4146341463414634
+  total_net_pnl: 6.2100000000025375
+  avg_r: 0.0913357489994695
+  avg_net_pnl: 0.0252439024390347
+  max_drawdown_pnl: -13.309999999999718
+  max_drawdown_r: -15.230030966782724
+  avg_bars_held: 6.414634146341464
+  stop_count: 137
+  target_count: 71
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 38
+config:
+  strategy: vwap_reclaim_reject
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 30
+    entry_end_minute: 180
+    min_bars_wrong_side: 5
+    confirm_mode: momentum_turn
+    require_volume_surge: false
+    min_volume_mult: 1.5
+  risk:
+    stop_mode: reclaim_candle
+    vwap_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 2.0
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 15

@@ -1,0 +1,74 @@
+candidate_id: GAP_ACCEPTANCE_FAILURE_001
+strategy: gap_acceptance_failure
+asset: equity
+symbol: QQQ
+strategy_family: gap_behavior
+conflict_group: QQQ_directional
+default_priority: 78
+default_active_start_minute: 5
+default_active_end_minute: 120
+metadata:
+  family: gap_behavior
+  conflict_group: QQQ_directional
+  default_priority: 78
+  default_active_start_minute: 5
+  default_active_end_minute: 120
+selection:
+  score: 1.519791063995457
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\gap_acceptance_failure\sweep_20260506_022151_layer1_qqq_2025_20260430_posthardening_v1\results.csv
+  row_index: 128
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\gap_acceptance_failure\sweep_20260506_022151_layer1_qqq_2025_20260430_posthardening_v1
+metrics:
+  trades: 73
+  profit_factor: 1.6074708171206404
+  total_r: 12.435393662445696
+  win_rate: 0.5068493150684932
+  total_net_pnl: 39.0300000000006
+  avg_r: 0.170347858389667
+  avg_net_pnl: 0.5346575342465836
+  max_drawdown_pnl: -19.605000000000015
+  max_drawdown_r: -7.725286775578275
+  avg_bars_held: 42.45205479452055
+  stop_count: 33
+  target_count: 19
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 21
+config:
+  strategy: gap_acceptance_failure
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+    opening_hold_minutes: 10
+  signal:
+    side: long_only
+    mode: gap_failure
+    entry_start_minute: 10
+    entry_end_minute: 60
+    min_gap_norm: 0.3
+    require_vwap_side: false
+    confirm_mode: reclaim_vwap
+    require_open_hold: true
+  risk:
+    stop_mode: failed_extreme
+    open_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.75
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 90

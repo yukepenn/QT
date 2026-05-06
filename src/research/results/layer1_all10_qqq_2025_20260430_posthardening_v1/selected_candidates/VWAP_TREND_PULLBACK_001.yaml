@@ -1,0 +1,74 @@
+candidate_id: VWAP_TREND_PULLBACK_001
+strategy: vwap_trend_pullback
+asset: equity
+symbol: QQQ
+strategy_family: vwap_trend
+conflict_group: QQQ_directional
+default_priority: 75
+default_active_start_minute: 60
+default_active_end_minute: 300
+metadata:
+  family: vwap_trend
+  conflict_group: QQQ_directional
+  default_priority: 75
+  default_active_start_minute: 60
+  default_active_end_minute: 300
+selection:
+  score: 0.9986108456665245
+  filters_used: relaxed
+  warning: relaxed_filter
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_trend_pullback\sweep_20260506_022402_layer1_qqq_2025_20260430_posthardening_v1\results.csv
+  row_index: 25
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_trend_pullback\sweep_20260506_022402_layer1_qqq_2025_20260430_posthardening_v1
+metrics:
+  trades: 130
+  profit_factor: 1.0109431407942489
+  total_r: 14.775249154188234
+  win_rate: 0.4230769230769231
+  total_net_pnl: 0.4850000000010936
+  avg_r: 0.1136557627245248
+  avg_net_pnl: 0.0037307692307776
+  max_drawdown_pnl: -6.61749999999887
+  max_drawdown_r: -7.461778004428526
+  avg_bars_held: 10.107692307692307
+  stop_count: 73
+  target_count: 50
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 7
+config:
+  strategy: vwap_trend_pullback
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 60
+    entry_end_minute: 180
+    trend_window: 30
+    min_vwap_persistence: 0.7
+    pullback_tolerance_atr: 0.25
+    confirm_mode: momentum_turn
+    require_volume_dryup: false
+    max_pullback_volume_ratio: 0.8
+  risk:
+    stop_mode: pullback_low
+    vwap_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.75
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45
