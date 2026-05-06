@@ -1,5 +1,11 @@
 ### [Unreleased] – 2026-05-05
 
+- Feat(combiner): Layer 2 precompute — candidate-level progress logs, optional `candidate_precompute_profile.csv`, in-memory feature/context reuse, generic `resolve_candidate_universe_for_grid` wired into `sweep.py`; `run.py` (diagnostics + saved runs) and `postprocess.py` cost stress emit profile CSVs.
+- Test(combiner): `test_combiner_candidate_filtering.py` — warning include/exclude and grid union (no real strategy names).
+- Chore(gitignore): allow-list placeholders for QQQ 2020 post-hardening Layer 1 / Layer 2 / comparison / Layer 3 gate MD paths.
+
+### [Unreleased] – 2026-05-05
+
 - Docs(results): post-hardening QQQ 2023–2026 Layer 2 **strict** + **relaxed** sweep outputs, comparison MD, and Layer 1 summary linkage under `layer1_all10_qqq_2023_20260430_posthardening_v1/` and `layer2_qqq_2023_20260430_posthardening_{strict,relaxed}_v1/` (curated CSV/MD only; large sweep logs remain ignored).
 
 ### [Unreleased] – 2026-05-02

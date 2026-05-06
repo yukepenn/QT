@@ -282,6 +282,9 @@ def cost_stress(
         raw_eligible.append(sp)
     universe = [apply_combiner_rules(sp, strategy_rules) for sp in raw_eligible]
 
+    stress_dir = output_root / "cost_stress"
+    stress_dir.mkdir(parents=True, exist_ok=True)
+
     print(f"[postprocess] cost stress: precomputing {len(universe)} candidates...", flush=True)
     csm = precompute_candidate_signal_matrices(
         candidates=universe,
@@ -290,6 +293,7 @@ def cost_stress(
         start=start,
         end=end,
         data_dir=data_dir,
+        profile_csv_path=stress_dir / "candidate_precompute_profile.csv",
     )
     bt_arr = csm.backtest_arrays
     mats = {
@@ -304,8 +308,6 @@ def cost_stress(
     meta = csm.meta_arrays
     _, _, pri, score, rank, ast, aen, _, _, _ = encode_candidate_metadata(universe)
 
-    stress_dir = output_root / "cost_stress"
-    stress_dir.mkdir(parents=True, exist_ok=True)
     rows_out: list[dict[str, Any]] = []
 
     head = unique_df.head(top_n)

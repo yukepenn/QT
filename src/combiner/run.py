@@ -154,6 +154,8 @@ def main(argv: list[str] | None = None) -> int:
             want = set(args.candidate_ids)
             diag_sel = [c for c in diag_sel if c.candidate_id in want]
 
+        diag_dir = out_root / "diagnostics"
+        diag_dir.mkdir(parents=True, exist_ok=True)
         csm = precompute_candidate_signal_matrices(
             candidates=diag_sel,
             asset=args.asset,
@@ -161,8 +163,8 @@ def main(argv: list[str] | None = None) -> int:
             start=args.start,
             end=args.end,
             data_dir=args.data_dir,
+            profile_csv_path=diag_dir / "candidate_precompute_profile.csv",
         )
-        diag_dir = out_root / "diagnostics"
         write_candidate_diagnostics(csm, diag_dir)
         tot_sig = int(np.sum(csm.valid & (csm.side != 0)))
         by_st: dict[str, int] = {}
@@ -209,6 +211,15 @@ def main(argv: list[str] | None = None) -> int:
         print("ERROR no candidates after filters", file=sys.stderr)
         return 2
 
+    run_dir: Path | None = None
+    profile_csv: Path | None = None
+    if not args.no_save:
+        ts_pre = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        tag_pre = _safe_tag(args.tag) if args.tag else "run"
+        run_dir = out_root / f"run_{ts_pre}_{tag_pre}"
+        run_dir.mkdir(parents=True, exist_ok=True)
+        profile_csv = run_dir / "candidate_precompute_profile.csv"
+
     csm = precompute_candidate_signal_matrices(
         candidates=merged,
         asset=args.asset,
@@ -216,6 +227,7 @@ def main(argv: list[str] | None = None) -> int:
         start=args.start,
         end=args.end,
         data_dir=args.data_dir,
+        profile_csv_path=profile_csv,
     )
 
     max_hold, recomp, qty, min_risk = _build_execution_arrays(merged, combiner_yaml, comb_cfg)
@@ -288,11 +300,8 @@ def main(argv: list[str] | None = None) -> int:
         execution_config=exec_cfg,
     )
 
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    tag_s = _safe_tag(args.tag) if args.tag else "run"
-    run_dir = out_root / f"run_{ts}_{tag_s}"
     if not args.no_save:
-        run_dir.mkdir(parents=True, exist_ok=True)
+        assert run_dir is not None
         trades_df.to_csv(run_dir / "trades.csv", index=False)
         equity_df.to_csv(run_dir / "equity.csv", index=False)
         if args.detailed:

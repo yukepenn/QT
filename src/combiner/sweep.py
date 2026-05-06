@@ -26,6 +26,7 @@ from src.combiner.candidate import (
     encode_candidate_metadata,
     load_candidates,
     precompute_candidate_signal_matrices,
+    resolve_candidate_universe_for_grid,
     select_candidate_set,
     write_candidates_used,
 )
@@ -135,7 +136,30 @@ def main(argv: list[str] | None = None) -> int:
         if rules.get("enabled", True) is False:
             continue
         raw_eligible.append(sp)
-    universe = [apply_combiner_rules(sp, strategy_rules) for sp in raw_eligible]
+
+    out_root = Path(args.output_root)
+    if not out_root.is_absolute():
+        out_root = cwd / out_root
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    tag_s = _safe_tag(args.tag)
+    sweep_dir = out_root / f"sweep_{ts}_{tag_s}"
+    sweep_dir.mkdir(parents=True, exist_ok=True)
+
+    pre_raw = resolve_candidate_universe_for_grid(raw_eligible, base_cfg, combo_rows)
+    universe = [apply_combiner_rules(sp, strategy_rules) for sp in pre_raw]
+    n_full = len(raw_eligible)
+    n_pre = len(universe)
+    if n_pre < n_full:
+        print(
+            f"[Layer2 sweep] precompute universe filtered: {n_pre}/{n_full} candidates "
+            f"(union over grid candidate_sets × top_per_strategy)",
+            flush=True,
+        )
+    else:
+        print(
+            f"[Layer2 sweep] precompute universe: all {n_pre} eligible candidates",
+            flush=True,
+        )
 
     if not universe:
         print("ERROR empty candidate universe", file=sys.stderr)
@@ -150,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
         start=args.start,
         end=args.end,
         data_dir=args.data_dir,
+        profile_csv_path=sweep_dir / "candidate_precompute_profile.csv",
     )
     print(f"[Layer2 sweep] precompute done in {(time.perf_counter()-t0):.1f}s", flush=True)
 
@@ -167,14 +192,6 @@ def main(argv: list[str] | None = None) -> int:
     _, _, pri, score, rank, ast, aen, _, _, _ = encode_candidate_metadata(universe)
 
     sets_cfg = base_cfg.get("candidate_sets") or {}
-
-    out_root = Path(args.output_root)
-    if not out_root.is_absolute():
-        out_root = cwd / out_root
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    tag_s = _safe_tag(args.tag)
-    sweep_dir = out_root / f"sweep_{ts}_{tag_s}"
-    sweep_dir.mkdir(parents=True, exist_ok=True)
 
     results_rows: list[dict[str, Any]] = []
     t_sweep0 = time.perf_counter()
@@ -276,6 +293,7 @@ def main(argv: list[str] | None = None) -> int:
         "",
         f"- combos: {len(df)}",
         f"- precompute_candidates: {len(universe)}",
+        f"- eligible_candidates_full: {n_full}",
         "",
         "## Top rows",
         "",

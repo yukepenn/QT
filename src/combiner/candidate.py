@@ -188,6 +188,39 @@ def select_candidate_set(
     return sorted(out, key=lambda x: x.candidate_id)
 
 
+def resolve_candidate_universe_for_grid(
+    raw_eligible: list[Candidate],
+    base_cfg: dict[str, Any],
+    combo_rows: list[dict[str, Any]],
+    *,
+    reserved_keys: frozenset[str] | None = None,
+) -> list[Candidate]:
+    """Union of candidates that any sweep grid row can select (generic).
+
+    For each combo, resolves ``candidate_set`` + ``top_per_strategy`` against
+    ``base_cfg["candidate_sets"]`` using the same rules as :func:`select_candidate_set`.
+    If no names resolve (e.g. missing grid), returns ``raw_eligible`` unchanged.
+    """
+    _ = reserved_keys  # reserved for future grid keys that affect selection
+    sets_cfg = base_cfg.get("candidate_sets") or {}
+    want_ids: set[str] = set()
+    for combo in combo_rows:
+        cs_name = str(combo.get("candidate_set", "") or "")
+        if cs_name not in sets_cfg:
+            continue
+        tps = int(combo.get("top_per_strategy", 1))
+        profile = dict(sets_cfg[cs_name])
+        selected = select_candidate_set(raw_eligible, profile, top_per_strategy=tps)
+        for c in selected:
+            want_ids.add(c.candidate_id)
+    if not want_ids:
+        return list(raw_eligible)
+    order = {c.candidate_id: i for i, c in enumerate(raw_eligible)}
+    out = [c for c in raw_eligible if c.candidate_id in want_ids]
+    out.sort(key=lambda c: order.get(c.candidate_id, 10**9))
+    return out
+
+
 def build_enabled_mask(universe: list[Candidate], selected: list[Candidate]) -> np.ndarray:
     """Align with precomputed matrices: 1 = candidate included in this combiner run/sweep row."""
     sel = {c.candidate_id for c in selected}
@@ -283,8 +316,13 @@ def precompute_candidate_signal_matrices(
     start: str,
     end: str,
     data_dir: str | Path = "data/raw/ibkr",
+    profile_csv_path: Path | None = None,
+    progress_prefix: str = "[precompute]",
 ) -> CandidateSignalMatrix:
-    """Read bars once; build features per feature_key; stack signal arrays (n_c × n_bars)."""
+    """Read bars once; build features per feature_key; stack signal arrays (n_c × n_bars).
+
+    Optional ``profile_csv_path`` writes per-candidate timings, signal counts, and cache hits.
+    """
     if not candidates:
         raise ValueError("no candidates")
     sym = symbol.upper().strip()
@@ -305,60 +343,159 @@ def precompute_candidate_signal_matrices(
     risk_preview = np.zeros((n_c, 0), dtype=np.float64)
     cids: list[str] = []
 
+    feat_cache: dict[str, pd.DataFrame] = {}
+    ctx_cache: dict[tuple[str, str], Any] = {}
+    profile_rows: list[dict[str, Any]] = []
+
     for ci, spec in enumerate(candidates):
-        strat = load_strategy(spec.strategy)
-        if not strat.supports_fast:
-            raise ValueError(f"{spec.strategy} does not support fast path")
-        cfg = merged_strategy_config(spec)
-        strat.validate_config(cfg)
-        fk = feature_key_from_config(cfg)
-        feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+        t_row0 = time.perf_counter()
+        feature_cache_hit = False
+        context_cache_hit = False
+        feature_sec = 0.0
+        context_sec = 0.0
+        signal_sec = 0.0
+        err = ""
+        n_sig = n_long = n_short = 0
+        fk_short = ""
+        ctx_short = str(spec.params_hash or "")[:12]
 
-        ts = feat_df["ts_utc"]
-        if canonical_ts is None:
-            canonical_ts = ts.reset_index(drop=True)
-            backtest_arrays = prepare_backtest_arrays(feat_df)
-            meta_arrays = {
-                "session_date": feat_df["session_date"].to_numpy(copy=False),
-                "minute_from_open": feat_df["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
-                "ts_utc": feat_df["ts_utc"].to_numpy(copy=False),
-                "ts_ny": feat_df["ts_ny"].to_numpy(copy=False) if "ts_ny" in feat_df.columns else np.array([]),
+        exc: BaseException | None = None
+        print(
+            f"{progress_prefix} {ci + 1}/{n_c} candidate_id={spec.candidate_id} strategy={spec.strategy} start",
+            flush=True,
+        )
+        try:
+            strat = load_strategy(spec.strategy)
+            if not strat.supports_fast:
+                raise ValueError(f"{spec.strategy} does not support fast path")
+            cfg = merged_strategy_config(spec)
+            strat.validate_config(cfg)
+            fk = feature_key_from_config(cfg)
+            fk_short = fk[:24] if len(fk) > 24 else fk
+
+            t_feat0 = time.perf_counter()
+            if fk in feat_cache:
+                feat_df = feat_cache[fk]
+                feature_cache_hit = True
+            else:
+                feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+                feat_cache[fk] = feat_df
+            feature_sec = time.perf_counter() - t_feat0
+
+            ts = feat_df["ts_utc"]
+            if canonical_ts is None:
+                canonical_ts = ts.reset_index(drop=True)
+                backtest_arrays = prepare_backtest_arrays(feat_df)
+                meta_arrays = {
+                    "session_date": feat_df["session_date"].to_numpy(copy=False),
+                    "minute_from_open": feat_df["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
+                    "ts_utc": feat_df["ts_utc"].to_numpy(copy=False),
+                    "ts_ny": feat_df["ts_ny"].to_numpy(copy=False) if "ts_ny" in feat_df.columns else np.array([]),
+                }
+            else:
+                if len(feat_df) != len(canonical_ts):
+                    raise ValueError(
+                        f"length mismatch candidate={spec.candidate_id} n={len(feat_df)} expected={len(canonical_ts)}"
+                    )
+                if not ts.reset_index(drop=True).equals(canonical_ts):
+                    raise ValueError(f"ts_utc mismatch for candidate={spec.candidate_id}")
+
+            miss = [c for c in strat.required_features() if c not in feat_df.columns]
+            if miss:
+                raise ValueError(f"{spec.candidate_id} missing features {miss}")
+
+            ctx_key = (fk, str(spec.params_hash))
+            t_ctx0 = time.perf_counter()
+            if ctx_key in ctx_cache:
+                ctx = ctx_cache[ctx_key]
+                context_cache_hit = True
+            else:
+                ctx = strat.prepare_signal_context(feat_df, cfg)
+                ctx_cache[ctx_key] = ctx
+            context_sec = time.perf_counter() - t_ctx0
+
+            t_sig0 = time.perf_counter()
+            sig = strat.generate_signal_arrays_from_context(ctx, cfg)
+            signal_sec = time.perf_counter() - t_sig0
+            cids.append(spec.candidate_id)
+
+            if side.shape[1] == 0:
+                n = len(feat_df)
+                side = np.zeros((n_c, n), dtype=np.int8)
+                valid = np.zeros((n_c, n), dtype=np.bool_)
+                stop = np.zeros((n_c, n), dtype=np.float64)
+                tgt_preview = np.zeros((n_c, n), dtype=np.float64)
+                tgt_mode = np.zeros((n_c, n), dtype=np.int8)
+                tgt_r = np.zeros((n_c, n), dtype=np.float64)
+                risk_preview = np.zeros((n_c, n), dtype=np.float64)
+
+            side[ci] = sig["side"].astype(np.int8)
+            valid[ci] = sig["valid"].astype(np.bool_)
+            stop[ci] = sig["stop"].astype(np.float64)
+            tgt_preview[ci] = sig["target_preview"].astype(np.float64)
+            tgt_mode[ci] = sig["target_mode_code"].astype(np.int8)
+            tgt_r[ci] = sig["target_r"].astype(np.float64)
+            risk_preview[ci] = sig.get("risk_preview", np.zeros(len(feat_df), dtype=np.float64)).astype(
+                np.float64
+            )
+
+            vrow = valid[ci] & (side[ci] != 0)
+            n_sig = int(np.sum(vrow))
+            n_long = int(np.sum(vrow & (side[ci] == 1)))
+            n_short = int(np.sum(vrow & (side[ci] == -1)))
+        except Exception as e:
+            err = str(e)
+            exc = e
+
+        total_sec = time.perf_counter() - t_row0
+        fch = "hit" if feature_cache_hit else "miss"
+        cch = "hit" if context_cache_hit else "miss"
+        print(
+            f"{progress_prefix} {ci + 1}/{n_c} done total_sec={total_sec:.2f} signals={n_sig} "
+            f"feature_cache={fch} context_cache={cch}",
+            flush=True,
+        )
+        profile_rows.append(
+            {
+                "candidate_id": spec.candidate_id,
+                "strategy": spec.strategy,
+                "candidate_rank": spec.candidate_rank,
+                "warning": spec.warning or "",
+                "feature_key_short": fk_short,
+                "context_key_short": ctx_short,
+                "feature_cache_hit": feature_cache_hit,
+                "context_cache_hit": context_cache_hit,
+                "feature_sec": round(feature_sec, 4),
+                "context_sec": round(context_sec, 4),
+                "signal_sec": round(signal_sec, 4),
+                "total_sec": round(total_sec, 4),
+                "n_signals": n_sig,
+                "n_long_signals": n_long,
+                "n_short_signals": n_short,
+                "error": err,
             }
-        else:
-            if len(feat_df) != len(canonical_ts):
-                raise ValueError(
-                    f"length mismatch candidate={spec.candidate_id} n={len(feat_df)} expected={len(canonical_ts)}"
-                )
-            if not ts.reset_index(drop=True).equals(canonical_ts):
-                raise ValueError(f"ts_utc mismatch for candidate={spec.candidate_id}")
-
-        miss = [c for c in strat.required_features() if c not in feat_df.columns]
-        if miss:
-            raise ValueError(f"{spec.candidate_id} missing features {miss}")
-
-        ctx = strat.prepare_signal_context(feat_df, cfg)
-        sig = strat.generate_signal_arrays_from_context(ctx, cfg)
-        cids.append(spec.candidate_id)
-
-        if side.shape[1] == 0:
-            n = len(feat_df)
-            side = np.zeros((n_c, n), dtype=np.int8)
-            valid = np.zeros((n_c, n), dtype=np.bool_)
-            stop = np.zeros((n_c, n), dtype=np.float64)
-            tgt_preview = np.zeros((n_c, n), dtype=np.float64)
-            tgt_mode = np.zeros((n_c, n), dtype=np.int8)
-            tgt_r = np.zeros((n_c, n), dtype=np.float64)
-            risk_preview = np.zeros((n_c, n), dtype=np.float64)
-
-        side[ci] = sig["side"].astype(np.int8)
-        valid[ci] = sig["valid"].astype(np.bool_)
-        stop[ci] = sig["stop"].astype(np.float64)
-        tgt_preview[ci] = sig["target_preview"].astype(np.float64)
-        tgt_mode[ci] = sig["target_mode_code"].astype(np.int8)
-        tgt_r[ci] = sig["target_r"].astype(np.float64)
-        risk_preview[ci] = sig.get("risk_preview", np.zeros(len(feat_df), dtype=np.float64)).astype(np.float64)
+        )
+        if err:
+            if profile_csv_path is not None and profile_rows:
+                _pp = Path(profile_csv_path)
+                _pp.parent.mkdir(parents=True, exist_ok=True)
+                with _pp.open("w", newline="", encoding="utf-8") as pf:
+                    w = csv.DictWriter(pf, fieldnames=list(profile_rows[0].keys()))
+                    w.writeheader()
+                    w.writerows(profile_rows)
+            assert exc is not None
+            raise exc
 
     assert backtest_arrays is not None and meta_arrays is not None
+
+    if profile_csv_path is not None:
+        profile_csv_path = Path(profile_csv_path)
+        profile_csv_path.parent.mkdir(parents=True, exist_ok=True)
+        with profile_csv_path.open("w", newline="", encoding="utf-8") as pf:
+            w = csv.DictWriter(pf, fieldnames=list(profile_rows[0].keys()))
+            w.writeheader()
+            w.writerows(profile_rows)
+
     return CandidateSignalMatrix(
         candidates=candidates,
         candidate_ids=cids,
