@@ -1,0 +1,82 @@
+name: layer2_qqq_2025_20260430_recent_check_v1
+
+candidate_root: src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/selected_candidates
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 5
+  daily_max_loss_r: -5.0
+  cooldown_after_loss_minutes: 0
+  cooldown_scope: session
+
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+  opposite_direction_policy: ""
+
+candidate_sets:
+  trap_family:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - failed_orb
+      - gap_acceptance_failure
+      - prior_day_level_trap
+
+  opening_family:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - failed_orb
+      - gap_acceptance_failure
+      - orb_continuation
+      - orb_retest_continuation
+
+  core5_no_vwap:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - failed_orb
+      - gap_acceptance_failure
+      - prior_day_level_trap
+      - orb_continuation
+      - orb_retest_continuation
+
+  strict_core:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - failed_orb
+      - orb_retest_continuation
+      - orb_continuation
+      - gap_acceptance_failure
+      - prior_day_level_trap
+      - vwap_reclaim_reject
+
+  vwap_control_family:
+    include_warnings: true
+    max_per_strategy: 5
+    strategies:
+      - vwap_reclaim_reject
+      - vwap_trend_pullback
+
+  all_strict:
+    include_warnings: false
+    max_per_strategy: 5
+
+  all_with_relaxed:
+    include_warnings: true
+    max_per_strategy: 5
+

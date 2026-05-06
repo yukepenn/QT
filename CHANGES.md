@@ -3,6 +3,7 @@
 - Docs(results): Layer 2 QQQ 2020–2026 post-hardening **strict** + **relaxed** roots (`layer2_qqq_2020_20260430_posthardening_{strict,relaxed}_v1/`), comparison MD, Layer 3 gate note (`layer3_gate_after_2020_posthardening.md`); curated CSV/MD only (sweep `top_runs/` + `fixed_runs/` remain ignored).
 - Feat(combiner): configs for 2020 post-hardening Layer 2 strict/relaxed — `layer2_qqq_2020_20260430_posthardening_{strict,relaxed}.yaml`, `layer2_sweep_qqq_2020_20260430_posthardening_{strict,relaxed}.yaml`.
 - Docs(results): Layer 1 QQQ **2020-01-01 → 2026-04-30** post-hardening candidate library — `layer1_all10_qqq_2020_20260430_posthardening_v1/` (manifest, **27** YAMLs, `layer1_2020_posthardening_summary.md`).
+- Feat(combiner): configs for QQQ **2025-01-01 → 2026-04-30** recent-window Layer 2 check — `layer2_qqq_2025_20260430_recent_check_v1.yaml`, `layer2_sweep_qqq_2025_20260430_recent_check_v1.yaml`.
 
 ### [Unreleased] – 2026-05-05
 
