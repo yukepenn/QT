@@ -1,0 +1,15 @@
+{
+  "asset": "equity",
+  "cache_entries": 4,
+  "end": "2026-04-30",
+  "feature_cache_hits": 36,
+  "feature_cache_misses": 4,
+  "feature_requests": 40,
+  "last_end": "2026-04-30",
+  "last_start": "2025-01-01",
+  "last_symbol": "QQQ",
+  "raw_load_count": 0,
+  "raw_rows": 128940,
+  "start": "2025-01-01",
+  "symbol": "QQQ"
+}

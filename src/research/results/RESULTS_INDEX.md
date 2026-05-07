@@ -23,6 +23,12 @@ This index classifies **result roots** without moving or deleting them.
   - `layer2_precompute_cleanup_plan.md`, `layer2_precompute_cleanup_summary.md`
   - `layer2_signal_cache_summary.md`
   - `feature_store_v1_plan.md`, `feature_store_v1_summary.md`
+- **Pre‑Layer‑3 gate docs:**
+  - `pre_layer3_cache_benchmark_plan.md`
+  - `pre_layer3_cache_benchmark_comparison.csv`
+  - `pre_layer3_cache_benchmark_summary.md`
+  - `pre_layer3_cache_benchmark_full_summary.md` (may be SKIPPED if local benchmark outputs weren’t retained)
+  - `pre_layer3_gate_readiness_summary.md`
 - **Data coverage docs:** `data_backfill_spy_qqq_2020_20260430/` (SPY incomplete; QQQ is the research symbol)
 
 ## C. Stale / superseded (keep for history; do not use for new decisions)

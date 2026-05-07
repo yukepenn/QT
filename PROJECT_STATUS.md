@@ -63,6 +63,7 @@ No live‑ready claim is implied.
 - Research results index: `src/research/results/RESULTS_INDEX.md`
 - Combiner results index: `src/combiner/results/RESULTS_INDEX.md`
 - Artifact policy: `docs/ARTIFACT_POLICY.md`
+- Pre‑Layer‑3 readiness summary: `src/research/results/pre_layer3_gate_readiness_summary.md`
 - Layer 3 smoke plan (doc only): `src/research/results/layer3_smoke_plan_v1.md`
 
 ## 7. Next intended phases

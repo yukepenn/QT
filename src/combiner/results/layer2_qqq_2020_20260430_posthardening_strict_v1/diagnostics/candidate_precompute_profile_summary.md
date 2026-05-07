@@ -1,0 +1,11 @@
+# Candidate precompute profile summary
+
+Source: `candidate_precompute_profile.csv`
+
+```
+              strategy feature_key_short strategy_context_key_short  candidate_count  n_feature_cache_hits  n_feature_cache_misses  n_context_cache_hits  n_context_cache_misses  sum_total_sec  mean_total_sec  max_total_sec  sum_feature_sec  sum_context_sec  sum_signal_sec  n_signal_cache_hits  n_signal_cache_misses  sum_signal_cache_load_sec  sum_signal_cache_write_sec  total_signals  total_long_signals  total_short_signals
+            failed_orb      7e57a16943ed               59dfb8f2d297                5                     4                       1                     4                       1        29.0448         5.80896        28.7674          24.4276           0.8359          0.1094                    0                      5                        0.0                      0.1427           4132                4132                    0
+gap_acceptance_failure      1fbe839265ff               01c6221904a1                5                     4                       1                     4                       1        30.4095         6.08190        30.1687          29.6135           0.4519          0.0791                    0                      5                        0.0                      0.1281           2022                2022                    0
+  prior_day_level_trap      1fbe839265ff               636f6965f569                1                     1                       0                     0                       1         0.4494         0.44940         0.4494           0.0000           0.3988          0.0079                    0                      1                        0.0                      0.0187            370                 370                    0
+  prior_day_level_trap      1fbe839265ff               f0b2795891f0                4                     4                       0                     3                       1         0.6722         0.16805         0.4591           0.0000           0.3900          0.0565                    0                      4                        0.0                      0.1261           1466                1466                    0
+```

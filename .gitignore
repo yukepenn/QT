@@ -36,6 +36,7 @@ src/combiner/results/**/trades.csv
 src/combiner/results/**/equity.csv
 src/combiner/results/**/candidate_signal_log.csv
 src/combiner/results/**/rejected_signals.csv
+src/combiner/results/**/rank_by_*.csv
 src/combiner/results/**/top_runs/
 src/combiner/results/**/run_*/
 src/combiner/results/**/fixed_runs/
@@ -107,6 +108,7 @@ src/strategies/testing_parameters_results/**/sweep_*/
 
 !src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/*.csv
 !src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/*.md
+src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_*.csv
 !src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/diagnostics/*.csv
 !src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/diagnostics/*.md
 !src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/cost_stress/*.csv
@@ -130,6 +132,7 @@ src/strategies/testing_parameters_results/**/sweep_*/
 
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/*.csv
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/*.md
+src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/rank_by_*.csv
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/diagnostics/*.csv
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/diagnostics/*.md
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/cost_stress/*.csv

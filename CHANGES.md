@@ -98,6 +98,7 @@
 - Chore(repo): expand `.gitignore` to also ignore heavy `src/research/results/**` artifacts and `*.parquet`.
 - Chore(results): local-only cleanup of generated Layer 2 artifacts (`equity.csv`, `trades.csv`, `top_runs/`, `run_*`, `sweep_*`) under `src/combiner/results/**`.
 - Docs(results): add pre‑Layer‑3 cache benchmark plan + comparison + summary (Layer 2 recent; cache_off/cold/warm outputs consistent; warm cache hit-rate improves runtime).
+- Docs(results): regenerate active Layer 2 diagnostics summaries (`diagnostics/diagnostics_summary.md`) and add pre‑Layer‑3 readiness summary.
 
 ### [Unreleased] – 2026-05-02
 

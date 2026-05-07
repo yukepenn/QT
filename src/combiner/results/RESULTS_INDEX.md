@@ -7,19 +7,19 @@ This index classifies committed Layer 2 result roots without deleting them.
 - **`layer2_qqq_2020_20260430_posthardening_strict_v1/`**
   - **status**: active baseline (strict)
   - **window**: 2020‑01‑01 → 2026‑04‑30
-  - **key summaries**: `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`
+  - **key summaries**: `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`, `diagnostics/diagnostics_summary.md`
   - **keep**: yes
 
 - **`layer2_qqq_2020_20260430_posthardening_relaxed_v1/`**
   - **status**: active baseline (relaxed)
   - **window**: 2020‑01‑01 → 2026‑04‑30
-  - **key summaries**: `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`
+  - **key summaries**: `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`, `diagnostics/diagnostics_summary.md`
   - **keep**: yes
 
 - **`layer2_qqq_2025_20260430_recent_check_v1/`**
   - **status**: active recent-window check
   - **window**: 2025‑01‑01 → 2026‑04‑30
-  - **key summaries**: `layer2_recent_2025_summary.md`, `top_unique_systems.md`, `fixed_run_summary.md`
+  - **key summaries**: `layer2_recent_2025_summary.md`, `top_unique_systems.md`, `fixed_run_summary.md`, `diagnostics/diagnostics_summary.md`
   - **keep**: yes
 
 ## B. Reference / historical
@@ -47,5 +47,5 @@ This index classifies committed Layer 2 result roots without deleting them.
 ## Notes
 
 - Large per-run artifacts (e.g. `top_runs/`, detailed `run_*` folders) are intentionally gitignored.
-- Some committed roots include large `equity.csv` files; treat them as **curated historical artifacts**, not as mandatory for new runs.
+- Committed roots are intended to remain **lightweight**: keep curated summaries/CSVs/MDs, not full `equity.csv`/`trades.csv` dumps.
 
