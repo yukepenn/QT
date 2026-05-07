@@ -15,6 +15,7 @@ venv/
 *.npy
 *.npz
 *.memmap
+*.parquet
 
 # Local research caches / dumps (never commit)
 .cache/
@@ -30,6 +31,7 @@ Thumbs.db
 data/raw/
 
 # Heavy generated combiner outputs (keep curated CSV/MD via negation below)
+src/combiner/results/benchmarks/
 src/combiner/results/**/trades.csv
 src/combiner/results/**/equity.csv
 src/combiner/results/**/candidate_signal_log.csv
@@ -38,6 +40,15 @@ src/combiner/results/**/top_runs/
 src/combiner/results/**/run_*/
 src/combiner/results/**/fixed_runs/
 src/combiner/results/**/sweep_*/
+
+# Heavy generated research outputs (keep curated summaries in src/research/results)
+src/research/results/**/trades.csv
+src/research/results/**/equity.csv
+src/research/results/**/candidate_signal_log.csv
+src/research/results/**/rejected_signals.csv
+src/research/results/**/top_runs/
+src/research/results/**/run_*/
+src/research/results/**/sweep_*/
 
 # Strategy sweep heavy outputs
 src/strategies/testing_parameters_results/**/trades.csv

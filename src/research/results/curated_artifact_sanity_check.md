@@ -1,0 +1,25 @@
+# Curated artifact sanity check
+
+- `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1` **dir**: OK
+- `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1` **selected_candidates.csv**: OK
+- `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1` **selected_candidates/*.yaml**: OK
+- `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1` **sweep_manifest.csv**: OK
+- `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1` **dir**: OK
+- `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1` **selected_candidates.csv**: OK
+- `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1` **selected_candidates/*.yaml**: OK
+- `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1` **sweep_manifest.csv**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1` **dir**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1` **top_unique_systems.csv**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1` **fixed_run_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1` **cost_stress/cost_stress_summary.md**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1` **diagnostics/diagnostics_summary.md**: MISSING
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1` **dir**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1` **top_unique_systems.csv**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1` **fixed_run_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1` **cost_stress/cost_stress_summary.md**: OK
+- `src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1` **diagnostics/diagnostics_summary.md**: MISSING
+- `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1` **dir**: OK
+- `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1` **top_unique_systems.csv**: OK
+- `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1` **fixed_run_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1` **cost_stress/cost_stress_summary.md**: OK
+- `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1` **diagnostics/diagnostics_summary.md**: MISSING

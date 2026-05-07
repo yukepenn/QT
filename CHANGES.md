@@ -93,6 +93,12 @@
 - Refactor(strategies): remove **`df_signal_strategy.py`** (superseded by true fast cores).
 - Docs(readme/progress): Layer 1 bundle commands; artifact cleanup note.
 
+### [Unreleased] – 2026-05-06
+
+- Chore(repo): expand `.gitignore` to also ignore heavy `src/research/results/**` artifacts and `*.parquet`.
+- Chore(results): local-only cleanup of generated Layer 2 artifacts (`equity.csv`, `trades.csv`, `top_runs/`, `run_*`, `sweep_*`) under `src/combiner/results/**`.
+- Docs(results): add pre‑Layer‑3 cache benchmark plan + comparison + summary (Layer 2 recent; cache_off/cold/warm outputs consistent; warm cache hit-rate improves runtime).
+
 ### [Unreleased] – 2026-05-02
 
 - Refactor(strategies): migrate eight Strategy Library v1 plugins from **`DfSignalStrategy`** to **`BaseStrategy`** true context + Numba cores (`failed_orb`, `orb_retest_continuation`, `vwap_trend_pullback`, `vwap_reclaim_reject`, `prior_day_level_trap`, `gap_acceptance_failure`, `midday_compression_breakout`, `afternoon_continuation`); shared helpers in **`fast_utils.py`** only; **`df_signal_strategy`** documented as MVP adapter (**`B_df_adapter_fast_compatible`**).
