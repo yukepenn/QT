@@ -1,0 +1,152 @@
+﻿# Project structure inventory (current)
+
+Generated: 2026-05-07T02:02:37.009753Z
+
+## Source modules
+- src/backtest
+- src/combiner
+- src/features
+- src/strategies
+- src/research
+- src/data
+
+## Combiner configs
+- src/combiner/configs/layer2_qqq_2020_20260430_posthardening_relaxed.yaml
+- src/combiner/configs/layer2_qqq_2020_20260430_posthardening_strict.yaml
+- src/combiner/configs/layer2_qqq_2020_20260430_v2_relaxed.yaml
+- src/combiner/configs/layer2_qqq_2023_20260430_posthardening_relaxed.yaml
+- src/combiner/configs/layer2_qqq_2023_20260430_posthardening_strict.yaml
+- src/combiner/configs/layer2_qqq_2025_20260430_recent_check_v1.yaml
+- src/combiner/configs/layer2_qqq_v1.yaml
+- src/combiner/configs/layer2_sweep_qqq_2020_20260430_posthardening_relaxed.yaml
+- src/combiner/configs/layer2_sweep_qqq_2020_20260430_posthardening_strict.yaml
+- src/combiner/configs/layer2_sweep_qqq_2020_20260430_v2_relaxed.yaml
+- src/combiner/configs/layer2_sweep_qqq_2023_20260430_posthardening_relaxed.yaml
+- src/combiner/configs/layer2_sweep_qqq_2023_20260430_posthardening_strict.yaml
+- src/combiner/configs/layer2_sweep_qqq_2025_20260430_recent_check_v1.yaml
+- src/combiner/configs/layer2_sweep_qqq_v1.yaml
+- src/combiner/configs/orb_vwap_simple.yaml
+
+## Strategy parameters
+- src/strategies/parameters/afternoon_continuation.yaml
+- src/strategies/parameters/failed_orb.yaml
+- src/strategies/parameters/gap_acceptance_failure.yaml
+- src/strategies/parameters/midday_compression_breakout.yaml
+- src/strategies/parameters/orb_continuation.yaml
+- src/strategies/parameters/orb_retest_continuation.yaml
+- src/strategies/parameters/prior_day_level_trap.yaml
+- src/strategies/parameters/vwap_reclaim_reject.yaml
+- src/strategies/parameters/vwap_reversal.yaml
+- src/strategies/parameters/vwap_trend_pullback.yaml
+
+## Strategy testing grids
+- src/strategies/testing_parameters/afternoon_continuation_focused.yaml
+- src/strategies/testing_parameters/failed_orb_focused.yaml
+- src/strategies/testing_parameters/gap_acceptance_failure_focused.yaml
+- src/strategies/testing_parameters/midday_compression_breakout_focused.yaml
+- src/strategies/testing_parameters/orb_continuation_focused.yaml
+- src/strategies/testing_parameters/orb_retest_continuation_focused.yaml
+- src/strategies/testing_parameters/prior_day_level_trap_focused.yaml
+- src/strategies/testing_parameters/vwap_reclaim_reject_focused.yaml
+- src/strategies/testing_parameters/vwap_reversal_focused.yaml
+- src/strategies/testing_parameters/vwap_trend_pullback_focused.yaml
+
+## Research result roots
+- src/research/results/data_backfill_spy_qqq_2020_20260430/
+- src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/
+- src/research/results/layer1_all10_qqq_2020_20260430_v1/
+- src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/
+- src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/
+- src/research/results/layer1_all10_qqq_v1/
+
+## Combiner result roots
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/
+- src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1/
+- src/combiner/results/layer2_qqq_v1/
+- src/combiner/results/layer2_qqq_v2_relaxed/
+
+## Large files (>10MB, excluding data/raw and .cache)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005306_relaxed_2020_fixed_trap_top1/equity.csv (16198593 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005335_relaxed_2020_fixed_trap_top5/equity.csv (16174411 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005408_relaxed_2020_fixed_opening_top5/equity.csv (16173313 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005440_relaxed_2020_fixed_core5_no_vwap_top5/equity.csv (16174411 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005521_relaxed_2020_fixed_strict_core_top5/equity.csv (16174411 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005555_relaxed_2020_fixed_vwap_control_top5/equity.csv (16498564 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005612_relaxed_2020_fixed_all_strict_top5/equity.csv (16174411 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/fixed_runs/run_20260506_005645_relaxed_2020_fixed_all_with_relaxed_top5/equity.csv (16098343 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_001/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_002/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_003/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_004/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_005/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_006/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_007/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_008/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_009/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_010/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_011/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_012/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_013/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_014/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/sweep_20260506_010141_sweep_relaxed_2020_posthardening/top_runs/rank_015/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_004909_strict_2020_fixed_trap_top1/equity.csv (16176218 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_004938_strict_2020_fixed_trap_top5/equity.csv (16161471 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_005011_strict_2020_fixed_opening_top5/equity.csv (16180522 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_005055_strict_2020_fixed_core5_no_vwap_top5/equity.csv (16161471 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_005127_strict_2020_fixed_strict_core_top5/equity.csv (16161471 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/fixed_runs/run_20260506_005200_strict_2020_fixed_all_strict_top5/equity.csv (16161471 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_001/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_002/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_003/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_004/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_005/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_006/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_007/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_008/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_009/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_010/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_011/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_012/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_013/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_014/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1/sweep_20260506_005804_sweep_strict_2020_posthardening/top_runs/rank_015/equity.csv (16193386 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_065253_v2_2020_fixed_trap_top1/equity.csv (16198593 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_065548_v2_2020_fixed_opening_top5/equity.csv (16173313 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_065750_v2_2020_fixed_core5_no_vwap_top5/equity.csv (16187784 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_065752_v2_2020_fixed_all_strict_top5/equity.csv (16187784 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_065752_v2_2020_fixed_trap_top5/equity.csv (16187784 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_070344_v2_2020_fixed_all_with_relaxed_top5/equity.csv (16092326 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/fixed_runs/run_20260505_071121_v2_2020_fixed_strict_core_top5/equity.csv (16187784 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_001/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_002/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_003/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_004/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_005/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_006/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_007/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_008/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_009/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_010/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_011/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_012/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_013/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_014/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/sweep_20260505_072445_sweep_v2_relaxed_2020_20260430/top_runs/rank_015/equity.csv (16403502 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_avg_cost_r.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_combiner_score.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_median_cost_r.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_profit_factor.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_profit_factor_r.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_total_r.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/rank_by_total_r_over_abs_dd.csv (12052953 bytes)
+- src/combiner/results/layer2_qqq_2023_20260430_posthardening_relaxed_v1/sweep_20260505_234057_sweep_relaxed_2023_posthardening/results.csv (12025669 bytes)
+- src/strategies/testing_parameters_results/midday_compression_breakout/sweep_20260505_051714_layer1_qqq_2020_20260430_v1/results.csv (32617728 bytes)
+- src/strategies/testing_parameters_results/midday_compression_breakout/sweep_20260505_224253_layer1_qqq_2023_20260430_posthardening_v1/results.csv (32517765 bytes)
+- src/strategies/testing_parameters_results/midday_compression_breakout/sweep_20260506_004101_layer1_qqq_2020_20260430_posthardening_v1/results.csv (32626452 bytes)
+- src/strategies/testing_parameters_results/midday_compression_breakout/sweep_20260506_022257_layer1_qqq_2025_20260430_posthardening_v1/results.csv (32321937 bytes)
+
+## Suspicious patterns (paths only)

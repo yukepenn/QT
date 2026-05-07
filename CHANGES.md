@@ -10,6 +10,10 @@
 - Test(features): `test_feature_store.py`, `test_combiner_precompute_feature_store.py`.
 - Docs(results): `feature_store_v1_plan.md`, `feature_store_v1_summary.md`.
 
+### [Unreleased] – 2026-05-07
+
+- Docs(index): add project structure inventory, indexes, artifact policy, and Layer 3 smoke plan (doc only). Mark legacy result roots with `STALE.md`.
+
 ### [Unreleased] – 2026-05-06
 
 - Refactor(combiner): Layer 2 precompute — new `precompute.py` (context cache key, strategy cache, profile + aggregated summary), `diagnostics.py` (overlap/conflict CSVs); `candidate.py` candidate-only + lazy `__getattr__` re-exports; `run.py` / `sweep.py` / `postprocess.py` import precompute directly; tests `test_combiner_precompute_{cache_key,profile}.py`, `test_combiner_module_boundaries.py`.

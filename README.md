@@ -55,6 +55,21 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - Readable / debug backtest engine (`src/backtest/engine.py`).
 - Generic Numba fast execution (`src/backtest/fast.py`).
 - Dynamic sweep runner: `load_strategy` → cached `prepare_signal_context` → `strategy.generate_signal_arrays_from_context` → `run_fast_backtest_from_arrays` (`src/backtest/sweep.py`).
+
+## Active baseline quick links
+
+- **Project handoff:** `PROJECT_STATUS.md`
+- **Artifact policy:** `docs/ARTIFACT_POLICY.md`
+- **Layer 2 config index:** `src/combiner/configs/CONFIG_INDEX.md`
+- **Research results index:** `src/research/results/RESULTS_INDEX.md`
+- **Combiner results index:** `src/combiner/results/RESULTS_INDEX.md`
+- **Layer 3 smoke plan (doc only):** `src/research/results/layer3_smoke_plan_v1.md`
+
+**Active baselines (QQQ, post-hardening):**
+
+- Layer 1: `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/`, `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/`
+- Layer 2: `src/combiner/results/layer2_qqq_2020_20260430_posthardening_{strict,relaxed}_v1/`, `src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1/`
+
 - Sweep result archival under `src/strategies/testing_parameters_results/`.
 
 **Strategy Library v1 (plugins)**
