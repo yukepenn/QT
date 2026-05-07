@@ -1,14 +1,12 @@
-"""Layer 1 candidate YAMLs, signal precompute, and candidate-set selection."""
+"""Layer 1 candidate YAMLs, selection rules, and metadata for Layer 2."""
 
 from __future__ import annotations
 
-import csv
 import hashlib
 import json
 import re
 import sys
-import time
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -20,10 +18,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from src.backtest.fast import prepare_backtest_arrays
-from src.data.read_bars import read_bars
-from src.features.feature_key import build_features_from_config, feature_key_from_config
-from src.strategies.loader import deep_update, load_strategy, load_strategy_config
+from src.strategies.loader import deep_update, load_strategy_config
 
 
 def _finalize_entry_start(cfg: dict[str, Any]) -> None:
@@ -284,271 +279,6 @@ def encode_candidate_metadata(candidates: list[Candidate]) -> tuple[
     return st_map, fa_map, pri, score, rank, ast, aen, sc, fc, warn
 
 
-@dataclass
-class CandidateSignalMatrix:
-    candidates: list[Candidate]
-    candidate_ids: list[str]
-    backtest_arrays: dict[str, Any]
-    side: np.ndarray
-    valid: np.ndarray
-    stop: np.ndarray
-    target_preview: np.ndarray
-    target_mode_code: np.ndarray
-    target_r: np.ndarray
-    risk_preview: np.ndarray
-    meta_arrays: dict[str, np.ndarray]
-    raw_bars_rows: int
-
-    @property
-    def n_candidates(self) -> int:
-        return len(self.candidates)
-
-    @property
-    def n_bars(self) -> int:
-        return int(self.backtest_arrays["n"])
-
-
-def precompute_candidate_signal_matrices(
-    *,
-    candidates: list[Candidate],
-    asset: str,
-    symbol: str,
-    start: str,
-    end: str,
-    data_dir: str | Path = "data/raw/ibkr",
-    profile_csv_path: Path | None = None,
-    progress_prefix: str = "[precompute]",
-) -> CandidateSignalMatrix:
-    """Read bars once; build features per feature_key; stack signal arrays (n_c × n_bars).
-
-    Optional ``profile_csv_path`` writes per-candidate timings, signal counts, and cache hits.
-    """
-    if not candidates:
-        raise ValueError("no candidates")
-    sym = symbol.upper().strip()
-    raw = read_bars(asset=asset, symbol=sym, start=start, end=end, data_dir=data_dir)
-    if raw.empty:
-        raise ValueError(f"empty bars for {sym}")
-
-    n_c = len(candidates)
-    canonical_ts: pd.Series | None = None
-    backtest_arrays: dict[str, Any] | None = None
-    meta_arrays: dict[str, np.ndarray] | None = None
-    side = np.zeros((n_c, 0), dtype=np.int8)
-    valid = np.zeros((n_c, 0), dtype=np.bool_)
-    stop = np.zeros((n_c, 0), dtype=np.float64)
-    tgt_preview = np.zeros((n_c, 0), dtype=np.float64)
-    tgt_mode = np.zeros((n_c, 0), dtype=np.int8)
-    tgt_r = np.zeros((n_c, 0), dtype=np.float64)
-    risk_preview = np.zeros((n_c, 0), dtype=np.float64)
-    cids: list[str] = []
-
-    feat_cache: dict[str, pd.DataFrame] = {}
-    ctx_cache: dict[tuple[str, str], Any] = {}
-    profile_rows: list[dict[str, Any]] = []
-
-    for ci, spec in enumerate(candidates):
-        t_row0 = time.perf_counter()
-        feature_cache_hit = False
-        context_cache_hit = False
-        feature_sec = 0.0
-        context_sec = 0.0
-        signal_sec = 0.0
-        err = ""
-        n_sig = n_long = n_short = 0
-        fk_short = ""
-        ctx_short = str(spec.params_hash or "")[:12]
-
-        exc: BaseException | None = None
-        print(
-            f"{progress_prefix} {ci + 1}/{n_c} candidate_id={spec.candidate_id} strategy={spec.strategy} start",
-            flush=True,
-        )
-        try:
-            strat = load_strategy(spec.strategy)
-            if not strat.supports_fast:
-                raise ValueError(f"{spec.strategy} does not support fast path")
-            cfg = merged_strategy_config(spec)
-            strat.validate_config(cfg)
-            fk = feature_key_from_config(cfg)
-            fk_short = fk[:24] if len(fk) > 24 else fk
-
-            t_feat0 = time.perf_counter()
-            if fk in feat_cache:
-                feat_df = feat_cache[fk]
-                feature_cache_hit = True
-            else:
-                feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
-                feat_cache[fk] = feat_df
-            feature_sec = time.perf_counter() - t_feat0
-
-            ts = feat_df["ts_utc"]
-            if canonical_ts is None:
-                canonical_ts = ts.reset_index(drop=True)
-                backtest_arrays = prepare_backtest_arrays(feat_df)
-                meta_arrays = {
-                    "session_date": feat_df["session_date"].to_numpy(copy=False),
-                    "minute_from_open": feat_df["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
-                    "ts_utc": feat_df["ts_utc"].to_numpy(copy=False),
-                    "ts_ny": feat_df["ts_ny"].to_numpy(copy=False) if "ts_ny" in feat_df.columns else np.array([]),
-                }
-            else:
-                if len(feat_df) != len(canonical_ts):
-                    raise ValueError(
-                        f"length mismatch candidate={spec.candidate_id} n={len(feat_df)} expected={len(canonical_ts)}"
-                    )
-                if not ts.reset_index(drop=True).equals(canonical_ts):
-                    raise ValueError(f"ts_utc mismatch for candidate={spec.candidate_id}")
-
-            miss = [c for c in strat.required_features() if c not in feat_df.columns]
-            if miss:
-                raise ValueError(f"{spec.candidate_id} missing features {miss}")
-
-            ctx_key = (fk, str(spec.params_hash))
-            t_ctx0 = time.perf_counter()
-            if ctx_key in ctx_cache:
-                ctx = ctx_cache[ctx_key]
-                context_cache_hit = True
-            else:
-                ctx = strat.prepare_signal_context(feat_df, cfg)
-                ctx_cache[ctx_key] = ctx
-            context_sec = time.perf_counter() - t_ctx0
-
-            t_sig0 = time.perf_counter()
-            sig = strat.generate_signal_arrays_from_context(ctx, cfg)
-            signal_sec = time.perf_counter() - t_sig0
-            cids.append(spec.candidate_id)
-
-            if side.shape[1] == 0:
-                n = len(feat_df)
-                side = np.zeros((n_c, n), dtype=np.int8)
-                valid = np.zeros((n_c, n), dtype=np.bool_)
-                stop = np.zeros((n_c, n), dtype=np.float64)
-                tgt_preview = np.zeros((n_c, n), dtype=np.float64)
-                tgt_mode = np.zeros((n_c, n), dtype=np.int8)
-                tgt_r = np.zeros((n_c, n), dtype=np.float64)
-                risk_preview = np.zeros((n_c, n), dtype=np.float64)
-
-            side[ci] = sig["side"].astype(np.int8)
-            valid[ci] = sig["valid"].astype(np.bool_)
-            stop[ci] = sig["stop"].astype(np.float64)
-            tgt_preview[ci] = sig["target_preview"].astype(np.float64)
-            tgt_mode[ci] = sig["target_mode_code"].astype(np.int8)
-            tgt_r[ci] = sig["target_r"].astype(np.float64)
-            risk_preview[ci] = sig.get("risk_preview", np.zeros(len(feat_df), dtype=np.float64)).astype(
-                np.float64
-            )
-
-            vrow = valid[ci] & (side[ci] != 0)
-            n_sig = int(np.sum(vrow))
-            n_long = int(np.sum(vrow & (side[ci] == 1)))
-            n_short = int(np.sum(vrow & (side[ci] == -1)))
-        except Exception as e:
-            err = str(e)
-            exc = e
-
-        total_sec = time.perf_counter() - t_row0
-        fch = "hit" if feature_cache_hit else "miss"
-        cch = "hit" if context_cache_hit else "miss"
-        print(
-            f"{progress_prefix} {ci + 1}/{n_c} done total_sec={total_sec:.2f} signals={n_sig} "
-            f"feature_cache={fch} context_cache={cch}",
-            flush=True,
-        )
-        profile_rows.append(
-            {
-                "candidate_id": spec.candidate_id,
-                "strategy": spec.strategy,
-                "candidate_rank": spec.candidate_rank,
-                "warning": spec.warning or "",
-                "feature_key_short": fk_short,
-                "context_key_short": ctx_short,
-                "feature_cache_hit": feature_cache_hit,
-                "context_cache_hit": context_cache_hit,
-                "feature_sec": round(feature_sec, 4),
-                "context_sec": round(context_sec, 4),
-                "signal_sec": round(signal_sec, 4),
-                "total_sec": round(total_sec, 4),
-                "n_signals": n_sig,
-                "n_long_signals": n_long,
-                "n_short_signals": n_short,
-                "error": err,
-            }
-        )
-        if err:
-            if profile_csv_path is not None and profile_rows:
-                _pp = Path(profile_csv_path)
-                _pp.parent.mkdir(parents=True, exist_ok=True)
-                with _pp.open("w", newline="", encoding="utf-8") as pf:
-                    w = csv.DictWriter(pf, fieldnames=list(profile_rows[0].keys()))
-                    w.writeheader()
-                    w.writerows(profile_rows)
-            assert exc is not None
-            raise exc
-
-    assert backtest_arrays is not None and meta_arrays is not None
-
-    if profile_csv_path is not None:
-        profile_csv_path = Path(profile_csv_path)
-        profile_csv_path.parent.mkdir(parents=True, exist_ok=True)
-        with profile_csv_path.open("w", newline="", encoding="utf-8") as pf:
-            w = csv.DictWriter(pf, fieldnames=list(profile_rows[0].keys()))
-            w.writeheader()
-            w.writerows(profile_rows)
-
-    return CandidateSignalMatrix(
-        candidates=candidates,
-        candidate_ids=cids,
-        backtest_arrays=backtest_arrays,
-        side=side,
-        valid=valid,
-        stop=stop,
-        target_preview=tgt_preview,
-        target_mode_code=tgt_mode,
-        target_r=tgt_r,
-        risk_preview=risk_preview,
-        meta_arrays=meta_arrays,
-        raw_bars_rows=len(raw),
-    )
-
-
-def build_candidate_signal_arrays(
-    candidates: list[Candidate],
-    *,
-    asset: str,
-    symbol: str,
-    start: str,
-    end: str,
-    data_dir: str | Path = "data/raw/ibkr",
-) -> tuple[dict[str, Any], dict[str, np.ndarray], pd.DataFrame, dict[str, np.ndarray]]:
-    """Backward-compatible alias returning legacy tuple + candidates_used table."""
-    csm = precompute_candidate_signal_matrices(
-        candidates=candidates, asset=asset, symbol=symbol, start=start, end=end, data_dir=data_dir
-    )
-    mats = {
-        "side": csm.side,
-        "valid": csm.valid,
-        "stop": csm.stop,
-        "target_preview": csm.target_preview,
-        "target_mode_code": csm.target_mode_code,
-        "target_r": csm.target_r,
-        "risk_preview": csm.risk_preview,
-    }
-    rows = [
-        {
-            "candidate_idx": i,
-            "candidate_id": c.candidate_id,
-            "strategy": c.strategy,
-            "strategy_family": c.family,
-            "priority": c.default_priority,
-            "active_start_minute": c.default_active_start_minute,
-            "active_end_minute": c.default_active_end_minute,
-        }
-        for i, c in enumerate(csm.candidates)
-    ]
-    return csm.backtest_arrays, mats, pd.DataFrame(rows), csm.meta_arrays
-
-
 def apply_combiner_rules(spec: Candidate, strategy_rules: dict[str, Any]) -> Candidate:
     rules = strategy_rules.get(spec.strategy) or {}
     if not rules:
@@ -592,139 +322,24 @@ def filter_candidates(
     return out
 
 
-def _min_abs_diff_two_sorted_minutes(m1: np.ndarray, m2: np.ndarray) -> float:
-    """Minimum |a - b| for minute-of-day integers; O(n log n + m log m + n + m)."""
-    if m1.size == 0 or m2.size == 0:
-        return float("nan")
-    a = np.sort(m1.astype(np.int64, copy=False).ravel())
-    b = np.sort(m2.astype(np.int64, copy=False).ravel())
-    i = j = 0
-    best = abs(int(a[0]) - int(b[0]))
-    while i < len(a) and j < len(b):
-        best = min(best, abs(int(a[i]) - int(b[j])))
-        if best == 0:
-            return 0.0
-        if a[i] < b[j]:
-            i += 1
-        else:
-            j += 1
-    return float(best)
+_REEXPORT_PRECOMPUTE = frozenset({
+    "CandidateSignalMatrix",
+    "build_candidate_signal_arrays",
+    "build_context_cache_key",
+    "normalize_for_context_cache_key",
+    "precompute_candidate_signal_matrices",
+    "write_precompute_profile_summary",
+})
 
 
-def write_candidate_diagnostics(
-    csm: CandidateSignalMatrix,
-    out_dir: Path,
-    *,
-    enabled_mask: np.ndarray | None = None,
-) -> None:
-    """Write overlap / conflict CSVs (fast; vectorized)."""
-    out_dir.mkdir(parents=True, exist_ok=True)
-    nc, n = csm.side.shape
-    mask = np.ones(nc, dtype=np.bool_) if enabled_mask is None else enabled_mask.astype(np.bool_)
-    minute = csm.meta_arrays["minute_from_open"].astype(np.int64)
-    ts = csm.meta_arrays["ts_utc"]
+def __getattr__(name: str) -> Any:
+    """Lazy re-exports so `candidate` never imports `precompute` at import time (avoids cycles)."""
+    if name in _REEXPORT_PRECOMPUTE:
+        from src.combiner import precompute as _pre
 
-    t0 = time.perf_counter()
-    print(f"[diagnostics] writing candidate_signal_summary.csv... C={nc} N={n}", flush=True)
-    rows_sig = []
-    med_by_ci = np.full(nc, np.nan, dtype=np.float64)
-    for ci in range(nc):
-        if not mask[ci]:
-            continue
-        c = csm.candidates[ci]
-        v = csm.valid[ci] & (csm.side[ci] != 0)
-        sig_n = int(np.sum(v))
-        long_n = int(np.sum(v & (csm.side[ci] == 1)))
-        short_n = int(np.sum(v & (csm.side[ci] == -1)))
-        ix = np.flatnonzero(v)
-        first_ts = ""
-        last_ts = ""
-        if sig_n:
-            first_ts = str(pd.Timestamp(ts[ix[0]]))
-            last_ts = str(pd.Timestamp(ts[ix[-1]]))
-        avg_m = float(np.mean(minute[ix])) if sig_n else np.nan
-        med_m = float(np.median(minute[ix])) if sig_n else np.nan
-        med_by_ci[ci] = med_m
-        rows_sig.append(
-            {
-                "candidate_id": c.candidate_id,
-                "strategy": c.strategy,
-                "family": c.family,
-                "warning": c.warning,
-                "candidate_rank": c.candidate_rank,
-                "priority": c.default_priority,
-                "score": float(c.selection.get("score", 0) or 0),
-                "signals": sig_n,
-                "long_signals": long_n,
-                "short_signals": short_n,
-                "first_signal_ts": first_ts,
-                "last_signal_ts": last_ts,
-                "avg_signal_minute": avg_m,
-                "median_signal_minute": med_m,
-                "active_start": c.default_active_start_minute,
-                "active_end": c.default_active_end_minute,
-            }
-        )
-    pd.DataFrame(rows_sig).to_csv(out_dir / "candidate_signal_summary.csv", index=False)
+        return getattr(_pre, name)
+    if name == "write_candidate_diagnostics":
+        from src.combiner import diagnostics as _diag
 
-    print("[diagnostics] building overlap matrices...", flush=True)
-    vmask = (csm.valid & (csm.side != 0) & mask.reshape(-1, 1)).astype(np.int8, copy=False)
-    lmask = (csm.valid & (csm.side == 1) & mask.reshape(-1, 1)).astype(np.int8, copy=False)
-    smask = (csm.valid & (csm.side == -1) & mask.reshape(-1, 1)).astype(np.int8, copy=False)
-
-    v_i32 = vmask.astype(np.int32, copy=False)
-    l_i32 = lmask.astype(np.int32, copy=False)
-    s_i32 = smask.astype(np.int32, copy=False)
-
-    same_bar_overlap = v_i32 @ v_i32.T
-    same_direction_same_bar = (l_i32 @ l_i32.T) + (s_i32 @ s_i32.T)
-    opposite_side_same_bar = (l_i32 @ s_i32.T) + (s_i32 @ l_i32.T)
-
-    # Same-day overlap: candidate has any signal in session.
-    session_id = np.asarray(csm.meta_arrays["session_date"])
-    _, inv = np.unique(session_id, return_inverse=True)
-    s_cnt = int(inv.max() + 1) if inv.size else 0
-    print(f"[diagnostics] building session overlap... S={s_cnt}", flush=True)
-    session_mat = np.zeros((nc, s_cnt), dtype=np.int8)
-    for ci in range(nc):
-        if not mask[ci]:
-            continue
-        ix = np.flatnonzero(vmask[ci].astype(np.bool_, copy=False))
-        if ix.size == 0:
-            continue
-        np.maximum.at(session_mat[ci], inv[ix], 1)
-    session_i32 = session_mat.astype(np.int32, copy=False)
-    same_day_overlap = session_i32 @ session_i32.T
-
-    print("[diagnostics] writing candidate_overlap_matrix.csv...", flush=True)
-    ids = [csm.candidates[i].candidate_id for i in range(nc)]
-    pd.DataFrame(same_bar_overlap.astype(np.int32), index=ids, columns=ids).to_csv(out_dir / "candidate_overlap_matrix.csv")
-
-    print("[diagnostics] writing candidate_conflict_summary.csv...", flush=True)
-    pairs: list[dict[str, Any]] = []
-    for ci in range(nc):
-        if not mask[ci]:
-            continue
-        a = csm.candidates[ci]
-        for cj in range(ci + 1, nc):
-            if not mask[cj]:
-                continue
-            b = csm.candidates[cj]
-            approx_md = float(abs(med_by_ci[ci] - med_by_ci[cj])) if np.isfinite(med_by_ci[ci]) and np.isfinite(med_by_ci[cj]) else float("nan")
-            pairs.append(
-                {
-                    "candidate_a": a.candidate_id,
-                    "candidate_b": b.candidate_id,
-                    "strategy_a": a.strategy,
-                    "strategy_b": b.strategy,
-                    "family_a": a.family,
-                    "family_b": b.family,
-                    "same_bar_overlap": int(same_bar_overlap[ci, cj]),
-                    "same_day_overlap": int(same_day_overlap[ci, cj]),
-                    "opposite_side_same_bar": int(opposite_side_same_bar[ci, cj]),
-                    "same_direction_same_bar": int(same_direction_same_bar[ci, cj]),
-                    "approx_abs_median_signal_minute_diff": approx_md,
-                }
-            )
-    pd.DataFrame(pairs).to_csv(out_dir / "candidate_conflict_summary.csv", index=False)
-    print(f"[diagnostics] done in {time.perf_counter() - t0:.2f}s", flush=True)
+        return _diag.write_candidate_diagnostics
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

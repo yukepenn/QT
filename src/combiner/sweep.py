@@ -25,11 +25,11 @@ from src.combiner.candidate import (
     build_enabled_mask,
     encode_candidate_metadata,
     load_candidates,
-    precompute_candidate_signal_matrices,
     resolve_candidate_universe_for_grid,
     select_candidate_set,
     write_candidates_used,
 )
+from src.combiner.precompute import precompute_candidate_signal_matrices
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
 from src.combiner.simulator import simulate_combiner_legacy_logs, simulate_combiner_numba

@@ -23,8 +23,8 @@ from src.combiner.candidate import (
     build_enabled_mask,
     encode_candidate_metadata,
     load_candidates,
-    precompute_candidate_signal_matrices,
 )
+from src.combiner.precompute import precompute_candidate_signal_matrices
 from src.combiner.behavior import behavior_hash_from_trades, behavior_summary_from_trades, dedupe_behavior_rows
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml

@@ -24,11 +24,11 @@ from src.combiner.candidate import (
     filter_candidates,
     load_candidates,
     merged_strategy_config,
-    precompute_candidate_signal_matrices,
     select_candidate_set,
-    write_candidate_diagnostics,
     write_candidates_used,
 )
+from src.combiner.diagnostics import write_candidate_diagnostics
+from src.combiner.precompute import precompute_candidate_signal_matrices
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
