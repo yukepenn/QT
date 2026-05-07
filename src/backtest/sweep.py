@@ -20,7 +20,8 @@ if str(_ROOT) not in sys.path:
 
 from src.backtest.fast import prepare_backtest_arrays, run_fast_backtest_from_arrays
 from src.data.read_bars import read_bars
-from src.features.feature_key import build_features_from_config, feature_key_from_config
+from src.features.feature_key import feature_key_from_config
+from src.features.feature_store import FeatureStore
 from src.strategies.loader import (
     apply_overrides,
     expand_grid,
@@ -268,6 +269,7 @@ def main(argv: list[str] | None = None) -> int:
     rows: list[dict[str, Any]] = []
     combo_count = 0
     combos_skipped_duplicate = 0
+    feature_store_stats_by_symbol: list[dict[str, Any]] = []
 
     for sym in symbols:
         t_r0 = time.perf_counter()
@@ -285,7 +287,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"WARNING empty bars for {sym}", flush=True)
             continue
 
-        feat_cache: dict[tuple[Any, ...], pd.DataFrame] = {}
+        fs = FeatureStore(
+            asset=args.asset,
+            symbol=sym,
+            start=args.start,
+            end=args.end,
+            data_dir=args.data_dir,
+            raw_df=raw,
+        )
         array_cache: dict[tuple[Any, ...], dict[str, Any]] = {}
         context_cache: dict[tuple[Any, ...], Any] = {}
         seen_param_keys: set[tuple[Any, ...]] = set()
@@ -308,15 +317,16 @@ def main(argv: list[str] | None = None) -> int:
                 break
 
             fk = feature_key_from_config(cfg)
-            if fk not in feat_cache:
+            if fk not in array_cache:
                 t_f0 = time.perf_counter()
-                feat_cache[fk] = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+                feat_df_new = fs.get_features_by_key(fk, cfg)
                 t_feat += time.perf_counter() - t_f0
                 t_p0 = time.perf_counter()
-                array_cache[fk] = prepare_backtest_arrays(feat_cache[fk])
+                array_cache[fk] = prepare_backtest_arrays(feat_df_new)
                 t_prep += time.perf_counter() - t_p0
-
-            feat_df = feat_cache[fk]
+                feat_df = feat_df_new
+            else:
+                feat_df = fs.get_features_by_key(fk, cfg)
             miss = [c for c in feat_required if c not in feat_df.columns]
             if miss:
                 raise ValueError(f"missing features: {miss}")
@@ -374,6 +384,8 @@ def main(argv: list[str] | None = None) -> int:
 
         if stop_symbol:
             break
+
+        feature_store_stats_by_symbol.append(fs.stats_dict())
 
     elapsed = time.perf_counter() - t0
     print(f"combinations_completed={combo_count}", flush=True)
@@ -469,6 +481,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         (out / "testing_config.yaml").write_text(
             yaml.safe_dump(testing, sort_keys=False, default_flow_style=False),
+            encoding="utf-8",
+        )
+        (out / "feature_store_stats.json").write_text(
+            json.dumps(feature_store_stats_by_symbol, indent=2, sort_keys=True, default=str),
             encoding="utf-8",
         )
         t_save += time.perf_counter() - t_sv0

@@ -6,6 +6,12 @@
 
 ### [Unreleased] – 2026-05-06
 
+- Feat(features): FeatureStore v1 — `src/features/feature_store.py` in-memory raw/feature reuse; wired into `src/backtest/sweep.py` and `src/combiner/precompute.py`; Layer 2 writes `feature_store_stats.json`.
+- Test(features): `test_feature_store.py`, `test_combiner_precompute_feature_store.py`.
+- Docs(results): `feature_store_v1_plan.md`, `feature_store_v1_summary.md`.
+
+### [Unreleased] – 2026-05-06
+
 - Refactor(combiner): Layer 2 precompute — new `precompute.py` (context cache key, strategy cache, profile + aggregated summary), `diagnostics.py` (overlap/conflict CSVs); `candidate.py` candidate-only + lazy `__getattr__` re-exports; `run.py` / `sweep.py` / `postprocess.py` import precompute directly; tests `test_combiner_precompute_{cache_key,profile}.py`, `test_combiner_module_boundaries.py`.
 - Docs(results): `layer2_precompute_cleanup_plan.md`, `layer2_precompute_cleanup_summary.md`.
 - Docs(results): Layer 2 QQQ 2020–2026 post-hardening **strict** + **relaxed** roots (`layer2_qqq_2020_20260430_posthardening_{strict,relaxed}_v1/`), comparison MD, Layer 3 gate note (`layer3_gate_after_2020_posthardening.md`); curated CSV/MD only (sweep `top_runs/` + `fixed_runs/` remain ignored).

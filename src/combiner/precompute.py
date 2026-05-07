@@ -32,7 +32,8 @@ from src.combiner.signal_cache import (
     short_key,
 )
 from src.data.read_bars import read_bars
-from src.features.feature_key import build_features_from_config, feature_key_from_config
+from src.features.feature_store import FeatureStore
+from src.features.feature_key import feature_key_from_config
 from src.strategies.loader import load_strategy
 
 
@@ -262,6 +263,8 @@ def precompute_candidate_signal_matrices(
     if raw.empty:
         raise ValueError(f"empty bars for {sym}")
 
+    fs = FeatureStore(asset=str(asset), symbol=sym, start=start, end=end, data_dir=data_dir, raw_df=raw)
+
     cache_root = Path(signal_cache_root) if signal_cache_root else default_signal_cache_root()
     data_fp = compute_data_fingerprint(raw)
     code_fp = compute_code_fingerprint()
@@ -281,7 +284,6 @@ def precompute_candidate_signal_matrices(
     risk_preview = np.zeros((n_c, 0), dtype=np.float64)
     cids: list[str] = []
 
-    feat_cache: dict[str, pd.DataFrame] = {}
     ctx_cache: dict[tuple[Any, ...], Any] = {}
     strategy_cache: dict[str, Any] = {}
     profile_rows: list[dict[str, Any]] = []
@@ -364,7 +366,8 @@ def precompute_candidate_signal_matrices(
                         loaded = None
                 if loaded is not None and backtest_arrays is None:
                     t_b = time.perf_counter()
-                    feat_df_b = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+                    _hit_before = fs.has_features(cfg)
+                    feat_df_b = fs.get_features_by_key(fk, cfg)
                     feature_sec = round(time.perf_counter() - t_b, 4)
                     if len(feat_df_b) != len(loaded["side"]):
                         loaded = None
@@ -379,8 +382,7 @@ def precompute_candidate_signal_matrices(
                             if "ts_ny" in feat_df_b.columns
                             else np.array([]),
                         }
-                        feat_cache[fk] = feat_df_b
-                        feature_cache_hit = False
+                        feature_cache_hit = _hit_before
                         miss_rf = [c for c in strat.required_features() if c not in feat_df_b.columns]
                         if miss_rf:
                             raise ValueError(f"{spec.candidate_id} missing features {miss_rf}")
@@ -414,12 +416,8 @@ def precompute_candidate_signal_matrices(
                 signal_cache_key_short = sk_short if use_signal_cache else ""
 
                 t_feat0 = time.perf_counter()
-                if fk in feat_cache:
-                    feat_df = feat_cache[fk]
-                    feature_cache_hit = True
-                else:
-                    feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
-                    feat_cache[fk] = feat_df
+                feature_cache_hit = fs.has_features(cfg)
+                feat_df = fs.get_features_by_key(fk, cfg)
                 feature_sec = time.perf_counter() - t_feat0
 
                 ts = feat_df["ts_utc"]
@@ -566,6 +564,7 @@ def precompute_candidate_signal_matrices(
             w.writeheader()
             w.writerows(profile_rows)
         write_precompute_profile_summary(profile_csv_path)
+        fs.write_stats(profile_csv_path.parent / "feature_store_stats.json")
 
     return CandidateSignalMatrix(
         candidates=candidates,
