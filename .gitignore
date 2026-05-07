@@ -6,11 +6,20 @@ venv/
 
 # Python
 **/__pycache__/
+.pytest_cache/
 *.py[cod]
 *$py.class
 *.pyo
 *.nbc
 *.nbi
+*.npy
+*.npz
+*.memmap
+
+# Local research caches / dumps (never commit)
+.cache/
+data/cache/
+PROJECT_STRUCTURE_AND_SCRIPTS.txt
 
 # Jupyter / OS
 .ipynb_checkpoints/

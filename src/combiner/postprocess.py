@@ -24,7 +24,10 @@ from src.combiner.candidate import (
     encode_candidate_metadata,
     load_candidates,
 )
-from src.combiner.precompute import precompute_candidate_signal_matrices
+from src.combiner.precompute import (
+    precompute_candidate_signal_matrices,
+    resolve_precompute_signal_cache_settings,
+)
 from src.combiner.behavior import behavior_hash_from_trades, behavior_summary_from_trades, dedupe_behavior_rows
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml
@@ -265,9 +268,23 @@ def cost_stress(
     end: str,
     data_dir: str,
     top_n: int,
+    use_signal_cache: bool = False,
+    signal_cache_root: str | Path | None = None,
+    refresh_signal_cache: bool = False,
 ) -> pd.DataFrame:
     with base_config_path.open(encoding="utf-8") as f:
         base_cfg = yaml.safe_load(f)
+
+    use_sc, sc_root, refresh_sc = resolve_precompute_signal_cache_settings(
+        base_cfg,
+        cli_use_signal_cache=use_signal_cache,
+        cli_signal_cache_root=signal_cache_root,
+        cli_refresh_signal_cache=refresh_signal_cache,
+    )
+    print(
+        f"[precompute-cache] use_signal_cache={use_sc} root={sc_root} refresh={refresh_sc}",
+        flush=True,
+    )
 
     raw = load_candidates(candidate_root)
     if not raw:
@@ -294,6 +311,9 @@ def cost_stress(
         end=end,
         data_dir=data_dir,
         profile_csv_path=stress_dir / "candidate_precompute_profile.csv",
+        use_signal_cache=use_sc,
+        signal_cache_root=sc_root,
+        refresh_signal_cache=refresh_sc,
     )
     bt_arr = csm.backtest_arrays
     mats = {
@@ -1096,6 +1116,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--start", default="2025-01-01")
     p.add_argument("--end", default="2026-04-30")
     p.add_argument("--data-dir", default="data/raw/ibkr")
+    p.add_argument("--use-signal-cache", action="store_true")
+    p.add_argument("--signal-cache-root", default=None)
+    p.add_argument("--refresh-signal-cache", action="store_true")
     p.add_argument("--diagnostics-dir", type=Path, default=None)
     p.add_argument("--diagnostics-date-range", default="2025-01-01 — 2026-04-30")
     p.add_argument("--collect-fixed-runs", type=Path, default=None, help="Scan run_* folders and write fixed_run_summary.")
@@ -1174,6 +1197,9 @@ def main(argv: list[str] | None = None) -> int:
             end=args.end,
             data_dir=args.data_dir,
             top_n=args.cost_stress_top,
+            use_signal_cache=bool(args.use_signal_cache),
+            signal_cache_root=args.signal_cache_root,
+            refresh_signal_cache=bool(args.refresh_signal_cache),
         )
         print(f"[postprocess] wrote {out_root / 'cost_stress'}", flush=True)
 

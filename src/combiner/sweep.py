@@ -29,7 +29,10 @@ from src.combiner.candidate import (
     select_candidate_set,
     write_candidates_used,
 )
-from src.combiner.precompute import precompute_candidate_signal_matrices
+from src.combiner.precompute import (
+    precompute_candidate_signal_matrices,
+    resolve_precompute_signal_cache_settings,
+)
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
 from src.combiner.simulator import simulate_combiner_legacy_logs, simulate_combiner_numba
@@ -99,6 +102,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--detail-top", type=int, default=10)
     p.add_argument("--progress-every", type=int, default=100)
     p.add_argument("--tag", default="sweep")
+    p.add_argument("--use-signal-cache", action="store_true")
+    p.add_argument("--signal-cache-root", default=None)
+    p.add_argument("--refresh-signal-cache", action="store_true")
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -115,6 +121,17 @@ def main(argv: list[str] | None = None) -> int:
         base_path = base_rel
     with base_path.open(encoding="utf-8") as f:
         base_cfg = yaml.safe_load(f)
+
+    use_sc, sc_root, refresh_sc = resolve_precompute_signal_cache_settings(
+        base_cfg,
+        cli_use_signal_cache=bool(args.use_signal_cache),
+        cli_signal_cache_root=args.signal_cache_root,
+        cli_refresh_signal_cache=bool(args.refresh_signal_cache),
+    )
+    print(
+        f"[precompute-cache] use_signal_cache={use_sc} root={sc_root} refresh={refresh_sc}",
+        flush=True,
+    )
 
     fixed = sweep_doc.get("fixed") or {}
     _merge_dotted(fixed, base_cfg)
@@ -175,6 +192,9 @@ def main(argv: list[str] | None = None) -> int:
         end=args.end,
         data_dir=args.data_dir,
         profile_csv_path=sweep_dir / "candidate_precompute_profile.csv",
+        use_signal_cache=use_sc,
+        signal_cache_root=sc_root,
+        refresh_signal_cache=refresh_sc,
     )
     print(f"[Layer2 sweep] precompute done in {(time.perf_counter()-t0):.1f}s", flush=True)
 

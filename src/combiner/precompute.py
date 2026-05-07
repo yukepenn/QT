@@ -8,6 +8,7 @@ import json
 import sys
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,16 @@ if str(_ROOT) not in sys.path:
 
 from src.backtest.fast import prepare_backtest_arrays
 from src.combiner.candidate import Candidate, merged_strategy_config
+from src.combiner.signal_cache import (
+    SignalCacheKeyParts,
+    build_signal_cache_key,
+    compute_code_fingerprint,
+    compute_data_fingerprint,
+    default_signal_cache_root,
+    load_signal_cache,
+    save_signal_cache,
+    short_key,
+)
 from src.data.read_bars import read_bars
 from src.features.feature_key import build_features_from_config, feature_key_from_config
 from src.strategies.loader import load_strategy
@@ -86,6 +97,28 @@ class CandidateSignalMatrix:
         return int(self.backtest_arrays["n"])
 
 
+def resolve_precompute_signal_cache_settings(
+    combiner_yaml: dict[str, Any] | None,
+    *,
+    cli_use_signal_cache: bool = False,
+    cli_signal_cache_root: str | Path | None = None,
+    cli_refresh_signal_cache: bool = False,
+) -> tuple[bool, Path, bool]:
+    """YAML `precompute:` block + CLI overrides (CLI wins when flags are passed)."""
+    pre = (combiner_yaml or {}).get("precompute") or {}
+    use = bool(pre.get("use_signal_cache", False))
+    root_raw = pre.get("signal_cache_root")
+    root = Path(str(root_raw)) if root_raw else default_signal_cache_root()
+    refresh = bool(pre.get("refresh_signal_cache", False))
+    if cli_use_signal_cache:
+        use = True
+    if cli_signal_cache_root is not None and str(cli_signal_cache_root).strip():
+        root = Path(cli_signal_cache_root)
+    if cli_refresh_signal_cache:
+        refresh = True
+    return use, root, refresh
+
+
 PROFILE_FIELDNAMES = [
     "candidate_id",
     "strategy",
@@ -103,6 +136,13 @@ PROFILE_FIELDNAMES = [
     "n_signals",
     "n_long_signals",
     "n_short_signals",
+    "signal_cache_enabled",
+    "signal_cache_hit",
+    "signal_cache_key_short",
+    "signal_cache_load_sec",
+    "signal_cache_write_sec",
+    "data_fingerprint_short",
+    "code_fingerprint_short",
     "error",
 ]
 
@@ -129,8 +169,20 @@ def write_precompute_profile_summary(profile_csv_path: Path) -> None:
     df["_fmiss"] = 1 - df["_fhit"]
     df["_chit"] = _bhit("context_cache_hit").astype(int)
     df["_cmiss"] = 1 - df["_chit"]
+    df["_schit"] = _bhit("signal_cache_hit").astype(int)
+    df["_smiss"] = 1 - df["_schit"]
 
-    for c in ("total_sec", "feature_sec", "context_sec", "signal_sec", "n_signals", "n_long_signals", "n_short_signals"):
+    for c in (
+        "total_sec",
+        "feature_sec",
+        "context_sec",
+        "signal_sec",
+        "signal_cache_load_sec",
+        "signal_cache_write_sec",
+        "n_signals",
+        "n_long_signals",
+        "n_short_signals",
+    ):
         if c not in df.columns:
             df[c] = np.nan
         df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -157,6 +209,10 @@ def write_precompute_profile_summary(profile_csv_path: Path) -> None:
             sum_feature_sec=("feature_sec", _sum_min1),
             sum_context_sec=("context_sec", _sum_min1),
             sum_signal_sec=("signal_sec", _sum_min1),
+            n_signal_cache_hits=("_schit", "sum"),
+            n_signal_cache_misses=("_smiss", "sum"),
+            sum_signal_cache_load_sec=("signal_cache_load_sec", _sum_min1),
+            sum_signal_cache_write_sec=("signal_cache_write_sec", _sum_min1),
             total_signals=("n_signals", "sum"),
             total_long_signals=("n_long_signals", "sum"),
             total_short_signals=("n_short_signals", "sum"),
@@ -190,11 +246,14 @@ def precompute_candidate_signal_matrices(
     data_dir: str | Path = "data/raw/ibkr",
     profile_csv_path: Path | None = None,
     progress_prefix: str = "[precompute]",
+    use_signal_cache: bool = False,
+    signal_cache_root: str | Path | None = None,
+    refresh_signal_cache: bool = False,
 ) -> CandidateSignalMatrix:
     """Read bars once; build features per feature_key; stack signal arrays (n_c × n_bars).
 
     Context cache key matches Layer 1: (strategy, feature_key, normalized context_key(cfg)),
-    not full params_hash. Optional ``profile_csv_path`` writes per-candidate timings and cache hits.
+    not full params_hash. Optional on-disk signal cache when ``use_signal_cache`` is True.
     """
     if not candidates:
         raise ValueError("no candidates")
@@ -202,6 +261,12 @@ def precompute_candidate_signal_matrices(
     raw = read_bars(asset=asset, symbol=sym, start=start, end=end, data_dir=data_dir)
     if raw.empty:
         raise ValueError(f"empty bars for {sym}")
+
+    cache_root = Path(signal_cache_root) if signal_cache_root else default_signal_cache_root()
+    data_fp = compute_data_fingerprint(raw)
+    code_fp = compute_code_fingerprint()
+    data_fp_short = short_key(data_fp)
+    code_fp_short = short_key(code_fp)
 
     n_c = len(candidates)
     canonical_ts: pd.Series | None = None
@@ -221,6 +286,17 @@ def precompute_candidate_signal_matrices(
     strategy_cache: dict[str, Any] = {}
     profile_rows: list[dict[str, Any]] = []
 
+    def _ensure_matrix_width(n: int) -> None:
+        nonlocal side, valid, stop, tgt_preview, tgt_mode, tgt_r, risk_preview
+        if side.shape[1] == 0:
+            side = np.zeros((n_c, n), dtype=np.int8)
+            valid = np.zeros((n_c, n), dtype=np.bool_)
+            stop = np.zeros((n_c, n), dtype=np.float64)
+            tgt_preview = np.zeros((n_c, n), dtype=np.float64)
+            tgt_mode = np.zeros((n_c, n), dtype=np.int8)
+            tgt_r = np.zeros((n_c, n), dtype=np.float64)
+            risk_preview = np.zeros((n_c, n), dtype=np.float64)
+
     for ci, spec in enumerate(candidates):
         t_row0 = time.perf_counter()
         feature_cache_hit = False
@@ -233,6 +309,11 @@ def precompute_candidate_signal_matrices(
         fk_short = ""
         params_hash_short = str(spec.params_hash or "")[:12]
         strategy_context_key_short = ""
+        signal_cache_enabled = use_signal_cache
+        signal_cache_hit = False
+        signal_cache_key_short = ""
+        signal_cache_load_sec = 0.0
+        signal_cache_write_sec = 0.0
 
         exc: BaseException | None = None
         print(
@@ -250,79 +331,180 @@ def precompute_candidate_signal_matrices(
             fk = feature_key_from_config(cfg)
             fk_short = _feature_key_short(fk)
 
-            t_feat0 = time.perf_counter()
-            if fk in feat_cache:
-                feat_df = feat_cache[fk]
-                feature_cache_hit = True
-            else:
-                feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
-                feat_cache[fk] = feat_df
-            feature_sec = time.perf_counter() - t_feat0
-
-            ts = feat_df["ts_utc"]
-            if canonical_ts is None:
-                canonical_ts = ts.reset_index(drop=True)
-                backtest_arrays = prepare_backtest_arrays(feat_df)
-                meta_arrays = {
-                    "session_date": feat_df["session_date"].to_numpy(copy=False),
-                    "minute_from_open": feat_df["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
-                    "ts_utc": feat_df["ts_utc"].to_numpy(copy=False),
-                    "ts_ny": feat_df["ts_ny"].to_numpy(copy=False) if "ts_ny" in feat_df.columns else np.array([]),
-                }
-            else:
-                if len(feat_df) != len(canonical_ts):
-                    raise ValueError(
-                        f"length mismatch candidate={spec.candidate_id} n={len(feat_df)} expected={len(canonical_ts)}"
-                    )
-                if not ts.reset_index(drop=True).equals(canonical_ts):
-                    raise ValueError(f"ts_utc mismatch for candidate={spec.candidate_id}")
-
-            miss = [c for c in strat.required_features() if c not in feat_df.columns]
-            if miss:
-                raise ValueError(f"{spec.candidate_id} missing features {miss}")
-
             raw_ck = strat.context_key(cfg)
             ctx_key = build_context_cache_key(spec.strategy, fk, raw_ck)
             strategy_context_key_short = _strategy_context_key_short(ctx_key[2])
 
-            t_ctx0 = time.perf_counter()
-            if ctx_key in ctx_cache:
-                ctx = ctx_cache[ctx_key]
-                context_cache_hit = True
+            sk = ""
+            sk_short = ""
+            loaded: dict[str, np.ndarray] | None = None
+            if use_signal_cache:
+                sk = build_signal_cache_key(
+                    SignalCacheKeyParts(
+                        asset=str(asset),
+                        symbol=sym,
+                        start=start,
+                        end=end,
+                        data_fingerprint=data_fp,
+                        strategy=spec.strategy,
+                        candidate_id=spec.candidate_id,
+                        params_hash=str(spec.params_hash),
+                        feature_key=fk,
+                        strategy_context_key=raw_ck,
+                        code_fingerprint=code_fp,
+                    )
+                )
+                sk_short = short_key(sk)
+                if not refresh_signal_cache:
+                    t_sc = time.perf_counter()
+                    loaded = load_signal_cache(cache_root, sk)
+                    signal_cache_load_sec = round(time.perf_counter() - t_sc, 4)
+                if loaded is not None and backtest_arrays is not None:
+                    if len(loaded["side"]) != int(backtest_arrays["n"]):
+                        loaded = None
+                if loaded is not None and backtest_arrays is None:
+                    t_b = time.perf_counter()
+                    feat_df_b = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+                    feature_sec = round(time.perf_counter() - t_b, 4)
+                    if len(feat_df_b) != len(loaded["side"]):
+                        loaded = None
+                    else:
+                        canonical_ts = feat_df_b["ts_utc"].reset_index(drop=True)
+                        backtest_arrays = prepare_backtest_arrays(feat_df_b)
+                        meta_arrays = {
+                            "session_date": feat_df_b["session_date"].to_numpy(copy=False),
+                            "minute_from_open": feat_df_b["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
+                            "ts_utc": feat_df_b["ts_utc"].to_numpy(copy=False),
+                            "ts_ny": feat_df_b["ts_ny"].to_numpy(copy=False)
+                            if "ts_ny" in feat_df_b.columns
+                            else np.array([]),
+                        }
+                        feat_cache[fk] = feat_df_b
+                        feature_cache_hit = False
+                        miss_rf = [c for c in strat.required_features() if c not in feat_df_b.columns]
+                        if miss_rf:
+                            raise ValueError(f"{spec.candidate_id} missing features {miss_rf}")
+
+            if loaded is not None:
+                signal_cache_hit = True
+                signal_cache_key_short = sk_short
+                nbar = len(loaded["side"])
+                if canonical_ts is not None and nbar != len(canonical_ts):
+                    raise ValueError(
+                        f"signal cache bars mismatch candidate={spec.candidate_id} n={nbar} expected={len(canonical_ts)}"
+                    )
+                _ensure_matrix_width(nbar)
+                side[ci] = loaded["side"].astype(np.int8)
+                valid[ci] = loaded["valid"].astype(np.bool_)
+                stop[ci] = loaded["stop"].astype(np.float64)
+                tgt_preview[ci] = loaded["target_preview"].astype(np.float64)
+                tgt_mode[ci] = loaded["target_mode_code"].astype(np.int8)
+                tgt_r[ci] = loaded["target_r"].astype(np.float64)
+                risk_preview[ci] = loaded["risk_preview"].astype(np.float64)
+                cids.append(spec.candidate_id)
+                context_cache_hit = False
+                context_sec = 0.0
+                signal_sec = 0.0
+                vrow = valid[ci] & (side[ci] != 0)
+                n_sig = int(np.sum(vrow))
+                n_long = int(np.sum(vrow & (side[ci] == 1)))
+                n_short = int(np.sum(vrow & (side[ci] == -1)))
             else:
-                ctx = strat.prepare_signal_context(feat_df, cfg)
-                ctx_cache[ctx_key] = ctx
-            context_sec = time.perf_counter() - t_ctx0
+                signal_cache_hit = False
+                signal_cache_key_short = sk_short if use_signal_cache else ""
 
-            t_sig0 = time.perf_counter()
-            sig = strat.generate_signal_arrays_from_context(ctx, cfg)
-            signal_sec = time.perf_counter() - t_sig0
-            cids.append(spec.candidate_id)
+                t_feat0 = time.perf_counter()
+                if fk in feat_cache:
+                    feat_df = feat_cache[fk]
+                    feature_cache_hit = True
+                else:
+                    feat_df = build_features_from_config(raw, cfg).sort_values("ts_utc", ignore_index=True)
+                    feat_cache[fk] = feat_df
+                feature_sec = time.perf_counter() - t_feat0
 
-            if side.shape[1] == 0:
-                n = len(feat_df)
-                side = np.zeros((n_c, n), dtype=np.int8)
-                valid = np.zeros((n_c, n), dtype=np.bool_)
-                stop = np.zeros((n_c, n), dtype=np.float64)
-                tgt_preview = np.zeros((n_c, n), dtype=np.float64)
-                tgt_mode = np.zeros((n_c, n), dtype=np.int8)
-                tgt_r = np.zeros((n_c, n), dtype=np.float64)
-                risk_preview = np.zeros((n_c, n), dtype=np.float64)
+                ts = feat_df["ts_utc"]
+                if canonical_ts is None:
+                    canonical_ts = ts.reset_index(drop=True)
+                    backtest_arrays = prepare_backtest_arrays(feat_df)
+                    meta_arrays = {
+                        "session_date": feat_df["session_date"].to_numpy(copy=False),
+                        "minute_from_open": feat_df["minute_from_open"].to_numpy(dtype=np.int32, copy=False),
+                        "ts_utc": feat_df["ts_utc"].to_numpy(copy=False),
+                        "ts_ny": feat_df["ts_ny"].to_numpy(copy=False) if "ts_ny" in feat_df.columns else np.array([]),
+                    }
+                else:
+                    if len(feat_df) != len(canonical_ts):
+                        raise ValueError(
+                            f"length mismatch candidate={spec.candidate_id} n={len(feat_df)} expected={len(canonical_ts)}"
+                        )
+                    if not ts.reset_index(drop=True).equals(canonical_ts):
+                        raise ValueError(f"ts_utc mismatch for candidate={spec.candidate_id}")
 
-            side[ci] = sig["side"].astype(np.int8)
-            valid[ci] = sig["valid"].astype(np.bool_)
-            stop[ci] = sig["stop"].astype(np.float64)
-            tgt_preview[ci] = sig["target_preview"].astype(np.float64)
-            tgt_mode[ci] = sig["target_mode_code"].astype(np.int8)
-            tgt_r[ci] = sig["target_r"].astype(np.float64)
-            risk_preview[ci] = sig.get("risk_preview", np.zeros(len(feat_df), dtype=np.float64)).astype(
-                np.float64
-            )
+                miss = [c for c in strat.required_features() if c not in feat_df.columns]
+                if miss:
+                    raise ValueError(f"{spec.candidate_id} missing features {miss}")
 
-            vrow = valid[ci] & (side[ci] != 0)
-            n_sig = int(np.sum(vrow))
-            n_long = int(np.sum(vrow & (side[ci] == 1)))
-            n_short = int(np.sum(vrow & (side[ci] == -1)))
+                t_ctx0 = time.perf_counter()
+                if ctx_key in ctx_cache:
+                    ctx = ctx_cache[ctx_key]
+                    context_cache_hit = True
+                else:
+                    ctx = strat.prepare_signal_context(feat_df, cfg)
+                    ctx_cache[ctx_key] = ctx
+                context_sec = time.perf_counter() - t_ctx0
+
+                t_sig0 = time.perf_counter()
+                sig = strat.generate_signal_arrays_from_context(ctx, cfg)
+                signal_sec = time.perf_counter() - t_sig0
+                cids.append(spec.candidate_id)
+
+                _ensure_matrix_width(len(feat_df))
+                side[ci] = sig["side"].astype(np.int8)
+                valid[ci] = sig["valid"].astype(np.bool_)
+                stop[ci] = sig["stop"].astype(np.float64)
+                tgt_preview[ci] = sig["target_preview"].astype(np.float64)
+                tgt_mode[ci] = sig["target_mode_code"].astype(np.int8)
+                tgt_r[ci] = sig["target_r"].astype(np.float64)
+                risk_preview[ci] = sig.get("risk_preview", np.zeros(len(feat_df), dtype=np.float64)).astype(
+                    np.float64
+                )
+
+                vrow = valid[ci] & (side[ci] != 0)
+                n_sig = int(np.sum(vrow))
+                n_long = int(np.sum(vrow & (side[ci] == 1)))
+                n_short = int(np.sum(vrow & (side[ci] == -1)))
+
+                if use_signal_cache and sk:
+                    cache_payload = {
+                        "side": side[ci].copy(),
+                        "valid": valid[ci].copy(),
+                        "stop": stop[ci].copy(),
+                        "target_preview": tgt_preview[ci].copy(),
+                        "target_mode_code": tgt_mode[ci].copy(),
+                        "target_r": tgt_r[ci].copy(),
+                        "risk_preview": risk_preview[ci].copy(),
+                    }
+                    meta_save: dict[str, Any] = {
+                        "cache_key": sk,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "asset": str(asset),
+                        "symbol": sym,
+                        "start": start,
+                        "end": end,
+                        "candidate_id": spec.candidate_id,
+                        "strategy": spec.strategy,
+                        "params_hash": str(spec.params_hash),
+                        "feature_key_short": fk_short,
+                        "strategy_context_key_short": strategy_context_key_short,
+                        "data_fingerprint": data_fp,
+                        "code_fingerprint": code_fp,
+                        "n_signals": n_sig,
+                        "n_long_signals": n_long,
+                        "n_short_signals": n_short,
+                    }
+                    t_w = time.perf_counter()
+                    save_signal_cache(cache_root, sk, cache_payload, meta_save)
+                    signal_cache_write_sec = round(time.perf_counter() - t_w, 4)
         except Exception as e:
             err = str(e)
             exc = e
@@ -330,9 +512,10 @@ def precompute_candidate_signal_matrices(
         total_sec = time.perf_counter() - t_row0
         fch = "hit" if feature_cache_hit else "miss"
         cch = "hit" if context_cache_hit else "miss"
+        sch = "hit" if signal_cache_hit else "miss"
         print(
             f"{progress_prefix} {ci + 1}/{n_c} done total_sec={total_sec:.2f} signals={n_sig} "
-            f"feature_cache={fch} context_cache={cch}",
+            f"feature_cache={fch} context_cache={cch} signal_cache={sch}",
             flush=True,
         )
         row = {
@@ -352,6 +535,13 @@ def precompute_candidate_signal_matrices(
             "n_signals": n_sig,
             "n_long_signals": n_long,
             "n_short_signals": n_short,
+            "signal_cache_enabled": signal_cache_enabled,
+            "signal_cache_hit": signal_cache_hit,
+            "signal_cache_key_short": signal_cache_key_short,
+            "signal_cache_load_sec": signal_cache_load_sec,
+            "signal_cache_write_sec": signal_cache_write_sec,
+            "data_fingerprint_short": data_fp_short,
+            "code_fingerprint_short": code_fp_short,
             "error": err,
         }
         profile_rows.append({k: row.get(k, "") for k in PROFILE_FIELDNAMES})
@@ -401,10 +591,21 @@ def build_candidate_signal_arrays(
     start: str,
     end: str,
     data_dir: str | Path = "data/raw/ibkr",
+    use_signal_cache: bool = False,
+    signal_cache_root: str | Path | None = None,
+    refresh_signal_cache: bool = False,
 ) -> tuple[dict[str, Any], dict[str, np.ndarray], pd.DataFrame, dict[str, np.ndarray]]:
     """Backward-compatible alias returning legacy tuple + candidates_used table."""
     csm = precompute_candidate_signal_matrices(
-        candidates=candidates, asset=asset, symbol=symbol, start=start, end=end, data_dir=data_dir
+        candidates=candidates,
+        asset=asset,
+        symbol=symbol,
+        start=start,
+        end=end,
+        data_dir=data_dir,
+        use_signal_cache=use_signal_cache,
+        signal_cache_root=signal_cache_root,
+        refresh_signal_cache=refresh_signal_cache,
     )
     mats = {
         "side": csm.side,

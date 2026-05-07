@@ -28,7 +28,10 @@ from src.combiner.candidate import (
     write_candidates_used,
 )
 from src.combiner.diagnostics import write_candidate_diagnostics
-from src.combiner.precompute import precompute_candidate_signal_matrices
+from src.combiner.precompute import (
+    precompute_candidate_signal_matrices,
+    resolve_precompute_signal_cache_settings,
+)
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
@@ -113,6 +116,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--detailed", action="store_true", default=True)
     p.add_argument("--no-detailed", action="store_false", dest="detailed")
     p.add_argument("--no-save", action="store_true")
+    p.add_argument("--use-signal-cache", action="store_true", help="Enable persistent candidate signal array cache.")
+    p.add_argument(
+        "--signal-cache-root",
+        default=None,
+        help="Override signal cache directory (default: .cache/qt/candidate_signals or YAML precompute.signal_cache_root).",
+    )
+    p.add_argument(
+        "--refresh-signal-cache",
+        action="store_true",
+        help="Ignore existing on-disk signal cache entries and overwrite.",
+    )
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -123,6 +137,17 @@ def main(argv: list[str] | None = None) -> int:
     validate_common_combiner_config(combiner_yaml)
     comb_cfg = _combiner_cfg_from_yaml(combiner_yaml)
     strategy_rules = combiner_yaml.get("strategy_rules") or {}
+
+    use_sc, sc_root, refresh_sc = resolve_precompute_signal_cache_settings(
+        combiner_yaml,
+        cli_use_signal_cache=bool(args.use_signal_cache),
+        cli_signal_cache_root=args.signal_cache_root,
+        cli_refresh_signal_cache=bool(args.refresh_signal_cache),
+    )
+    print(
+        f"[precompute-cache] use_signal_cache={use_sc} root={sc_root} refresh={refresh_sc}",
+        flush=True,
+    )
 
     root = Path(args.candidate_root)
     if not root.is_absolute():
@@ -164,6 +189,9 @@ def main(argv: list[str] | None = None) -> int:
             end=args.end,
             data_dir=args.data_dir,
             profile_csv_path=diag_dir / "candidate_precompute_profile.csv",
+            use_signal_cache=use_sc,
+            signal_cache_root=sc_root,
+            refresh_signal_cache=refresh_sc,
         )
         write_candidate_diagnostics(csm, diag_dir)
         tot_sig = int(np.sum(csm.valid & (csm.side != 0)))
@@ -228,6 +256,9 @@ def main(argv: list[str] | None = None) -> int:
         end=args.end,
         data_dir=args.data_dir,
         profile_csv_path=profile_csv,
+        use_signal_cache=use_sc,
+        signal_cache_root=sc_root,
+        refresh_signal_cache=refresh_sc,
     )
 
     max_hold, recomp, qty, min_risk = _build_execution_arrays(merged, combiner_yaml, comb_cfg)

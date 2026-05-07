@@ -38,6 +38,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 
 - User-approved **post-hardening** Layer 1 → selection → Layer 2 strict/relaxed → postprocess; then decide on Layer 3 smoke. Details: `src/research/results/hardening_closeout_20260505.md`, `rerun_plan_after_hardening.md`, `tests/README.md`.
 - **Layer 2 precompute cleanup (2026-05-06):** `src/combiner/candidate.py` split into `candidate` / `precompute` / `diagnostics`; Layer 2 context cache matches Layer 1 intent **`(strategy, feature_key, strategy.context_key(cfg))`** (normalized); strategy instances cached; `candidate_precompute_profile_summary.csv` next to `candidate_precompute_profile.csv`. Summary: `src/research/results/layer2_precompute_cleanup_summary.md`. **No strategy logic or sweep grid changes.**
+- **Layer 2 persistent signal cache:** Optional on-disk cache for per-candidate signal arrays (`src/combiner/signal_cache.py`); default root `.cache/qt/candidate_signals` (gitignored). Flags: `--use-signal-cache`, `--signal-cache-root`, `--refresh-signal-cache`; optional YAML block `precompute:`. Summary: `src/research/results/layer2_signal_cache_summary.md`. Safe to delete cache dirs; research outputs only.
 
 ## 0. Current project status
 

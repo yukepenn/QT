@@ -1,3 +1,9 @@
+### [Unreleased] – 2026-05-07
+
+- Feat(combiner): persistent Layer 2 **candidate signal** disk cache — `signal_cache.py`, `precompute.py` integration, CLI + YAML `precompute`, profile/summary columns; tests `test_combiner_signal_cache.py`, `test_combiner_precompute_signal_cache.py`.
+- Chore(gitignore): `.cache/`, `data/cache/`, `*.npy` / `*.npz` / `*.memmap`, `PROJECT_STRUCTURE_AND_SCRIPTS.txt`.
+- Docs(results): `layer2_signal_cache_summary.md`.
+
 ### [Unreleased] – 2026-05-06
 
 - Refactor(combiner): Layer 2 precompute — new `precompute.py` (context cache key, strategy cache, profile + aggregated summary), `diagnostics.py` (overlap/conflict CSVs); `candidate.py` candidate-only + lazy `__getattr__` re-exports; `run.py` / `sweep.py` / `postprocess.py` import precompute directly; tests `test_combiner_precompute_{cache_key,profile}.py`, `test_combiner_module_boundaries.py`.
