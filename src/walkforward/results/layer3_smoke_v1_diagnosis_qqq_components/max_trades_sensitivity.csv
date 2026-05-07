@@ -1,0 +1,5 @@
+mtd1_system,mtd2_system,family,delta_total_r,delta_worst_fold_r,delta_fold_concentration,delta_trades,mtd2_helps_headline_r,mtd2_increases_concentration
+recent_failed_gap_mtd1,recent_failed_gap_mtd2,failed+gap recent,-4.35636222256759,-0.27397861700561066,0.026974012629175315,57.0,False,True
+recent_trap_trio_mtd1,recent_trap_trio_mtd2,trap trio recent,-6.80213766989845,-3.8953590222662076,-0.03730325998340411,159.0,False,False
+recent_opening_full_mtd1,recent_opening_full_mtd2,full opening recent,-6.59765211424385,-18.159200124872207,0.1366826334840805,311.0,False,True
+fullhist_failed_gap_mtd1,fullhist_failed_gap_mtd2,failed+gap full-hist,1.9391905808916903,-0.9822736071748546,-0.10819798248528101,33.0,True,False

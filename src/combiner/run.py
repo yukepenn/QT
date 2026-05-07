@@ -331,14 +331,11 @@ def run_combiner_fixed_config(
     monthly_path: Path | None = None
     daily_path: Path | None = None
 
-    if save_compact_trades and trades_df_out is not None and len(trades_df_out):
+    if trades_df_out is not None and len(trades_df_out) and save_compact_trades:
         cols = [c for c in _COMPACT_TRADE_COLS_PREFERRED if c in trades_df_out.columns]
         compact = trades_df_out[cols] if cols else trades_df_out
         trades_path = output_dir / "compact_trades.csv"
         compact.to_csv(trades_path, index=False)
-    elif trades_df_out is not None and len(trades_df_out):
-        trades_path = output_dir / "trades.csv"
-        trades_df_out.to_csv(trades_path, index=False)
 
     if save_equity and equity_df_out is not None and len(equity_df_out):
         equity_path = output_dir / "equity.csv"

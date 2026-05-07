@@ -6,7 +6,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 - **Layer 1:** per-strategy parameter sweeps → candidate library (`selected_candidates/*.yaml`).
 - **Layer 2:** combiner/router that evaluates candidate sets under simple system constraints (currently **max_open_positions=1**).
-- **Layer 3:** **smoke v1** implemented (`src/walkforward/`) — fixed frozen systems evaluated on fixed test folds only; **full** rolling train→freeze→test WFO remains future work.
+- **Layer 3:** **smoke v1** + **component diagnosis v1** (`src/walkforward/`) — fixed frozen systems on fixed folds; diagnosis YAMLs under `src/combiner/configs/frozen/diagnosis/`; **full** rolling train→freeze→test WFO remains future work.
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
@@ -22,7 +22,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 - **Engineering accelerators:**
   - **Signal cache (disk):** `.cache/qt/candidate_signals` (gitignored), from `src/combiner/signal_cache.py`.
   - **FeatureStore (memory):** `src/features/feature_store.py`.
-- **Layer 3 smoke (research only):** `src/walkforward/runner.py` loads frozen system YAMLs and calls Layer 2 combiner over YAML-defined folds; **no** per-fold Layer 1/2 grid reruns.
+- **Layer 3 smoke / diagnosis (research only):** `src/walkforward/runner.py` loads frozen system YAMLs and calls Layer 2 combiner over YAML-defined folds; **no** per-fold Layer 1/2 grid reruns.
 
 ## 3. Active research baselines (current)
 
@@ -69,12 +69,12 @@ No live‑ready claim is implied.
 
 ## Frozen configs (Layer 3 smoke only)
 
-- Directory: `src/combiner/configs/frozen/`
-- Purpose: fixed **research** snapshots wired into `src/walkforward/` smoke runs only.
+- Directory: `src/combiner/configs/frozen/` (plus **`frozen/diagnosis/`** for component decomposition runs).
+- Purpose: fixed **research** snapshots wired into `src/walkforward/` smoke/diagnosis runs only.
 - These are **not** production or live-trading configs.
 
 ## 7. Next intended phases
 
 1. Keep repo hygiene / indexing work mergeable.
-2. **Layer 3 smoke v1** is runnable (QQQ fixed systems); next decision is **strategy-family diagnosis** vs a **causal mini-WFO** (explicit approval only) — not full WFO automation.
+2. **Layer 3 smoke v1** and **component diagnosis v1** are runnable on QQQ fixed systems; **causal mini-WFO** remains **not approved** by default — review diagnosis outputs first (`src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`).
 

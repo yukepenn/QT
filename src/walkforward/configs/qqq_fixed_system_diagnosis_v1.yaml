@@ -1,0 +1,86 @@
+experiment:
+  name: qqq_fixed_system_diagnosis_v1
+  purpose: fixed_system_component_diagnosis_after_layer3_smoke
+  live_ready: false
+  note: >
+    This diagnosis explains Layer 3 smoke v1 results. It is not full WFO,
+    not parameter optimization, and not a live trading claim.
+
+asset: equity
+symbol: QQQ
+
+cost:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  stress_slippage_per_share: [0.02, 0.03]
+
+execution:
+  max_open_positions: 1
+  use_signal_cache: true
+  signal_cache_root: .cache/qt/candidate_signals
+
+systems:
+  - system_id: recent_failed_only
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_failed_orb_only.yaml
+  - system_id: recent_gap_only
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_gap_acceptance_only.yaml
+  - system_id: recent_prior_day_only
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_prior_day_trap_only.yaml
+  - system_id: recent_failed_gap_mtd1
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_failed_gap_pair_mtd1.yaml
+  - system_id: recent_failed_gap_mtd2
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_failed_gap_pair_mtd2.yaml
+  - system_id: recent_trap_trio_mtd1
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_trap_trio_mtd1.yaml
+  - system_id: recent_trap_trio_mtd2
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_trap_trio_mtd2.yaml
+  - system_id: recent_opening_no_retest
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_opening_without_retest.yaml
+  - system_id: recent_opening_no_continuation
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_opening_without_continuation.yaml
+  - system_id: recent_opening_full_mtd1
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_opening_full_mtd1.yaml
+  - system_id: recent_opening_full_mtd2
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_recent_opening_full_mtd2.yaml
+  - system_id: fullhist_failed_only
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_fullhist_failed_orb_only.yaml
+  - system_id: fullhist_gap_only
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_fullhist_gap_acceptance_only.yaml
+  - system_id: fullhist_failed_gap_mtd1
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_fullhist_failed_gap_pair_mtd1.yaml
+  - system_id: fullhist_failed_gap_mtd2
+    frozen_config: src/combiner/configs/frozen/diagnosis/qqq_diag_fullhist_failed_gap_pair_mtd2.yaml
+
+folds:
+  - fold_id: y2023
+    label: calendar_2023
+    reference_start: 2020-01-01
+    reference_end: 2022-12-31
+    test_start: 2023-01-01
+    test_end: 2023-12-31
+    note: temporal stability segment
+
+  - fold_id: y2024
+    label: calendar_2024
+    reference_start: 2021-01-01
+    reference_end: 2023-12-31
+    test_start: 2024-01-01
+    test_end: 2024-12-31
+    note: temporal stability segment
+
+  - fold_id: recent_2025_202604
+    label: recent_2025_202604
+    reference_start: 2022-01-01
+    reference_end: 2024-12-31
+    test_start: 2025-01-01
+    test_end: 2026-04-30
+    note: overlaps recent candidate window; interpret carefully
+
+outputs:
+  root: src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components
+  save_compact_trades: false
+  save_full_signal_logs: false
+  save_rejected_signals: false
+  save_monthly_breakdown: true
+  save_cost_stress: true
+  write_diagnosis_report: true

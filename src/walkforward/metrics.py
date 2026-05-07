@@ -39,14 +39,20 @@ def _aggregate_one_system(system_id: str, grp: pd.DataFrame) -> dict[str, Any]:
     positive_fold_count = int(pos_mask.sum())
     fold_count = len(grp)
 
+    mean_pf = float(np.nanmean(pf_vals)) if len(pf_vals) else float("nan")
+    mean_pfr = float(np.nanmean(pfr_vals)) if len(pfr_vals) else float("nan")
+
     out: dict[str, Any] = {
         "system_id": system_id,
         "fold_count": fold_count,
         "positive_fold_count": positive_fold_count,
         "total_trades": trades_sum,
         "stitched_total_r": stitched_total_r,
-        "stitched_pf": float(np.nanmean(pf_vals)) if len(pf_vals) else float("nan"),
-        "stitched_pf_r": float(np.nanmean(pfr_vals)) if len(pfr_vals) else float("nan"),
+        # stitched_pf / stitched_pf_r are mean-of-fold PF metrics (not trade-level stitched PF).
+        "stitched_pf": mean_pf,
+        "stitched_pf_r": mean_pfr,
+        "mean_fold_pf": mean_pf,
+        "mean_fold_pf_r": mean_pfr,
         "median_fold_r": float(np.nanmedian(tr)) if len(tr) else float("nan"),
         "worst_fold_r": float(np.nanmin(tr)) if len(tr) else float("nan"),
         "best_fold_r": float(np.nanmax(tr)) if len(tr) else float("nan"),
@@ -103,7 +109,8 @@ def interpretation_flags(fold_summary: pd.DataFrame) -> dict[str, Any]:
             "pf_r_above_1": False,
             "cost_0_02_survives": False,
             "cost_0_03_survives": False,
-            "drawdown_exceeds_insample": False,
+            "drawdown_exceeds_insample": float("nan"),
+            "drawdown_exceeds_source_baseline": float("nan"),
             "single_fold_dependency": False,
             "trade_2_positive": False,
         }
@@ -137,7 +144,9 @@ def interpretation_flags(fold_summary: pd.DataFrame) -> dict[str, Any]:
     else:
         out["cost_0_03_survives"] = False
 
-    out["drawdown_exceeds_insample"] = bool(fold_summary.get("drawdown_exceeds_insample", pd.Series([False])).any())
+    # Legacy column name kept for CSV compatibility; not computed unless an in-sample baseline exists.
+    out["drawdown_exceeds_insample"] = float("nan")
+    out["drawdown_exceeds_source_baseline"] = float("nan")
 
     conc = compute_fold_concentration(fold_summary)
     out["single_fold_dependency"] = bool(np.isfinite(conc) and conc >= 0.65)

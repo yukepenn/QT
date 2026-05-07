@@ -52,7 +52,15 @@ Directory: **`src/combiner/configs/frozen/`**
 - Consumed by **`src/walkforward/runner.py`** for temporal-stability smoke — **not** live deployment configs.
 - Example files: `qqq_trap_family_recent_top1.yaml`, `qqq_opening_family_recent_top1.yaml`, `qqq_full_history_opening_pair.yaml`.
 
-## D. Legacy / deprecated (do not use for new decisions)
+## D. Frozen diagnosis (`frozen/diagnosis/` — component smoke only)
+
+Directory: **`src/combiner/configs/frozen/diagnosis/`**
+
+- **Status:** diagnostic-only YAMLs for Layer 3 **component** runs (`walkforward` diagnosis config).
+- **Not** active trading configs; **not** live configs.
+- Decompose trap/opening families into single candidates, pairs, MTD variants, and full-history contrasts.
+
+## E. Legacy / deprecated (do not use for new decisions)
 
 - **`layer2_qqq_2020_20260430_v2_relaxed.yaml`** (+ sweep)
   - **candidate_root**: `src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates`

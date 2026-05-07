@@ -62,6 +62,7 @@ src/walkforward/results/**/candidate_precompute_profile*.csv
 src/walkforward/results/**/candidate_precompute_profile_summary.*
 src/walkforward/results/**/candidates_used.csv
 src/walkforward/results/**/feature_store_stats.json
+src/walkforward/results/**/config_resolved.yaml
 
 # Strategy sweep heavy outputs
 src/strategies/testing_parameters_results/**/trades.csv

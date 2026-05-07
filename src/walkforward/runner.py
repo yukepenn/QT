@@ -17,6 +17,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.combiner.run import run_combiner_fixed_config
+from src.walkforward.diagnosis import write_diagnosis_report as write_dx_report
 from src.walkforward.fixed_system import (
     build_fold_combiner_config,
     candidate_yaml_paths,
@@ -81,6 +82,7 @@ def run_smoke(
     save_compact = bool(out_cfg.get("save_compact_trades", True))
     save_monthly = bool(out_cfg.get("save_monthly_breakdown", True))
     save_cost = bool(out_cfg.get("save_cost_stress", True))
+    write_dx = bool(out_cfg.get("write_diagnosis_report", False))
 
     exec_smoke = smoke.get("execution") or {}
     use_cache_cfg = bool(exec_smoke.get("use_signal_cache", True))
@@ -198,7 +200,8 @@ def run_smoke(
                     "pf_r_above_1": bool((mbase.get("profit_factor_r") or 0) >= 1.0),
                     "cost_0_02_survives": bool((s02.get("total_r") or 0) > 0 and (s02.get("profit_factor") or 0) >= 1.0),
                     "cost_0_03_survives": bool((s03.get("total_r") or 0) > 0 and (s03.get("profit_factor") or 0) >= 1.0),
-                    "drawdown_exceeds_insample": False,
+                    "drawdown_exceeds_insample": float("nan"),
+                    "drawdown_exceeds_source_baseline": float("nan"),
                     "output_dir": _rel_to_repo(fold_dir, cwd),
                 }
             )
@@ -244,6 +247,8 @@ def run_smoke(
         pd.concat(stress_parts, ignore_index=True).to_csv(output_root / "cost_stress_by_fold.csv", index=False)
 
     _write_main_summary_md(output_root, smoke, fold_df, sys_df, tag, use_cache, sc_root)
+    if write_dx:
+        write_dx_report(output_root, fold_df, sys_df)
     print(f"[walkforward] wrote {output_root}", flush=True)
     return 0
 
@@ -257,8 +262,10 @@ def _write_main_summary_md(
     use_cache: bool,
     sc_root: str,
 ) -> None:
+    exp = smoke.get("experiment") or {}
+    title = str(exp.get("name") or "layer3_walkforward")
     lines: list[str] = []
-    lines.append("# Layer 3 Smoke v1 — QQQ Fixed Systems")
+    lines.append(f"# Layer 3 — {title}")
     lines.append("")
     lines.append("## 1. Purpose")
     lines.append("")

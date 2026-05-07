@@ -1,0 +1,5 @@
+recent_system,fullhist_system,delta_total_r_recent_minus_full,delta_fold_concentration_recent_minus_full,delta_positive_fold_count_recent_minus_full,interpretation
+recent_failed_only,fullhist_failed_only,9.452876556080454,0.2278355819890608,-1.0,recent higher stitched R; recent more concentrated
+recent_gap_only,fullhist_gap_only,-5.924633205840925,0.15153943459314345,-1.0,full-hist higher stitched R; recent more concentrated
+recent_failed_gap_mtd1,fullhist_failed_gap_mtd1,18.70000664030473,0.14003747829697333,0.0,recent higher stitched R; recent more concentrated
+recent_failed_gap_mtd2,fullhist_failed_gap_mtd2,12.404453836845448,0.27520947341142965,-1.0,recent higher stitched R; recent more concentrated

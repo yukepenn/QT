@@ -84,4 +84,5 @@ Treat like Layer 2 results roots:
 - **Commit:** aggregate CSVs (`fold_summary.csv`, `system_summary.csv`, `stitched_summary.csv`, `cost_stress_by_fold.csv`, `monthly_breakdown_all.csv`, `daily_trade_number_by_fold.csv`, `layer3_smoke_summary.md`) and small per-fold `metrics.json` / `summary.csv` when curated.
 - **Do not commit:** `compact_trades.csv` when large, full `trades.csv`, `equity.csv`, `candidate_signal_log.csv`, `rejected_signals.csv`, `top_runs/`, dense matrices — same rules as sections 4–5 for Layer 2/research roots.
 - Per-fold Layer 2 profiling dumps under smoke (`candidate_precompute_profile*.csv`, `candidates_used.csv`, `feature_store_stats.json`) should remain local — see `.gitignore` rules under `src/walkforward/results/`.
+- **Diagnosis v1** (`layer3_smoke_v1_diagnosis_qqq_components/`): commit aggregate CSVs + `layer3_smoke_diagnosis_summary.md` + `layer3_smoke_summary.md`; large per-fold trees optional/local unless intentionally curated small.
 

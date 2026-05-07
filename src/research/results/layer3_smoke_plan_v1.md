@@ -1,6 +1,8 @@
 # Layer 3 smoke plan v1 — implemented (fixed-system smoke only)
 
-**Implementation:** `src/walkforward/` (runner, folds YAML, frozen configs under `src/combiner/configs/frozen/`). Curated results example: `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`.
+**Implementation (smoke):** `src/walkforward/` (runner, folds YAML, frozen configs under `src/combiner/configs/frozen/`). Curated results example: `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`.
+
+**Implementation (component diagnosis v1):** frozen YAMLs under `src/combiner/configs/frozen/diagnosis/`, config `src/walkforward/configs/qqq_fixed_system_diagnosis_v1.yaml`, curated aggregates under `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/` (`layer3_smoke_diagnosis_summary.md`, comparison CSVs).
 
 This document retains the **original design intent** for smoke vs full Layer 3 WFO.
 

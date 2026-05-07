@@ -92,7 +92,7 @@ def interpretation_sections_markdown(
         "pf_r_above_1",
         "cost_0_02_survives",
         "cost_0_03_survives",
-        "drawdown_exceeds_insample",
+        "drawdown_exceeds_source_baseline",
         "single_fold_dependency",
         "trade_2_positive",
         "positive_fold_rate",

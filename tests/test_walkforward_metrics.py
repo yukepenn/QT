@@ -81,3 +81,5 @@ def test_system_summary_smoke():
     out = summarize_system_across_folds(df)
     assert len(out) == 1
     assert out.iloc[0]["stitched_total_r"] == pytest.approx(1.0)
+    assert out.iloc[0]["mean_fold_pf"] == pytest.approx(out.iloc[0]["stitched_pf"])
+    assert out.iloc[0]["mean_fold_pf_r"] == pytest.approx(out.iloc[0]["stitched_pf_r"])

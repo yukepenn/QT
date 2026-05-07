@@ -1,5 +1,8 @@
 ### [Unreleased] – 2026-05-07
 
+- Feat(walkforward): Layer 3 **component diagnosis v1** — `src/walkforward/diagnosis.py`, frozen YAMLs `src/combiner/configs/frozen/diagnosis/`, config `qqq_fixed_system_diagnosis_v1.yaml`, runner hook `outputs.write_diagnosis_report`; curated aggregates under `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`; tests `tests/test_walkforward_diagnosis.py`.
+- Fix(combiner): `run_combiner_fixed_config` no longer writes `trades.csv` when `save_compact_trades=False` (monthly/daily breakdown still use in-memory trades).
+- Refactor(metrics): `mean_fold_pf` / `mean_fold_pf_r` alias mean-of-fold PF; `drawdown_exceeds_insample` / `drawdown_exceeds_source_baseline` unset (NA) until a real baseline exists.
 - Feat(walkforward): Layer 3 **fixed-system temporal-stability smoke v1** — `src/walkforward/` (folds, frozen systems, runner, metrics, reports), `run_combiner_fixed_config()` in `src/combiner/run.py`, frozen YAMLs in `src/combiner/configs/frozen/`, smoke config `qqq_fixed_system_smoke_v1.yaml`, curated results `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`; tests `tests/test_walkforward_*.py`.
 - Docs: README, PROJECT_STATUS, PROGRESS, `src/combiner/configs/CONFIG_INDEX.md`, `docs/ARTIFACT_POLICY.md`, `src/research/results/layer3_smoke_plan_v1.md`; `.gitignore` patterns for heavy `src/walkforward/results/**` outputs.
 - Feat(combiner): persistent Layer 2 **candidate signal** disk cache — `signal_cache.py`, `precompute.py` integration, CLI + YAML `precompute`, profile/summary columns; tests `test_combiner_signal_cache.py`, `test_combiner_precompute_signal_cache.py`.
