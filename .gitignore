@@ -51,6 +51,18 @@ src/research/results/**/top_runs/
 src/research/results/**/run_*/
 src/research/results/**/sweep_*/
 
+# Layer 3 walkforward smoke — heavy paths (curated CSV/MD via selective git add)
+src/walkforward/results/**/trades.csv
+src/walkforward/results/**/equity.csv
+src/walkforward/results/**/candidate_signal_log.csv
+src/walkforward/results/**/rejected_signals.csv
+src/walkforward/results/**/top_runs/
+src/walkforward/results/**/compact_trades.csv
+src/walkforward/results/**/candidate_precompute_profile*.csv
+src/walkforward/results/**/candidate_precompute_profile_summary.*
+src/walkforward/results/**/candidates_used.csv
+src/walkforward/results/**/feature_store_stats.json
+
 # Strategy sweep heavy outputs
 src/strategies/testing_parameters_results/**/trades.csv
 src/strategies/testing_parameters_results/**/equity.csv

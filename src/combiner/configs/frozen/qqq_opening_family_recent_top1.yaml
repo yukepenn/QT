@@ -1,0 +1,38 @@
+system_id: qqq_opening_family_recent_top1
+research_status: fixed_system_smoke_candidate
+live_ready: false
+
+source:
+  layer1_root: src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1
+  layer2_root: src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1
+  source_window:
+    start: 2025-01-01
+    end: 2026-04-30
+  source_note: recent-window in-sample contrast system, not OOS validated
+
+candidate_root: src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/selected_candidates
+
+candidate_ids:
+  - FAILED_ORB_001
+  - GAP_ACCEPTANCE_FAILURE_001
+  - ORB_CONTINUATION_001
+  - ORB_RETEST_CONTINUATION_001
+
+combiner:
+  candidate_set: opening_family
+  top_per_strategy: 1
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -1.5
+  cooldown_after_loss_minutes: 0
+  priority_policy: metadata_priority
+  no_new_after_minute: 360
+
+cost:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+
+notes:
+  - Tests whether adding ORB continuation/retest improves or hurts the trap core.
+  - Not live-ready.
+  - Used only for Layer 3 smoke v1.

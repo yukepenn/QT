@@ -1,0 +1,16 @@
+system_id,fold_id,daily_trade_number,trades,total_r
+trap_recent_top1,y2023,1,194,6.635351438030092
+trap_recent_top1,y2023,2,49,-21.586558141648755
+trap_recent_top1,y2024,1,188,-11.05584768135246
+trap_recent_top1,y2024,2,49,-2.443639069006516
+trap_recent_top1,recent_2025_202604,1,262,51.82921794142066
+trap_recent_top1,recent_2025_202604,2,61,17.22805954075683
+opening_recent_top1,y2023,1,233,17.64650581250373
+opening_recent_top1,y2023,2,94,-16.941107657756227
+opening_recent_top1,y2024,1,231,-6.905058115263214
+opening_recent_top1,y2024,2,95,-18.1592001248722
+opening_recent_top1,recent_2025_202604,1,306,31.70791435521695
+opening_recent_top1,recent_2025_202604,2,122,28.502655668384584
+full_history_opening_pair,y2023,1,158,18.40022322618653
+full_history_opening_pair,y2024,1,146,-6.195607253365997
+full_history_opening_pair,recent_2025_202604,1,204,7.547178050343273

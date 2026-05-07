@@ -1,4 +1,12 @@
-# Layer 3 smoke plan v1 (doc only — do not implement yet)
+# Layer 3 smoke plan v1 — implemented (fixed-system smoke only)
+
+**Implementation:** `src/walkforward/` (runner, folds YAML, frozen configs under `src/combiner/configs/frozen/`). Curated results example: `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`.
+
+This document retains the **original design intent** for smoke vs full Layer 3 WFO.
+
+---
+
+# Layer 3 smoke plan v1 (historical header — design intent)
 
 ## 1. Purpose
 

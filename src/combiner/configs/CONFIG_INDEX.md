@@ -44,7 +44,15 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
 - **`layer2_qqq_2023_20260430_posthardening_relaxed.yaml`** (+ sweep)
   - same window/candidate root, relaxed reference
 
-## C. Legacy / deprecated (do not use for new decisions)
+## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)
+
+Directory: **`src/combiner/configs/frozen/`**
+
+- Research snapshots that pin **candidate IDs**, combiner knobs, and provenance (`source.layer1_root`, `source.layer2_root`).
+- Consumed by **`src/walkforward/runner.py`** for temporal-stability smoke — **not** live deployment configs.
+- Example files: `qqq_trap_family_recent_top1.yaml`, `qqq_opening_family_recent_top1.yaml`, `qqq_full_history_opening_pair.yaml`.
+
+## D. Legacy / deprecated (do not use for new decisions)
 
 - **`layer2_qqq_2020_20260430_v2_relaxed.yaml`** (+ sweep)
   - **candidate_root**: `src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates`

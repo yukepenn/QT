@@ -75,4 +75,13 @@ Not safe to delete without explicit intent:
 
 - `selected_candidates/*.yaml`
 - curated summaries and indexes under `src/research/results/` and `src/combiner/results/`
+- curated Layer 3 smoke summaries under `src/walkforward/results/**` when intentionally kept small
+
+## 8. Walk-forward smoke outputs (`src/walkforward/results/`)
+
+Treat like Layer 2 results roots:
+
+- **Commit:** aggregate CSVs (`fold_summary.csv`, `system_summary.csv`, `stitched_summary.csv`, `cost_stress_by_fold.csv`, `monthly_breakdown_all.csv`, `daily_trade_number_by_fold.csv`, `layer3_smoke_summary.md`) and small per-fold `metrics.json` / `summary.csv` when curated.
+- **Do not commit:** `compact_trades.csv` when large, full `trades.csv`, `equity.csv`, `candidate_signal_log.csv`, `rejected_signals.csv`, `top_runs/`, dense matrices — same rules as sections 4–5 for Layer 2/research roots.
+- Per-fold Layer 2 profiling dumps under smoke (`candidate_precompute_profile*.csv`, `candidates_used.csv`, `feature_store_stats.json`) should remain local — see `.gitignore` rules under `src/walkforward/results/`.
 

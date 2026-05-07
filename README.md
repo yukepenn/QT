@@ -12,7 +12,8 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 **Current state**
 
 - Layer **1** (per-strategy sweeps + candidate YAMLs) and Layer **2** (combiner run/sweep/postprocess) **exist** on `main`.
-- Layer **3** (walk-forward / OOS harness) is **intentionally deferred** until post-hardening Layer 1/2 reruns justify it.
+- Layer **3 full walk-forward** (rolling train→freeze→test automation) is **not** implemented.
+- **Layer 3 smoke v1** (`src/walkforward/`) evaluates **frozen** Layer 2 systems on fixed date folds — **not** parameter search and **not** live-ready.
 - **QQQ** is the **complete** research symbol for 2020–2026 RTH on a typical backfill; **SPY** is often **incomplete** — do not use SPY for robustness until coverage matches.
 
 **Hardening completed (Commits A–D)**
@@ -36,7 +37,8 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 
 **Next phase**
 
-- User-approved **post-hardening** Layer 1 → selection → Layer 2 strict/relaxed → postprocess; then decide on Layer 3 smoke. Details: `src/research/results/hardening_closeout_20260505.md`, `rerun_plan_after_hardening.md`, `tests/README.md`.
+- **Layer 3 smoke v1:** Run fixed-system temporal checks with `python src/walkforward/runner.py --config src/walkforward/configs/qqq_fixed_system_smoke_v1.yaml` (see `PROJECT_STATUS.md`). Still **not** full walk-forward and **not** live-ready.
+- User-approved **post-hardening** Layer 1 → selection → Layer 2 strict/relaxed → postprocess remains the baseline research loop. Details: `src/research/results/hardening_closeout_20260505.md`, `rerun_plan_after_hardening.md`, `tests/README.md`.
 - **Layer 2 precompute cleanup (2026-05-06):** `src/combiner/candidate.py` split into `candidate` / `precompute` / `diagnostics`; Layer 2 context cache matches Layer 1 intent **`(strategy, feature_key, strategy.context_key(cfg))`** (normalized); strategy instances cached; `candidate_precompute_profile_summary.csv` next to `candidate_precompute_profile.csv`. Summary: `src/research/results/layer2_precompute_cleanup_summary.md`. **No strategy logic or sweep grid changes.**
 - **Layer 2 persistent signal cache:** Optional on-disk cache for per-candidate signal arrays (`src/combiner/signal_cache.py`); default root `.cache/qt/candidate_signals` (gitignored). Flags: `--use-signal-cache`, `--signal-cache-root`, `--refresh-signal-cache`; optional YAML block `precompute:`. Summary: `src/research/results/layer2_signal_cache_summary.md`. Safe to delete cache dirs; research outputs only.
 - **FeatureStore v1:** Centralized in-memory feature DataFrame caching (`src/features/feature_store.py`) for reuse across Layer 1 sweep and Layer 2 precompute. Preserves `feature_key_from_config` + `build_features_from_config` behavior (no formula changes). Summary: `src/research/results/feature_store_v1_summary.md`.
@@ -63,7 +65,9 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - **Layer 2 config index:** `src/combiner/configs/CONFIG_INDEX.md`
 - **Research results index:** `src/research/results/RESULTS_INDEX.md`
 - **Combiner results index:** `src/combiner/results/RESULTS_INDEX.md`
-- **Layer 3 smoke plan (doc only):** `src/research/results/layer3_smoke_plan_v1.md`
+- **Layer 3 smoke plan:** `src/research/results/layer3_smoke_plan_v1.md`
+- **Walk-forward smoke runner:** `src/walkforward/runner.py` + configs under `src/walkforward/configs/`
+- **Frozen smoke configs (not live):** `src/combiner/configs/frozen/`
 
 **Active baselines (QQQ, post-hardening):**
 

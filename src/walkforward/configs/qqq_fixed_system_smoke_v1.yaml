@@ -1,0 +1,63 @@
+experiment:
+  name: qqq_fixed_system_smoke_v1
+  purpose: fixed_system_temporal_stability_smoke
+  live_ready: false
+  note: >
+    This is not full walk-forward optimization. It evaluates frozen systems
+    over test segments without reselection. Results are not live-ready.
+
+asset: equity
+symbol: QQQ
+
+cost:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  stress_slippage_per_share: [0.02, 0.03]
+
+execution:
+  max_open_positions: 1
+  use_signal_cache: true
+  signal_cache_root: .cache/qt/candidate_signals
+
+systems:
+  - system_id: trap_recent_top1
+    frozen_config: src/combiner/configs/frozen/qqq_trap_family_recent_top1.yaml
+
+  - system_id: opening_recent_top1
+    frozen_config: src/combiner/configs/frozen/qqq_opening_family_recent_top1.yaml
+
+  - system_id: full_history_opening_pair
+    frozen_config: src/combiner/configs/frozen/qqq_full_history_opening_pair.yaml
+
+folds:
+  - fold_id: y2023
+    label: calendar_2023
+    reference_start: 2020-01-01
+    reference_end: 2022-12-31
+    test_start: 2023-01-01
+    test_end: 2023-12-31
+    note: temporal stability segment
+
+  - fold_id: y2024
+    label: calendar_2024
+    reference_start: 2021-01-01
+    reference_end: 2023-12-31
+    test_start: 2024-01-01
+    test_end: 2024-12-31
+    note: temporal stability segment
+
+  - fold_id: recent_2025_202604
+    label: recent_2025_202604
+    reference_start: 2022-01-01
+    reference_end: 2024-12-31
+    test_start: 2025-01-01
+    test_end: 2026-04-30
+    note: overlaps recent source window for Systems A/B; interpret carefully
+
+outputs:
+  root: src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems
+  save_compact_trades: true
+  save_full_signal_logs: false
+  save_rejected_signals: false
+  save_monthly_breakdown: true
+  save_cost_stress: true

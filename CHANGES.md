@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-07
 
+- Feat(walkforward): Layer 3 **fixed-system temporal-stability smoke v1** — `src/walkforward/` (folds, frozen systems, runner, metrics, reports), `run_combiner_fixed_config()` in `src/combiner/run.py`, frozen YAMLs in `src/combiner/configs/frozen/`, smoke config `qqq_fixed_system_smoke_v1.yaml`, curated results `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`; tests `tests/test_walkforward_*.py`.
+- Docs: README, PROJECT_STATUS, PROGRESS, `src/combiner/configs/CONFIG_INDEX.md`, `docs/ARTIFACT_POLICY.md`, `src/research/results/layer3_smoke_plan_v1.md`; `.gitignore` patterns for heavy `src/walkforward/results/**` outputs.
 - Feat(combiner): persistent Layer 2 **candidate signal** disk cache — `signal_cache.py`, `precompute.py` integration, CLI + YAML `precompute`, profile/summary columns; tests `test_combiner_signal_cache.py`, `test_combiner_precompute_signal_cache.py`.
 - Chore(gitignore): `.cache/`, `data/cache/`, `*.npy` / `*.npz` / `*.memmap`, `PROJECT_STRUCTURE_AND_SCRIPTS.txt`.
 - Docs(results): `layer2_signal_cache_summary.md`.
@@ -9,10 +11,6 @@
 - Feat(features): FeatureStore v1 — `src/features/feature_store.py` in-memory raw/feature reuse; wired into `src/backtest/sweep.py` and `src/combiner/precompute.py`; Layer 2 writes `feature_store_stats.json`.
 - Test(features): `test_feature_store.py`, `test_combiner_precompute_feature_store.py`.
 - Docs(results): `feature_store_v1_plan.md`, `feature_store_v1_summary.md`.
-
-### [Unreleased] – 2026-05-07
-
-- Docs(index): add project structure inventory, indexes, artifact policy, and Layer 3 smoke plan (doc only). Mark legacy result roots with `STALE.md`.
 
 ### [Unreleased] – 2026-05-06
 

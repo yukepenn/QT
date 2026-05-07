@@ -6,7 +6,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 - **Layer 1:** per-strategy parameter sweeps → candidate library (`selected_candidates/*.yaml`).
 - **Layer 2:** combiner/router that evaluates candidate sets under simple system constraints (currently **max_open_positions=1**).
-- **Layer 3:** planned walk-forward / OOS harness (not implemented in this phase).
+- **Layer 3:** **smoke v1** implemented (`src/walkforward/`) — fixed frozen systems evaluated on fixed test folds only; **full** rolling train→freeze→test WFO remains future work.
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
@@ -22,6 +22,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 - **Engineering accelerators:**
   - **Signal cache (disk):** `.cache/qt/candidate_signals` (gitignored), from `src/combiner/signal_cache.py`.
   - **FeatureStore (memory):** `src/features/feature_store.py`.
+- **Layer 3 smoke (research only):** `src/walkforward/runner.py` loads frozen system YAMLs and calls Layer 2 combiner over YAML-defined folds; **no** per-fold Layer 1/2 grid reruns.
 
 ## 3. Active research baselines (current)
 
@@ -64,10 +65,16 @@ No live‑ready claim is implied.
 - Combiner results index: `src/combiner/results/RESULTS_INDEX.md`
 - Artifact policy: `docs/ARTIFACT_POLICY.md`
 - Pre‑Layer‑3 readiness summary: `src/research/results/pre_layer3_gate_readiness_summary.md`
-- Layer 3 smoke plan (doc only): `src/research/results/layer3_smoke_plan_v1.md`
+- Layer 3 smoke plan: `src/research/results/layer3_smoke_plan_v1.md`
+
+## Frozen configs (Layer 3 smoke only)
+
+- Directory: `src/combiner/configs/frozen/`
+- Purpose: fixed **research** snapshots wired into `src/walkforward/` smoke runs only.
+- These are **not** production or live-trading configs.
 
 ## 7. Next intended phases
 
-1. Keep this repo hygiene / indexing work mergeable.
-2. Draft and review **Layer 3 smoke** plan (already documented), then implement only with explicit approval.
+1. Keep repo hygiene / indexing work mergeable.
+2. **Layer 3 smoke v1** is runnable (QQQ fixed systems); next decision is **strategy-family diagnosis** vs a **causal mini-WFO** (explicit approval only) — not full WFO automation.
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -36,6 +37,21 @@ from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
 from src.utils.config_validation import validate_common_combiner_config
+
+_COMPACT_TRADE_COLS_PREFERRED = [
+    "session_date",
+    "entry_ts_utc",
+    "exit_ts_utc",
+    "candidate_id",
+    "strategy",
+    "strategy_family",
+    "r_multiple",
+    "net_pnl",
+    "daily_trade_number",
+    "exit_reason",
+    "bars_held",
+    "risk_per_share",
+]
 
 
 def _safe_tag(tag: str) -> str:
@@ -93,6 +109,283 @@ def _build_execution_arrays(
         mr = float(get_min_risk_per_share(full))
         min_risk[ci] = max(mr, ex_min)
     return max_hold, recomp, qty, min_risk
+
+
+def run_combiner_fixed_config(
+    combiner_yaml: dict[str, Any],
+    *,
+    candidate_root: Path,
+    candidate_set: str | None,
+    candidate_ids: list[str] | None,
+    top_per_strategy: int,
+    asset: str,
+    symbol: str,
+    start: str,
+    end: str,
+    output_dir: Path,
+    data_dir: str = "data/raw/ibkr",
+    include_warnings: bool | None = None,
+    use_signal_cache: bool = True,
+    signal_cache_root: str | Path | None = None,
+    refresh_signal_cache: bool = False,
+    detailed: bool = False,
+    save_compact_trades: bool = True,
+    save_full_signal_logs: bool = False,
+    save_rejected_signals: bool = False,
+    stress_slippages: list[float] | None = None,
+    save_monthly_breakdown: bool = True,
+    save_equity: bool = False,
+    tag: str = "fixed",
+) -> dict[str, Any]:
+    """Run Layer 2 combiner for one fixed configuration and optional cost-stress slips.
+
+    Writes outputs directly under ``output_dir`` (no ``run_*`` subfolder). Prefer
+    ``detailed=False`` (Numba path) for walk-forward smoke to avoid heavy logs.
+    """
+    validate_common_combiner_config(combiner_yaml)
+    strategy_rules = combiner_yaml.get("strategy_rules") or {}
+
+    use_sc, sc_root, refresh_sc = resolve_precompute_signal_cache_settings(
+        combiner_yaml,
+        cli_use_signal_cache=bool(use_signal_cache),
+        cli_signal_cache_root=signal_cache_root,
+        cli_refresh_signal_cache=bool(refresh_signal_cache),
+    )
+
+    raw_specs = load_candidates(candidate_root)
+    raw_eligible: list[Any] = []
+    for sp in raw_specs:
+        rules = strategy_rules.get(sp.strategy) or {}
+        if rules.get("enabled", True) is False:
+            continue
+        raw_eligible.append(sp)
+
+    if candidate_ids:
+        merged_specs = filter_candidates(
+            raw_eligible,
+            candidate_ids=candidate_ids,
+            top_per_strategy=None,
+        )
+    else:
+        if not candidate_set:
+            raise ValueError("candidate_set or candidate_ids required")
+        sets_cfg = combiner_yaml.get("candidate_sets") or {}
+        if candidate_set not in sets_cfg:
+            raise ValueError(f"unknown candidate_set {candidate_set}")
+        profile = dict(sets_cfg[candidate_set])
+        if include_warnings is not None:
+            profile["include_warnings"] = include_warnings
+        merged_specs = select_candidate_set(raw_eligible, profile, top_per_strategy=top_per_strategy)
+
+    merged: list[Any] = []
+    for sp in merged_specs:
+        rules = strategy_rules.get(sp.strategy) or {}
+        if rules.get("enabled", True) is False:
+            continue
+        merged.append(apply_combiner_rules(sp, strategy_rules))
+
+    if not merged:
+        raise RuntimeError("no candidates after filters")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    profile_csv = output_dir / "candidate_precompute_profile.csv"
+
+    csm = precompute_candidate_signal_matrices(
+        candidates=merged,
+        asset=asset,
+        symbol=symbol,
+        start=start,
+        end=end,
+        data_dir=data_dir,
+        profile_csv_path=profile_csv,
+        use_signal_cache=use_sc,
+        signal_cache_root=sc_root,
+        refresh_signal_cache=refresh_sc,
+    )
+
+    _, _, pri, score, rank, ast, aen, _, _, _ = encode_candidate_metadata(merged)
+    enabled = np.ones(len(merged), dtype=np.int8)
+
+    bt_arr = csm.backtest_arrays
+    mats = {
+        "side": csm.side,
+        "valid": csm.valid,
+        "stop": csm.stop,
+        "target_preview": csm.target_preview,
+        "target_mode_code": csm.target_mode_code,
+        "target_r": csm.target_r,
+        "risk_preview": csm.risk_preview,
+    }
+    meta = csm.meta_arrays
+
+    slips = stress_slippages if stress_slippages is not None else [float(combiner_yaml.get("execution", {}).get("slippage_per_share", 0.01))]
+    metrics_by_slip: dict[float, dict[str, Any]] = {}
+    sim_by_slip: dict[float, dict[str, Any]] = {}
+
+    for slip in slips:
+        mc = copy.deepcopy(combiner_yaml)
+        mc.setdefault("execution", {})
+        mc["execution"]["slippage_per_share"] = float(slip)
+        comb_cfg = _combiner_cfg_from_yaml(mc)
+        max_hold_s, recomp_s, qty_s, min_risk_s = _build_execution_arrays(merged, mc, comb_cfg)
+
+        if detailed:
+            sim_out = simulate_combiner_legacy_logs(
+                backtest_arrays=bt_arr,
+                candidate_arrays=mats,
+                candidate_specs=merged,
+                session_date=meta["session_date"],
+                minute=meta["minute_from_open"],
+                ts_utc=meta["ts_utc"],
+                combiner_cfg=comb_cfg,
+                opposite_direction_skip_all=comb_cfg.opposite_direction_skip_all,
+                max_hold_per_candidate=max_hold_s,
+                recompute_target=recomp_s,
+                quantity_per_candidate=qty_s,
+                min_risk_per_candidate=min_risk_s,
+                enabled_mask=enabled,
+            )
+        else:
+            sim_out = simulate_combiner_numba(
+                backtest_arrays=bt_arr,
+                candidate_arrays=mats,
+                candidates=merged,
+                meta_arrays=meta,
+                combiner_cfg=comb_cfg,
+                enabled_mask=enabled,
+                max_hold_per_candidate=max_hold_s,
+                recompute_target=recomp_s,
+                quantity_per_candidate=qty_s,
+                min_risk_per_candidate=min_risk_s,
+                priority_float=pri,
+                score_float=score,
+                rank_int=rank,
+                active_start=ast,
+                active_end=aen,
+            )
+
+        trades_df = sim_out["trades_df"]
+        log_df = sim_out["candidate_signal_log_df"]
+        rej_df = sim_out["rejected_signals_df"]
+        rej_counts = sim_out.get("rejection_counts")
+
+        exec_cfg = execution_config_from_parts(
+            comb_cfg.slippage_per_share,
+            comb_cfg.commission_per_trade,
+            qty_s,
+        )
+        metrics = summarize_combiner(
+            trades_df,
+            rej_df,
+            log_df,
+            rejection_counts=rej_counts,
+            execution_config=exec_cfg,
+        )
+        metrics_by_slip[float(slip)] = metrics
+        sim_by_slip[float(slip)] = sim_out
+
+    base_slip = float(combiner_yaml.get("execution", {}).get("slippage_per_share", 0.01))
+    if base_slip not in metrics_by_slip and metrics_by_slip:
+        base_slip = float(min(metrics_by_slip.keys()))
+    metrics_base = metrics_by_slip.get(base_slip) or next(iter(metrics_by_slip.values()))
+    sim_base = sim_by_slip.get(base_slip) or next(iter(sim_by_slip.values()))
+
+    trades_df_out = sim_base["trades_df"]
+    equity_df_out = sim_base["equity_df"]
+
+    (output_dir / "metrics.json").write_text(json.dumps(metrics_base, indent=2, default=str), encoding="utf-8")
+
+    summary_row = {
+        "tag": tag,
+        "trades": metrics_base.get("trades"),
+        "total_r": metrics_base.get("total_r"),
+        "profit_factor": metrics_base.get("profit_factor"),
+        "profit_factor_r": metrics_base.get("profit_factor_r"),
+        "max_drawdown_r": metrics_base.get("max_drawdown_r"),
+        "avg_cost_r": metrics_base.get("avg_cost_r"),
+        "median_cost_r": metrics_base.get("median_cost_r"),
+        "combiner_score": metrics_base.get("combiner_score"),
+    }
+    pd.DataFrame([summary_row]).to_csv(output_dir / "summary.csv", index=False)
+
+    stress_rows: list[dict[str, Any]] = []
+    for slip in sorted(metrics_by_slip.keys()):
+        m = metrics_by_slip[slip]
+        stress_rows.append(
+            {
+                "slippage_per_share": slip,
+                "trades": m.get("trades"),
+                "total_r": m.get("total_r"),
+                "profit_factor": m.get("profit_factor"),
+                "profit_factor_r": m.get("profit_factor_r"),
+                "max_drawdown_r": m.get("max_drawdown_r"),
+                "avg_cost_r": m.get("avg_cost_r"),
+                "median_cost_r": m.get("median_cost_r"),
+            }
+        )
+    cost_stress_path = output_dir / "cost_stress.csv"
+    pd.DataFrame(stress_rows).to_csv(cost_stress_path, index=False)
+
+    trades_path: Path | None = None
+    equity_path: Path | None = None
+    monthly_path: Path | None = None
+    daily_path: Path | None = None
+
+    if save_compact_trades and trades_df_out is not None and len(trades_df_out):
+        cols = [c for c in _COMPACT_TRADE_COLS_PREFERRED if c in trades_df_out.columns]
+        compact = trades_df_out[cols] if cols else trades_df_out
+        trades_path = output_dir / "compact_trades.csv"
+        compact.to_csv(trades_path, index=False)
+    elif trades_df_out is not None and len(trades_df_out):
+        trades_path = output_dir / "trades.csv"
+        trades_df_out.to_csv(trades_path, index=False)
+
+    if save_equity and equity_df_out is not None and len(equity_df_out):
+        equity_path = output_dir / "equity.csv"
+        equity_df_out.to_csv(equity_path, index=False)
+
+    if save_monthly_breakdown and trades_df_out is not None and len(trades_df_out):
+        from src.backtest.metrics import period_breakdown
+
+        monthly_path = output_dir / "monthly_breakdown.csv"
+        period_breakdown(trades_df_out, "M").to_csv(monthly_path, index=False)
+
+    if trades_df_out is not None and len(trades_df_out) and "daily_trade_number" in trades_df_out.columns:
+        g = trades_df_out.groupby("daily_trade_number", dropna=False)["r_multiple"].agg(["count", "sum"])
+        g = g.rename(columns={"count": "trades", "sum": "total_r"})
+        daily_path = output_dir / "daily_trade_number_breakdown.csv"
+        g.reset_index().to_csv(daily_path, index=False)
+
+    write_candidates_used(merged, output_dir / "candidates_used.csv")
+    dump_cfg = {
+        "combiner_yaml": combiner_yaml,
+        "run": {
+            "asset": asset,
+            "symbol": symbol,
+            "start": start,
+            "end": end,
+            "candidate_set": candidate_set,
+            "candidate_ids": candidate_ids,
+            "top_per_strategy": top_per_strategy,
+            "tag": tag,
+            "detailed": detailed,
+            "stress_slippages": slips,
+        },
+    }
+    (output_dir / "config_resolved.yaml").write_text(yaml.safe_dump(dump_cfg, sort_keys=False), encoding="utf-8")
+
+    return {
+        "metrics": metrics_base,
+        "metrics_by_slippage": metrics_by_slip,
+        "trades_path": trades_path,
+        "equity_path": equity_path,
+        "monthly_breakdown_path": monthly_path,
+        "daily_trade_number_breakdown_path": daily_path,
+        "cost_stress_path": cost_stress_path,
+        "output_dir": output_dir,
+        "signal_cache_root": str(sc_root),
+        "use_signal_cache": use_sc,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
