@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+# =============================================================================
+# Imports
+# =============================================================================
+
 import argparse
 import json
 import numbers
@@ -18,13 +22,14 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from src.combiner.postprocess import _merged_cfg_for_row
+from src.combiner.postprocess import _merged_cfg_for_row, cost_stress
 from src.combiner.run import run_combiner_fixed_config
 from src.utils.config_validation import validate_common_combiner_config
 
 from src.walkforward.mini_wfo_selection import (
     ComparisonRow,
     MiniWFOValidationError,
+    explain_row_eligibility,
     layer2_raw_combo_count,
     load_candidate_warnings,
     pick_best_row,
@@ -32,6 +37,9 @@ from src.walkforward.mini_wfo_selection import (
     validate_mini_wfo_config,
 )
 
+# =============================================================================
+# Config loading + CLI
+# =============================================================================
 
 def load_mini_wfo_config(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as f:
@@ -114,6 +122,10 @@ def run(argv: list[str] | None = None) -> int:
     return rc
 
 
+# =============================================================================
+# Small utilities (filesystem / YAML / typing hygiene)
+# =============================================================================
+
 def _run_cmd(cmd: list[str], *, cwd: Path) -> None:
     print(f"[mini_wfo] CMD: {' '.join(cmd)}", flush=True)
     rc = subprocess.run(cmd, cwd=str(cwd))
@@ -153,6 +165,9 @@ def _to_yaml_plain(obj: Any) -> Any:
         return [_to_yaml_plain(v) for v in obj]
     return str(obj)
 
+# =============================================================================
+# Train Layer 2 config builder
+# =============================================================================
 
 def _build_layer2_train_configs(
     cfg: dict[str, Any], *, exp_root: Path, cwd: Path, signal_cache_root_override: str | None = None
@@ -222,6 +237,9 @@ def _build_layer2_train_configs(
     _write_yaml(sweep_path, sweep_doc)
     return base_path, sweep_path
 
+# =============================================================================
+# Candidate ID hygiene (avoid collisions across experiments)
+# =============================================================================
 
 def _rename_candidate_prefix(selected_dir: Path, *, prefix: str) -> None:
     """Rename FAILED_ORB_001 -> MINIWFO_FAILED_ORB_001 and update YAML bodies + selected_candidates.csv."""
@@ -273,6 +291,9 @@ def _rename_candidate_prefix(selected_dir: Path, *, prefix: str) -> None:
         df["config_yaml"] = df["config_yaml"].map(_rewrite_cell)
     df.to_csv(csv_path, index=False)
 
+# =============================================================================
+# Layer 2 sweep helpers / curated export
+# =============================================================================
 
 def _latest_sweep_dir(root: Path) -> Path | None:
     if not root.is_dir():
@@ -299,6 +320,9 @@ def _copy_curated_train_outputs(exp_root: Path, analysis: Path) -> None:
         if src.is_file():
             shutil.copy2(src, exp_root / dst_name)
 
+# =============================================================================
+# Reference comparisons (from previously recorded smoke baselines)
+# =============================================================================
 
 def _reference_comparison_rows(test_window: str) -> list[ComparisonRow]:
     return [
@@ -332,6 +356,9 @@ def _reference_comparison_rows(test_window: str) -> list[ComparisonRow]:
         ),
     ]
 
+# =============================================================================
+# Main pipeline: Layer 1 → candidates → Layer 2 → postprocess → freeze → test
+# =============================================================================
 
 def _run_full_pipeline(
     cfg: dict[str, Any],
@@ -583,6 +610,15 @@ def _run_full_pipeline(
             "mini-WFO: no eligible Layer 2 system after train-only gates; check sweep/postprocess outputs."
         )
 
+    _write_selection_audit(
+        exp_root=exp_root,
+        cfg=cfg,
+        behavior_df=behavior_df.head(bh_top) if len(behavior_df) else behavior_df,
+        cost_df=cost_df,
+        selected_row=best,
+        selection_meta=audit,
+    )
+
     with base_cfg_path.open(encoding="utf-8") as f:
         base_yaml = yaml.safe_load(f)
     validate_common_combiner_config(base_yaml)
@@ -742,6 +778,18 @@ def _run_full_pipeline(
         )
     (exp_root / "comparison_to_fixed_smoke.md").write_text("\n".join(cmp_md) + "\n", encoding="utf-8")
 
+    # LOOKAHEAD diagnostic only (never used for selection).
+    _write_oracle_diagnostic(
+        exp_root=exp_root,
+        cfg=cfg,
+        base_layer2_config_path=base_cfg_path,
+        behavior_df=behavior_df,
+        cost_df_train=cost_df,
+        selected_row=best,
+        top_n=min(50, len(behavior_df)) if len(behavior_df) else 0,
+        signal_cache_root_override=str(signal_cache_root) if signal_cache_root else None,
+    )
+
     decision = _classify_decision(m_last, test_root / "monthly_breakdown.csv", test_root / "cost_stress.csv")
     fill = _enrich_summary_placeholders(exp_root, best)
     summary_md = _build_final_summary(cfg, exp_root, decision, m_last, fill)
@@ -750,12 +798,249 @@ def _run_full_pipeline(
     print(f"[mini_wfo] DONE decision={decision} root={exp_root}", flush=True)
     return 0
 
+# =============================================================================
+# Reporting helpers (summary fill + decision heuristics)
+# =============================================================================
+
 
 def _md_table(df: pd.DataFrame) -> str:
     try:
         return df.to_markdown(index=False)
     except Exception:
         return df.to_string(index=False)
+
+
+def _write_selection_audit(
+    *,
+    exp_root: Path,
+    cfg: dict[str, Any],
+    behavior_df: pd.DataFrame,
+    cost_df: pd.DataFrame | None,
+    selected_row: pd.Series,
+    selection_meta: dict[str, Any],
+) -> None:
+    """Write selection_audit.{csv,md,json} under the run root."""
+    layer2_meta = cfg.get("layer2") or {}
+    sel = (layer2_meta.get("selection") or {}).copy()
+    primary_sets = set(layer2_meta.get("primary_candidate_sets") or [])
+    diagnostic_sets = set(layer2_meta.get("diagnostic_candidate_sets") or [])
+
+    warnings_map = load_candidate_warnings(exp_root / "train_selected_candidates.csv")
+
+    slip002_by_ur: dict[int, float] | None = None
+    if cost_df is not None and len(cost_df) and "unique_rank" in cost_df.columns:
+        sub = cost_df[cost_df["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9]
+        slip002_by_ur = {}
+        for ur, g in sub.groupby("unique_rank"):
+            slip002_by_ur[int(ur)] = float(g.iloc[0].get("total_r", 0.0) or 0.0)
+
+    rows: list[dict[str, Any]] = []
+    for _, r in behavior_df.iterrows():
+        eligible, reasons, _ann = explain_row_eligibility(
+            r,
+            sel=sel,
+            cost_slip_002_by_unique_rank=slip002_by_ur,
+            warnings_by_candidate=warnings_map,
+            primary_candidate_sets=primary_sets,
+            diagnostic_candidate_sets=diagnostic_sets,
+        )
+        rows.append(
+            {
+                "unique_rank": int(r.get("unique_rank", -1) or -1),
+                "candidate_set": r.get("candidate_set"),
+                "top_per_strategy": r.get("top_per_strategy"),
+                "max_trades_per_day": r.get("max_trades_per_day"),
+                "daily_max_loss_r": r.get("daily_max_loss_r"),
+                "cooldown_after_loss_minutes": r.get("cooldown_after_loss_minutes"),
+                "priority_policy": r.get("priority_policy"),
+                "candidate_ids_json": r.get("candidate_ids_json"),
+                "train_trades": r.get("trades"),
+                "train_total_r": r.get("total_r"),
+                "train_profit_factor_r": r.get("profit_factor_r", r.get("profit_factor")),
+                "train_max_drawdown_r": r.get("max_drawdown_r"),
+                "train_slip_0_02_total_r": (
+                    slip002_by_ur.get(int(r.get("unique_rank") or -1)) if slip002_by_ur else None
+                ),
+                "eligible": bool(eligible),
+                "rejection_reasons": "|".join(reasons),
+            }
+        )
+
+    df_out = pd.DataFrame(rows)
+    df_out.to_csv(exp_root / "selection_audit.csv", index=False)
+
+    md_lines = [
+        "# Mini-WFO selection audit (train-only)",
+        "",
+        "This audit explains why the frozen system was selected **using train only**.",
+        "",
+        "## Selected system (train-selected)",
+        "",
+        f"- candidate_set: **{selected_row.get('candidate_set')}**",
+        f"- candidate_ids_json: `{selected_row.get('candidate_ids_json')}`",
+        f"- train_trades: {selected_row.get('trades')} train_total_r: {selected_row.get('total_r')} "
+        f"train_pf_r: {selected_row.get('profit_factor_r', selected_row.get('profit_factor'))} "
+        f"train_maxDD_r: {selected_row.get('max_drawdown_r')}",
+        "",
+        "## Systems considered (behavior-unique table → eligibility)",
+        "",
+        _md_table(df_out.head(80)) if len(df_out) else "*(no rows)*",
+        "",
+        "## Key question",
+        "",
+        "Did mini-WFO select a narrow candidate_set because it was truly best on train, or because filters eliminated broader systems?",
+        "",
+        f"- behavior_unique_rows_available: **{len(behavior_df)}**",
+        f"- eligible_rows_after_filters: **{int(df_out['eligible'].sum()) if 'eligible' in df_out.columns and len(df_out) else 0}**",
+        "",
+    ]
+    (exp_root / "selection_audit.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+
+    out_json = {
+        "train_window": cfg.get("train") or {},
+        "test_window": cfg.get("test") or {},
+        "strategy_universe_layer1": (cfg.get("layer1") or {}).get("strategies") or [],
+        "optional_diagnostics_layer1": (cfg.get("layer1") or {}).get("allow_optional_diagnostics") or [],
+        "layer2_grid_raw_size": layer2_raw_combo_count((layer2_meta.get("grid") or {})),
+        "selection_rules": sel,
+        "selection_meta": selection_meta,
+        "selected_candidate_set": str(selected_row.get("candidate_set", "")),
+        "selected_candidate_ids": json.loads(str(selected_row.get("candidate_ids_json"))),
+        "systems_considered": df_out.to_dict(orient="records"),
+    }
+    (exp_root / "selection_audit.json").write_text(json.dumps(out_json, indent=2, default=str), encoding="utf-8")
+
+
+def _write_oracle_diagnostic(
+    *,
+    exp_root: Path,
+    cfg: dict[str, Any],
+    base_layer2_config_path: Path,
+    behavior_df: pd.DataFrame,
+    cost_df_train: pd.DataFrame | None,
+    selected_row: pd.Series,
+    top_n: int = 50,
+    signal_cache_root_override: str | None = None,
+) -> None:
+    """LOOKAHEAD diagnostic: evaluate top-N train systems on test; never used for selection."""
+    out_csv = exp_root / "oracle_diagnostic.csv"
+    out_md = exp_root / "oracle_diagnostic.md"
+
+    if behavior_df is None or len(behavior_df) == 0:
+        out_csv.write_text("", encoding="utf-8")
+        out_md.write_text("# ORACLE / LOOKAHEAD DIAGNOSTIC (empty)\n\nNo behavior-unique rows available.\n", encoding="utf-8")
+        return
+
+    # Train cost stress at 0.02 (for reporting only).
+    train_slip002_by_ur: dict[int, float] = {}
+    if cost_df_train is not None and len(cost_df_train) and "unique_rank" in cost_df_train.columns:
+        sub = cost_df_train[cost_df_train["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9]
+        for ur, g in sub.groupby("unique_rank"):
+            train_slip002_by_ur[int(ur)] = float(g.iloc[0].get("total_r", 0.0) or 0.0)
+
+    # Evaluate on test using existing cost_stress helper (precompute once; loop over top-N rows).
+    oracle_root = exp_root / "_oracle_tmp"
+    oracle_root.mkdir(parents=True, exist_ok=True)
+    test = cfg["test"]
+
+    # cost_stress expects unique_rank and the config knobs present.
+    head = behavior_df.head(int(top_n)).copy()
+    if "unique_rank" not in head.columns:
+        head.insert(0, "unique_rank", range(1, len(head) + 1))
+
+    test_stress_df = cost_stress(
+        unique_df=head,
+        output_root=oracle_root,
+        candidate_root=Path(str((cfg.get("paths") or {}).get("output_root", exp_root)))  # unused; overwritten below
+        if False
+        else Path(exp_root / "train_candidates" / "selected_candidates"),
+        base_config_path=base_layer2_config_path,
+        asset=str(cfg.get("asset", "equity")),
+        symbol=str(cfg.get("symbol", "QQQ")),
+        start=str(test["start"]),
+        end=str(test["end"]),
+        data_dir="data/raw/ibkr",
+        top_n=int(top_n),
+        use_signal_cache=True,
+        signal_cache_root=signal_cache_root_override or (cfg.get("cache") or {}).get("signal_cache_root"),
+    )
+
+    def _pick(df: pd.DataFrame, *, slip: float) -> pd.DataFrame:
+        return df[(df["slippage_per_share"].astype(float) - slip).abs() < 1e-9].copy()
+
+    base01 = _pick(test_stress_df, slip=0.01)
+    base02 = _pick(test_stress_df, slip=0.02)
+
+    def _best_row(df: pd.DataFrame, col: str, *, require_pos: bool = False) -> pd.Series | None:
+        if df is None or len(df) == 0 or col not in df.columns:
+            return None
+        d = df.copy()
+        if require_pos:
+            d = d[d[col].astype(float) > 0]
+        if len(d) == 0:
+            return None
+        return d.sort_values(col, ascending=False, na_position="last").iloc[0]
+
+    r_selected = selected_row
+    r_best_tr = _best_row(base01, "total_r")
+    r_best_pf = _best_row(base01, "profit_factor_r")
+    r_best_cost02 = _best_row(base02, "total_r", require_pos=True)
+
+    def _row_out(rank_type: str, r: pd.Series | None) -> dict[str, Any]:
+        if r is None:
+            return {"rank_type": rank_type}
+        ur = int(r.get("unique_rank", -1) or -1)
+        return {
+            "rank_type": rank_type,
+            "candidate_set": r.get("candidate_set"),
+            "top_per_strategy": r.get("top_per_strategy"),
+            "max_trades_per_day": r.get("max_trades_per_day"),
+            "daily_max_loss_r": r.get("daily_max_loss_r"),
+            "cooldown": r.get("cooldown_after_loss_minutes"),
+            "priority_policy": r.get("priority_policy"),
+            "candidate_ids": r.get("candidate_ids_json"),
+            "train_total_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("total_r"))
+            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
+            else None,
+            "train_pf_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("profit_factor_r"))
+            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
+            else None,
+            "train_maxdd_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("max_drawdown_r"))
+            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
+            else None,
+            "train_0_02_total_r": train_slip002_by_ur.get(ur),
+            "test_total_r": r.get("total_r"),
+            "test_pf_r": r.get("profit_factor_r"),
+            "test_maxdd_r": r.get("max_drawdown_r"),
+            "test_0_02_total_r": float(
+                base02[base02["unique_rank"] == ur].iloc[0].get("total_r")
+            )
+            if len(base02[base02["unique_rank"] == ur])
+            else None,
+            "interpretation": "ORACLE (LOOKAHEAD): evaluated on test; never selectable.",
+        }
+
+    out = pd.DataFrame(
+        [
+            _row_out("selected_train", r_selected),
+            _row_out("oracle_best_test_total_r", r_best_tr),
+            _row_out("oracle_best_test_pf_r", r_best_pf),
+            _row_out("oracle_best_test_cost_0_02", r_best_cost02),
+        ]
+    )
+    out.to_csv(out_csv, index=False)
+    md = [
+        "# ORACLE / LOOKAHEAD DIAGNOSTIC ONLY",
+        "",
+        "**NOT SELECTABLE.** This is a diagnostic that evaluates train-derived candidate systems on the held-out test window.",
+        "",
+        f"- evaluated_top_n: **{int(top_n)}**",
+        f"- test_window: **{cfg['test']['start']} → {cfg['test']['end']}**",
+        "",
+        _md_table(out),
+        "",
+    ]
+    out_md.write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
 def _enrich_summary_placeholders(exp_root: Path, best: pd.Series | None) -> dict[str, str]:

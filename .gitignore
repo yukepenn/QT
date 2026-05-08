@@ -58,6 +58,9 @@ src/walkforward/results/**/candidate_signal_log.csv
 src/walkforward/results/**/rejected_signals.csv
 src/walkforward/results/**/top_runs/
 src/walkforward/results/**/sweep_*/
+src/walkforward/results/**/_oracle_tmp/
+src/walkforward/results/**/train_layer1/
+src/walkforward/results/**/train_layer2/train_layer2_postprocess/
 src/walkforward/results/**/compact_trades.csv
 src/walkforward/results/**/candidate_precompute_profile*.csv
 src/walkforward/results/**/candidate_precompute_profile_summary.*

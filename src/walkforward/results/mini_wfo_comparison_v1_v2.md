@@ -1,0 +1,14 @@
+# Mini-WFO comparison (v1 / v2A / v2B)
+
+                                                  run_id train_start  train_end test_start   test_end                                                                                                                         strategies_used selected_candidate_set                                    selected_candidate_ids  train_total_r  train_pf_r  train_maxdd_r  train_0_02_total_r  test_trades  test_total_r  test_pf  test_pf_r  test_maxdd_r  test_0_02_total_r  test_0_03_total_r worst_month  worst_month_r  positive_month_ratio  monthly_concentration_ratio decision
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1  2023-01-01 2024-12-31 2025-01-01 2026-04-30                                                                                  failed_orb,gap_acceptance_failure,prior_day_level_trap               gap_only                        MINIWFO_GAP_ACCEPTANCE_FAILURE_001      20.001084    1.338558      -6.023748           15.696617           89      1.306924 1.202031   1.028720    -12.263664          -1.164571          -2.307094     2025-12      -9.083297                0.6875                     0.319425  CAUTION
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test  2023-01-01 2024-12-31 2025-01-01 2026-04-30 failed_orb,gap_acceptance_failure,prior_day_level_trap,orb_retest_continuation,orb_continuation,vwap_reclaim_reject,vwap_trend_pullback               gap_only                        MINIWFO_GAP_ACCEPTANCE_FAILURE_001      20.001084    1.338558      -6.023748           15.696617           89      1.306924 1.202031   1.028720    -12.263664          -1.164571          -2.307094     2025-12      -9.083297                0.6875                     0.319425  CAUTION
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test  2020-01-01 2024-12-31 2025-01-01 2026-04-30 failed_orb,gap_acceptance_failure,prior_day_level_trap,orb_retest_continuation,orb_continuation,vwap_reclaim_reject,vwap_trend_pullback               gap_only MINIWFO_FAILED_ORB_001,MINIWFO_GAP_ACCEPTANCE_FAILURE_001      48.191527    1.153688     -14.752563           34.184445          205     -5.920676 1.006718   0.936197    -22.880289          -8.343194         -11.139718     2025-12      -8.534961                0.4375                     0.202577     FAIL
+
+## Interpretation prompts
+
+1. Did broader opening/trap (v2A) improve robustness vs v1?
+2. Did longer training (v2B) improve robustness vs v1?
+3. Did the selected candidate_set change?
+4. Did any variant survive 0.02 slippage on test?
+

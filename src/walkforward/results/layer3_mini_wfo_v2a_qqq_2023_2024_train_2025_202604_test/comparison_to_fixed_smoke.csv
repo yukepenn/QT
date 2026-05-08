@@ -1,0 +1,4 @@
+system,source_type,selected_using,test_window,trades,total_r,PF,PF_R,maxDD_r,slip_0_02_total_r,slip_0_03_total_r,interpretation
+trap_recent_top1 (smoke ref),fixed_smoke_reference,recent_window_in_sample,2025-01-01 — 2026-04-30,323,69.057,1.516,>1 (ref),-12.082,(see smoke),(see smoke),High headline R; selected on recent window — not causal train→test.
+opening_pair_full_history (smoke ref),fixed_smoke_reference,full_history_pair,2025-01-01 — 2026-04-30,204,7.547,1.146,>1 (ref),-18.888,(see smoke),(see smoke),Lower R; broader selection context — use as sanity anchor only.
+qqq_mini_wfo_v2a_2023_2024_train_2025_202604_test_frozen_rank1,mini_wfo_frozen,train_2023_2024_only,2025-01-01 — 2026-04-30,89,1.306923882982659,1.2020314701738017,1.028720272070243,-12.263663716159586,-1.1645705643308029,-2.3070942797701623,"Causal path: Layer 1+2 on train only, frozen for test."

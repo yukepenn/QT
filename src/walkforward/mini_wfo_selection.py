@@ -11,7 +11,19 @@ from typing import Any
 import pandas as pd
 import yaml
 
-PRIMARY_ALLOWED = frozenset({"failed_orb", "gap_acceptance_failure", "prior_day_level_trap"})
+# Keep this allow-list narrow and explicit: mini-WFO is intended to be causal and
+# family-focused (not a broad all-strategy search).
+PRIMARY_ALLOWED = frozenset(
+    {
+        "failed_orb",
+        "gap_acceptance_failure",
+        "prior_day_level_trap",
+        "orb_retest_continuation",
+        "orb_continuation",
+        "vwap_reclaim_reject",
+        "vwap_trend_pullback",
+    }
+)
 
 
 class MiniWFOValidationError(ValueError):
@@ -109,6 +121,74 @@ def _parse_ids(cell: Any) -> list[str]:
         except json.JSONDecodeError:
             pass
     return []
+
+
+def explain_row_eligibility(
+    row: pd.Series,
+    *,
+    sel: dict[str, Any],
+    cost_slip_002_by_unique_rank: dict[int, float] | None,
+    warnings_by_candidate: dict[str, str],
+    primary_candidate_sets: set[str] | None = None,
+    diagnostic_candidate_sets: set[str] | None = None,
+) -> tuple[bool, list[str], dict[str, Any]]:
+    """Return (eligible, rejection_reasons, annotations) for one train-row."""
+    reasons: list[str] = []
+    ann: dict[str, Any] = {}
+
+    ur = int(row.get("unique_rank", -1) or -1)
+    ann["unique_rank"] = ur
+    ann["candidate_set"] = str(row.get("candidate_set", ""))
+
+    min_tr = int(sel.get("require_min_trades", 0) or 0)
+    trades = float(row.get("trades", 0) or 0)
+    ann["trades"] = trades
+    if trades < min_tr:
+        reasons.append(f"min_trades<{min_tr}")
+
+    if bool(sel.get("require_positive_total_r")):
+        tr = float(row.get("total_r", 0.0) or 0.0)
+        ann["train_total_r"] = tr
+        if tr <= 0.0:
+            reasons.append("train_total_r_nonpositive")
+
+    if bool(sel.get("require_pf_r_above_1")):
+        if "profit_factor_r" in row.index and row.get("profit_factor_r") is not None:
+            pfr = float(row.get("profit_factor_r") or 0.0)
+        else:
+            pfr = float(row.get("profit_factor") or 0.0)
+        ann["train_pf_r_or_pf"] = pfr
+        if pfr <= 1.0:
+            reasons.append("pf_r_or_pf_not_above_1")
+
+    floor = float(sel.get("max_drawdown_r_floor", -50.0))
+    dd = float(row.get("max_drawdown_r", -999.0) or -999.0)
+    ann["train_maxdd_r"] = dd
+    if dd < floor:
+        reasons.append(f"max_drawdown_r<{floor}")
+
+    slip002 = None
+    if cost_slip_002_by_unique_rank is not None and ur >= 0:
+        slip002 = cost_slip_002_by_unique_rank.get(ur)
+    ann["train_slip_0_02_total_r"] = slip002
+    if bool(sel.get("require_cost_0_02_positive")) and cost_slip_002_by_unique_rank is not None:
+        if slip002 is None:
+            reasons.append("missing_cost_stress_0_02")
+        elif float(slip002) <= 0.0:
+            reasons.append("cost_stress_0_02_nonpositive")
+
+    ids = _parse_ids(row.get("candidate_ids_json"))
+    ann["candidate_ids"] = ids
+    has_relaxed = any(str(warnings_by_candidate.get(i, "")).strip() for i in ids)
+    ann["uses_relaxed_candidate"] = bool(has_relaxed)
+
+    cset = str(row.get("candidate_set", ""))
+    if primary_candidate_sets is not None:
+        ann["is_primary_candidate_set"] = cset in primary_candidate_sets
+    if diagnostic_candidate_sets is not None:
+        ann["is_diagnostic_candidate_set"] = cset in diagnostic_candidate_sets
+
+    return (len(reasons) == 0), reasons, ann
 
 
 def filter_eligible_train_systems(

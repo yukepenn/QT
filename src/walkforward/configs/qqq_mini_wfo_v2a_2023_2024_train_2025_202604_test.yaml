@@ -1,0 +1,163 @@
+experiment:
+  name: qqq_mini_wfo_v2a_2023_2024_train_2025_202604_test
+  purpose: causal_mini_wfo_single_split_broader_family
+  live_ready: false
+  note: >
+    Mini-WFO v2A: broaden the strategy universe to opening/trap families,
+    but keep a single causal split. Train-only selection, freeze, and
+    one held-out test. Not full WFO; not live-ready.
+
+asset: equity
+symbol: QQQ
+
+train:
+  start: 2023-01-01
+  end: 2024-12-31
+
+test:
+  start: 2025-01-01
+  end: 2026-04-30
+
+paths:
+  output_root: src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test
+  train_layer1_root: src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test/train_layer1
+  train_layer2_root: src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test/train_layer2
+  frozen_system_dir: src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test/frozen_system
+  test_root: src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test/test
+
+layer1:
+  strategies:
+    - failed_orb
+    - gap_acceptance_failure
+    - prior_day_level_trap
+    - orb_retest_continuation
+    - orb_continuation
+  allow_optional_diagnostics:
+    - vwap_reclaim_reject
+    - vwap_trend_pullback
+  primary_strategies:
+    - failed_orb
+    - gap_acceptance_failure
+    - prior_day_level_trap
+    - orb_retest_continuation
+    - orb_continuation
+  include_orb_retest: true
+  include_orb_continuation: true
+  include_vwap: true
+  tag: mini_wfo_v2a_train_2023_2024
+  top_per_strategy: 5
+
+candidate_selection:
+  strict:
+    min_trades: 40
+    min_profit_factor: 1.02
+    min_total_r: 0.0
+    max_drawdown_r: -50.0
+    max_avg_bars_held: 120
+    max_eod_count: 0
+    max_end_of_data_count: 0
+  relaxed:
+    enabled: true
+    min_trades: 25
+    min_profit_factor: 1.00
+    min_total_r: -5.0
+    max_drawdown_r: -70.0
+  max_candidates_per_strategy: 5
+
+layer2:
+  candidate_sets:
+    gap_only:
+      include_warnings: false
+      strategies: [gap_acceptance_failure]
+    failed_only:
+      include_warnings: false
+      strategies: [failed_orb]
+    prior_day_only:
+      include_warnings: false
+      strategies: [prior_day_level_trap]
+    failed_gap:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure]
+    trap_trio:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure, prior_day_level_trap]
+    opening_no_continuation:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure, orb_retest_continuation]
+    opening_no_retest:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure, orb_continuation]
+    opening_full:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure, orb_retest_continuation, orb_continuation]
+    strict_core:
+      include_warnings: false
+      strategies:
+        - failed_orb
+        - gap_acceptance_failure
+        - prior_day_level_trap
+        - orb_retest_continuation
+        - orb_continuation
+
+  primary_candidate_sets:
+    - gap_only
+    - failed_only
+    - failed_gap
+    - trap_trio
+    - opening_no_continuation
+    - opening_no_retest
+    - opening_full
+
+  diagnostic_candidate_sets:
+    - strict_core
+
+  grid:
+    candidate_set:
+      - gap_only
+      - failed_only
+      - prior_day_only
+      - failed_gap
+      - trap_trio
+      - opening_no_continuation
+      - opening_no_retest
+      - opening_full
+      - strict_core
+    top_per_strategy: [1, 2]
+    system.max_trades_per_day: [1, 2]
+    system.daily_max_loss_r: [-1.5, -2.0]
+    system.cooldown_after_loss_minutes: [0, 15]
+    conflict.priority_policy: [metadata_priority]
+
+  selection:
+    prefer_primary_candidate_sets: true
+    penalize_relaxed_candidates: true
+    require_min_trades: 80
+    require_positive_total_r: true
+    require_pf_r_above_1: true
+    require_cost_0_02_positive: true
+    max_drawdown_r_floor: -50.0
+    behavior_dedupe_top: 50
+    cost_stress_top: 10
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  stress_slippage_per_share: [0.02, 0.03]
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+  max_open_positions: 1
+
+cache:
+  use_signal_cache: true
+  signal_cache_root: .cache/qt/mini_wfo_v2a_candidate_signals
+
+outputs:
+  save_curated_only: true
+  save_compact_trades: false
+  save_full_signal_logs: false
+  save_rejected_signals: false
+  save_monthly_breakdown: true
+  save_cost_stress: true
+

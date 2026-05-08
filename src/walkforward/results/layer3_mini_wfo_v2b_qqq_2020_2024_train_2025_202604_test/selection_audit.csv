@@ -1,0 +1,7 @@
+unique_rank,candidate_set,top_per_strategy,max_trades_per_day,daily_max_loss_r,cooldown_after_loss_minutes,priority_policy,candidate_ids_json,train_trades,train_total_r,train_profit_factor_r,train_max_drawdown_r,train_slip_0_02_total_r,eligible,rejection_reasons
+-1,gap_only,1,1,-1.5,0,metadata_priority,"[""MINIWFO_GAP_ACCEPTANCE_FAILURE_001""]",320,41.05130629276429,1.2820052367050276,-7.029883192139597,,False,missing_cost_stress_0_02
+-1,prior_day_only,2,2,-1.5,0,metadata_priority,"[""MINIWFO_PRIOR_DAY_LEVEL_TRAP_001"", ""MINIWFO_PRIOR_DAY_LEVEL_TRAP_002""]",304,9.703062993394456,1.0547732503489975,-18.097554605153363,,False,missing_cost_stress_0_02
+-1,prior_day_only,1,1,-1.5,0,metadata_priority,"[""MINIWFO_PRIOR_DAY_LEVEL_TRAP_001""]",297,5.946638450662995,1.0341638995222513,-17.319742084106306,,False,missing_cost_stress_0_02
+-1,prior_day_only,2,2,-1.5,15,metadata_priority,"[""MINIWFO_PRIOR_DAY_LEVEL_TRAP_001"", ""MINIWFO_PRIOR_DAY_LEVEL_TRAP_002""]",301,7.337719856139625,1.0416700821125298,-18.33382659114855,,False,missing_cost_stress_0_02
+-1,failed_gap,1,1,-1.5,0,metadata_priority,"[""MINIWFO_FAILED_ORB_001"", ""MINIWFO_GAP_ACCEPTANCE_FAILURE_001""]",787,48.191527493664616,1.1536881398902417,-14.75256316585986,,False,missing_cost_stress_0_02
+-1,failed_gap,2,1,-1.5,0,metadata_priority,"[""MINIWFO_FAILED_ORB_001"", ""MINIWFO_FAILED_ORB_002"", ""MINIWFO_GAP_ACCEPTANCE_FAILURE_001"", ""MINIWFO_GAP_ACCEPTANCE_FAILURE_002""]",788,48.1738804348411,1.1536232157835309,-14.75256316585986,,False,missing_cost_stress_0_02
