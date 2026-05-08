@@ -6,6 +6,10 @@
 
 This document retains the **original design intent** for smoke vs full Layer 3 WFO.
 
+## Mini-WFO v1 (implemented)
+
+**Single causal split** (train-only selection, one held-out test): `src/walkforward/mini_wfo.py` with `src/walkforward/configs/qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml`. Produces its own Layer 1 manifest + `MINIWFO_*` candidate YAMLs, train-only Layer 2 sweep (heavy `sweep_*` local, gitignored), `frozen_system/selected_frozen_system.yaml`, and test CSV/MD under `src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1/`. This is **not** multi-fold WFO and **not** the same as smoke v1 (no pre-pinned frozen systems from prior research roots for selection).
+
 ---
 
 # Layer 3 smoke plan v1 (historical header — design intent)

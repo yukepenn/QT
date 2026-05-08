@@ -40,6 +40,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 
 - **Layer 3 smoke v1:** Run fixed-system temporal checks with `python src/walkforward/runner.py --config src/walkforward/configs/qqq_fixed_system_smoke_v1.yaml` (see `PROJECT_STATUS.md`). Still **not** full walk-forward and **not** live-ready.
 - **Layer 3 smoke diagnosis v1:** Component decomposition run: `python src/walkforward/runner.py --config src/walkforward/configs/qqq_fixed_system_diagnosis_v1.yaml --tag layer3_diagnosis --use-signal-cache` (optional `--signal-cache-root` on OneDrive). Outputs: `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`. **Not** mini-WFO.
+- **Layer 3 mini-WFO v1 (causal single split):** Train 2023–2024 → select Layer 1 + Layer 2 on train only → freeze → test 2025–2026 once: `python src/walkforward/mini_wfo.py --config src/walkforward/configs/qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml --tag mini_wfo_v1 --use-signal-cache --signal-cache-root <cache>` (`--validate-only`, `--resume-from layer2`, `--resume-from after_sweep`). Curated outputs: `src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1/`. **Not** full WFO.
 - User-approved **post-hardening** Layer 1 → selection → Layer 2 strict/relaxed → postprocess remains the baseline research loop. Details: `src/research/results/hardening_closeout_20260505.md`, `rerun_plan_after_hardening.md`, `tests/README.md`.
 - **Layer 2 precompute cleanup (2026-05-06):** `src/combiner/candidate.py` split into `candidate` / `precompute` / `diagnostics`; Layer 2 context cache matches Layer 1 intent **`(strategy, feature_key, strategy.context_key(cfg))`** (normalized); strategy instances cached; `candidate_precompute_profile_summary.csv` next to `candidate_precompute_profile.csv`. Summary: `src/research/results/layer2_precompute_cleanup_summary.md`. **No strategy logic or sweep grid changes.**
 - **Layer 2 persistent signal cache:** Optional on-disk cache for per-candidate signal arrays (`src/combiner/signal_cache.py`); default root `.cache/qt/candidate_signals` (gitignored). Flags: `--use-signal-cache`, `--signal-cache-root`, `--refresh-signal-cache`; optional YAML block `precompute:`. Summary: `src/research/results/layer2_signal_cache_summary.md`. Safe to delete cache dirs; research outputs only.
@@ -72,6 +73,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - **Frozen smoke configs (not live):** `src/combiner/configs/frozen/` and `src/combiner/configs/frozen/diagnosis/`
 - **Layer 3 smoke v1 results:** `src/walkforward/results/layer3_smoke_v1_qqq_fixed_systems/`
 - **Layer 3 diagnosis v1 results:** `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`
+- **Layer 3 mini-WFO v1 results:** `src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1/`
 
 **Active baselines (QQQ, post-hardening):**
 

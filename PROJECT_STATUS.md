@@ -6,7 +6,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 - **Layer 1:** per-strategy parameter sweeps → candidate library (`selected_candidates/*.yaml`).
 - **Layer 2:** combiner/router that evaluates candidate sets under simple system constraints (currently **max_open_positions=1**).
-- **Layer 3:** **smoke v1** + **component diagnosis v1** (`src/walkforward/`) — fixed frozen systems on fixed folds; diagnosis YAMLs under `src/combiner/configs/frozen/diagnosis/`; **full** rolling train→freeze→test WFO remains future work.
+- **Layer 3:** **smoke v1** + **component diagnosis v1** + **mini-WFO v1** (`src/walkforward/`) — smoke/diagnosis use fixed frozen systems on fixed folds; **mini-WFO** runs one causal train (2023–2024) / test (2025–2026) split with train-only selection; **full** rolling WFO remains future work.
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
@@ -23,6 +23,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
   - **Signal cache (disk):** `.cache/qt/candidate_signals` (gitignored), from `src/combiner/signal_cache.py`.
   - **FeatureStore (memory):** `src/features/feature_store.py`.
 - **Layer 3 smoke / diagnosis (research only):** `src/walkforward/runner.py` loads frozen system YAMLs and calls Layer 2 combiner over YAML-defined folds; **no** per-fold Layer 1/2 grid reruns.
+- **Layer 3 mini-WFO v1:** `src/walkforward/mini_wfo.py` orchestrates Layer 1 focused sweeps (narrow strategy list), `select_candidates`, Layer 2 sweep + postprocess, frozen `selected_frozen_system.yaml`, and one out-of-sample test — **not** live-ready.
 
 ## 3. Active research baselines (current)
 

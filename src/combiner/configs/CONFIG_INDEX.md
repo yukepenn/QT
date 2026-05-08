@@ -60,7 +60,12 @@ Directory: **`src/combiner/configs/frozen/diagnosis/`**
 - **Not** active trading configs; **not** live configs.
 - Decompose trap/opening families into single candidates, pairs, MTD variants, and full-history contrasts.
 
-## E. Legacy / deprecated (do not use for new decisions)
+## E. Layer 3 mini-WFO (`src/walkforward/configs/` — causal split harness)
+
+- **Status:** `mini_wfo.py` driver only — generates train-local Layer 2 base/sweep YAMLs under the run’s `train_layer2/` tree; not a default Layer 2 research baseline (use sections A–B for that).
+- **Example:** `qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml` — QQQ train 2023–2024 / test 2025–2026, narrowed strategy family, fixed 288-combo grid.
+
+## F. Legacy / deprecated (do not use for new decisions)
 
 - **`layer2_qqq_2020_20260430_v2_relaxed.yaml`** (+ sweep)
   - **candidate_root**: `src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates`

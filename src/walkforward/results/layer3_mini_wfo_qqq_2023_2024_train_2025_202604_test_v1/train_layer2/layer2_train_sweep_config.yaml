@@ -1,0 +1,33 @@
+name: layer2_mini_wfo_train_sweep
+base_config: src\walkforward\results\layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1\train_layer2\layer2_train_config.yaml
+grid:
+  candidate_set:
+  - failed_only
+  - gap_only
+  - failed_gap
+  - failed_gap_with_prior_day_diagnostic
+  top_per_strategy:
+  - 1
+  - 2
+  - 3
+  system.max_trades_per_day:
+  - 1
+  - 2
+  system.daily_max_loss_r:
+  - -1.5
+  - -2.0
+  - -3.0
+  system.cooldown_after_loss_minutes:
+  - 0
+  - 15
+  conflict.priority_policy:
+  - metadata_priority
+  - score_adjusted_priority
+fixed:
+  execution.commission_per_trade: 0.0
+  execution.slippage_per_share: 0.01
+  execution.eod_exit_minute: 389
+  execution.no_new_after_minute: 360
+  execution.recompute_target_from_entry: true
+  execution.min_risk_per_share: 0.03
+  system.max_open_positions: 1

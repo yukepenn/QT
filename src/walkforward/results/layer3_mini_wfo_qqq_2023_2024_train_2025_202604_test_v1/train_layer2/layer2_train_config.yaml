@@ -1,0 +1,45 @@
+name: layer2_mini_wfo_train
+candidate_root: src\walkforward\results\layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1\train_candidates\selected_candidates
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+system:
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -2.0
+  cooldown_after_loss_minutes: 15
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+  - candidate_score
+  - candidate_rank
+  - candidate_index
+  opposite_direction_policy: ''
+candidate_sets:
+  failed_only:
+    include_warnings: false
+    strategies:
+    - failed_orb
+  gap_only:
+    include_warnings: false
+    strategies:
+    - gap_acceptance_failure
+  failed_gap:
+    include_warnings: false
+    strategies:
+    - failed_orb
+    - gap_acceptance_failure
+  failed_gap_with_prior_day_diagnostic:
+    include_warnings: false
+    strategies:
+    - failed_orb
+    - gap_acceptance_failure
+    - prior_day_level_trap
+precompute:
+  use_signal_cache: true
+  signal_cache_root: C:\Users\Yuke Zhang\AppData\Local\qt\mini_wfo_candidate_signals

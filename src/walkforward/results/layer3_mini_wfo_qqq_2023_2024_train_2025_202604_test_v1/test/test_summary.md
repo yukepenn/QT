@@ -1,0 +1,85 @@
+# Mini-WFO test summary
+
+- **active_days**: 89
+- **avg_bars_held**: 30.95505617977528
+- **avg_cost_r**: 0.014100786098342526
+- **avg_daily_r**: 0.014684538011041113
+- **avg_daily_trade_count**: 1.0
+- **avg_net_pnl**: 0.19331460674158116
+- **avg_r**: 0.014684538011041113
+- **avg_r_by_daily_trade_number_json**: {"1": 0.014684538011041113}
+- **avg_risk_per_share**: 2.093820224719088
+- **best_day_r**: 1.2481617647058867
+- **best_trade_r**: 1.2481617647058867
+- **candidate_signals**: 0
+- **combiner_score**: 0.622770360753979
+- **cooldown_after_loss_rejections**: 0
+- **cooldown_rejections**: 0
+- **daily_loss_limit_rejections**: 0
+- **daily_profit_factor_r**: 1.028720272070243
+- **disabled_candidate_rejections**: 0
+- **end_of_data_count**: 0
+- **end_of_session_count**: 0
+- **eod_count**: 0
+- **estimated_round_trip_cost_per_share**: 0.02
+- **existing_position_rejections**: 0
+- **invalid_price_nan_rejections**: 0
+- **invalid_stop_side_rejections**: 0
+- **invalid_target_r_rejections**: 0
+- **invalid_target_side_rejections**: 0
+- **last_bar_no_entry_rejections**: 0
+- **low_trade_count**: False
+- **lower_priority_rejections**: 0
+- **max_daily_trade_count**: 1
+- **max_drawdown_pnl**: -24.822499999999877
+- **max_drawdown_r**: -12.263663716159586
+- **max_hold_count**: 10
+- **max_trades_reached_rejections**: 0
+- **max_trades_rejections**: 0
+- **median_cost_r**: 0.010695187165775374
+- **median_daily_r**: -1.0015313935681456
+- **median_r**: -1.0015313935681456
+- **median_risk_per_share**: 1.8700000000000045
+- **no_new_after_rejections**: 0
+- **opposite_direction_conflict_rejections**: 0
+- **p10_risk_per_share**: 0.6439999999999828
+- **p25_r**: -1.005681818181813
+- **p25_risk_per_share**: 1.2999999999999545
+- **p75_r**: 1.2434210526315848
+- **p90_cost_r**: 0.031138975966562867
+- **pct_trades_cost_r_gt_0_25**: 0.0
+- **pct_trades_cost_r_gt_0_50**: 0.0
+- **pct_trades_cost_r_gt_1_00**: 0.0
+- **pnl_by_candidate_json**: {"MINIWFO_GAP_ACCEPTANCE_FAILURE_001": 17.205000000000723}
+- **pnl_by_daily_trade_number_json**: {"1": 17.205000000000723}
+- **pnl_by_family_json**: {"gap_behavior": 17.205000000000723}
+- **pnl_by_strategy_json**: {"gap_acceptance_failure": 17.205000000000723}
+- **positive_day_rate**: 0.48314606741573035
+- **profit_factor**: 1.2020314701738017
+- **profit_factor_r**: 1.028720272070243
+- **profit_factor_r_by_daily_trade_number_json**: {"1": 1.028720272070243}
+- **r_by_candidate_json**: {"MINIWFO_GAP_ACCEPTANCE_FAILURE_001": 1.3069238829826615}
+- **r_by_daily_trade_number_json**: {"1": 1.306923882982659}
+- **r_by_family_json**: {"gap_behavior": 1.3069238829826615}
+- **r_by_strategy_json**: {"gap_acceptance_failure": 1.3069238829826615}
+- **rejected_by_reason_json**: {}
+- **rejected_signals**: 0
+- **risk_too_small_rejections**: 0
+- **selected_signals**: 0
+- **selection_rate**: 1.0
+- **session_boundary_no_entry_rejections**: 0
+- **std_r**: 1.0658804541873779
+- **stop_count**: 45
+- **target_count**: 34
+- **total_net_pnl**: 17.205000000000723
+- **total_r**: 1.306923882982659
+- **trades**: 89
+- **trades_by_candidate_json**: {"MINIWFO_GAP_ACCEPTANCE_FAILURE_001": 89}
+- **trades_by_daily_trade_number_json**: {"1": 89}
+- **trades_by_family_json**: {"gap_behavior": 89}
+- **trades_by_strategy_json**: {"gap_acceptance_failure": 89}
+- **win_rate**: 0.48314606741573035
+- **win_rate_by_daily_trade_number_json**: {"1": 0.48314606741573035}
+- **worst_day_r**: -1.027027027027002
+- **worst_trade_r**: -1.027027027027002
+- **wrong_time_window_rejections**: 0
