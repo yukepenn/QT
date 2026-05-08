@@ -1,0 +1,35 @@
+strategy: failed_orb
+
+# Refined diagnostic grid (QQQ only for now).
+# Purpose: test VWAP confirmation + tighter entry window + fail_window sensitivity.
+# Defaults must preserve prior behavior when new keys are unset.
+
+grid:
+  features.orb_open_minutes: [3, 5]
+  signal.side: [long_only]
+  signal.entry_start_minute: [3, 5]
+  signal.entry_end_minute: [30, 45, 60]
+  signal.fail_window_bars: [3, 5, 8]
+  signal.confirm_mode: [close_reclaim, momentum_turn]
+
+  # Alias supported: require_vwap_confirmation (preferred in refined grids).
+  signal.require_vwap_confirmation: [false, true]
+
+  risk.stop_mode: [failed_extreme]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.5, 2.0]
+  backtest.max_hold_minutes: [15, 30, 45]
+
+fixed:
+  signal.require_volume_climax: false
+  signal.min_close_location: 0.55
+  signal.min_volume_mult: 1.5
+  risk.atr_buffer: 0.10
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+

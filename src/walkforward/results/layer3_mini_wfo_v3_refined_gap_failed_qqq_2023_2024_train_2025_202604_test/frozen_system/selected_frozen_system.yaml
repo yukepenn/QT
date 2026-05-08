@@ -1,0 +1,67 @@
+system_id: qqq_mini_wfo_v3_refined_gap_failed_2023_2024_train_2025_202604_test_frozen_rank1
+source:
+  train_start: '2023-01-01'
+  train_end: '2024-12-31'
+  selected_from: train_layer2_behavior_unique
+  selected_rank: 1
+candidate_root: D:/OneDrive - Washington University in St. Louis/QT/src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test/train_candidates/selected_candidates
+candidate_ids:
+- MINIWFO_FAILED_ORB_001
+combiner:
+  name: layer2_mini_wfo_train
+  candidate_root: src\walkforward\results\layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test\train_candidates\selected_candidates
+  execution:
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    eod_exit_minute: 389
+    no_new_after_minute: 360
+    recompute_target_from_entry: true
+    min_risk_per_share: 0.03
+  system:
+    max_open_positions: 1
+    max_trades_per_day: 1
+    daily_max_loss_r: -1.5
+    cooldown_after_loss_minutes: 0
+  conflict:
+    priority_policy: metadata_priority
+    same_bar_policy: priority
+    tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+    opposite_direction_policy: ''
+  candidate_sets:
+    refined_gap_only:
+      include_warnings: false
+      strategies:
+      - gap_acceptance_failure
+    refined_failed_only:
+      include_warnings: false
+      strategies:
+      - failed_orb
+    refined_failed_gap:
+      include_warnings: false
+      strategies:
+      - failed_orb
+      - gap_acceptance_failure
+  precompute:
+    use_signal_cache: true
+    signal_cache_root: C:\Users\Yuke Zhang\AppData\Local\qt\mini_wfo_v3_candidate_signals
+cost:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  stress_slippage_per_share:
+  - 0.02
+  - 0.03
+selection_reason: 'Train-only gates + primary-set preference + MTD/cooldown/priority
+  policy scoring (audit={"input_rows": 3, "after_hard_filters": 3, "selected_candidate_set":
+  "refined_failed_only", "selected_score": -0.34033469910021275})'
+selection_metrics_train:
+  trades: 181
+  total_r: 12.408621380938571
+  profit_factor: 1.3305937818552835
+  profit_factor_r: 1.1349336264003334
+  max_drawdown_r: -10.538288407357072
+  combiner_score: null
+live_ready: false
+research_status: mini_wfo_selected_train_only

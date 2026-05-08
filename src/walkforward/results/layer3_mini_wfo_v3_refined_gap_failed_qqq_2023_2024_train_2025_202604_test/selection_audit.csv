@@ -1,0 +1,4 @@
+unique_rank,candidate_set,top_per_strategy,max_trades_per_day,daily_max_loss_r,cooldown_after_loss_minutes,priority_policy,candidate_ids_json,train_trades,train_total_r,train_profit_factor_r,train_max_drawdown_r,train_slip_0_02_total_r,eligible,rejection_reasons
+-1,refined_failed_only,1,1,-1.5,0,metadata_priority,"[""MINIWFO_FAILED_ORB_001""]",181,12.408621380938571,1.1349336264003334,-10.538288407357072,,False,missing_cost_stress_0_02
+-1,refined_failed_only,3,1,-1.5,0,metadata_priority,"[""MINIWFO_FAILED_ORB_001"", ""MINIWFO_FAILED_ORB_002"", ""MINIWFO_FAILED_ORB_003""]",182,11.39098096832592,1.122509410560088,-10.538288407357072,,False,missing_cost_stress_0_02
+-1,refined_gap_only,1,1,-1.5,0,metadata_priority,"[""MINIWFO_GAP_ACCEPTANCE_FAILURE_001""]",89,9.67457324836447,1.2814426296175312,-6.574430473229407,,False,missing_cost_stress_0_02

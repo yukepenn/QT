@@ -69,6 +69,8 @@ def _gap_af_numba(
     ee: int,
     mode_acc: int,
     min_norm: float,
+    min_gap_atr: float,
+    max_gap_atr: float,
     req_vw: int,
     confirm: int,
     hold_m: int,
@@ -96,6 +98,15 @@ def _gap_af_numba(
             continue
         if minute[i] < es or minute[i] > ee:
             continue
+        if min_gap_atr >= 0.0 or max_gap_atr >= 0.0:
+            ga = so[i] - pdc[i]
+            if atr[i] <= 0:
+                continue
+            gatr = math.fabs(ga) / atr[i]
+            if min_gap_atr >= 0.0 and gatr < min_gap_atr:
+                continue
+            if max_gap_atr >= 0.0 and gatr > max_gap_atr:
+                continue
         base = False
         if mode_acc != 0:
             if not (so[i] > pdc[i] and gpn[i] >= min_norm):
@@ -162,6 +173,13 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
             sig.get("entry_end_minute"),
         )
         validate_nonnegative_number("signal.min_gap_norm", sig.get("min_gap_norm", 0.3))
+        if sig.get("min_gap_size_atr") is not None:
+            validate_nonnegative_number("signal.min_gap_size_atr", sig.get("min_gap_size_atr"))
+        if sig.get("max_gap_size_atr") is not None:
+            validate_nonnegative_number("signal.max_gap_size_atr", sig.get("max_gap_size_atr"))
+        if sig.get("min_gap_size_atr") is not None and sig.get("max_gap_size_atr") is not None:
+            if float(sig["max_gap_size_atr"]) <= float(sig["min_gap_size_atr"]):
+                raise ValueError("signal.max_gap_size_atr must be > signal.min_gap_size_atr")
         confirm = str(sig.get("confirm_mode", "break_pullback"))
         if confirm not in ("break_pullback", "reclaim_open", "reclaim_vwap"):
             raise ValueError(f"signal.confirm_mode invalid: {confirm!r}")
@@ -237,7 +255,13 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
         es = int(sig["entry_start_minute"])
         ee = int(sig["entry_end_minute"])
         min_norm = float(sig.get("min_gap_norm", 0.3))
-        req_vw = int(bool(sig.get("require_vwap_side", False)))
+        # Backward-compatible alias: require_vwap_context (prefer it if present).
+        req_vw_raw = sig.get("require_vwap_context")
+        if req_vw_raw is None:
+            req_vw_raw = sig.get("require_vwap_side", False)
+        req_vw = int(bool(req_vw_raw))
+        min_gap_atr = float(sig.get("min_gap_size_atr")) if sig.get("min_gap_size_atr") is not None else -1.0
+        max_gap_atr = float(sig.get("max_gap_size_atr")) if sig.get("max_gap_size_atr") is not None else -1.0
         confirm = str(sig.get("confirm_mode", "break_pullback"))
         hold_m = int(feat.get("opening_hold_minutes", 10))
         req_hold = int(bool(sig.get("require_open_hold", True)))
@@ -269,6 +293,8 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
             ee,
             mode_acc,
             min_norm,
+            min_gap_atr,
+            max_gap_atr,
             req_vw,
             ci,
             hold_m,
@@ -324,7 +350,9 @@ class GapAcceptanceFailureStrategy(BaseStrategy):
             int(sig["entry_start_minute"]),
             int(sig["entry_end_minute"]),
             float(sig.get("min_gap_norm", 0.3)),
-            bool(sig.get("require_vwap_side", False)),
+            bool(sig.get("require_vwap_context")) if sig.get("require_vwap_context") is not None else bool(sig.get("require_vwap_side", False)),
+            (float(sig.get("min_gap_size_atr")) if sig.get("min_gap_size_atr") is not None else None),
+            (float(sig.get("max_gap_size_atr")) if sig.get("max_gap_size_atr") is not None else None),
             str(sig.get("confirm_mode", "break_pullback")),
             int(feat.get("opening_hold_minutes", 10)),
             str(sig.get("atr_column", "atr_like_15")),

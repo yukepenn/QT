@@ -1,0 +1,11 @@
+{
+  "symbol": "QQQ",
+  "asset": "equity",
+  "start": "2025-12-01",
+  "end": "2025-12-31",
+  "roots": [
+    "D:/OneDrive - Washington University in St. Louis/QT/src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1",
+    "D:/OneDrive - Washington University in St. Louis/QT/src/walkforward/results/layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test",
+    "D:/OneDrive - Washington University in St. Louis/QT/src/walkforward/results/layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test"
+  ]
+}

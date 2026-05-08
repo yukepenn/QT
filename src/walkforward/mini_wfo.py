@@ -106,6 +106,10 @@ def run(argv: list[str] | None = None) -> int:
         print(f"  output_root={exp_root}")
         print(f"  strategies primary={(cfg.get('layer1') or {}).get('strategies')}")
         print(f"  optional diagnostics={(cfg.get('layer1') or {}).get('allow_optional_diagnostics')}")
+        if isinstance(((cfg.get("layer1") or {}).get("testing_configs")), dict) and (cfg.get("layer1") or {}).get(
+            "testing_configs"
+        ):
+            print(f"  testing_configs overrides={list(((cfg.get('layer1') or {}).get('testing_configs') or {}).keys())}")
         print(f"  signal_cache: use={use_cache} root={sc_root}")
         return 0
 
@@ -390,10 +394,10 @@ def _run_full_pipeline(
     diag = [str(x) for x in (l1.get("allow_optional_diagnostics") or [])]
     strategies_csv = ",".join(primary + diag)
     tag_l1 = str(l1.get("tag") or tag)
+    testing_cfgs = (l1.get("testing_configs") or {}) if isinstance(l1.get("testing_configs"), dict) else {}
 
     if resume_from == "all":
-        _run_cmd(
-            [
+        l1_cmd = [
                 sys.executable,
                 str(cwd / "src/research/run_layer1_focused.py"),
                 "--asset",
@@ -414,9 +418,10 @@ def _run_full_pipeline(
                 str(int(l1.get("top_per_strategy", 5)) * 20),
                 "--min-trades",
                 "20",
-            ],
-            cwd=cwd,
-        )
+        ]
+        for strat, pth in sorted(testing_cfgs.items()):
+            l1_cmd.extend(["--testing-config-override", f"{strat}={pth}"])
+        _run_cmd(l1_cmd, cwd=cwd)
 
         shutil.copy2(layer1_root / "sweep_manifest.csv", exp_root / "train_layer1_manifest.csv")
 

@@ -25,6 +25,9 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.combiner.run import run_combiner_fixed_config
+from src.data.read_bars import read_bars
+from src.features.build_features import build_basic_features
+from src.research.trade_enrichment import enrich_trades_with_context
 
 
 @dataclass(frozen=True)
@@ -271,6 +274,16 @@ def main(argv: list[str] | None = None) -> int:
 
     runs = _load_runs([Path(x) for x in args.roots])
 
+    # Build features once for the requested window (used for enrichment).
+    bars = read_bars(
+        asset=str(args.asset),
+        symbol=symbol,
+        start=str(args.start),
+        end=str(args.end),
+        data_dir="data/raw/ibkr",
+    )
+    feats = build_basic_features(bars, orb_open_minutes=15, copy=True, allow_overwrite=False) if len(bars) else pd.DataFrame()
+
     all_trades: list[pd.DataFrame] = []
     per_run_rows: list[dict[str, Any]] = []
 
@@ -290,6 +303,8 @@ def main(argv: list[str] | None = None) -> int:
 
         df = pd.read_csv(trades_path)
         df.insert(0, "run_id", run.run_id)
+        if len(feats):
+            df = enrich_trades_with_context(df, feats, timestamp_col="entry_ts_utc", idx_col="entry_idx", tolerance="2min")
         all_trades.append(df)
 
         per_run_rows.append(
@@ -330,17 +345,26 @@ def main(argv: list[str] | None = None) -> int:
         by_day = _group_summary(df_all, "session_date")
         by_entry = _group_summary(df_all, "entry_minute_bucket")
         by_risk = _group_summary(df_all, "risk_bucket")
+        by_gap_dir = _group_summary(df_all, "gap_direction")
+        by_gap_size = _group_summary(df_all, "gap_size_bucket")
+        by_vwap_side = _group_summary(df_all, "vwap_side_at_entry")
+        by_orb_ctx = _group_summary(df_all, "orb_context")
 
         _write_df(out_root / "dec2025_by_strategy.csv", by_strategy)
         _write_df(out_root / "dec2025_by_exit_reason.csv", by_exit)
         _write_df(out_root / "dec2025_by_day.csv", by_day)
         _write_df(out_root / "dec2025_by_entry_minute_bucket.csv", by_entry)
         _write_df(out_root / "dec2025_by_risk_bucket.csv", by_risk)
+        _write_df(out_root / "dec2025_by_gap_direction.csv", by_gap_dir)
+        _write_df(out_root / "dec2025_by_gap_size_bucket.csv", by_gap_size)
+        _write_df(out_root / "dec2025_by_vwap_side.csv", by_vwap_side)
+        _write_df(out_root / "dec2025_by_orb_context.csv", by_orb_ctx)
 
-        # Optional columns (not always present in compact trades).
-        _write_df(out_root / "dec2025_by_gap_direction.csv", pd.DataFrame([{"group": "MISSING_COLUMN", "reason": "no gap_direction in compact trades"}]))
-        _write_df(out_root / "dec2025_by_gap_size_bucket.csv", pd.DataFrame([{"group": "MISSING_COLUMN", "reason": "no gap_size_atr in compact trades"}]))
-        _write_df(out_root / "dec2025_by_stop_target_mode.csv", pd.DataFrame([{"group": "MISSING_COLUMN", "reason": "no stop/target mode in compact trades"}]))
+        # Stop/target mode isn't represented in compact trades; keep explicit placeholder.
+        _write_df(
+            out_root / "dec2025_by_stop_target_mode.csv",
+            pd.DataFrame([{"group": "MISSING_COLUMN", "reason": "stop/target mode not present in compact trades"}]),
+        )
 
         sections.extend(
             [
@@ -349,6 +373,10 @@ def main(argv: list[str] | None = None) -> int:
                 ("By day", by_day.head(50)),
                 ("By entry minute bucket", by_entry.head(50)),
                 ("By risk bucket", by_risk.head(50)),
+                ("By gap direction", by_gap_dir.head(50)),
+                ("By gap size bucket", by_gap_size.head(50)),
+                ("By VWAP side", by_vwap_side.head(50)),
+                ("By ORB context", by_orb_ctx.head(50)),
             ]
         )
 
@@ -377,6 +405,17 @@ def main(argv: list[str] | None = None) -> int:
             )
             if dfw.empty:
                 continue
+            # Enrich using features built for this window (per-window build to avoid lookahead).
+            bars_w = read_bars(
+                asset=str(args.asset),
+                symbol=symbol,
+                start=s0,
+                end=e0,
+                data_dir="data/raw/ibkr",
+            )
+            feats_w = build_basic_features(bars_w, orb_open_minutes=15, copy=True, allow_overwrite=False) if len(bars_w) else pd.DataFrame()
+            if len(feats_w):
+                dfw = enrich_trades_with_context(dfw, feats_w, timestamp_col="entry_ts_utc", idx_col="entry_idx", tolerance="2min")
             gap_rows.append(_stack_groupings(dfw, run_id=run.run_id, window=label, strategy_filter="gap_acceptance_failure"))
             fail_rows.append(_stack_groupings(dfw, run_id=run.run_id, window=label, strategy_filter="failed_orb"))
 

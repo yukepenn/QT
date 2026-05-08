@@ -1,0 +1,51 @@
+# Gap acceptance diagnostic (train/test windows)
+
+## Top loss buckets (first 60 rows)
+
+                                                  run_id               strategy            grouping window     group  trades     total_r     avg_r  win_rate  max_loss_r  profit_factor_r  avg_bars_held  exit_reason_unique
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason  train      stop      58  -58.697847 -1.012032  0.000000   -1.023810         0.000000      19.051724                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason  train  max_hold      10    3.151713  0.315171  0.700000   -0.187500         9.306611      90.000000                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason  train    target      61   75.547218  1.238479  1.000000    1.194444              NaN      26.770492                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket  train     30-60       8    0.928527  0.116066  0.500000   -1.011905         1.230110      36.375000                   2
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket  train     15-30      17    6.724913  0.395583  0.647059   -1.015625         2.110685      18.882353                   3
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket  train      0-15     104   12.347644  0.118727  0.509615   -1.023810         1.252058      29.096154                   3
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         risk_bucket  train     >0.10     129   20.001084  0.155047  0.527132   -1.023810         1.338558      28.201550                   3
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason   test      stop      45  -45.360061 -1.008001  0.000000   -1.027027         0.000000      16.977778                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason   test  max_hold      10    4.397068  0.439707  0.900000   -0.145215        31.279811      90.000000                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         exit_reason   test    target      34   42.269916  1.243233  1.000000    1.226190              NaN      32.088235                   1
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket   test      0-15      70   -8.038157 -0.114831  0.428571   -1.027027         0.796397      30.085714                   3
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket   test     30-60       5    3.160120  0.632024  0.800000   -1.003356         4.149551      59.800000                   3
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure entry_minute_bucket   test     15-30      14    6.184961  0.441783  0.642857   -1.006098         2.231504      25.000000                   2
+ layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1 gap_acceptance_failure         risk_bucket   test     >0.10      89    1.306924  0.014685  0.483146   -1.027027         1.028720      30.955056                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train      stop      58  -58.697847 -1.012032  0.000000   -1.023810         0.000000      19.051724                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train  max_hold      10    3.151713  0.315171  0.700000   -0.187500         9.306611      90.000000                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train    target      61   75.547218  1.238479  1.000000    1.194444              NaN      26.770492                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train     30-60       8    0.928527  0.116066  0.500000   -1.011905         1.230110      36.375000                   2
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train     15-30      17    6.724913  0.395583  0.647059   -1.015625         2.110685      18.882353                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train      0-15     104   12.347644  0.118727  0.509615   -1.023810         1.252058      29.096154                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         risk_bucket  train     >0.10     129   20.001084  0.155047  0.527132   -1.023810         1.338558      28.201550                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test      stop      45  -45.360061 -1.008001  0.000000   -1.027027         0.000000      16.977778                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test  max_hold      10    4.397068  0.439707  0.900000   -0.145215        31.279811      90.000000                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test    target      34   42.269916  1.243233  1.000000    1.226190              NaN      32.088235                   1
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test      0-15      70   -8.038157 -0.114831  0.428571   -1.027027         0.796397      30.085714                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test     30-60       5    3.160120  0.632024  0.800000   -1.003356         4.149551      59.800000                   3
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test     15-30      14    6.184961  0.441783  0.642857   -1.006098         2.231504      25.000000                   2
+layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test gap_acceptance_failure         risk_bucket   test     >0.10      89    1.306924  0.014685  0.483146   -1.027027         1.028720      30.955056                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train      stop     106 -107.322948 -1.012481  0.000000   -1.200000         0.000000      20.254717                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train  max_hold      30    5.079316  0.169311  0.533333   -0.614035         2.481884      90.000000                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason  train    target      99  122.566305  1.238043  1.000000    1.178571              NaN      27.949495                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train    60-120       7   -0.211486 -0.030212  0.428571   -1.009091         0.936693      66.000000                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train     30-60      12    3.652991  0.304416  0.583333   -1.011905         1.725268      39.500000                   2
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train     15-30      18    5.728582  0.318255  0.611111   -1.016667         1.810337      24.722222                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket  train      0-15     198   11.152586  0.056326  0.474747   -1.200000         1.117021      31.479798                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         risk_bucket  train 0.05-0.10       1   -1.200000 -1.200000  0.000000   -1.200000         0.000000       1.000000                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         risk_bucket  train     >0.10     234   21.522673  0.091977  0.491453   -1.025641         1.196463      32.534188                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test      stop      32  -32.256117 -1.008004  0.000000   -1.027027         0.000000      17.125000                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test  max_hold      10    4.397068  0.439707  0.900000   -0.145215        31.279811      90.000000                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         exit_reason   test    target      18   22.361717  1.242318  1.000000    1.226190              NaN      35.388889                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test      0-15      49   -7.131232 -0.145535  0.428571   -1.027027         0.739564      34.000000                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test    60-120       1   -1.003676 -1.003676  0.000000   -1.003676         0.000000      26.000000                   1
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test     30-60       3    0.667207  0.222402  0.666667   -1.003356         1.664975      48.333333                   3
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure entry_minute_bucket   test     15-30       7    1.970370  0.281481  0.571429   -1.004975         1.654090      35.428571                   2
+layer3_mini_wfo_v2b_qqq_2020_2024_train_2025_202604_test gap_acceptance_failure         risk_bucket   test     >0.10      60   -5.497331 -0.091622  0.450000   -1.027027         0.830336      34.750000                   3
+

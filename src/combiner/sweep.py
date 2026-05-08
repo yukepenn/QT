@@ -159,7 +159,9 @@ def main(argv: list[str] | None = None) -> int:
         out_root = cwd / out_root
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     tag_s = _safe_tag(args.tag)
-    sweep_dir = out_root / f"sweep_{ts}_{tag_s}"
+    # Keep sweep directory names short to avoid Windows path-length issues.
+    # Tag is still recorded in summary.md and results metadata.
+    sweep_dir = out_root / f"sweep_{ts}"
     sweep_dir.mkdir(parents=True, exist_ok=True)
 
     pre_raw = resolve_candidate_universe_for_grid(raw_eligible, base_cfg, combo_rows)

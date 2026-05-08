@@ -1,0 +1,118 @@
+experiment:
+  name: qqq_mini_wfo_v3_refined_gap_failed_2023_2024_train_2025_202604_test
+  purpose: causal_mini_wfo_refined_gap_failed
+  live_ready: false
+  note: >
+    Refined gap/failed mini-WFO. Uses train-only 2023-2024 selection,
+    tests frozen system on 2025-2026. Full WFO remains blocked unless
+    this survives 0.02 slippage.
+
+asset: equity
+symbol: QQQ
+
+train:
+  start: 2023-01-01
+  end: 2024-12-31
+
+test:
+  start: 2025-01-01
+  end: 2026-04-30
+
+paths:
+  output_root: src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test
+  train_layer1_root: src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test/train_layer1
+  train_layer2_root: src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test/train_layer2
+  frozen_system_dir: src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test/frozen_system
+  test_root: src/walkforward/results/layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test/test
+
+layer1:
+  strategies:
+    - gap_acceptance_failure
+    - failed_orb
+  primary_strategies:
+    - gap_acceptance_failure
+    - failed_orb
+  testing_configs:
+    gap_acceptance_failure: src/strategies/testing_parameters/gap_acceptance_failure_refined_v1.yaml
+    failed_orb: src/strategies/testing_parameters/failed_orb_refined_v1.yaml
+  tag: mini_wfo_v3_refined_gap_failed
+  top_per_strategy: 5
+
+candidate_selection:
+  strict:
+    min_trades: 40
+    min_profit_factor: 1.02
+    min_total_r: 0.0
+    max_drawdown_r: -50.0
+    max_avg_bars_held: 120
+    max_eod_count: 0
+    max_end_of_data_count: 0
+  relaxed:
+    enabled: true
+    min_trades: 25
+    min_profit_factor: 1.00
+    min_total_r: -5.0
+    max_drawdown_r: -70.0
+  max_candidates_per_strategy: 5
+
+layer2:
+  candidate_sets:
+    refined_gap_only:
+      include_warnings: false
+      strategies: [gap_acceptance_failure]
+    refined_failed_only:
+      include_warnings: false
+      strategies: [failed_orb]
+    refined_failed_gap:
+      include_warnings: false
+      strategies: [failed_orb, gap_acceptance_failure]
+
+  primary_candidate_sets:
+    - refined_gap_only
+    - refined_failed_only
+    - refined_failed_gap
+
+  grid:
+    candidate_set:
+      - refined_gap_only
+      - refined_failed_only
+      - refined_failed_gap
+    top_per_strategy: [1, 2, 3]
+    system.max_trades_per_day: [1, 2]
+    system.daily_max_loss_r: [-1.5, -2.0, -3.0]
+    system.cooldown_after_loss_minutes: [0, 15]
+    conflict.priority_policy: [metadata_priority]
+
+  selection:
+    prefer_primary_candidate_sets: true
+    penalize_relaxed_candidates: true
+    require_min_trades: 60
+    require_positive_total_r: true
+    require_pf_r_above_1: true
+    require_cost_0_02_positive: true
+    max_drawdown_r_floor: -50.0
+    behavior_dedupe_top: 50
+    cost_stress_top: 10
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  stress_slippage_per_share: [0.02, 0.03]
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+  max_open_positions: 1
+
+cache:
+  use_signal_cache: true
+  signal_cache_root: .cache/qt/mini_wfo_v3_candidate_signals
+
+outputs:
+  save_curated_only: true
+  save_compact_trades: false
+  save_full_signal_logs: false
+  save_rejected_signals: false
+  save_monthly_breakdown: true
+  save_cost_stress: true
+

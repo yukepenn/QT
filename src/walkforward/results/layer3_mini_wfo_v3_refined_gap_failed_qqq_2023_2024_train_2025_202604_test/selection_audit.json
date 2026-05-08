@@ -1,0 +1,90 @@
+{
+  "train_window": {
+    "start": "2023-01-01",
+    "end": "2024-12-31"
+  },
+  "test_window": {
+    "start": "2025-01-01",
+    "end": "2026-04-30"
+  },
+  "strategy_universe_layer1": [
+    "gap_acceptance_failure",
+    "failed_orb"
+  ],
+  "optional_diagnostics_layer1": [],
+  "layer2_grid_raw_size": 108,
+  "selection_rules": {
+    "prefer_primary_candidate_sets": true,
+    "penalize_relaxed_candidates": true,
+    "require_min_trades": 60,
+    "require_positive_total_r": true,
+    "require_pf_r_above_1": true,
+    "require_cost_0_02_positive": true,
+    "max_drawdown_r_floor": -50.0,
+    "behavior_dedupe_top": 50,
+    "cost_stress_top": 10
+  },
+  "selection_meta": {
+    "input_rows": 3,
+    "after_hard_filters": 3,
+    "selected_candidate_set": "refined_failed_only",
+    "selected_score": -0.34033469910021275
+  },
+  "selected_candidate_set": "refined_failed_only",
+  "selected_candidate_ids": [
+    "MINIWFO_FAILED_ORB_001"
+  ],
+  "systems_considered": [
+    {
+      "unique_rank": -1,
+      "candidate_set": "refined_failed_only",
+      "top_per_strategy": 1,
+      "max_trades_per_day": 1,
+      "daily_max_loss_r": -1.5,
+      "cooldown_after_loss_minutes": 0,
+      "priority_policy": "metadata_priority",
+      "candidate_ids_json": "[\"MINIWFO_FAILED_ORB_001\"]",
+      "train_trades": 181,
+      "train_total_r": 12.408621380938571,
+      "train_profit_factor_r": 1.1349336264003334,
+      "train_max_drawdown_r": -10.538288407357072,
+      "train_slip_0_02_total_r": null,
+      "eligible": false,
+      "rejection_reasons": "missing_cost_stress_0_02"
+    },
+    {
+      "unique_rank": -1,
+      "candidate_set": "refined_failed_only",
+      "top_per_strategy": 3,
+      "max_trades_per_day": 1,
+      "daily_max_loss_r": -1.5,
+      "cooldown_after_loss_minutes": 0,
+      "priority_policy": "metadata_priority",
+      "candidate_ids_json": "[\"MINIWFO_FAILED_ORB_001\", \"MINIWFO_FAILED_ORB_002\", \"MINIWFO_FAILED_ORB_003\"]",
+      "train_trades": 182,
+      "train_total_r": 11.39098096832592,
+      "train_profit_factor_r": 1.122509410560088,
+      "train_max_drawdown_r": -10.538288407357072,
+      "train_slip_0_02_total_r": null,
+      "eligible": false,
+      "rejection_reasons": "missing_cost_stress_0_02"
+    },
+    {
+      "unique_rank": -1,
+      "candidate_set": "refined_gap_only",
+      "top_per_strategy": 1,
+      "max_trades_per_day": 1,
+      "daily_max_loss_r": -1.5,
+      "cooldown_after_loss_minutes": 0,
+      "priority_policy": "metadata_priority",
+      "candidate_ids_json": "[\"MINIWFO_GAP_ACCEPTANCE_FAILURE_001\"]",
+      "train_trades": 89,
+      "train_total_r": 9.67457324836447,
+      "train_profit_factor_r": 1.2814426296175312,
+      "train_max_drawdown_r": -6.574430473229407,
+      "train_slip_0_02_total_r": null,
+      "eligible": false,
+      "rejection_reasons": "missing_cost_stress_0_02"
+    }
+  ]
+}

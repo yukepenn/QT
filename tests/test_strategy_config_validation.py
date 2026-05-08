@@ -130,6 +130,24 @@ def test_gap_acceptance_rejects_short_only():
         s.validate_config(cfg)
 
 
+def test_gap_acceptance_rejects_bad_gap_atr_range():
+    s = load_strategy("gap_acceptance_failure")
+    cfg = _base_strategy_cfg("gap_acceptance_failure")
+    cfg.setdefault("signal", {})["min_gap_size_atr"] = 1.0
+    cfg["signal"]["max_gap_size_atr"] = 0.5
+    with pytest.raises(ValueError, match="max_gap_size_atr"):
+        s.validate_config(cfg)
+
+
+def test_failed_orb_rejects_conflicting_vwap_flags():
+    s = load_strategy("failed_orb")
+    cfg = _base_strategy_cfg("failed_orb")
+    cfg.setdefault("signal", {})["require_vwap_reclaim"] = False
+    cfg["signal"]["require_vwap_confirmation"] = True
+    # Alias overrides without error.
+    s.validate_config(cfg)
+
+
 def test_prior_day_rejects_level_type():
     s = load_strategy("prior_day_level_trap")
     cfg = _base_strategy_cfg("prior_day_level_trap")

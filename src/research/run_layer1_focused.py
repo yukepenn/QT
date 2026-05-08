@@ -187,6 +187,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--min-trades", type=int, default=30)
     p.add_argument("--progress-every", type=int, default=50)
     p.add_argument("--resume", action="store_true")
+    p.add_argument(
+        "--testing-config-override",
+        action="append",
+        default=[],
+        help="Repeatable: strategy=path/to/testing_config.yaml (overrides *_focused.yaml).",
+    )
     args = p.parse_args(argv)
 
     out_root = args.output_root
@@ -210,8 +216,21 @@ def main(argv: list[str] | None = None) -> int:
     priority_order = list(strat_list)
     sym_args = [str(x).upper() for x in args.symbols]
 
+    overrides: dict[str, Path] = {}
+    for item in list(args.testing_config_override or []):
+        if "=" not in str(item):
+            print(f"ERROR --testing-config-override must be strategy=path, got {item!r}", file=sys.stderr)
+            return 2
+        k, v = str(item).split("=", 1)
+        k = k.strip()
+        pth = Path(v.strip())
+        if not pth.is_absolute():
+            pth = Path.cwd() / pth
+        overrides[k] = pth
+
     for strategy in strat_list:
-        focused = strategy_root() / "testing_parameters" / f"{strategy}_focused.yaml"
+        focused_default = strategy_root() / "testing_parameters" / f"{strategy}_focused.yaml"
+        focused = overrides.get(strategy) or focused_default
         if not focused.is_file():
             row = {
                 "strategy": strategy,
@@ -234,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
                 "best_max_hold_count": "",
                 "best_eod_count": "",
                 "best_end_of_data_count": "",
-                "notes": "no focused yaml",
+                "notes": "missing testing yaml",
             }
             manifest_by[strategy] = row
             rows = _manifest_list(manifest_by, priority_order)

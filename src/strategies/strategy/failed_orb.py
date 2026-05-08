@@ -235,6 +235,9 @@ class FailedOrbStrategy(BaseStrategy):
             raise ValueError("signal.atr_column must be a non-empty string when set")
         validate_nonnegative_number("signal.min_close_location", sig.get("min_close_location", 0.55))
         validate_nonnegative_number("signal.min_volume_mult", sig.get("min_volume_mult", 1.5))
+        # Backward-compatible alias:
+        # - If require_vwap_confirmation is provided, it overrides require_vwap_reclaim.
+        # - We intentionally do not error if both are set and disagree (to keep grids simple).
 
     def required_features(self) -> list[str]:
         return [
@@ -315,7 +318,11 @@ class FailedOrbStrategy(BaseStrategy):
         fw = int(sig.get("fail_window_bars", 5))
         confirm = str(sig.get("confirm_mode", "close_reclaim"))
         min_cl = float(sig.get("min_close_location", 0.55))
-        req_vw = bool(sig.get("require_vwap_reclaim", False))
+        # Backward-compatible alias: require_vwap_confirmation (prefer it if present).
+        req_vw_raw = sig.get("require_vwap_confirmation")
+        if req_vw_raw is None:
+            req_vw_raw = sig.get("require_vwap_reclaim", False)
+        req_vw = bool(req_vw_raw)
         req_vc = bool(sig.get("require_volume_climax", False))
         min_vm = float(sig.get("min_volume_mult", 1.5))
         stop_mode = str(risk.get("stop_mode", "failed_extreme"))
@@ -425,7 +432,7 @@ class FailedOrbStrategy(BaseStrategy):
             int(sig.get("fail_window_bars", 5)),
             str(sig.get("atr_column", "atr_like_15")),
             str(sig.get("confirm_mode", "close_reclaim")),
-            bool(sig.get("require_vwap_reclaim", False)),
+            bool(sig.get("require_vwap_confirmation")) if sig.get("require_vwap_confirmation") is not None else bool(sig.get("require_vwap_reclaim", False)),
             bool(sig.get("require_volume_climax", False)),
             float(sig.get("min_close_location", 0.55)),
             str(risk.get("stop_mode", "failed_extreme")),

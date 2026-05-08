@@ -115,9 +115,20 @@ def _infer_candidate_set_from_ids(candidate_ids: list[str]) -> str:
 def validate_selected_system_consistency(*, candidate_set: str, candidate_ids: list[str]) -> str:
     """Return warning string if candidate_set and candidate_ids appear inconsistent."""
     inf = _infer_candidate_set_from_ids(candidate_ids)
+    # Treat refined_* candidate sets as aliases of the base labels.
+    cset = str(candidate_set or "")
+    if cset.startswith("refined_"):
+        if cset.endswith("_gap_only"):
+            cset = "gap_only"
+        elif cset.endswith("_failed_only"):
+            cset = "failed_only"
+        elif cset.endswith("_failed_gap"):
+            cset = "failed_gap"
+    else:
+        cset = candidate_set
     if not candidate_set:
         return "missing_selected_candidate_set"
-    if inf and inf != candidate_set:
+    if inf and cset and inf != cset:
         return f"mismatch_ids_vs_set inferred={inf}"
     return ""
 
