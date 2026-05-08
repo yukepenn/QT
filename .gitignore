@@ -66,6 +66,15 @@ src/walkforward/results/**/candidate_precompute_profile*.csv
 src/walkforward/results/**/candidate_precompute_profile_summary.*
 src/walkforward/results/**/candidates_used.csv
 src/walkforward/results/**/feature_store_stats.json
+
+# Research diagnostics: keep run artifacts local-only; commit curated summaries only.
+src/research/results/**/_runs/
+src/research/results/**/_windows/
+src/research/results/**/compact_trades.csv
+src/research/results/**/trades.csv
+src/research/results/**/equity.csv
+src/research/results/**/candidate_signal_log.csv
+src/research/results/**/rejected_signals.csv
 src/walkforward/results/**/config_resolved.yaml
 
 # Strategy sweep heavy outputs

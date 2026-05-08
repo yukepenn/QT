@@ -4,6 +4,8 @@
 - Feat(walkforward): mini-WFO **selection audit** + **oracle (lookahead) diagnostic** — `selection_audit.{csv,md,json}` and `oracle_diagnostic.{csv,md}` (explicitly labeled NOT selectable); helper `explain_row_eligibility` in `mini_wfo_selection.py`.
 - Feat(walkforward): mini-WFO v2A/v2B configs + runs — `qqq_mini_wfo_v2a_2023_2024_train_2025_202604_test.yaml`, `qqq_mini_wfo_v2b_2020_2024_train_2025_202604_test.yaml` with curated outputs under `src/walkforward/results/layer3_mini_wfo_v2{a,b}_.../`.
 - Feat(walkforward): mini-WFO comparison report — `src/walkforward/mini_wfo_compare.py` writes `src/walkforward/results/mini_wfo_comparison_v1_v2.md` + `.csv`.
+- Feat(research): gap/failed family diagnostics — `src/research/gap_failed_diagnostics.py` regenerates compact trades locally for small windows and writes curated Dec-2025 summaries + gap/failed train/test bucket diagnostics under `src/research/results/gap_failed_family_diagnostics_v1/`.
+- Docs(research): gap/failed improvement plan — `src/research/results/strategy_family_improvement_gap_failed_v1.md`.
 - Chore(gitignore): `src/walkforward/results/**/sweep_*/` (heavy Layer 2 sweep trees under mini-WFO train).
 - Docs: README, PROJECT_STATUS, PROGRESS, `layer3_smoke_plan_v1.md`, `CONFIG_INDEX.md`, `ARTIFACT_POLICY.md`. — `src/walkforward/diagnosis.py`, frozen YAMLs `src/combiner/configs/frozen/diagnosis/`, config `qqq_fixed_system_diagnosis_v1.yaml`, runner hook `outputs.write_diagnosis_report`; curated aggregates under `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`; tests `tests/test_walkforward_diagnosis.py`.
 - Fix(combiner): `run_combiner_fixed_config` no longer writes `trades.csv` when `save_compact_trades=False` (monthly/daily breakdown still use in-memory trades).
