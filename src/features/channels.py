@@ -68,39 +68,43 @@ def add_channel_features(
     c = out["close"].astype(float)
     atr = out[atr_col].astype(float)
 
+    new_cols: dict[str, pd.Series] = {}
+
     for w in spec.bb_windows:
         mid = g["close"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).mean())
-        out[f"bb_mid_{w}"] = mid
+        new_cols[f"bb_mid_{w}"] = mid
         dev_base = g["close"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).std()).fillna(0.0)
         for std in spec.bb_stds:
             stdf = float(std)
             upper = mid + stdf * dev_base
             lower = mid - stdf * dev_base
-            out[f"bb_upper_{w}_{std}"] = upper
-            out[f"bb_lower_{w}_{std}"] = lower
+            new_cols[f"bb_upper_{w}_{std}"] = upper
+            new_cols[f"bb_lower_{w}_{std}"] = lower
             width = (upper - lower) / (mid.replace(0, np.nan) + 1e-12)
-            out[f"bb_width_{w}_{std}"] = width
-            out[f"bb_percent_b_{w}_{std}"] = (c - lower) / (upper - lower + 1e-12)
+            bw_name = f"bb_width_{w}_{std}"
+            new_cols[bw_name] = width
+            new_cols[f"bb_percent_b_{w}_{std}"] = (c - lower) / (upper - lower + 1e-12)
 
-            bw_col = f"bb_width_{w}_{std}"
-            lag_w = out.groupby(sd)[bw_col].transform(lambda s: s.shift(1))
+            lag_w = new_cols[bw_name].groupby(sd).transform(lambda s: s.shift(1))
             for lb in spec.bb_bandwidth_lookbacks:
                 rank = lag_w.groupby(sd).transform(
                     lambda s, lbb=lb: s.rolling(lbb, min_periods=3).apply(_pct_rank_last, raw=True)
                 )
-                out[f"bb_width_percentile_{w}_{std}_{lb}"] = rank
+                new_cols[f"bb_width_percentile_{w}_{std}_{lb}"] = rank
                 q = lag_w.groupby(sd).transform(
                     lambda s, lbb=lb, sq=squeeze_quantile: s.rolling(lbb, min_periods=3).quantile(sq)
                 )
-                out[f"bb_squeeze_{w}_{std}_{lb}"] = (lag_w <= q).astype(np.int8)
+                new_cols[f"bb_squeeze_{w}_{std}_{lb}"] = (lag_w <= q).astype(np.int8)
 
     for dw in spec.donchian_windows:
         dh = g["high"].transform(lambda s, d=dw: s.shift(1).rolling(d, min_periods=1).max())
         dl = g["low"].transform(lambda s, d=dw: s.shift(1).rolling(d, min_periods=1).min())
-        out[f"donchian_high_{dw}_prior"] = dh
-        out[f"donchian_low_{dw}_prior"] = dl
-        out[f"donchian_mid_{dw}_prior"] = (dh + dl) / 2.0
+        new_cols[f"donchian_high_{dw}_prior"] = dh
+        new_cols[f"donchian_low_{dw}_prior"] = dl
+        new_cols[f"donchian_mid_{dw}_prior"] = (dh + dl) / 2.0
         ch_w = dh - dl
-        out[f"donchian_width_atr_{dw}"] = ch_w / (atr + 1e-12)
+        new_cols[f"donchian_width_atr_{dw}"] = ch_w / (atr + 1e-12)
 
+    if new_cols:
+        out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)
     return out

@@ -33,7 +33,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
   - `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/`
   - `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/`
 - **Reference:** `src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/`
-- **Strategy Library v2 Batch 1 (partial, QQQ 2023–2024):** `src/research/results/layer1_v2_batch1_qqq_2023_2024/` — capped Layer 1 + `select_candidates` for **`rsi_failure_swing`** only in this phase; other Batch 1 families pending wider sweeps. Interpretation: `src/research/results/strategy_library_v2_batch1_summary.md`.
+- **Strategy Library v2 Batch 1 (QQQ 2023–2024 Layer 1):** `src/research/results/layer1_v2_batch1_qqq_2023_2024/` — all **six** Batch 1 strategies swept (capped when raw grid > 2000; see `sweep_manifest.csv`), manifest-mode `select_candidates`, **20** YAML exports; **Layer 2 not run**. Summary: `src/research/results/strategy_library_v2_batch1_summary.md`.
 
 ### Layer 2 (combiner roots)
 

@@ -104,8 +104,12 @@ Registered plugins (see `src/strategies/loader.py`):
 Orthogonal mechanism families (MA / oscillator / Bollinger / Donchian / exhaustion); not ORB/VWAP/gap/trap duplicates. Curated plan + smoke health + interpretation:
 
 - `src/research/results/strategy_library_v2_batch1_plan.md`
+- `src/research/results/strategy_library_v2_batch1_audit.md` / `strategy_library_v2_batch1_audit.csv`
+- `src/research/results/strategy_library_v2_batch1_grid_review.md` / `strategy_library_v2_batch1_grid_review.csv`
 - `src/research/results/strategy_library_v2_batch1_health.csv` / `strategy_library_v2_batch1_health.md`
 - `src/research/results/strategy_library_v2_batch1_summary.md`
+- Layer 1 (QQQ 2023–2024): `src/research/results/layer1_v2_batch1_qqq_2023_2024/` (`sweep_manifest.*`, `selected_candidates/`, `candidate_selection_config.md`)
+- Reduced Layer 2 design (not executed): `src/research/results/reduced_layer2_v2_batch1_design.md`
 
 Registered plugins (also in `loader.py`):
 

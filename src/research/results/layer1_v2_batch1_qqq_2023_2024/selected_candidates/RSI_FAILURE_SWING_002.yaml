@@ -15,12 +15,12 @@ metadata:
   default_active_end_minute: 330
 selection:
   score: 1.741097302769734
-  filters_used: cli
+  filters_used: strict
   warning: ''
 source:
-  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260509_213539_layer1_v2_batch1_qqq_2023_2024\results.csv
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260509_215628_layer1_v2_batch1_qqq_2023_2024\results.csv
   row_index: 111
-  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260509_213539_layer1_v2_batch1_qqq_2023_2024
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260509_215628_layer1_v2_batch1_qqq_2023_2024
 metrics:
   trades: 68
   profit_factor: 1.8220968629609968

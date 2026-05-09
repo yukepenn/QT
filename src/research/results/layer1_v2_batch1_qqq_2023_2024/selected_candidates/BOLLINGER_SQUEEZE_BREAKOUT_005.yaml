@@ -1,0 +1,97 @@
+candidate_id: BOLLINGER_SQUEEZE_BREAKOUT_005
+strategy: bollinger_squeeze_breakout
+asset: equity
+symbol: QQQ
+strategy_family: volatility_expansion
+conflict_group: QQQ_directional
+default_priority: 52
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: volatility_expansion
+  conflict_group: QQQ_directional
+  default_priority: 52
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 1.0687215519932398
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\bollinger_squeeze_breakout\sweep_20260509_215643_layer1_v2_batch1_qqq_2023_2024\results.csv
+  row_index: 350
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\bollinger_squeeze_breakout\sweep_20260509_215643_layer1_v2_batch1_qqq_2023_2024
+metrics:
+  trades: 410
+  profit_factor: 1.0836802685774338
+  total_r: 24.03074935946622
+  win_rate: 0.4902439024390244
+  total_net_pnl: 8.167250000002923
+  avg_r: 0.0586115838035761
+  avg_net_pnl: 0.0199201219512266
+  max_drawdown_pnl: -7.3162499999991155
+  max_drawdown_r: -12.080014826035509
+  avg_bars_held: 13.019512195121951
+  stop_count: 203
+  target_count: 187
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 20
+config:
+  strategy: bollinger_squeeze_breakout
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    channels.bb_windows:
+    - 20
+    - 30
+    channels.bb_stds:
+    - 1.5
+    - 2.0
+    channels.bb_bandwidth_lookbacks:
+    - 60
+    - 120
+    channels.donchian_windows: []
+    bb_window: 30
+    bb_std: 1.5
+    bandwidth_lookback: 120
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 300
+    max_bandwidth_percentile: 0.2
+    breakout_mode: close_above_upper_band
+    require_vwap_side: true
+    require_range_expansion: true
+  risk:
+    stop_mode: bb_mid
+    target_mode: fixed_r
+    target_r: 1.25
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45

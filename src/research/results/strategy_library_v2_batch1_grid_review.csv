@@ -1,0 +1,7 @@
+strategy,raw_grid_size,over_2000,notes
+intraday_ma_crossover,2304,yes,Capped at 500 combos in 2023–2024 sweep; MA cross grid moderate.
+rsi_failure_swing,3072,yes,Capped 500; oscillator grid dense — primary watchlist family.
+bollinger_squeeze_breakout,6144,yes,Capped 500; large BB × squeeze × time × risk cross-product.
+bollinger_band_fade_chop,6144,yes,Capped 500; regime + BB × triggers; strict filters often empty → relaxed selection.
+donchian_channel_breakout,1728,no,Grid tuned to ≤2000: widened width bounds, entry from 30m, volume expansion fixed false to cut axis.
+consecutive_bar_exhaustion,6144,yes,Capped 500; many confirm/stop/hold axes.

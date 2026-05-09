@@ -1,11 +1,12 @@
 ### [Unreleased] – 2026-05-09
 
-- Feat(strategies): **Strategy Library v2 Batch 1** — six plugins (`intraday_ma_crossover`, `rsi_failure_swing`, `bollinger_squeeze_breakout`, `bollinger_band_fade_chop`, `donchian_channel_breakout`, `consecutive_bar_exhaustion`), parameters + focused YAMLs, loader + `metadata.yaml` (**16** registered strategies).
-- Feat(features): no-lookahead **`indicators`**, **`channels`**, **`regime`** modules + `build_types.py`; `feature_config` / `feature_key` / `build_features` integration.
-- Test(features/strategies): `test_indicators_features.py`, `test_channels_features.py`, `test_regime_features.py`, `test_strategy_library_v2_batch1_registration.py`.
-- Docs(research): `strategy_library_v2_batch1_plan.md`, `strategy_library_v2_batch1_health.{csv,md}`, `strategy_library_v2_batch1_summary.md`; partial Layer 1 export `layer1_v2_batch1_qqq_2023_2024/` (rsi_failure_swing).
-- Docs: README (v2 list + 16-strategy note), PROJECT_STATUS (Batch 1 partial link), PROGRESS, `docs/ARTIFACT_POLICY.md` (Batch 1 curated path); Chore(gitignore): force-include curated `layer1_v2_batch1_qqq_2023_2024` artifacts.
-- Chore(walkforward): complete curated **mini-WFO v3** tree — `train_layer1_manifest.csv`, Layer 2 summary CSV/MD (`train_layer2_*`), `train_candidates/` (selected YAMLs + manifests); `.gitignore` for duplicate unprefixed `test/*.csv` exports and heavy `layer3_smoke_v1_diagnosis_qqq_components/system_*/` per-system folders. `main` includes prior `Feat(walkforward): add refined mini-WFO v3` (trade enrichment, refined strategies, v1/v2/v3 comparison).
+- Feat(research): **Batch 1 Layer 1 complete** — six-strategy QQQ 2023–2024 sweeps + `sweep_manifest.{csv,md}` + manifest `select_candidates` → 20 YAMLs; `no_candidate_strategies.txt`, `candidate_selection_config.md`, `layer1_v2_batch1_summary.md` updates.
+- Feat(features): batch column concat in `indicators.py`, `channels.py`, `regime.py` (no formula change; removes pandas fragmentation warnings).
+- Feat(strategies): `donchian_channel_breakout_focused.yaml` grid retuned (≤1728 raw combos, less restrictive width / entry).
+- Test(research): `tests/test_select_candidates_manifest.py` (multi-strategy manifest selection).
+- Docs(research): `strategy_library_v2_batch1_audit.{md,csv}`, `strategy_library_v2_batch1_grid_review.{md,csv}`, `strategy_library_v2_batch1_summary.md`, `reduced_layer2_v2_batch1_design.md` (design only); helpers `gen_batch1_audit.py`, `run_batch1_jan_smokes.py`, `run_batch1_layer1_sweeps.py`.
+- Docs: README, PROJECT_STATUS, PROGRESS, `docs/ARTIFACT_POLICY.md`, `.gitignore` (curated Batch 1 manifest + selection artifacts).
+- Chore(walkforward): complete curated **mini-WFO v3** tree — `train_layer1_manifest.csv`, Layer 2 summary CSV/MD (`train_layer2_*`), `train_candidates/` (selected YAMLs + manifests); `.gitignore` for duplicate unprefixed `test/*.csv` exports and heavy `layer3_smoke_v1_diagnosis_qqq_components/system_*/` per-system folders.
 
 ### [Unreleased] – 2026-05-08
 

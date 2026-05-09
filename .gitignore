@@ -180,3 +180,12 @@ src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/rank_by_*
 !src/research/results/layer1_v2_batch1_qqq_2023_2024/selected_candidates.csv
 !src/research/results/layer1_v2_batch1_qqq_2023_2024/candidate_summary.md
 !src/research/results/layer1_v2_batch1_qqq_2023_2024/layer1_v2_batch1_summary.md
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/sweep_manifest.csv
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/sweep_manifest.md
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/candidate_selection_config.md
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/no_candidate_strategies.txt
+!src/research/results/strategy_library_v2_batch1_audit.csv
+!src/research/results/strategy_library_v2_batch1_audit.md
+!src/research/results/strategy_library_v2_batch1_grid_review.csv
+!src/research/results/strategy_library_v2_batch1_grid_review.md
+!src/research/results/reduced_layer2_v2_batch1_design.md

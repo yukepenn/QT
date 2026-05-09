@@ -1,0 +1,2 @@
+intraday_ma_crossover
+donchian_channel_breakout

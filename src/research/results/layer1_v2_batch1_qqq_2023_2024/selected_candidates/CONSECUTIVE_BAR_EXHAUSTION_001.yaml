@@ -1,0 +1,87 @@
+candidate_id: CONSECUTIVE_BAR_EXHAUSTION_001
+strategy: consecutive_bar_exhaustion
+asset: equity
+symbol: QQQ
+strategy_family: price_action_exhaustion
+conflict_group: QQQ_directional
+default_priority: 46
+default_active_start_minute: 30
+default_active_end_minute: 330
+metadata:
+  family: price_action_exhaustion
+  conflict_group: QQQ_directional
+  default_priority: 46
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+selection:
+  score: 0.7629078022726519
+  filters_used: relaxed
+  warning: relaxed_filter
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\consecutive_bar_exhaustion\sweep_20260509_215711_layer1_v2_batch1_qqq_2023_2024\results.csv
+  row_index: 128
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\consecutive_bar_exhaustion\sweep_20260509_215711_layer1_v2_batch1_qqq_2023_2024
+metrics:
+  trades: 502
+  profit_factor: 1.0464952448045577
+  total_r: 10.79139137092704
+  win_rate: 0.5338645418326693
+  total_net_pnl: 3.960000000003959
+  avg_r: 0.0214967955596156
+  avg_net_pnl: 0.0078884462151473
+  max_drawdown_pnl: -6.339999999999009
+  max_drawdown_r: -14.723444433871007
+  avg_bars_held: 3.754980079681275
+  stop_count: 230
+  target_count: 256
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 16
+config:
+  strategy: consecutive_bar_exhaustion
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    exhaustion_window: 6
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 30
+    entry_end_minute: 270
+    min_consecutive_red: 3
+    min_down_move_atr: 1.2
+    require_lower_wick: false
+    require_volume_surge: false
+    volume_surge_mult: 1.15
+    confirm_mode: break_prior_high
+  risk:
+    stop_mode: exhaustion_low
+    target_mode: fixed_r
+    target_r: 1.0
+    atr_buffer_mult: 0.4
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 15

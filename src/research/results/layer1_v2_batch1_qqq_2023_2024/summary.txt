@@ -1,6 +1,6 @@
-tag=v2_batch1_rsi
+tag=
 out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_v2_batch1_qqq_2023_2024
-candidates_written=5
+candidates_written=20
 
 candidates:
   RSI_FAILURE_SWING_001 rsi_failure_swing score=1.7411 trades=68
@@ -8,3 +8,18 @@ candidates:
   RSI_FAILURE_SWING_003 rsi_failure_swing score=1.7289 trades=68
   RSI_FAILURE_SWING_004 rsi_failure_swing score=1.7289 trades=68
   RSI_FAILURE_SWING_005 rsi_failure_swing score=1.1769 trades=46
+  BOLLINGER_SQUEEZE_BREAKOUT_001 bollinger_squeeze_breakout score=1.2012 trades=479
+  BOLLINGER_SQUEEZE_BREAKOUT_002 bollinger_squeeze_breakout score=1.2012 trades=479
+  BOLLINGER_SQUEEZE_BREAKOUT_003 bollinger_squeeze_breakout score=1.1864 trades=479
+  BOLLINGER_SQUEEZE_BREAKOUT_004 bollinger_squeeze_breakout score=1.1864 trades=479
+  BOLLINGER_SQUEEZE_BREAKOUT_005 bollinger_squeeze_breakout score=1.0687 trades=410
+  BOLLINGER_BAND_FADE_CHOP_001 bollinger_band_fade_chop score=0.1927 trades=472
+  BOLLINGER_BAND_FADE_CHOP_002 bollinger_band_fade_chop score=0.1927 trades=472
+  BOLLINGER_BAND_FADE_CHOP_003 bollinger_band_fade_chop score=0.0749 trades=487
+  BOLLINGER_BAND_FADE_CHOP_004 bollinger_band_fade_chop score=0.0749 trades=487
+  BOLLINGER_BAND_FADE_CHOP_005 bollinger_band_fade_chop score=0.0439 trades=487
+  CONSECUTIVE_BAR_EXHAUSTION_001 consecutive_bar_exhaustion score=0.7629 trades=502
+  CONSECUTIVE_BAR_EXHAUSTION_002 consecutive_bar_exhaustion score=0.7629 trades=502
+  CONSECUTIVE_BAR_EXHAUSTION_003 consecutive_bar_exhaustion score=0.6352 trades=502
+  CONSECUTIVE_BAR_EXHAUSTION_004 consecutive_bar_exhaustion score=0.6352 trades=502
+  CONSECUTIVE_BAR_EXHAUSTION_005 consecutive_bar_exhaustion score=0.5354 trades=61

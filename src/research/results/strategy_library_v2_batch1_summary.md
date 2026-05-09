@@ -1,74 +1,62 @@
-# Strategy Library v2 — Batch 1 summary (QQQ)
+# Strategy Library v2 Batch 1 Summary
 
-## 1. Why Batch 1 was added
+## 1. Purpose
 
-Batch 1 adds **six orthogonal mechanism families** (MA trend shift, RSI-style oscillator reversal, Bollinger squeeze breakout, Bollinger fade in chop, Donchian breakout, consecutive-bar exhaustion) without inflating the ORB/VWAP/gap/trap surface. See `strategy_library_v2_batch1_plan.md` for why `opening_drive_pullback` / `opening_range_failure_retest` stay refinements, not new plugins.
+- Add **non-overlapping behavioral families** (MA / oscillator / Bollinger / Donchian / exhaustion) orthogonal to the ORB/VWAP/gap/trap stack.
+- Avoid inflating the library with **near-duplicate** opening-drive / ORB-template variants (see `strategy_library_v2_batch1_plan.md`).
 
-## 2. Non-duplication vs existing stack
+## 2. Implementation status
 
-These plugins do **not** reuse ORB/VWAP/gap/trap entry templates; they consume **new feature columns** from `indicators.py`, `channels.py`, and `regime.py` plus existing safe OHLCV/VWAP/volatility/volume columns.
+- **Features:** `indicators.py`, `channels.py`, `regime.py`, `build_types.py`; integrated in `feature_config.py`, `feature_key.py`, `build_features.py`.
+- **Strategies:** six plugins registered (**16** total strategies in `loader.py`).
+- **Tests:** `162+` after adding `tests/test_select_candidates_manifest.py` (manifest multi-strategy selection).
+- **DataFrame fragmentation:** mitigated via single `pd.concat` per feature module (see audit §Phase 2).
 
-## 3. Feature modules
+## 3. Smoke health (Jan 2025)
 
-| module | role |
-|--------|------|
-| `src/features/indicators.py` | Session-scoped EMA/SMA/RSI/MACD/stoch/CCI/ADX-style columns |
-| `src/features/channels.py` | Bollinger + prior-exclusive Donchian |
-| `src/features/regime.py` | `range_efficiency`, `vwap_cross_count`, `trend_score`, `compression_score` |
+QQQ **2025-01-01 → 2025-01-31**, `--max-combos 50`, `--min-trades 1`, `--no-save`, `--profile`. Source: `strategy_library_v2_batch1_health.csv` / `.md`.
 
-`feature_key.py` / `build_features.py` / `feature_config.py` integrate these with stable cache keys.
+Jan is a **wiring / health** check only — not used to declare live edge.
 
-## 4. Registration
+## 4. Layer 1 2023–2024 results
 
-**16** strategies registered in `loader.py` (10 legacy + 6 Batch 1). Metadata in `metadata.yaml`.
+- **Window:** 2023-01-01 → 2024-12-31, QQQ only.
+- **Tag:** `layer1_v2_batch1_qqq_2023_2024`.
+- **Capping:** raw grids **> 2000** → `--max-combos 500` (see `sweep_manifest.csv` column `capped`). **Donchian** raw grid **1728** → full exhaust.
+- **Prior rsi-only export:** superseded by the unified manifest row in `sweep_manifest.csv` (same tag, consistent `min_trades=25` display slice for manifest stats).
 
-## 5. Smoke (Jan 2025)
+### By strategy (manifest “best” row = top PF among rows with trades ≥ 25)
 
-QQQ **2025-01-01 → 2025-01-31**, `--max-combos 24`, `--min-trades 1`, **numba_fast**, all **exit 0**. Best row by `profit_factor` (in-window only; not predictive):
+| strategy | capped | result_rows | best PF | best total_r | strict candidates |
+|----------|--------|------------:|--------:|-------------:|-------------------|
+| intraday_ma_crossover | yes | 192 | 0.94 | -3.45 | 0 |
+| rsi_failure_swing | yes | 128 | 1.85 | 7.64 | 5 |
+| bollinger_squeeze_breakout | yes | 500 | 1.35 | 30.96 | 5 |
+| bollinger_band_fade_chop | yes | 500 | 1.14 | -2.93 | 0 (5 relaxed) |
+| donchian_channel_breakout | no | 72 | 0.93 | -64.51 | 0 |
+| consecutive_bar_exhaustion | yes | 256 | 1.14 | -3.25 | 0 (5 relaxed) |
 
-| strategy | runtime_s | combos | best_trades | best_total_r | best_pf |
-|----------|----------:|-------:|------------:|-------------:|--------:|
-| intraday_ma_crossover | 0.54 | 24 | 18 | -0.65 | 0.76 |
-| rsi_failure_swing | 0.56 | 24 | 7 | 0.62 | 3.83 |
-| bollinger_squeeze_breakout | 0.81 | 24 | 20 | -1.68 | 0.69 |
-| bollinger_band_fade_chop | 0.85 | 24 | 19 | -3.88 | 0.81 |
-| donchian_channel_breakout | 0.55 | 24 | 1 | -1.04 | 0.0 |
-| consecutive_bar_exhaustion | 0.53 | 24 | 19 | -6.12 | 0.58 |
+**Selection:** `select_candidates.py --manifest sweep_manifest.csv` → **20** YAMLs total in `selected_candidates/` (see `candidate_summary.md`). **No** candidates: `intraday_ma_crossover`, `donchian_channel_breakout` (`no_candidate_strategies.txt`).
 
-Details and warnings: `strategy_library_v2_batch1_health.md` / `.csv`.
-
-## 6. Layer 1 (2023–2024) — partial
-
-Full per-strategy 2023–2024 sweeps at production depth are **not** all committed here (time budget). A representative **capped** sweep for **`rsi_failure_swing`** (`--max-combos 150`, `min_trades=10` for sweep display) showed **meaningful** PF/Total R in-window; **`select_candidates`** wrote **5** YAMLs under `layer1_v2_batch1_qqq_2023_2024/` (filters: `min_trades>=25`, `PF>=1.02`, `total_r>=-5`, `maxDD_r>=-60`).
-
-**Other Batch 1 strategies:** treat as **NEEDS_GRID_TUNING** until similar 2023–2024 sweeps are run with tuned `min_trades` / grid density.
-
-## 7. Candidate counts (this commit)
-
-| strategy | candidates (this partial run) |
-|----------|------------------------------|
-| rsi_failure_swing | 5 |
-| others | not run in this commit |
-
-## 8. Promising vs weak
+## 5. Family interpretation (labels)
 
 | strategy | label |
 |----------|--------|
-| rsi_failure_swing | **PROMISING_FOR_LAYER2** (spot-check only) |
 | intraday_ma_crossover | **NEEDS_GRID_TUNING** |
-| bollinger_squeeze_breakout | **NEEDS_GRID_TUNING** |
-| bollinger_band_fade_chop | **NEEDS_GRID_TUNING** |
-| donchian_channel_breakout | **NEEDS_GRID_TUNING** |
-| consecutive_bar_exhaustion | **NEEDS_GRID_TUNING** |
+| rsi_failure_swing | **PROMISING_FOR_REDUCED_LAYER2** |
+| bollinger_squeeze_breakout | **PROMISING_FOR_REDUCED_LAYER2** |
+| bollinger_band_fade_chop | **NEEDS_GRID_TUNING** (relaxed-only; marginal / noisy) |
+| donchian_channel_breakout | **DEFER** |
+| consecutive_bar_exhaustion | **NEEDS_GRID_TUNING** (relaxed-only; marginal PF) |
 
-## 9. mini-WFO v4
+## 6. Recommended next action
 
-**Defer** mini-WFO v4 until at least one additional Batch 1 family shows stable 2023–2024 behavior under conservative filters (or grids are tightened deliberately).
+**`PROCEED_TO_REDUCED_LAYER2_V2_BATCH1_DESIGN`** — at least **two** Batch 1 families (`rsi_failure_swing`, `bollinger_squeeze_breakout`) produced **strict** passing YAMLs; additional relaxed families need review before any combiner weighting.
 
-## 10. Decision
+Concrete design (not executed): `src/research/results/reduced_layer2_v2_batch1_design.md`.
 
-**TUNE_BATCH1_GRIDS_FIRST** — run deeper 2023–2024 sweeps (or widen acceptance thresholds) for the remaining five strategies; keep **rsi_failure_swing** on watch for a **reduced Layer 2** probe **after** independent review (not executed in this phase).
+## 7. Explicit non-runs
 
-### Recommended next step (design-only)
-
-If Batch 1 strengthens: propose reduced Layer 2 candidate sets (`indicator_trend`, `oscillator_reversal`, …) and a **mini-WFO v4** design that keeps refined failed/gap core separate — **do not run** until explicitly approved.
+- **Layer 2** sweeps: **not run**.
+- **mini-WFO v4 / v5**: **not run**.
+- **Full WFO**: **not run**.

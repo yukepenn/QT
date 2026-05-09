@@ -45,26 +45,27 @@ def add_regime_features(
     atr = out[atr_col].astype(float)
 
     vwap_side = (c > out["vwap"].astype(float)).astype(np.int8)
-    out["_vwap_above_i8"] = vwap_side
-    prev_side = g["_vwap_above_i8"].transform(lambda s: s.shift(1))
+    prev_side = vwap_side.groupby(sd).transform(lambda s: s.shift(1))
     cross = (vwap_side != prev_side.fillna(vwap_side)).astype(np.int8)
 
+    new_cols: dict[str, pd.Series] = {}
     for w in spec.windows:
         prev_c = g["close"].transform(lambda s, ww=w: s.shift(ww))
         net_move = (c - prev_c).abs()
         roll_sum = g["close"].transform(lambda s, ww=w: s.diff().abs().rolling(ww, min_periods=1).sum())
-        out[f"range_efficiency_{w}"] = net_move / (roll_sum + 1e-12)
+        new_cols[f"range_efficiency_{w}"] = net_move / (roll_sum + 1e-12)
 
-        out[f"vwap_cross_count_{w}"] = cross.groupby(sd).transform(
+        new_cols[f"vwap_cross_count_{w}"] = cross.groupby(sd).transform(
             lambda s, ww=w: s.rolling(ww, min_periods=1).sum()
         )
 
-        out[f"trend_score_{w}"] = (c - prev_c) / (atr + 1e-12)
+        new_cols[f"trend_score_{w}"] = (c - prev_c) / (atr + 1e-12)
 
         hi = g["close"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).max())
         lo = g["close"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).min())
         rng = hi - lo
-        out[f"compression_score_{w}"] = (1.0 - (rng / (atr * float(w) + 1e-12))).clip(lower=0.0, upper=1.0)
+        new_cols[f"compression_score_{w}"] = (1.0 - (rng / (atr * float(w) + 1e-12))).clip(lower=0.0, upper=1.0)
 
-    out.drop(columns=["_vwap_above_i8"], inplace=True, errors="ignore")
+    if new_cols:
+        out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)
     return out

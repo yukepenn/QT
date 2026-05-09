@@ -1,7 +1,7 @@
-strategy,registered,supports_fast,metadata_ok,focused_yaml_exists,jan_smoke_exit_code,jan_smoke_runtime_sec,jan_combos_completed,jan_best_trades,jan_best_total_r,jan_best_pf,warnings,recommended_next_action
-intraday_ma_crossover,true,true,true,true,0,0.538,24,18,-0.654264,0.760925,Jan 2025 best row still sub-1 PF,NEEDS_GRID_TUNING
-rsi_failure_swing,true,true,true,true,0,0.555,24,7,0.618422,3.832692,,PROMISING_FOR_LAYER2
-bollinger_squeeze_breakout,true,true,true,true,0,0.807,24,20,-1.678095,0.691586,pandas PerformanceWarning channels.py insert,NEEDS_GRID_TUNING
-bollinger_band_fade_chop,true,true,true,true,0,0.854,24,19,-3.876959,0.805917,pandas PerformanceWarning channels/regime insert,NEEDS_GRID_TUNING
-donchian_channel_breakout,true,true,true,true,0,0.549,24,1,-1.038462,0.0,Very few trades in Jan capped slice; grid restrictive,TOO_RESTRICTIVE
-consecutive_bar_exhaustion,true,true,true,true,0,0.528,24,19,-6.122525,0.578694,,NEEDS_GRID_TUNING
+strategy,registered,supports_fast,metadata_ok,focused_yaml_exists,raw_grid_size,jan_smoke_exit_code,jan_smoke_runtime_sec,jan_combos_completed,jan_best_trades,jan_best_total_r,jan_best_profit_factor,jan_best_max_drawdown_r,jan_best_avg_bars_held,warning,recommended_next_action
+intraday_ma_crossover,true,true,true,true,2304,0,1.303,50,18,-0.654264,0.760925,-3.102652,2.388889,negative_jan_smoke,NEEDS_GRID_TUNING
+rsi_failure_swing,true,true,true,true,3072,0,1.347,50,7,0.618422,3.832692,-1.153907,18.428571,ok_for_layer1,PROMISING_FOR_REDUCED_LAYER2
+bollinger_squeeze_breakout,true,true,true,true,6144,0,1.565,50,20,-1.662697,0.776503,-5.594643,9.8,negative_jan_smoke,NEEDS_GRID_TUNING
+bollinger_band_fade_chop,true,true,true,true,6144,0,1.625,50,19,-3.876959,0.805917,-8.256751,2.0,negative_jan_smoke,NEEDS_GRID_TUNING
+donchian_channel_breakout,true,true,true,true,1728,0,1.304,50,20,-5.947401,0.650238,-8.238166,3.8,negative_jan_smoke,NEEDS_GRID_TUNING
+consecutive_bar_exhaustion,true,true,true,true,6144,0,1.318,50,4,0.374799,0.586634,-1.026316,4.25,ok_for_layer1,NEEDS_GRID_TUNING

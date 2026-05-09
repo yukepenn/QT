@@ -90,62 +90,64 @@ def add_indicator_features(
     h = out["high"].astype(float)
     lo = out["low"].astype(float)
 
+    new_cols: dict[str, pd.Series] = {}
+
     for w in spec.ema_windows:
         ema = g["close"].transform(lambda s, sp=w: s.ewm(span=sp, adjust=False, min_periods=1).mean())
-        out[f"ema_{w}"] = ema
-        out[f"ema_slope_{w}"] = g[f"ema_{w}"].transform(lambda s: s - s.shift(1))
+        new_cols[f"ema_{w}"] = ema
+        new_cols[f"ema_slope_{w}"] = ema.groupby(sd).transform(lambda s: s - s.shift(1))
 
     for w in spec.sma_windows:
         sma = g["close"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).mean())
-        out[f"sma_{w}"] = sma
-        out[f"sma_slope_{w}"] = g[f"sma_{w}"].transform(lambda s: s - s.shift(1))
+        new_cols[f"sma_{w}"] = sma
+        new_cols[f"sma_slope_{w}"] = sma.groupby(sd).transform(lambda s: s - s.shift(1))
 
     for w in spec.rsi_windows:
         rsi = _rsi_wilder(c, w, sd)
-        out[f"rsi_{w}"] = rsi
-        out[f"rsi_slope_{w}"] = g[f"rsi_{w}"].transform(lambda s: s - s.shift(1))
+        new_cols[f"rsi_{w}"] = rsi
+        new_cols[f"rsi_slope_{w}"] = rsi.groupby(sd).transform(lambda s: s - s.shift(1))
 
     for fast, slow, sig in spec.macd_tuples:
         ema_f = g["close"].transform(lambda s, sp=fast: s.ewm(span=sp, adjust=False, min_periods=1).mean())
         ema_s = g["close"].transform(lambda s, sp=slow: s.ewm(span=sp, adjust=False, min_periods=1).mean())
         line = ema_f - ema_s
-        out[f"macd_line_{fast}_{slow}"] = line
-        sig_line = g[f"macd_line_{fast}_{slow}"].transform(
+        ln = f"macd_line_{fast}_{slow}"
+        new_cols[ln] = line
+        sig_line = line.groupby(sd).transform(
             lambda s, sp=sig: s.ewm(span=sp, adjust=False, min_periods=1).mean()
         )
-        out[f"macd_signal_{fast}_{slow}_{sig}"] = sig_line
+        new_cols[f"macd_signal_{fast}_{slow}_{sig}"] = sig_line
         hist = line - sig_line
-        out[f"macd_hist_{fast}_{slow}_{sig}"] = hist
-        out[f"macd_hist_slope_{fast}_{slow}_{sig}"] = g[f"macd_hist_{fast}_{slow}_{sig}"].transform(lambda s: s - s.shift(1))
-        prev = g[f"macd_hist_{fast}_{slow}_{sig}"].transform(lambda s: s.shift(1))
-        out[f"macd_cross_up_{fast}_{slow}_{sig}"] = ((hist > 0) & (prev <= 0)).astype(np.int8)
+        hn = f"macd_hist_{fast}_{slow}_{sig}"
+        new_cols[hn] = hist
+        new_cols[f"macd_hist_slope_{fast}_{slow}_{sig}"] = hist.groupby(sd).transform(lambda s: s - s.shift(1))
+        prev = hist.groupby(sd).transform(lambda s: s.shift(1))
+        new_cols[f"macd_cross_up_{fast}_{slow}_{sig}"] = ((hist > 0) & (prev <= 0)).astype(np.int8)
 
     for k_w, d_s in spec.stochastic_tuples:
         roll_lo = g["low"].transform(lambda s, kw=k_w: s.rolling(kw, min_periods=1).min())
         roll_hi = g["high"].transform(lambda s, kw=k_w: s.rolling(kw, min_periods=1).max())
         rng = (roll_hi - roll_lo).replace(0, np.nan)
         k = 100.0 * (c - roll_lo) / (rng + 1e-12)
-        out[f"stoch_k_{k_w}"] = k
-        d = g[f"stoch_k_{k_w}"].transform(lambda s, ds=d_s: s.rolling(ds, min_periods=1).mean())
-        out[f"stoch_d_{k_w}_{d_s}"] = d
-        prev_k = g[f"stoch_k_{k_w}"].transform(lambda s: s.shift(1))
-        prev_d = g[f"stoch_d_{k_w}_{d_s}"].transform(lambda s: s.shift(1))
-        out[f"stoch_cross_up_{k_w}_{d_s}"] = ((k > d) & (prev_k <= prev_d)).astype(np.int8)
+        new_cols[f"stoch_k_{k_w}"] = k
+        d = k.groupby(sd).transform(lambda s, ds=d_s: s.rolling(ds, min_periods=1).mean())
+        new_cols[f"stoch_d_{k_w}_{d_s}"] = d
+        prev_k = k.groupby(sd).transform(lambda s: s.shift(1))
+        prev_d = d.groupby(sd).transform(lambda s: s.shift(1))
+        new_cols[f"stoch_cross_up_{k_w}_{d_s}"] = ((k > d) & (prev_k <= prev_d)).astype(np.int8)
 
     for w in spec.cci_windows:
         tp = (h + lo + c) / 3.0
-        out["_tp_cci"] = tp
-        ma_tp = g["_tp_cci"].transform(lambda s, ww=w: s.rolling(ww, min_periods=1).mean())
-        md = g["_tp_cci"].transform(
+        ma_tp = tp.groupby(sd).transform(lambda s, ww=w: s.rolling(ww, min_periods=1).mean())
+        md = tp.groupby(sd).transform(
             lambda s, ww=w: (s - s.rolling(ww, min_periods=1).mean())
             .abs()
             .rolling(ww, min_periods=1)
             .mean()
         )
         cci = (tp - ma_tp) / (0.015 * md.replace(0, np.nan) + 1e-12)
-        out.drop(columns=["_tp_cci"], inplace=True)
-        out[f"cci_{w}"] = cci
-        out[f"cci_slope_{w}"] = g[f"cci_{w}"].transform(lambda s: s - s.shift(1))
+        new_cols[f"cci_{w}"] = cci
+        new_cols[f"cci_slope_{w}"] = cci.groupby(sd).transform(lambda s: s - s.shift(1))
 
     for w in spec.adx_windows:
         prev_c = g["close"].transform(lambda s: s.shift(1))
@@ -163,9 +165,11 @@ def add_indicator_features(
         minus_di = 100.0 * (m_dm_s / (atr_tr + 1e-12))
         dx = 100.0 * (plus_di - minus_di).abs() / (plus_di + minus_di + 1e-12)
         adx = _wilder_smooth_series(dx, w, sd)
-        out[f"plus_di_{w}"] = plus_di
-        out[f"minus_di_{w}"] = minus_di
-        out[f"adx_{w}"] = adx
-        out[f"adx_slope_{w}"] = g[f"adx_{w}"].transform(lambda s: s - s.shift(1))
+        new_cols[f"plus_di_{w}"] = plus_di
+        new_cols[f"minus_di_{w}"] = minus_di
+        new_cols[f"adx_{w}"] = adx
+        new_cols[f"adx_slope_{w}"] = adx.groupby(sd).transform(lambda s: s - s.shift(1))
 
+    if new_cols:
+        out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)
     return out

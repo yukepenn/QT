@@ -1,0 +1,100 @@
+candidate_id: BOLLINGER_BAND_FADE_CHOP_001
+strategy: bollinger_band_fade_chop
+asset: equity
+symbol: QQQ
+strategy_family: band_mean_reversion
+conflict_group: QQQ_directional
+default_priority: 48
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: band_mean_reversion
+  conflict_group: QQQ_directional
+  default_priority: 48
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 0.1926746876057184
+  filters_used: relaxed
+  warning: relaxed_filter
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\bollinger_band_fade_chop\sweep_20260509_215658_layer1_v2_batch1_qqq_2023_2024\results.csv
+  row_index: 214
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\bollinger_band_fade_chop\sweep_20260509_215658_layer1_v2_batch1_qqq_2023_2024
+metrics:
+  trades: 472
+  profit_factor: 1.0076390279058092
+  total_r: 32.2106817622158
+  win_rate: 0.3644067796610169
+  total_net_pnl: 0.4770000000084451
+  avg_r: 0.0682429698352029
+  avg_net_pnl: 0.0010105932203568
+  max_drawdown_pnl: -6.885499999998331
+  max_drawdown_r: -43.12936408885104
+  avg_bars_held: 4.24364406779661
+  stop_count: 298
+  target_count: 165
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 9
+config:
+  strategy: bollinger_band_fade_chop
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    channels.bb_windows:
+    - 20
+    - 30
+    channels.bb_stds:
+    - 1.5
+    - 2.0
+    channels.bb_bandwidth_lookbacks:
+    - 60
+    - 120
+    channels.donchian_windows: []
+    regime.windows:
+    - 30
+    - 60
+    bb_window: 20
+    bb_std: 2.0
+    regime_window: 60
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    require_range_regime: true
+    max_range_efficiency: 0.22
+    min_vwap_cross_count: 4.0
+    trigger_mode: lower_band_reclaim
+  risk:
+    stop_mode: signal_candle_low
+    target_mode: bb_mid
+    target_r: 1.0
+    atr_buffer_mult: 0.25
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30
