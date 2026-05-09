@@ -1,0 +1,48 @@
+strategy: intraday_ma_crossover
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 20, 30]
+  price_action_windows: [3, 5, 10, 20, 30, 60]
+  volume_windows: [20, 30]
+  indicators:
+    ema_windows: [9, 10, 20, 50]
+    sma_windows: [20]
+    rsi_windows: []
+    macd_tuples: []
+    stochastic_tuples: []
+    cci_windows: []
+    adx_windows: []
+  channels: {}
+  regime: {}
+  ema_fast: 9
+  ema_slow: 20
+  ema_trend: 50
+  sma_ref: 20
+
+signal:
+  side: long_only
+  atr_column: atr_like_20
+  entry_start_minute: 30
+  entry_end_minute: 330
+  trigger_mode: ema_fast_cross_slow
+  require_ema_slope: false
+  require_vwap_side: false
+  min_slope_atr: 0.0
+
+risk:
+  stop_mode: signal_candle_low
+  target_mode: fixed_r
+  target_r: 1.25
+  atr_buffer_mult: 0.35
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 60

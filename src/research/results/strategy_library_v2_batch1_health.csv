@@ -1,0 +1,7 @@
+strategy,registered,supports_fast,metadata_ok,focused_yaml_exists,jan_smoke_exit_code,jan_smoke_runtime_sec,jan_combos_completed,jan_best_trades,jan_best_total_r,jan_best_pf,warnings,recommended_next_action
+intraday_ma_crossover,true,true,true,true,0,0.538,24,18,-0.654264,0.760925,Jan 2025 best row still sub-1 PF,NEEDS_GRID_TUNING
+rsi_failure_swing,true,true,true,true,0,0.555,24,7,0.618422,3.832692,,PROMISING_FOR_LAYER2
+bollinger_squeeze_breakout,true,true,true,true,0,0.807,24,20,-1.678095,0.691586,pandas PerformanceWarning channels.py insert,NEEDS_GRID_TUNING
+bollinger_band_fade_chop,true,true,true,true,0,0.854,24,19,-3.876959,0.805917,pandas PerformanceWarning channels/regime insert,NEEDS_GRID_TUNING
+donchian_channel_breakout,true,true,true,true,0,0.549,24,1,-1.038462,0.0,Very few trades in Jan capped slice; grid restrictive,TOO_RESTRICTIVE
+consecutive_bar_exhaustion,true,true,true,true,0,0.528,24,19,-6.122525,0.578694,,NEEDS_GRID_TUNING

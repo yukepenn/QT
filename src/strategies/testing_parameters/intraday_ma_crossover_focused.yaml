@@ -1,0 +1,41 @@
+strategy: intraday_ma_crossover
+
+grid:
+  features.ema_fast: [9, 10]
+  features.ema_slow: [20]
+  features.ema_trend: [50]
+  features.sma_ref: [20]
+  signal.entry_start_minute: [30, 60]
+  signal.entry_end_minute: [270, 330]
+  signal.trigger_mode: [ema_fast_cross_slow, price_reclaim_sma20]
+  signal.require_ema_slope: [false, true]
+  signal.require_vwap_side: [false]
+  signal.min_slope_atr: [0.0, 0.05]
+  risk.stop_mode: [signal_candle_low, ema_slow_buffer]
+  risk.target_r: [1.0, 1.25, 1.5]
+  risk.atr_buffer_mult: [0.35, 0.5]
+  backtest.max_hold_minutes: [45, 60, 90]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  features.orb_open_minutes: 15
+  features.vwap_bands: [1.0, 2.0]
+  features.vol_windows: [5, 15, 20, 30]
+  features.price_action_windows: [3, 5, 10, 20, 30, 60]
+  features.volume_windows: [20, 30]
+  features.indicators.ema_windows: [9, 10, 20, 50]
+  features.indicators.sma_windows: [20]
+  features.indicators.rsi_windows: []
+  features.indicators.macd_tuples: []
+  features.indicators.stochastic_tuples: []
+  features.indicators.cci_windows: []
+  features.indicators.adx_windows: []
+  risk.target_mode: fixed_r
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

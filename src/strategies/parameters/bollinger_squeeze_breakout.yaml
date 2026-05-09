@@ -1,0 +1,44 @@
+strategy: bollinger_squeeze_breakout
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 20, 30]
+  price_action_windows: [3, 5, 10, 20, 30, 60]
+  volume_windows: [20, 30]
+  indicators: {}
+  channels:
+    bb_windows: [20, 30]
+    bb_stds: [1.5, 2.0]
+    bb_bandwidth_lookbacks: [60, 120]
+    donchian_windows: []
+  regime: {}
+  bb_window: 20
+  bb_std: 2.0
+  bandwidth_lookback: 60
+
+signal:
+  side: long_only
+  atr_column: atr_like_20
+  entry_start_minute: 60
+  entry_end_minute: 330
+  max_bandwidth_percentile: 0.25
+  breakout_mode: close_above_upper_band
+  require_vwap_side: false
+  require_range_expansion: false
+
+risk:
+  stop_mode: breakout_candle_low
+  target_mode: fixed_r
+  target_r: 1.25
+  atr_buffer_mult: 0.4
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 60

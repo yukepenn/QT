@@ -1,0 +1,29 @@
+strategy: consecutive_bar_exhaustion
+
+grid:
+  features.exhaustion_window: [4, 6]
+  signal.entry_start_minute: [30, 60]
+  signal.entry_end_minute: [270, 330]
+  signal.min_consecutive_red: [3, 4]
+  signal.min_down_move_atr: [1.2, 1.8]
+  signal.require_lower_wick: [false, true]
+  signal.require_volume_surge: [false, true]
+  signal.confirm_mode: [break_prior_high, close_green]
+  risk.stop_mode: [exhaustion_low, signal_candle_low]
+  risk.target_r: [1.0, 1.25]
+  risk.atr_buffer_mult: [0.4, 0.55]
+  backtest.max_hold_minutes: [15, 30, 45]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  features.vol_windows: [5, 15, 20, 30]
+  signal.volume_surge_mult: 1.15
+  risk.target_mode: fixed_r
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

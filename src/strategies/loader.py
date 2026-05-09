@@ -18,12 +18,18 @@ if str(_ROOT) not in sys.path:
 
 from src.strategies.strategy.afternoon_continuation import AfternoonContinuationStrategy
 from src.strategies.strategy.base import BaseStrategy, validate_required_features_no_lookahead
+from src.strategies.strategy.bollinger_band_fade_chop import BollingerBandFadeChopStrategy
+from src.strategies.strategy.bollinger_squeeze_breakout import BollingerSqueezeBreakoutStrategy
+from src.strategies.strategy.consecutive_bar_exhaustion import ConsecutiveBarExhaustionStrategy
+from src.strategies.strategy.donchian_channel_breakout import DonchianChannelBreakoutStrategy
 from src.strategies.strategy.failed_orb import FailedOrbStrategy
 from src.strategies.strategy.gap_acceptance_failure import GapAcceptanceFailureStrategy
+from src.strategies.strategy.intraday_ma_crossover import IntradayMaCrossoverStrategy
 from src.strategies.strategy.midday_compression_breakout import MiddayCompressionBreakoutStrategy
 from src.strategies.strategy.orb_continuation import ORBContinuationStrategy
 from src.strategies.strategy.orb_retest_continuation import OrbRetestContinuationStrategy
 from src.strategies.strategy.prior_day_level_trap import PriorDayLevelTrapStrategy
+from src.strategies.strategy.rsi_failure_swing import RsiFailureSwingStrategy
 from src.strategies.strategy.vwap_reclaim_reject import VwapReclaimRejectStrategy
 from src.strategies.strategy.vwap_reversal import VWAPReversalStrategy
 from src.strategies.strategy.vwap_trend_pullback import VwapTrendPullbackStrategy
@@ -38,6 +44,12 @@ def strategy_root() -> Path:
 
 
 _STRATEGY_BY_NAME: dict[str, type[BaseStrategy]] = {
+    "intraday_ma_crossover": IntradayMaCrossoverStrategy,
+    "rsi_failure_swing": RsiFailureSwingStrategy,
+    "bollinger_squeeze_breakout": BollingerSqueezeBreakoutStrategy,
+    "bollinger_band_fade_chop": BollingerBandFadeChopStrategy,
+    "donchian_channel_breakout": DonchianChannelBreakoutStrategy,
+    "consecutive_bar_exhaustion": ConsecutiveBarExhaustionStrategy,
     "orb_continuation": ORBContinuationStrategy,
     "vwap_reversal": VWAPReversalStrategy,
     "failed_orb": FailedOrbStrategy,

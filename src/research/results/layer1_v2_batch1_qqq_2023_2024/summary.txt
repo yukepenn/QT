@@ -1,0 +1,10 @@
+tag=v2_batch1_rsi
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_v2_batch1_qqq_2023_2024
+candidates_written=5
+
+candidates:
+  RSI_FAILURE_SWING_001 rsi_failure_swing score=1.7411 trades=68
+  RSI_FAILURE_SWING_002 rsi_failure_swing score=1.7411 trades=68
+  RSI_FAILURE_SWING_003 rsi_failure_swing score=1.7289 trades=68
+  RSI_FAILURE_SWING_004 rsi_failure_swing score=1.7289 trades=68
+  RSI_FAILURE_SWING_005 rsi_failure_swing score=1.1769 trades=46

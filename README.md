@@ -54,7 +54,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - Raw data reader (`src/data/read_bars.py`).
 - In-memory feature layer (`src/features/build_features.py`).
 - Strategy plugin interface (`BaseStrategy` in `src/strategies/strategy/base.py`).
-- Strategy plugins including ORB continuation (`orb_continuation`), VWAP reversal (`vwap_reversal`), and **Strategy Library v1** additions (`failed_orb`, `orb_retest_continuation`, `vwap_trend_pullback`, `vwap_reclaim_reject`, `prior_day_level_trap`, `gap_acceptance_failure`, `midday_compression_breakout`, `afternoon_continuation` — see **Strategy Library v1** below).
+- Strategy plugins including ORB continuation (`orb_continuation`), VWAP reversal (`vwap_reversal`), **Strategy Library v1** additions (`failed_orb`, `orb_retest_continuation`, `vwap_trend_pullback`, `vwap_reclaim_reject`, `prior_day_level_trap`, `gap_acceptance_failure`, `midday_compression_breakout`, `afternoon_continuation`), and **Strategy Library v2 Batch 1** (`intraday_ma_crossover`, `rsi_failure_swing`, `bollinger_squeeze_breakout`, `bollinger_band_fade_chop`, `donchian_channel_breakout`, `consecutive_bar_exhaustion` — see **Strategy Library v2 Batch 1** below).
 - YAML default parameters (`src/strategies/parameters/`).
 - YAML sweep grids (`src/strategies/testing_parameters/`).
 - Readable / debug backtest engine (`src/backtest/engine.py`).
@@ -99,7 +99,24 @@ Registered plugins (see `src/strategies/loader.py`):
 - `midday_compression_breakout`
 - `afternoon_continuation`
 
-**Strategy Library v1 snapshot:** Current sweep-ready status is summarized in **`src/research/results/layer1_all10_qqq_v1/fast_core_status_current.csv`** (Layer 1 bundle metadata in **`sweep_manifest.csv`**).
+**Strategy Library v2 Batch 1 (plugins, QQQ, long-only MVP v1)**
+
+Orthogonal mechanism families (MA / oscillator / Bollinger / Donchian / exhaustion); not ORB/VWAP/gap/trap duplicates. Curated plan + smoke health + interpretation:
+
+- `src/research/results/strategy_library_v2_batch1_plan.md`
+- `src/research/results/strategy_library_v2_batch1_health.csv` / `strategy_library_v2_batch1_health.md`
+- `src/research/results/strategy_library_v2_batch1_summary.md`
+
+Registered plugins (also in `loader.py`):
+
+- `intraday_ma_crossover`
+- `rsi_failure_swing`
+- `bollinger_squeeze_breakout`
+- `bollinger_band_fade_chop`
+- `donchian_channel_breakout`
+- `consecutive_bar_exhaustion`
+
+**Strategy Library v1 snapshot:** Current sweep-ready status is summarized in **`src/research/results/layer1_all10_qqq_v1/fast_core_status_current.csv`** (Layer 1 bundle metadata in **`sweep_manifest.csv`**). **v1 + v2 Batch 1** totals **16** registered strategies.
 
 **Generic risk hygiene (`risk.min_risk_per_share`)**
 

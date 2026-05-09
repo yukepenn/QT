@@ -12,11 +12,14 @@ if str(_ROOT) not in sys.path:
 
 import pandas as pd
 
-from src.data.read_bars import read_bars
+from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, RegimeFeatureConfig
+from src.features.channels import add_channel_features
 from src.features.feature_config import FEATURE_COLUMNS, RAW_COLUMNS, validate_no_registry_duplicates
-from src.features.orb import add_orb
+from src.features.indicators import add_indicator_features
 from src.features.levels import add_prior_day_levels
+from src.features.orb import add_orb
 from src.features.price_action import add_price_action_features
+from src.features.regime import add_regime_features
 from src.features.time_features import add_time_features
 from src.features.volatility import add_intraday_volatility
 from src.features.volume import add_volume_features
@@ -31,10 +34,17 @@ def build_basic_features(
     vol_windows: tuple[int, ...] = (5, 15, 30),
     price_action_windows: tuple[int, ...] = (3, 5, 10, 20, 30, 60),
     volume_windows: tuple[int, ...] = (20, 30, 60),
+    indicators: IndicatorsFeatureConfig | None = None,
+    channels: ChannelsFeatureConfig | None = None,
+    regime: RegimeFeatureConfig | None = None,
     copy: bool = True,
     allow_overwrite: bool = False,
 ) -> pd.DataFrame:
     validate_no_registry_duplicates()
+    ind = indicators or IndicatorsFeatureConfig()
+    ch = channels or ChannelsFeatureConfig()
+    reg = regime or RegimeFeatureConfig()
+
     out = add_time_features(df, copy=copy, allow_overwrite=allow_overwrite)
     out = add_vwap(out, bands=vwap_bands, copy=False, allow_overwrite=allow_overwrite)
     out = add_orb(out, open_minutes=orb_open_minutes, copy=False, allow_overwrite=allow_overwrite)
@@ -42,6 +52,9 @@ def build_basic_features(
     out = add_intraday_volatility(out, windows=vol_windows, copy=False, allow_overwrite=allow_overwrite)
     out = add_price_action_features(out, windows=price_action_windows, copy=False, allow_overwrite=allow_overwrite)
     out = add_volume_features(out, windows=volume_windows, copy=False, allow_overwrite=allow_overwrite)
+    out = add_indicator_features(out, ind, copy=False, allow_overwrite=allow_overwrite)
+    out = add_channel_features(out, ch, copy=False, allow_overwrite=allow_overwrite)
+    out = add_regime_features(out, reg, copy=False, allow_overwrite=allow_overwrite)
     return out
 
 
@@ -72,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"registry_validation=FAILED {e}", file=sys.stderr)
         return 1
 
+    from src.data.read_bars import read_bars
+
     df = read_bars(
         asset=args.asset,
         symbol=args.symbol,
@@ -91,7 +106,6 @@ def main(argv: list[str] | None = None) -> int:
         allow_overwrite=False,
     )
 
-    # Raw columns preserved (ts_ny may be normalized by time_features from ts_utc)
     preserved = True
     for c in raw_subset:
         if c == "ts_ny":

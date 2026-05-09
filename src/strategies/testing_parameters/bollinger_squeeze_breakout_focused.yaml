@@ -1,0 +1,32 @@
+strategy: bollinger_squeeze_breakout
+
+grid:
+  features.bb_window: [20, 30]
+  features.bb_std: [1.5, 2.0]
+  features.bandwidth_lookback: [60, 120]
+  signal.entry_start_minute: [60, 90]
+  signal.entry_end_minute: [300, 330]
+  signal.max_bandwidth_percentile: [0.2, 0.3]
+  signal.require_vwap_side: [false, true]
+  signal.require_range_expansion: [false, true]
+  risk.stop_mode: [breakout_candle_low, bb_mid]
+  risk.target_r: [1.0, 1.25]
+  risk.atr_buffer_mult: [0.35, 0.5]
+  backtest.max_hold_minutes: [45, 60, 90]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  features.vol_windows: [5, 15, 20, 30]
+  features.channels.bb_windows: [20, 30]
+  features.channels.bb_stds: [1.5, 2.0]
+  features.channels.bb_bandwidth_lookbacks: [60, 120]
+  features.channels.donchian_windows: []
+  risk.target_mode: fixed_r
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

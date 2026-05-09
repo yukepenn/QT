@@ -1,0 +1,40 @@
+strategy: consecutive_bar_exhaustion
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 20, 30]
+  price_action_windows: [3, 5, 10, 20, 30, 60]
+  volume_windows: [20, 30]
+  indicators: {}
+  channels: {}
+  regime: {}
+  exhaustion_window: 5
+
+signal:
+  side: long_only
+  atr_column: atr_like_20
+  entry_start_minute: 30
+  entry_end_minute: 330
+  min_consecutive_red: 3
+  min_down_move_atr: 1.5
+  require_lower_wick: false
+  require_volume_surge: false
+  volume_surge_mult: 1.2
+  confirm_mode: break_prior_high
+
+risk:
+  stop_mode: exhaustion_low
+  target_mode: fixed_r
+  target_r: 1.25
+  atr_buffer_mult: 0.45
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 30

@@ -1,3 +1,51 @@
+intraday_ma_crossover:
+  family: moving_average_trend
+  conflict_group: QQQ_directional
+  default_priority: 55
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; MA cross / reclaim vs VWAP trend filter."
+
+rsi_failure_swing:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 50
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; RSI oversold + reclaim / 3-bar high break."
+
+bollinger_squeeze_breakout:
+  family: volatility_expansion
+  conflict_group: QQQ_directional
+  default_priority: 52
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; squeeze + close above upper band."
+
+bollinger_band_fade_chop:
+  family: band_mean_reversion
+  conflict_group: QQQ_directional
+  default_priority: 48
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; chop regime + lower-band fade."
+
+donchian_channel_breakout:
+  family: rolling_channel_breakout
+  conflict_group: QQQ_directional
+  default_priority: 54
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; prior Donchian high breakout + width filter."
+
+consecutive_bar_exhaustion:
+  family: price_action_exhaustion
+  conflict_group: QQQ_directional
+  default_priority: 46
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "Long-only MVP v1; consecutive red + exhaustion reversal."
+
 orb_continuation:
   family: opening_momentum
   conflict_group: QQQ_directional

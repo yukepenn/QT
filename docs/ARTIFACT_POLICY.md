@@ -37,8 +37,10 @@ Commit curated, small artifacts that summarize experiments:
 - Candidate libraries:
   - `selected_candidates.csv`
   - `selected_candidates/*.yaml`
+  - `candidate_summary.md` (when present)
   - `sweep_manifest.csv` (and optional `.md`)
   - summary MDs (e.g. `layer1_*_summary.md`)
+  - Strategy Library v2 Batch 1 partial export: `src/research/results/layer1_v2_batch1_qqq_2023_2024/` (curated YAMLs + CSV + summaries only; **not** the underlying `testing_parameters_results/.../sweep_*` trees)
 - Layer 2 summaries:
   - `top_unique_systems.csv` / `.md`
   - `fixed_run_summary.csv` / `.md`

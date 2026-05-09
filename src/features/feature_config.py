@@ -183,6 +183,32 @@ FEATURE_COLUMNS = {
     ],
 }
 
+from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, RegimeFeatureConfig
+from src.features.channels import channel_column_names
+from src.features.indicators import indicator_column_names
+from src.features.regime import regime_column_names
+
+_REGISTRY_INDICATORS = IndicatorsFeatureConfig(
+    ema_windows=(7, 9, 10, 12, 14, 20, 26, 50),
+    sma_windows=(20, 50),
+    rsi_windows=(7, 14),
+    macd_tuples=((12, 26, 9),),
+    stochastic_tuples=((14, 3),),
+    cci_windows=(20,),
+    adx_windows=(14,),
+)
+_REGISTRY_CHANNELS = ChannelsFeatureConfig(
+    bb_windows=(20, 30),
+    bb_stds=(1.5, 2.0),
+    bb_bandwidth_lookbacks=(60, 120),
+    donchian_windows=(20, 30, 60),
+)
+_REGISTRY_REGIME = RegimeFeatureConfig(windows=(30, 60))
+
+FEATURE_COLUMNS["indicators"] = indicator_column_names(_REGISTRY_INDICATORS)
+FEATURE_COLUMNS["channels"] = channel_column_names(_REGISTRY_CHANNELS)
+FEATURE_COLUMNS["regime"] = regime_column_names(_REGISTRY_REGIME)
+
 FEATURE_DEPENDENCIES = {
     "time_features": ["ts_utc", "ts_ny"],
     "vwap": ["session_date", "open", "high", "low", "close", "volume"],
@@ -191,6 +217,9 @@ FEATURE_DEPENDENCIES = {
     "price_action": ["session_date", "open", "high", "low", "close"],
     "volume": ["session_date", "volume"],
     "volatility": ["session_date", "high", "low", "close"],
+    "indicators": ["session_date", "open", "high", "low", "close"],
+    "channels": ["session_date", "open", "high", "low", "close", "atr_like_20"],
+    "regime": ["session_date", "close", "vwap", "atr_like_20"],
 }
 
 FEATURE_COLUMN_DESCRIPTIONS = {

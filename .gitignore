@@ -175,3 +175,8 @@ src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/rank_by_*
 
 !src/combiner/results/layer2_qqq_2020_20260430_posthardening_comparison.md
 !src/research/results/layer3_gate_after_2020_posthardening.md
+
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/selected_candidates/*.yaml
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/selected_candidates.csv
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/candidate_summary.md
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/layer1_v2_batch1_summary.md
