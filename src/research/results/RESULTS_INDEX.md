@@ -35,7 +35,20 @@ This index classifies **result roots** without moving or deleting them.
   - **keep**: yes (CSV + MD summaries only)
 
 - **`strategy_library_v2_batch1_tuning_summary.md`**
-  - **status**: narrative for tuned v1 + decision (`TUNE_BATCH1_GRIDS_AGAIN`)
+  - **status**: Batch 1 tuning v1 narrative + decision (`TUNE_BATCH1_GRIDS_AGAIN`)
+  - **keep**: yes
+
+- **`strategy_library_v2_batch1_tuning_v2_summary.md`**
+  - **status**: Batch 1 tuning v2 narrative + **`DEFER_BATCH1_AND_RETURN_TO_REFINED_FAILED_CORE`**
+  - **keep**: yes
+
+- **`layer1_v2_batch1_tuned_v2_qqq_2023_2024/`**
+  - **status**: tuned_v2 Layer 1 manifest only (**no** `selected_candidates/*.yaml`)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **keep**: yes (manifest + selection docs)
+
+- **`batch1_tuned_v1_cost_diagnostics/`**
+  - **status**: tuned_v1 winner trade-quality / bucket diagnostics
   - **keep**: yes
 
 ## B. Reference / engineering docs

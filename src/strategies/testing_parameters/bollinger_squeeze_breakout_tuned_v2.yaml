@@ -1,0 +1,38 @@
+strategy: bollinger_squeeze_breakout
+
+# Cost-aware tuning v2: fewer trades, higher min_risk (0.05), tighter squeeze band.
+# Raw grid: 2×1×2 × 2×2×3 × 2×3×2 = 576; sweep may emit fewer rows after normalized_param_key dedupe.
+# `features.channels.bb_stds` includes 1.5 so FeatureStore builds columns required by the strategy plugin.
+# `breakout_mode` is implicit in the strategy (close > upper).
+# `atr_window` is fixed via `signal.atr_column` (atr_like_20).
+
+grid:
+  features.bb_window: [20, 30]
+  features.bb_std: [2.0]
+  features.bandwidth_lookback: [60, 120]
+  signal.entry_start_minute: [90, 120]
+  signal.entry_end_minute: [240, 300]
+  signal.max_bandwidth_percentile: [0.08, 0.10, 0.15]
+  signal.require_vwap_side: [true]
+  signal.require_range_expansion: [true]
+  risk.stop_mode: [bb_mid, atr_buffer]
+  risk.target_r: [1.5, 1.75, 2.0]
+  backtest.max_hold_minutes: [45, 60]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  features.vol_windows: [5, 15, 20, 30]
+  features.channels.bb_windows: [20, 30]
+  features.channels.bb_stds: [1.5, 2.0]
+  features.channels.bb_bandwidth_lookbacks: [60, 120]
+  features.channels.donchian_windows: []
+  risk.target_mode: fixed_r
+  risk.atr_buffer_mult: 0.5
+  risk.min_risk_per_share: 0.05
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

@@ -251,3 +251,22 @@ src/combiner/results/layer2_qqq_v2_batch1_2023_2024_diagnostics_local/
 !src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/diagnostics/*.csv
 !src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/diagnostics/diagnostics_summary.md
 src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/rank_by_*.csv
+
+# Tuned v1 detailed combiner reruns (local trades.csv)
+src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1_diagnostics_local/
+
+# Batch 1 tuned v1 winner trade-quality diagnostics
+!src/research/results/batch1_tuned_v1_cost_diagnostics/*.csv
+!src/research/results/batch1_tuned_v1_cost_diagnostics/*.md
+
+# Batch 1 tuned v2 Layer 1 (no YAML exports; manifest + selection docs only)
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/sweep_manifest.csv
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/sweep_manifest.md
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/candidate_selection_config.md
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/candidate_summary.md
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/no_candidate_strategies.txt
+!src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024/summary.txt
+!src/research/results/strategy_library_v2_batch1_tuning_v2_summary.md
+
+# Layer 2 tuned v2 (skipped — summary only)
+!src/combiner/results/layer2_qqq_v2_batch1_tuned_v2_2023_2024/layer2_v2_batch1_tuned_v2_summary.md

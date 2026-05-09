@@ -1,0 +1,2 @@
+strategy,status,elapsed_sec,raw_grid_size,result_rows,best_trades,best_total_r,best_profit_factor,best_max_drawdown_r,best_avg_bars_held,sweep_folder,results_csv
+bollinger_squeeze_breakout,ok,12.1,,576,72,268,6.823118,1.048297,-21.413603,18.085821,src/strategies/testing_parameters_results/bollinger_squeeze_breakout/sweep_20260509_232104_layer1_v2_batch1_tuned_v2_qqq_2023_2024,src/strategies/testing_parameters_results/bollinger_squeeze_breakout/sweep_20260509_232104_layer1_v2_batch1_tuned_v2_qqq_2023_2024/results.csv

@@ -66,6 +66,8 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **grid**: 192 combos
   - **results**: `src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/layer2_v2_batch1_tuned_summary.md`
 
+**Tuned v2:** `bollinger_squeeze_breakout_tuned_v2.yaml` exists for a stricter squeeze grid; **no** Layer 2 YAMLs were added in this phase because Layer 1 candidate export was **empty** (see `strategy_library_v2_batch1_tuning_v2_summary.md`).
+
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)
 
 Directory: **`src/combiner/configs/frozen/`**

@@ -1,0 +1,5 @@
+## cost_by_candidate
+
+candidate_id,trades,sum_r,mean_r,mean_risk
+BOLLINGER_SQUEEZE_BREAKOUT_001,376,35.417505918706176,0.09419549446464409,0.43557269503544827
+

@@ -1,10 +1,15 @@
 ### [Unreleased] – 2026-05-09
 
+- Feat(strategies): **Batch 1 squeeze tuned_v2** — `bollinger_squeeze_breakout_tuned_v2.yaml` (stricter bandwidth + `min_risk_per_share: 0.05`; 576-combo grid).
+- Feat(research): **tuned_v1 winner diagnostics** — `gen_batch1_tuned_v1_cost_diagnostics.py`, curated `batch1_tuned_v1_cost_diagnostics/` (exit-reason / risk / entry-hour buckets).
+- Feat(research): **Layer 1 slippage stress helper** — `layer1_row_slippage_eval.py` (re-sim top filtered rows at alternate `slippage_per_share`).
+- Docs(research): **Batch 1 tuning v2** — `layer1_v2_batch1_tuned_v2_qqq_2023_2024/` manifest + selection docs (**0** YAML exports); `strategy_library_v2_batch1_tuning_v2_summary.md` (**`DEFER_BATCH1_AND_RETURN_TO_REFINED_FAILED_CORE`**).
+- Docs(combiner): **Layer 2 tuned_v2 skipped** — `layer2_qqq_v2_batch1_tuned_v2_2023_2024/layer2_v2_batch1_tuned_v2_summary.md` (no candidate library).
 - Feat(strategies): **Batch 1 tuned grids v1** — `bollinger_squeeze_breakout_tuned_v1.yaml`, `rsi_failure_swing_tuned_v1.yaml` (cost-aware strict families; `min_risk_per_share` where supported).
 - Feat(research): **Batch 1 cost fragility diagnostics** — `gen_batch1_cost_fragility_diagnostics.py` + curated `batch1_cost_fragility_diagnostics_v1/` (local detailed reruns under `layer2_qqq_v2_batch1_2023_2024_diagnostics_local/`, gitignored).
 - Feat(research): **Layer 1 tuned** — `layer1_v2_batch1_tuned_qqq_2023_2024_v1/` (manifest, **10** YAMLs, selection docs).
 - Feat(combiner): **Batch 1 tuned Layer 2** — `layer2_qqq_v2_batch1_tuned_2023_2024_v1.yaml`, `layer2_sweep_qqq_v2_batch1_tuned_2023_2024_v1.yaml`; curated `layer2_qqq_v2_batch1_tuned_2023_2024_v1/` (diagnostics, fixed rollup, **192-combo** sweep postprocess, cost stress, behavior dedupe, cost-robust leaderboard). Summaries: `layer2_v2_batch1_tuned_summary.md`, `strategy_library_v2_batch1_tuning_summary.md`. Decision **`TUNE_BATCH1_GRIDS_AGAIN`**. **mini-WFO v4/v5 and full WFO not run.**
-- Chore(gitignore): ignore `layer2_qqq_v2_batch1_2023_2024_diagnostics_local/`; force-include tuned Layer 1/2 curated paths + diagnostics pack + `rank_by_*.csv` exclusion under tuned root.
+- Chore(gitignore): ignore `layer2_qqq_v2_batch1_2023_2024_diagnostics_local/`; local `layer2_qqq_v2_batch1_tuned_2023_2024_v1_diagnostics_local/`; force-include tuned Layer 1/2 curated paths + `batch1_tuned_v1_cost_diagnostics` + tuned_v2 manifest pack + `rank_by_*.csv` exclusion under tuned v1 root.
 - Docs: README, PROJECT_STATUS, PROGRESS, `CONFIG_INDEX.md`, both `RESULTS_INDEX.md`, `ARTIFACT_POLICY.md`.
 - Feat(combiner): **Batch 1 reduced Layer 2** — `layer2_qqq_v2_batch1_2023_2024.yaml`, `layer2_sweep_qqq_v2_batch1_2023_2024.yaml`; curated results `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/` (diagnostics, fixed rollup, sweep dedupe, behavior dedupe, cost stress, fixed-vs-sweep). Summary `layer2_v2_batch1_summary.md`; decision **`TUNE_BATCH1_GRIDS_FIRST`**. **mini-WFO v4/v5 and full WFO not run.**
 - Fix(research): remove duplicate `main()` in `gen_batch1_audit.py` (single idempotent writer for audit CSV/MD).

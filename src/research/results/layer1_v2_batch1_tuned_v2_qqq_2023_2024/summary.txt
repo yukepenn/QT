@@ -1,0 +1,4 @@
+tag=layer1_v2_batch1_tuned_v2_qqq_2023_2024
+out_dir=src/research/results/layer1_v2_batch1_tuned_v2_qqq_2023_2024
+candidates_written=0
+reason=no_rows_meet_min_profit_factor_1_10
