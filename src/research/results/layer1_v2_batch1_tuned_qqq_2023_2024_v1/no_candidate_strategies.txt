@@ -1,0 +1,4 @@
+intraday_ma_crossover
+donchian_channel_breakout
+bollinger_band_fade_chop
+consecutive_bar_exhaustion

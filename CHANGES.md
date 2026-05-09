@@ -1,5 +1,11 @@
 ### [Unreleased] – 2026-05-09
 
+- Feat(strategies): **Batch 1 tuned grids v1** — `bollinger_squeeze_breakout_tuned_v1.yaml`, `rsi_failure_swing_tuned_v1.yaml` (cost-aware strict families; `min_risk_per_share` where supported).
+- Feat(research): **Batch 1 cost fragility diagnostics** — `gen_batch1_cost_fragility_diagnostics.py` + curated `batch1_cost_fragility_diagnostics_v1/` (local detailed reruns under `layer2_qqq_v2_batch1_2023_2024_diagnostics_local/`, gitignored).
+- Feat(research): **Layer 1 tuned** — `layer1_v2_batch1_tuned_qqq_2023_2024_v1/` (manifest, **10** YAMLs, selection docs).
+- Feat(combiner): **Batch 1 tuned Layer 2** — `layer2_qqq_v2_batch1_tuned_2023_2024_v1.yaml`, `layer2_sweep_qqq_v2_batch1_tuned_2023_2024_v1.yaml`; curated `layer2_qqq_v2_batch1_tuned_2023_2024_v1/` (diagnostics, fixed rollup, **192-combo** sweep postprocess, cost stress, behavior dedupe, cost-robust leaderboard). Summaries: `layer2_v2_batch1_tuned_summary.md`, `strategy_library_v2_batch1_tuning_summary.md`. Decision **`TUNE_BATCH1_GRIDS_AGAIN`**. **mini-WFO v4/v5 and full WFO not run.**
+- Chore(gitignore): ignore `layer2_qqq_v2_batch1_2023_2024_diagnostics_local/`; force-include tuned Layer 1/2 curated paths + diagnostics pack + `rank_by_*.csv` exclusion under tuned root.
+- Docs: README, PROJECT_STATUS, PROGRESS, `CONFIG_INDEX.md`, both `RESULTS_INDEX.md`, `ARTIFACT_POLICY.md`.
 - Feat(combiner): **Batch 1 reduced Layer 2** — `layer2_qqq_v2_batch1_2023_2024.yaml`, `layer2_sweep_qqq_v2_batch1_2023_2024.yaml`; curated results `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/` (diagnostics, fixed rollup, sweep dedupe, behavior dedupe, cost stress, fixed-vs-sweep). Summary `layer2_v2_batch1_summary.md`; decision **`TUNE_BATCH1_GRIDS_FIRST`**. **mini-WFO v4/v5 and full WFO not run.**
 - Fix(research): remove duplicate `main()` in `gen_batch1_audit.py` (single idempotent writer for audit CSV/MD).
 - Docs(research): `layer1_v2_batch1_qqq_2023_2024/MANIFEST_CONSISTENCY_NOTE.md`; expanded `reduced_layer2_v2_batch1_design.md`.

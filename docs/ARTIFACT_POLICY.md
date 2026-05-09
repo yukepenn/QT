@@ -45,6 +45,10 @@ Commit curated, small artifacts that summarize experiments:
     - `reduced_layer2_v2_batch1_design.md` (Batch 1 Layer 2 rationale + links to configs)
     - `src/research/results/layer1_v2_batch1_qqq_2023_2024/MANIFEST_CONSISTENCY_NOTE.md` (manifest/candidate alignment policy)
   - `src/research/results/layer1_v2_batch1_qqq_2023_2024/` — `sweep_manifest.{csv,md}`, `selected_candidates/`, `candidate_selection_config.md`, `no_candidate_strategies.txt`, `layer1_v2_batch1_summary.md`
+- Strategy Library v2 Batch 1 **tuned** Layer 1 v1: `src/strategies/testing_parameters/bollinger_squeeze_breakout_tuned_v1.yaml`, `src/strategies/testing_parameters/rsi_failure_swing_tuned_v1.yaml`; curated root `src/research/results/layer1_v2_batch1_tuned_qqq_2023_2024_v1/`
+- Strategy Library v2 Batch 1 **tuned** Layer 2 (QQQ 2023–2024) curated root: `src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/` — same lightweight pattern as the original Batch 1 root (`layer2_v2_batch1_tuned_summary.md`, `fixed_run_summary.*`, dedupe exports, `cost_stress/*`, `cost_robust_systems.*`, `fixed_vs_sweep_comparison.*`, `candidate_precompute_profile_summary.*`, `diagnostics/*`; no `run_*` / `sweep_*` / `fixed_runs/` / `top_runs/` / full `trades.csv`)
+- Batch 1 **cost fragility** curated diagnostics: `src/research/results/batch1_cost_fragility_diagnostics_v1/`; generator `src/research/gen_batch1_cost_fragility_diagnostics.py`; local detailed reruns under `src/combiner/results/layer2_qqq_v2_batch1_2023_2024_diagnostics_local/` stay **uncommitted**
+- Narrative: `src/research/results/strategy_library_v2_batch1_tuning_summary.md`
 - Strategy Library v2 Batch 1 Layer 2 (QQQ 2023–2024) curated root: `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/` — `layer2_v2_batch1_summary.md`, `fixed_run_summary.*`, `top_unique_systems.*`, `behavior_unique_systems.*`, `top_unique_run_map.csv`, `cost_stress/*`, `cost_robust_systems.*`, `fixed_vs_sweep_comparison.*`, `candidate_precompute_profile_summary.*`, `diagnostics/*` (no committed `run_*`, `fixed_runs/`, `sweep_*`, `top_runs/`, or full `trades.csv`)
 - Layer 2 summaries:
   - `top_unique_systems.csv` / `.md`

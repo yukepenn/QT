@@ -1,0 +1,3 @@
+layer1_v2_batch1_tuned_qqq_2023_2024_v1
+candidates_written=10
+see selected_candidates.csv and candidate_summary.md

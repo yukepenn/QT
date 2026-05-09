@@ -1,0 +1,10 @@
+# Candidate precompute profile summary
+
+Source: `candidate_precompute_profile.csv`
+
+```
+                  strategy feature_key_short strategy_context_key_short  candidate_count  n_feature_cache_hits  n_feature_cache_misses  n_context_cache_hits  n_context_cache_misses  sum_total_sec  mean_total_sec  max_total_sec  sum_feature_sec  sum_context_sec  sum_signal_sec  n_signal_cache_hits  n_signal_cache_misses  sum_signal_cache_load_sec  sum_signal_cache_write_sec  total_signals  total_long_signals  total_short_signals
+bollinger_squeeze_breakout      646511f924eb               6a2715415106                5                     4                       1                     4                       1        29.8756         5.97512        29.7502          28.0822           0.1498          0.4155                    0                      5                     0.0010                      0.0822           1841                1841                    0
+         rsi_failure_swing      a6548fc49bfc               f145f0c46eab                1                     1                       0                     0                       1         0.2749         0.27490         0.2749           0.0000           0.2441          0.0041                    0                      1                     0.0003                      0.0141            152                 152                    0
+         rsi_failure_swing      a6548fc49bfc               f7c194c610f8                4                     3                       1                     3                       1        11.5598         2.88995        11.4645          11.1548           0.2524          0.0380                    0                      4                     0.0008                      0.0656            824                 824                    0
+```

@@ -109,7 +109,8 @@ Orthogonal mechanism families (MA / oscillator / Bollinger / Donchian / exhausti
 - `src/research/results/strategy_library_v2_batch1_health.csv` / `strategy_library_v2_batch1_health.md`
 - `src/research/results/strategy_library_v2_batch1_summary.md`
 - Layer 1 (QQQ 2023–2024): `src/research/results/layer1_v2_batch1_qqq_2023_2024/` (`sweep_manifest.*`, `selected_candidates/`, `candidate_selection_config.md`, `MANIFEST_CONSISTENCY_NOTE.md`)
-- Reduced Layer 2 v2 Batch 1 (QQQ 2023–2024): configs `src/combiner/configs/layer2_qqq_v2_batch1_2023_2024.yaml` + `layer2_sweep_qqq_v2_batch1_2023_2024.yaml`; curated results `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md` (**mini-WFO v4 not run**)
+- Reduced Layer 2 v2 Batch 1 (QQQ 2023–2024): configs `src/combiner/configs/layer2_qqq_v2_batch1_2023_2024.yaml` + `layer2_sweep_qqq_v2_batch1_2023_2024.yaml`; curated results `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md` (**cost-sensitive at 0.02**; **mini-WFO v4 not run**)
+- **Tuned v1 (strict squeeze + RSI only):** testing grids `bollinger_squeeze_breakout_tuned_v1.yaml`, `rsi_failure_swing_tuned_v1.yaml`; Layer 1 `src/research/results/layer1_v2_batch1_tuned_qqq_2023_2024_v1/`; Layer 2 `src/combiner/configs/layer2_qqq_v2_batch1_tuned_2023_2024_v1.yaml` + sweep; curated results `src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/layer2_v2_batch1_tuned_summary.md`; narrative `src/research/results/strategy_library_v2_batch1_tuning_summary.md` (**decision: `TUNE_BATCH1_GRIDS_AGAIN`**; mini-WFO v4/v5 + full WFO **not** run)
 - Design + rationale: `src/research/results/reduced_layer2_v2_batch1_design.md`
 
 Registered plugins (also in `loader.py`):

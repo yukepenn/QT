@@ -1,0 +1,11 @@
+candidate_id,strategy,candidate_rank,warning,params_hash_short,feature_key_short,strategy_context_key_short,feature_cache_hit,context_cache_hit,feature_sec,context_sec,signal_sec,total_sec,n_signals,n_long_signals,n_short_signals,signal_cache_enabled,signal_cache_hit,signal_cache_key_short,signal_cache_load_sec,signal_cache_write_sec,data_fingerprint_short,code_fingerprint_short,error
+BOLLINGER_SQUEEZE_BREAKOUT_001,bollinger_squeeze_breakout,1,,80257b8e59ad,646511f924eb,6a2715415106,False,False,31.2303,0.1438,0.392,32.8739,376,376,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+BOLLINGER_SQUEEZE_BREAKOUT_002,bollinger_squeeze_breakout,2,,2b9849d6817c,646511f924eb,6a2715415106,True,True,0.0,0.0,0.0047,0.015,376,376,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+BOLLINGER_SQUEEZE_BREAKOUT_003,bollinger_squeeze_breakout,3,,b3360d6b5a06,646511f924eb,6a2715415106,True,True,0.0,0.0,0.0027,0.0116,363,363,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+BOLLINGER_SQUEEZE_BREAKOUT_004,bollinger_squeeze_breakout,4,,29261e4f69fb,646511f924eb,6a2715415106,True,True,0.0,0.0,0.0026,0.0129,363,363,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+BOLLINGER_SQUEEZE_BREAKOUT_005,bollinger_squeeze_breakout,5,,6f2b3db4b310,646511f924eb,6a2715415106,True,True,0.0,0.0,0.0029,0.0117,363,363,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+RSI_FAILURE_SWING_001,rsi_failure_swing,1,,e2ec0b9da268,a6548fc49bfc,f7c194c610f8,False,False,10.8492,0.2563,0.0237,11.1393,206,206,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+RSI_FAILURE_SWING_002,rsi_failure_swing,2,,b646f54bf93a,a6548fc49bfc,f7c194c610f8,True,True,0.0001,0.0,0.0056,0.0168,206,206,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+RSI_FAILURE_SWING_003,rsi_failure_swing,3,,4d641d1370f3,a6548fc49bfc,f7c194c610f8,True,True,0.0,0.0,0.005,0.0143,206,206,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+RSI_FAILURE_SWING_004,rsi_failure_swing,4,,50e0440dcc51,a6548fc49bfc,f7c194c610f8,True,True,0.0,0.0,0.0052,0.0138,206,206,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,
+RSI_FAILURE_SWING_005,rsi_failure_swing,5,,84dab0b623da,a6548fc49bfc,f145f0c46eab,True,False,0.0,0.2324,0.0046,0.2471,152,152,0,False,False,,0.0,0.0,e6d5ec110389,6dde4789d429,

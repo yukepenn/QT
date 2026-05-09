@@ -55,6 +55,17 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **grid**: 1296 combos
   - **results**: `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md`
 
+### Strategy Library v2 Batch 1 — tuned reduced Layer 2 (QQQ 2023–2024)
+
+- **`layer2_qqq_v2_batch1_tuned_2023_2024_v1.yaml`**
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **candidate_root**: `src/research/results/layer1_v2_batch1_tuned_qqq_2023_2024_v1/selected_candidates`
+  - **purpose**: cost-aware **tuned** strict Batch 1 (squeeze + RSI only)
+- **`layer2_sweep_qqq_v2_batch1_tuned_2023_2024_v1.yaml`**
+  - **base_config**: YAML above
+  - **grid**: 192 combos
+  - **results**: `src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/layer2_v2_batch1_tuned_summary.md`
+
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)
 
 Directory: **`src/combiner/configs/frozen/`**

@@ -23,6 +23,21 @@ This index classifies **result roots** without moving or deleting them.
   - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md`
   - **keep**: yes
 
+- **`layer1_v2_batch1_tuned_qqq_2023_2024_v1/`**
+  - **status**: active Batch 1 **tuned** Layer 1 (squeeze + RSI only)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **purpose**: tuned grids → **10** selected YAMLs; `sweep_manifest.*` + selection docs
+  - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1/layer2_v2_batch1_tuned_summary.md`
+  - **keep**: yes
+
+- **`batch1_cost_fragility_diagnostics_v1/`**
+  - **status**: reference diagnostics pack (original Batch 1 Layer 2 cost attribution)
+  - **keep**: yes (CSV + MD summaries only)
+
+- **`strategy_library_v2_batch1_tuning_summary.md`**
+  - **status**: narrative for tuned v1 + decision (`TUNE_BATCH1_GRIDS_AGAIN`)
+  - **keep**: yes
+
 ## B. Reference / engineering docs
 
 - **Hardening docs**: `hardening_*`, `rerun_plan_after_hardening.md`, `PRE_HARDENING_STALE.md` markers

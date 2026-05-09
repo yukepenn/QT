@@ -28,6 +28,12 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **key summaries**: `layer2_v2_batch1_summary.md`, `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`, `behavior_unique_systems.md`, `diagnostics/diagnostics_summary.md`
   - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
 
+- **`layer2_qqq_v2_batch1_tuned_2023_2024_v1/`**
+  - **status**: active Batch 1 **tuned** reduced Layer 2 (strict squeeze + RSI)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **key summaries**: `layer2_v2_batch1_tuned_summary.md`, `top_unique_systems.md`, `fixed_run_summary.md`, `cost_stress/cost_stress_summary.md`, `behavior_unique_systems.md`, `cost_robust_systems.md`, `fixed_vs_sweep_comparison.md`, `diagnostics/diagnostics_summary.md`
+  - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/`, `rank_by_*.csv` remain gitignored)
+
 ## B. Reference / historical
 
 - **`layer2_qqq_2023_20260430_posthardening_strict_v1/`**, **`layer2_qqq_2023_20260430_posthardening_relaxed_v1/`**

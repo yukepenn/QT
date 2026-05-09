@@ -1,0 +1,38 @@
+strategy: rsi_failure_swing
+
+# Cost-aware tuning v1: cleaner oscillator lane (~768 raw combos).
+# `require_price_reclaim` is not implemented in rsi_failure_swing.py — omitted.
+
+grid:
+  features.rsi_window: [7, 14]
+  features.swing_lookback: [8, 14]
+  signal.entry_start_minute: [30, 60]
+  signal.entry_end_minute: [270]
+  signal.oversold_level: [25, 30]
+  signal.trigger_mode: [rsi_cross_up, price_break_3bar_high_after_oversold]
+  signal.require_vwap_filter: [false, true]
+  risk.stop_mode: [swing_low, signal_candle_low]
+  risk.target_r: [1.25, 1.5]
+  risk.atr_buffer_mult: [0.4]
+  backtest.max_hold_minutes: [30, 45, 60]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  features.orb_open_minutes: 15
+  features.vol_windows: [5, 15, 20, 30]
+  features.indicators.ema_windows: []
+  features.indicators.sma_windows: []
+  features.indicators.rsi_windows: [7, 14]
+  features.indicators.macd_tuples: []
+  features.indicators.stochastic_tuples: []
+  features.indicators.cci_windows: []
+  features.indicators.adx_windows: []
+  risk.target_mode: fixed_r
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
