@@ -1,0 +1,68 @@
+name: layer2_qqq_v2_batch1_2023_2024
+
+candidate_root: src/research/results/layer1_v2_batch1_qqq_2023_2024/selected_candidates
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 3
+  daily_max_loss_r: -2.0
+  cooldown_after_loss_minutes: 15
+  cooldown_scope: session
+
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+  opposite_direction_policy: ""
+
+candidate_sets:
+  oscillator_reversal:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - rsi_failure_swing
+
+  volatility_breakout:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - bollinger_squeeze_breakout
+
+  strict_batch1:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - rsi_failure_swing
+      - bollinger_squeeze_breakout
+
+  relaxed_batch1:
+    include_warnings: true
+    max_per_strategy: 5
+    strategies:
+      - rsi_failure_swing
+      - bollinger_squeeze_breakout
+      - bollinger_band_fade_chop
+      - consecutive_bar_exhaustion
+
+  range_mean_reversion_diagnostic:
+    include_warnings: true
+    max_per_strategy: 5
+    strategies:
+      - bollinger_band_fade_chop
+
+  price_action_exhaustion_diagnostic:
+    include_warnings: true
+    max_per_strategy: 5
+    strategies:
+      - consecutive_bar_exhaustion

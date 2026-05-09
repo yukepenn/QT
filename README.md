@@ -108,8 +108,9 @@ Orthogonal mechanism families (MA / oscillator / Bollinger / Donchian / exhausti
 - `src/research/results/strategy_library_v2_batch1_grid_review.md` / `strategy_library_v2_batch1_grid_review.csv`
 - `src/research/results/strategy_library_v2_batch1_health.csv` / `strategy_library_v2_batch1_health.md`
 - `src/research/results/strategy_library_v2_batch1_summary.md`
-- Layer 1 (QQQ 2023–2024): `src/research/results/layer1_v2_batch1_qqq_2023_2024/` (`sweep_manifest.*`, `selected_candidates/`, `candidate_selection_config.md`)
-- Reduced Layer 2 design (not executed): `src/research/results/reduced_layer2_v2_batch1_design.md`
+- Layer 1 (QQQ 2023–2024): `src/research/results/layer1_v2_batch1_qqq_2023_2024/` (`sweep_manifest.*`, `selected_candidates/`, `candidate_selection_config.md`, `MANIFEST_CONSISTENCY_NOTE.md`)
+- Reduced Layer 2 v2 Batch 1 (QQQ 2023–2024): configs `src/combiner/configs/layer2_qqq_v2_batch1_2023_2024.yaml` + `layer2_sweep_qqq_v2_batch1_2023_2024.yaml`; curated results `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md` (**mini-WFO v4 not run**)
+- Design + rationale: `src/research/results/reduced_layer2_v2_batch1_design.md`
 
 Registered plugins (also in `loader.py`):
 

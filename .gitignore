@@ -189,3 +189,24 @@ src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1/rank_by_*
 !src/research/results/strategy_library_v2_batch1_grid_review.csv
 !src/research/results/strategy_library_v2_batch1_grid_review.md
 !src/research/results/reduced_layer2_v2_batch1_design.md
+!src/research/results/layer1_v2_batch1_qqq_2023_2024/MANIFEST_CONSISTENCY_NOTE.md
+
+# Layer 2 v2 Batch 1 QQQ 2023–2024 (curated only; run_*/sweep_* remain ignored)
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/fixed_run_summary.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/fixed_run_summary.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/top_unique_systems.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/top_unique_systems.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/top_unique_run_map.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/behavior_unique_systems.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/behavior_unique_systems.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/cost_stress/cost_stress_results.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/cost_stress/cost_stress_summary.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/cost_robust_systems.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/cost_robust_systems.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/candidate_precompute_profile_summary.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/candidate_precompute_profile_summary.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/fixed_vs_sweep_comparison.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/fixed_vs_sweep_comparison.md
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_v2_batch1_2023_2024/diagnostics/diagnostics_summary.md

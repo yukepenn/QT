@@ -42,8 +42,10 @@ Commit curated, small artifacts that summarize experiments:
   - summary MDs (e.g. `layer1_*_summary.md`)
   - Strategy Library v2 Batch 1 research pack:
     - `strategy_library_v2_batch1_plan.md`, `strategy_library_v2_batch1_audit.{md,csv}`, `strategy_library_v2_batch1_grid_review.{md,csv}`, `strategy_library_v2_batch1_health.{md,csv}`, `strategy_library_v2_batch1_summary.md`
-    - `reduced_layer2_v2_batch1_design.md` (design-only; no Layer 2 execution)
+    - `reduced_layer2_v2_batch1_design.md` (Batch 1 Layer 2 rationale + links to configs)
+    - `src/research/results/layer1_v2_batch1_qqq_2023_2024/MANIFEST_CONSISTENCY_NOTE.md` (manifest/candidate alignment policy)
   - `src/research/results/layer1_v2_batch1_qqq_2023_2024/` — `sweep_manifest.{csv,md}`, `selected_candidates/`, `candidate_selection_config.md`, `no_candidate_strategies.txt`, `layer1_v2_batch1_summary.md`
+- Strategy Library v2 Batch 1 Layer 2 (QQQ 2023–2024) curated root: `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/` — `layer2_v2_batch1_summary.md`, `fixed_run_summary.*`, `top_unique_systems.*`, `behavior_unique_systems.*`, `top_unique_run_map.csv`, `cost_stress/*`, `cost_robust_systems.*`, `fixed_vs_sweep_comparison.*`, `candidate_precompute_profile_summary.*`, `diagnostics/*` (no committed `run_*`, `fixed_runs/`, `sweep_*`, `top_runs/`, or full `trades.csv`)
 - Layer 2 summaries:
   - `top_unique_systems.csv` / `.md`
   - `fixed_run_summary.csv` / `.md`

@@ -16,6 +16,13 @@ This index classifies **result roots** without moving or deleting them.
   - **purpose**: recent Layer 1 manifest + selected candidates
   - **keep**: yes
 
+- **`layer1_v2_batch1_qqq_2023_2024/`**
+  - **status**: active Strategy Library v2 Batch 1 Layer 1
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **purpose**: six-strategy capped sweeps → **20** selected YAMLs; manifest + `MANIFEST_CONSISTENCY_NOTE.md`
+  - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md`
+  - **keep**: yes
+
 ## B. Reference / engineering docs
 
 - **Hardening docs**: `hardening_*`, `rerun_plan_after_hardening.md`, `PRE_HARDENING_STALE.md` markers

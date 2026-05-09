@@ -1,59 +1,50 @@
-# Reduced Layer 2 — Strategy Library v2 Batch 1 (design only)
+# Reduced Layer 2 v2 — Strategy Library Batch 1 (QQQ 2023–2024)
 
-**Status:** design document only. **No** Layer 2 sweep was executed. **No** mini-WFO v4/v5.
+**Status:** design + combiner configs for `layer2_qqq_v2_batch1_2023_2024`. **No** mini-WFO v4/v5 and **no** full WFO in this phase.
 
-## Rationale
+## 1. Why only RSI + Bollinger squeeze are strict core
 
-Layer 1 2023–2024 (capped where noted in `sweep_manifest.csv`) produced **strict** candidates for:
+Layer 1 on QQQ 2023–2024 produced **strict-filter** YAMLs only for:
 
-- `rsi_failure_swing`
-- `bollinger_squeeze_breakout`
+- `rsi_failure_swing` — oscillator failure / reversal mechanism, distinct from price-channel ORB logic.
+- `bollinger_squeeze_breakout` — volatility compression → expansion; orthogonal to pure mean-reversion fades.
 
-and **relaxed** candidates for:
+These two families passed the stricter Layer 1 gates with exportable configs and are treated as the **primary Batch 1 hypothesis** for Layer 2 stacking and conflict resolution.
 
-- `bollinger_band_fade_chop`
-- `consecutive_bar_exhaustion`
+## 2. Why Bollinger fade + consecutive exhaustion are diagnostic (relaxed)
 
-That is **≥2** independent mechanism families with exportable YAMLs → a reduced Layer 2 pass is **defensible as a next research step** (still subject to human review and cost-stress policy).
+- `bollinger_band_fade_chop` and `consecutive_bar_exhaustion` Layer 1 rows used **relaxed** acceptance (warnings / softer thresholds). They are **included in Layer 2 only with `include_warnings: true`** in dedicated candidate sets so we can measure whether they add **diversifying signals** or mostly **overlap / noise** versus the strict core.
+- Dedicated diagnostic sets (`range_mean_reversion_diagnostic`, `price_action_exhaustion_diagnostic`) isolate each relaxed family for overlap review.
 
-## Proposed candidate buckets (YAML IDs from `selected_candidates/`)
+## 3. Why MA + Donchian are excluded
 
-### indicator_trend
+- `intraday_ma_crossover` and `donchian_channel_breakout` produced **zero** selected Layer 1 candidates for this window. Including them in Layer 2 would reference an empty universe. They stay out until a retuned Layer 1 sweep yields YAMLs.
 
-- `intraday_ma_crossover` — *Layer 1 produced no passing rows; include only after grid retune or new Layer 1 sweep.*
+## 4. Layer 2 execution plan (this repo phase)
 
-### oscillator_reversal
+- Base config: `src/combiner/configs/layer2_qqq_v2_batch1_2023_2024.yaml`
+- Sweep config: `src/combiner/configs/layer2_sweep_qqq_v2_batch1_2023_2024.yaml` (grid size \(6 \times 4 \times 3 \times 3 \times 3 \times 2 = 1296\) combos)
+- **Diagnostics-only** preflight on `relaxed_batch1` (signal counts, overlap matrix, conflict summary).
+- **Fixed runs** on strict and relaxed sets; **sweep** only if fixed-run gate passes (at least one strict or acceptable relaxed outcome).
+- **Postprocess:** behavior dedupe + cost stress on curated sweep outputs.
 
-- `rsi_failure_swing`: `RSI_FAILURE_SWING_001` … `_005`
+## 5. No mini-WFO yet
 
-### volatility_breakout
+Mini-WFO is **not** part of this step. **Layer 2 results** (fixed + optional sweep + cost stress) decide whether **mini-WFO v4** is justified.
 
-- `bollinger_squeeze_breakout`: `BOLLINGER_SQUEEZE_BREAKOUT_001` … `_005`
+## 6. Decision gate (after Layer 2 numbers)
 
-### range_mean_reversion
+Proceed toward **mini-WFO v4 design** only if, among strict Batch 1 systems:
 
-- `bollinger_band_fade_chop`: `BOLLINGER_BAND_FADE_CHOP_001` … `_005` (note `relaxed_filter` on all)
+- `total_r` is positive for at least one configuration,
+- profit factor (or PF_R) > ~1.05,
+- cost stress remains acceptable at **0.02** slippage,
+- behavior-unique systems are not trivial duplicates,
+- drawdown is acceptable for the research mandate.
 
-### price_action_exhaustion
-
-- `consecutive_bar_exhaustion`: `CONSECUTIVE_BAR_EXHAUSTION_001` … `_005` (relaxed)
-
-### rolling_channel_breakout
-
-- `donchian_channel_breakout` — *defer until Layer 1 shows any stable edge; 2023–2024 run was negative on best-PF row.*
-
-### strict_core_v2 (conceptual)
-
-- Existing **refined failed / gap** core candidates (from mini-WFO v3 track) **plus** only the Batch 1 YAMLs above that survive **cost stress** and **behavior dedupe** in Layer 2 preflight.
-
-## Suggested Layer 2 grid discipline
-
-- Cap `max_open_positions=1` (current default).
-- Run **cost stress** on any system that includes high-trade-count Batch 1 legs (`bollinger_squeeze_breakout` ~479 trades / window).
-- Keep Batch 1 families **separate** from ORB/VWAP/gap/trap **conflict groups** until overlap diagnostics are reviewed.
+Otherwise: **tune Batch 1 grids** or **defer Batch 1** and return focus to refined failed-core work.
 
 ## Explicit non-goals
 
-- No full rolling WFO.
-- No live / paper trading.
-- No automatic promotion of relaxed-filter rows without manual review.
+- No SPY, no IBKR pulls, no `data/raw` edits.
+- No new strategy plugins or Batch 2/3 scope.

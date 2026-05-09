@@ -44,6 +44,17 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
 - **`layer2_qqq_2023_20260430_posthardening_relaxed.yaml`** (+ sweep)
   - same window/candidate root, relaxed reference
 
+### Strategy Library v2 Batch 1 — reduced Layer 2 (QQQ 2023–2024)
+
+- **`layer2_qqq_v2_batch1_2023_2024.yaml`**
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **candidate_root**: `src/research/results/layer1_v2_batch1_qqq_2023_2024/selected_candidates`
+  - **purpose**: Batch 1 only (RSI + squeeze strict; fade + exhaustion relaxed/diagnostic); MA/Donchian excluded (no Layer 1 YAMLs)
+- **`layer2_sweep_qqq_v2_batch1_2023_2024.yaml`**
+  - **base_config**: YAML above
+  - **grid**: 1296 combos
+  - **results**: `src/combiner/results/layer2_qqq_v2_batch1_2023_2024/layer2_v2_batch1_summary.md`
+
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)
 
 Directory: **`src/combiner/configs/frozen/`**
