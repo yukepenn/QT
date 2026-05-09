@@ -1,0 +1,15 @@
+tag=mini_wfo_v3_refined_gap_failed
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\walkforward\results\layer3_mini_wfo_v3_refined_gap_failed_qqq_2023_2024_train_2025_202604_test\train_candidates
+candidates_written=10
+
+candidates:
+  GAP_ACCEPTANCE_FAILURE_001 gap_acceptance_failure score=1.1796 trades=89
+  GAP_ACCEPTANCE_FAILURE_002 gap_acceptance_failure score=1.1796 trades=89
+  GAP_ACCEPTANCE_FAILURE_003 gap_acceptance_failure score=1.1796 trades=89
+  GAP_ACCEPTANCE_FAILURE_004 gap_acceptance_failure score=1.1796 trades=89
+  GAP_ACCEPTANCE_FAILURE_005 gap_acceptance_failure score=1.1796 trades=89
+  FAILED_ORB_001 failed_orb score=1.1797 trades=181
+  FAILED_ORB_002 failed_orb score=1.1797 trades=181
+  FAILED_ORB_003 failed_orb score=1.1595 trades=182
+  FAILED_ORB_004 failed_orb score=1.1595 trades=182
+  FAILED_ORB_005 failed_orb score=1.1371 trades=181

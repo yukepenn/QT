@@ -67,6 +67,15 @@ src/walkforward/results/**/candidate_precompute_profile_summary.*
 src/walkforward/results/**/candidates_used.csv
 src/walkforward/results/**/feature_store_stats.json
 
+# Mini-WFO: unprefixed test/*.csv|json|summary.csv duplicate curated test_*.csv + test_summary.md
+src/walkforward/results/layer3_mini_wfo*/test/cost_stress.csv
+src/walkforward/results/layer3_mini_wfo*/test/daily_trade_number_breakdown.csv
+src/walkforward/results/layer3_mini_wfo*/test/metrics.json
+src/walkforward/results/layer3_mini_wfo*/test/monthly_breakdown.csv
+src/walkforward/results/layer3_mini_wfo*/test/summary.csv
+# Layer 3 smoke diagnosis: per-system fold trees (keep top-level curated CSV/MD only)
+src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/system_*/
+
 # Research diagnostics: keep run artifacts local-only; commit curated summaries only.
 src/research/results/**/_runs/
 src/research/results/**/_windows/

@@ -1,3 +1,7 @@
+### [Unreleased] – 2026-05-09
+
+- Chore(walkforward): complete curated **mini-WFO v3** tree — `train_layer1_manifest.csv`, Layer 2 summary CSV/MD (`train_layer2_*`), `train_candidates/` (selected YAMLs + manifests); `.gitignore` for duplicate unprefixed `test/*.csv` exports and heavy `layer3_smoke_v1_diagnosis_qqq_components/system_*/` per-system folders. `main` includes prior `Feat(walkforward): add refined mini-WFO v3` (trade enrichment, refined strategies, v1/v2/v3 comparison).
+
 ### [Unreleased] – 2026-05-08
 
 - Feat(walkforward): **Layer 3 causal mini-WFO v1** — `src/walkforward/mini_wfo.py`, `mini_wfo_selection.py`, config `src/walkforward/configs/qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml` (QQQ train 2023–2024 / test 2025–2026; narrowed strategies; ~288-combo Layer 2 grid); CLI `--validate-only`, `--resume-from {layer2,after_sweep}`; curated results root `src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1/`; tests `tests/test_walkforward_mini_wfo_*.py`. **Not** full WFO; **not** live-ready. Example outcome (local run): **CAUTION** — test PF_R > 1 but **0.02 slippage stress negative** and Dec‑2025 drawdown cluster.
