@@ -8,6 +8,25 @@ import numpy as np
 import pandas as pd
 
 from src.features.build_types import PaFeatureConfig, RegimeFeatureConfig
+from src.features.pa_brooks_enums import (
+    PA_ALWAYS_IN_LONG,
+    PA_ALWAYS_IN_NEUTRAL,
+    PA_ALWAYS_IN_SHORT,
+    PA_REGIME_BROAD_BEAR_CHANNEL,
+    PA_REGIME_BROAD_BULL_CHANNEL,
+    PA_REGIME_LATE_TREND_CLIMAX,
+    PA_REGIME_STRONG_BEAR_BREAKOUT,
+    PA_REGIME_STRONG_BULL_BREAKOUT,
+    PA_REGIME_TIGHT_BEAR_CHANNEL,
+    PA_REGIME_TIGHT_BULL_CHANNEL,
+    PA_REGIME_TRADING_RANGE,
+    PA_REGIME_UNKNOWN,
+    PA_TRADE_MODE_CLIMAX,
+    PA_TRADE_MODE_NEUTRAL,
+    PA_TRADE_MODE_RANGE,
+    PA_TRADE_MODE_TREND_LONG,
+    PA_TRADE_MODE_TREND_SHORT,
+)
 from src.features.utils import add_or_overwrite_columns, ensure_columns, safe_copy
 
 
@@ -42,6 +61,12 @@ def pa_regime_column_names(pa: PaFeatureConfig) -> list[str]:
                 f"pa_overlap_score_{nn}",
                 f"pa_followthrough_up_{nn}",
                 f"pa_followthrough_down_{nn}",
+                f"pa_always_in_side_{nn}",
+                f"pa_regime_label_{nn}",
+                f"pa_trade_mode_{nn}",
+                f"pa_late_trend_score_{nn}",
+                f"pa_trend_to_tr_transition_score_{nn}",
+                f"pa_limit_order_market_score_{nn}",
             ]
         )
     cols.append("pa_distance_from_vwap_atr")
@@ -232,6 +257,121 @@ def add_regime_features(
         new_cols[f"pa_followthrough_down_{nn}"] = (
             (bear_b > 0.5) & (prev_bear > 0.5) & (c < prev_c1.fillna(c))
         ).astype(np.int8)
+
+        ts_arr = ts.to_numpy(dtype=float)
+        reff_arr = reff.to_numpy(dtype=float)
+        brk_arr = new_cols[f"pa_strong_breakout_score_{nn}"].to_numpy(dtype=float)
+        tb_arr = new_cols[f"pa_tight_bull_channel_score_{nn}"].to_numpy(dtype=float)
+        te_arr = new_cols[f"pa_tight_bear_channel_score_{nn}"].to_numpy(dtype=float)
+        bb_arr = new_cols[f"pa_broad_bull_channel_score_{nn}"].to_numpy(dtype=float)
+        be_arr = new_cols[f"pa_broad_bear_channel_score_{nn}"].to_numpy(dtype=float)
+        tr_arr = new_cols[f"pa_trading_range_score_{nn}"].to_numpy(dtype=float)
+        clx_arr = new_cols[f"pa_climax_score_{nn}"].to_numpy(dtype=float)
+        ov_arr = new_cols[f"pa_overlap_score_{nn}"].to_numpy(dtype=float)
+
+        always = np.where(
+            (ts_arr > 1.0) & (bb_arr > 0.35),
+            PA_ALWAYS_IN_LONG,
+            np.where(
+                (ts_arr < -1.0) & (be_arr > 0.35),
+                PA_ALWAYS_IN_SHORT,
+                PA_ALWAYS_IN_NEUTRAL,
+            ),
+        ).astype(np.int8)
+        new_cols[f"pa_always_in_side_{nn}"] = pd.Series(
+            always, index=out.index, dtype=np.int8
+        )
+
+        lab = np.full(len(out), PA_REGIME_UNKNOWN, dtype=np.int16)
+        lab = np.where(
+            (brk_arr >= 0.55) & (ts_arr > 0.15),
+            PA_REGIME_STRONG_BULL_BREAKOUT,
+            lab,
+        )
+        lab = np.where(
+            (brk_arr >= 0.55) & (ts_arr < -0.15),
+            PA_REGIME_STRONG_BEAR_BREAKOUT,
+            lab,
+        )
+        lab = np.where(
+            (tb_arr >= te_arr)
+            & (tb_arr >= bb_arr * 0.85)
+            & (tb_arr >= tr_arr)
+            & (tb_arr >= 0.38),
+            PA_REGIME_TIGHT_BULL_CHANNEL,
+            lab,
+        )
+        lab = np.where(
+            (te_arr > tb_arr)
+            & (te_arr >= be_arr * 0.85)
+            & (te_arr >= tr_arr)
+            & (te_arr >= 0.38),
+            PA_REGIME_TIGHT_BEAR_CHANNEL,
+            lab,
+        )
+        lab = np.where(
+            (bb_arr > be_arr + 0.08) & (bb_arr >= tr_arr) & (bb_arr >= 0.35),
+            PA_REGIME_BROAD_BULL_CHANNEL,
+            lab,
+        )
+        lab = np.where(
+            (be_arr > bb_arr + 0.08) & (be_arr >= tr_arr) & (be_arr >= 0.35),
+            PA_REGIME_BROAD_BEAR_CHANNEL,
+            lab,
+        )
+        lab = np.where(
+            (tr_arr > 0.48) & (np.abs(ts_arr) < 0.75),
+            PA_REGIME_TRADING_RANGE,
+            lab,
+        )
+        climax_pick = clx_arr * (1.0 - np.clip(reff_arr, 0.0, 1.0)) * (
+            np.abs(ts_arr) + 0.25
+        )
+        lab = np.where(
+            (climax_pick > 0.42) & (np.abs(ts_arr) > 0.45),
+            PA_REGIME_LATE_TREND_CLIMAX,
+            lab,
+        )
+        new_cols[f"pa_regime_label_{nn}"] = pd.Series(lab, index=out.index, dtype=np.int16)
+
+        tm = np.full(len(out), PA_TRADE_MODE_NEUTRAL, dtype=np.int8)
+        tm = np.where(
+            (tr_arr > 0.52) & (np.abs(ts_arr) < 0.7),
+            PA_TRADE_MODE_RANGE,
+            tm,
+        )
+        tm = np.where((clx_arr > 0.55) & (reff_arr < 0.55), PA_TRADE_MODE_CLIMAX, tm)
+        tm = np.where((ts_arr > 0.85) & (tr_arr < 0.45), PA_TRADE_MODE_TREND_LONG, tm)
+        tm = np.where((ts_arr < -0.85) & (tr_arr < 0.45), PA_TRADE_MODE_TREND_SHORT, tm)
+        new_cols[f"pa_trade_mode_{nn}"] = pd.Series(tm, index=out.index, dtype=np.int8)
+
+        late = np.clip(
+            out["body_pct"].astype(float).to_numpy(dtype=float)
+            * (np.abs(ts_arr) / (4.0 + np.abs(ts_arr))),
+            0.0,
+            1.0,
+        )
+        new_cols[f"pa_late_trend_score_{nn}"] = pd.Series(
+            late, index=out.index, dtype=float
+        )
+        trans = np.clip(
+            (np.abs(ts_arr) / (3.0 + np.abs(ts_arr)))
+            * (1.0 - np.clip(reff_arr, 0.0, 1.0))
+            * np.clip(tr_arr, 0.0, 1.0),
+            0.0,
+            1.0,
+        )
+        new_cols[f"pa_trend_to_tr_transition_score_{nn}"] = pd.Series(
+            trans, index=out.index, dtype=float
+        )
+        lim_mkt = np.clip(
+            ov_arr * (1.0 - np.minimum(np.abs(ts_arr) / 4.0, 1.0)),
+            0.0,
+            1.0,
+        )
+        new_cols[f"pa_limit_order_market_score_{nn}"] = pd.Series(
+            lim_mkt, index=out.index, dtype=float
+        )
 
     new_cols["pa_distance_from_vwap_atr"] = (c - out["vwap"].astype(float)) / (
         atr + 1e-12

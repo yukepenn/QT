@@ -1,0 +1,4 @@
+config,rows,new_feature_columns_count,missing_expected_columns,lookahead_columns_count,notes
+pa_buy_sell_close_trend_tuned_v2.yaml,200,30,,3,build_features_from_config with default parameters yaml
+pa_climax_reversal_tuned_v2.yaml,200,30,,3,build_features_from_config with default parameters yaml
+pa_trading_range_bls_hs_tuned_v1.yaml,200,30,,3,build_features_from_config with default parameters yaml

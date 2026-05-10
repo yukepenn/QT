@@ -1,0 +1,7 @@
+strategy,testing_config,exit_code,total_mismatch_approx,notes
+failed_orb,failed_orb_focused.yaml,0,0,QQQ Jan 2025 max-combos 2
+pa_buy_sell_close_trend,pa_buy_sell_close_trend_tuned_v2.yaml,0,0,QQQ Jan 2025 max-combos 2
+pa_climax_reversal,pa_climax_reversal_tuned_v2.yaml,0,0,QQQ Jan 2025 max-combos 2
+pa_trading_range_bls_hs,pa_trading_range_bls_hs_tuned_v1.yaml,0,0,QQQ Jan 2025 max-combos 2
+pa_failed_range_breakout_trap,pa_failed_range_breakout_trap_tuned_v1.yaml,0,0,QQQ Jan 2025 max-combos 2
+pa_second_entry_pullback,pa_second_entry_pullback_focused.yaml,0,0,QQQ Jan 2025 max-combos 2

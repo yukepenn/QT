@@ -25,6 +25,46 @@ def _streak_from_bool(is_pos: np.ndarray, session_id: np.ndarray, n: int) -> np.
     return out
 
 
+@njit(cache=True)
+def _micro_bull_rising_lows(
+    low: np.ndarray, session_id: np.ndarray, n: int, k: int
+) -> np.ndarray:
+    """k-bar bull micro-channel: k consecutive lows each above prior bar low (session-scoped)."""
+    out = np.zeros(n, dtype=np.int8)
+    need = k - 1
+    streak = 0
+    for i in range(n):
+        if i == 0 or session_id[i] != session_id[i - 1]:
+            streak = 0
+        else:
+            if low[i] > low[i - 1]:
+                streak += 1
+            else:
+                streak = 0
+        out[i] = 1 if streak >= need else 0
+    return out
+
+
+@njit(cache=True)
+def _micro_bear_falling_highs(
+    high: np.ndarray, session_id: np.ndarray, n: int, k: int
+) -> np.ndarray:
+    """k-bar bear micro-channel: k consecutive highs each below prior bar high (session-scoped)."""
+    out = np.zeros(n, dtype=np.int8)
+    need = k - 1
+    streak = 0
+    for i in range(n):
+        if i == 0 or session_id[i] != session_id[i - 1]:
+            streak = 0
+        else:
+            if high[i] < high[i - 1]:
+                streak += 1
+            else:
+                streak = 0
+        out[i] = 1 if streak >= need else 0
+    return out
+
+
 def add_price_action_features(
     df: pd.DataFrame,
     *,
@@ -116,6 +156,48 @@ def add_price_action_features(
         (out["lower_wick"] > out["body_abs"] * 1.5)
         & (out["lower_wick"] > out["upper_wick"])
     ).astype(np.int8)
+
+    # --- Brooks-style bar-quality primitives (ATR-free; session-safe) ---
+    ch_hi = float(pa_spec.close_near_high_threshold)
+    ch_lo = float(pa_spec.close_near_low_threshold)
+    sbp = float(pa_spec.strong_bar_body_pct)
+    bull = out["bull_bar"].to_numpy(dtype=np.int8) != 0
+    bear = out["bear_bar"].to_numpy(dtype=np.int8) != 0
+    bp = out["body_pct"].to_numpy(dtype=float)
+    cloc = np.asarray(close_loc, dtype=np.float64)
+    strong_bull_c = bull & (bp >= sbp) & (cloc >= ch_hi)
+    strong_bear_c = bear & (bp >= sbp) & (cloc <= ch_lo)
+    out["strong_bull_close"] = strong_bull_c.astype(np.int8)
+    out["strong_bear_close"] = strong_bear_c.astype(np.int8)
+    out["weak_bull_close"] = (bull & ~strong_bull_c).astype(np.int8)
+    out["weak_bear_close"] = (bear & ~strong_bear_c).astype(np.int8)
+
+    brv = out["bull_reversal_bar"].to_numpy(dtype=np.int8) != 0
+    berv = out["bear_reversal_bar"].to_numpy(dtype=np.int8) != 0
+    uw = out["upper_wick_pct"].to_numpy(dtype=float)
+    lw = out["lower_wick_pct"].to_numpy(dtype=float)
+    out["strong_bull_signal_bar"] = (strong_bull_c | brv).astype(np.int8)
+    out["strong_bear_signal_bar"] = (strong_bear_c | berv).astype(np.int8)
+    out["failed_bull_signal_bar"] = (
+        bull & ~strong_bull_c & (uw > lw) & (uw >= 0.35)
+    ).astype(np.int8)
+    out["failed_bear_signal_bar"] = (
+        bear & ~strong_bear_c & (lw > uw) & (lw >= 0.35)
+    ).astype(np.int8)
+
+    lo_np = l.to_numpy(dtype=np.float64)
+    hi_np = h.to_numpy(dtype=np.float64)
+    for k in (3, 4, 5):
+        out[f"bull_micro_channel_{k}"] = pd.Series(
+            _micro_bull_rising_lows(lo_np, sid, len(out), k),
+            index=out.index,
+            dtype=np.int8,
+        )
+        out[f"bear_micro_channel_{k}"] = pd.Series(
+            _micro_bear_falling_highs(hi_np, sid, len(out), k),
+            index=out.index,
+            dtype=np.int8,
+        )
 
     out["prev_high_by_session"] = g["high"].shift(1)
     out["prev_low_by_session"] = g["low"].shift(1)

@@ -19,6 +19,10 @@ This index classifies **result roots** without moving or deleting them.
   - **status:** two plugins; formal Layer 1 economics in **`layer1_pa_batch_bc_qqq_2023_2024/`**
   - **keep:** yes
 
+- **PA Brooks framework primitives (features + helpers, 2026-05-10)** — `pa_brooks_framework_optimization_plan.md`, `pa_brooks_feature_primitives_summary.md`, `pa_brooks_strategy_compatibility_audit.md`, `pa_brooks_feature_smoke.{md,csv}`, `pa_brooks_framework_parity_smoke.{md,csv}`, `pa_brooks_framework_optimization_summary.md`; tests `tests/test_pa_bar_primitives.py`, `tests/test_pa_swing_primitives.py`, `tests/test_pa_regime_router_features.py`, `tests/test_pa_level_magnet_features.py`, `tests/test_pa_common.py`, `tests/test_pa_required_features_no_lookahead.py`
+  - **status:** shared `pa_*` feature columns + `strategy/pa_common.py`; **no** Layer 1/2/WFO reruns; **no** new strategies
+  - **keep:** yes
+
 - **`layer1_pa_batch_bc_qqq_2023_2024/`**
   - **status:** formal **PA Batch B + C** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_qqq_2023_2024`
   - **purpose:** six `*_focused.yaml` sweeps → manifest → strict selection (**5** YAMLs, **`pa_buy_sell_close_trend` only**); `signal_rate_diagnosis.*`, optional `diagnostic_relaxed_selection/` (DIAGNOSTIC ONLY); `candidate_fast_context_check.*`

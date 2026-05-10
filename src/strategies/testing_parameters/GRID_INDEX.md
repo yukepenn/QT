@@ -87,6 +87,8 @@ Gate / exit diagnostics on tuned v1 YAMLs (QQQ 2023–2024 design aid; **not** a
 
 Post-P0 diagnostics + post-key-fix Layer 1 rerun. Result root: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`. Gate preflight: `src/research/results/pa_batch_bc_gate_diagnostics_v2_preflight/`.
 
+**Brooks PA framework primitives (2026-05-10, features only):** New shared `pa_*` columns and `pa_common` helpers are documented in `src/research/results/pa_brooks_framework_optimization_summary.md`. Existing tuned v2 YAMLs do **not** need changes until a future **v3** grid opts into new gates.
+
 | Strategy | File | Raw grid | Purpose |
 |----------|------|---------:|---------|
 | pa_broad_channel_zone | `pa_broad_channel_zone_tuned_v2.yaml` | 972 | `zone_max_frac` + regime/hold axes — **sweep skipped** (preflight finals 0) |

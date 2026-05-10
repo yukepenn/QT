@@ -181,6 +181,20 @@ FEATURE_COLUMNS = {
         "consecutive_bear_closes_4",
         "overlap_bar",
         "tail_bar",
+        "strong_bull_close",
+        "strong_bear_close",
+        "weak_bull_close",
+        "weak_bear_close",
+        "strong_bull_signal_bar",
+        "strong_bear_signal_bar",
+        "failed_bull_signal_bar",
+        "failed_bear_signal_bar",
+        "bull_micro_channel_3",
+        "bull_micro_channel_4",
+        "bull_micro_channel_5",
+        "bear_micro_channel_3",
+        "bear_micro_channel_4",
+        "bear_micro_channel_5",
     ],
     "volume": [
         "volume_ma_20_prior",
@@ -216,6 +230,7 @@ from src.features.build_types import (
 )
 from src.features.channels import channel_column_names
 from src.features.indicators import indicator_column_names
+from src.features.pa_magnet_columns import pa_magnet_level_column_names
 from src.features.pa_swings import pa_swing_column_names
 from src.features.regime import regime_column_names
 
@@ -250,6 +265,9 @@ FEATURE_COLUMNS["pa_proximity"] = [
     "near_rolling_high_20_atr",
     "near_rolling_low_20_atr",
 ]
+FEATURE_COLUMNS["pa_magnet_levels"] = pa_magnet_level_column_names(
+    _REGISTRY_PA.swing_windows
+)
 FEATURE_COLUMNS["regime"] = regime_column_names(_REGISTRY_REGIME, _REGISTRY_PA)
 
 FEATURE_DEPENDENCIES = {
@@ -262,7 +280,32 @@ FEATURE_DEPENDENCIES = {
     "volatility": ["session_date", "high", "low", "close"],
     "indicators": ["session_date", "open", "high", "low", "close"],
     "channels": ["session_date", "open", "high", "low", "close", "atr_like_20"],
-    "pa_swings": ["session_date", "open", "high", "low", "close", "atr_like_20"],
+    "pa_swings": [
+        "session_date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "atr_like_20",
+        "bull_reversal_bar",
+        "bear_reversal_bar",
+        "strong_bull_close",
+        "strong_bear_close",
+    ],
+    "pa_magnet_levels": [
+        "session_date",
+        "open",
+        "close",
+        "high",
+        "low",
+        "vwap_upper_1.0",
+        "vwap_lower_1.0",
+        "vwap_upper_2.0",
+        "vwap_lower_2.0",
+        "orb_high_known",
+        "orb_low_known",
+        "atr_like_20",
+    ],
     "pa_proximity": [
         "session_date",
         "close",

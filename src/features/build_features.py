@@ -25,7 +25,7 @@ from src.features.feature_config import (
     validate_no_registry_duplicates,
 )
 from src.features.indicators import add_indicator_features
-from src.features.levels import add_pa_proximity_features, add_prior_day_levels
+from src.features.levels import add_pa_magnet_level_features, add_pa_proximity_features, add_prior_day_levels
 from src.features.orb import add_orb
 from src.features.pa_swings import add_pa_swing_features
 from src.features.price_action import add_price_action_features
@@ -87,6 +87,13 @@ def build_basic_features(
     out = add_channel_features(out, ch, copy=False, allow_overwrite=allow_overwrite)
     out = add_pa_swing_features(
         out, pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite
+    )
+    out = add_pa_magnet_level_features(
+        out,
+        tuple(int(x) for x in pa_spec.swing_windows),
+        atr_col=atr_col,
+        copy=False,
+        allow_overwrite=allow_overwrite,
     )
     out = add_pa_proximity_features(
         out, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite

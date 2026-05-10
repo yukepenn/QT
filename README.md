@@ -31,6 +31,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - **`context_key`**: any config field that changes **`prepare_signal_context`** outputs belongs in the key.
 - **`normalized_param_key`**: any field that changes **final signals** belongs in the key.
 - **PA plugins (2026-05-10):** `context_key` was narrowed to **window / ATR-column selectors only** (plus a fixed strategy tag); score gates, entry windows, and risk/backtest axes stay in **`normalized_param_key`**. Rationale + tables: `src/research/results/pa_context_key_cache_optimization_summary.md`.
+- **PA Brooks primitives (2026-05-10):** Shared bar / swing / regime-router / magnet columns in `src/features/` plus `src/strategies/strategy/pa_common.py` (helpers only; strategies unchanged). Plan + summary: `src/research/results/pa_brooks_framework_optimization_summary.md`. **No** Layer 2 / mini-WFO reruns in this step.
 - Layer 2 postprocess: **`top_unique_*`** = config dedupe; **`behavior_unique_*`** = trade-sequence dedupe from **`trades.csv`**.
 
 **Rerun warning**

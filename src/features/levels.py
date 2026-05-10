@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from src.features.feature_config import FEATURE_COLUMNS
+from src.features.pa_magnet_columns import pa_magnet_level_column_names
 from src.features.utils import add_or_overwrite_columns, ensure_columns, safe_copy
 
 
@@ -155,3 +156,95 @@ def add_prior_day_levels(
     )
 
     return out
+
+
+def add_pa_magnet_level_features(
+    df: pd.DataFrame,
+    swing_windows: tuple[int, ...],
+    *,
+    atr_col: str = "atr_like_20",
+    copy: bool = True,
+    allow_overwrite: bool = False,
+) -> pd.DataFrame:
+    """Brooks-style magnet distances (ATR-normalized); skips missing inputs with NaN."""
+    cols = pa_magnet_level_column_names(swing_windows)
+    add_or_overwrite_columns(
+        df, cols, module_name="pa_magnet_levels", allow_overwrite=allow_overwrite
+    )
+    out = safe_copy(df, copy)
+    if "session_date" not in out.columns or "close" not in out.columns:
+        empty = {k: pd.Series(np.nan, index=out.index, dtype=float) for k in cols}
+        return pd.concat([out, pd.DataFrame(empty)], axis=1)
+    c = out["close"].astype(float)
+    atr = (
+        out[atr_col].astype(float).replace(0.0, np.nan) + 1e-12
+        if atr_col in out.columns
+        else None
+    )
+    newc: dict[str, pd.Series] = {}
+
+    def dist_col(x: pd.Series | None) -> pd.Series:
+        if x is None or atr is None:
+            return pd.Series(np.nan, index=out.index, dtype=float)
+        return (c - x.astype(float)).abs() / atr
+
+    ohk = out["orb_high_known"] if "orb_high_known" in out.columns else None
+    olk = out["orb_low_known"] if "orb_low_known" in out.columns else None
+    newc["near_orb_high_known_atr"] = dist_col(ohk)
+    newc["near_orb_low_known_atr"] = dist_col(olk)
+
+    for band, suffix in ((1.0, "1"), (2.0, "2")):
+        uc = f"vwap_upper_{band}"
+        lc = f"vwap_lower_{band}"
+        if uc in out.columns:
+            newc[f"near_vwap_upper_{suffix}_atr"] = dist_col(out[uc])
+        else:
+            newc[f"near_vwap_upper_{suffix}_atr"] = pd.Series(
+                np.nan, index=out.index, dtype=float
+            )
+        if lc in out.columns:
+            newc[f"near_vwap_lower_{suffix}_atr"] = dist_col(out[lc])
+        else:
+            newc[f"near_vwap_lower_{suffix}_atr"] = pd.Series(
+                np.nan, index=out.index, dtype=float
+            )
+
+    if atr is None:
+        for n in swing_windows:
+            nn = int(n)
+            nan_s = pd.Series(np.nan, index=out.index, dtype=float)
+            newc[f"pa_mm_range_up_{nn}"] = nan_s
+            newc[f"pa_mm_range_down_{nn}"] = nan_s.copy()
+            newc[f"near_pa_mm_range_up_atr_{nn}"] = nan_s.copy()
+            newc[f"near_pa_mm_range_down_atr_{nn}"] = nan_s.copy()
+        return pd.concat([out, pd.DataFrame(newc)], axis=1)
+
+    g = out.groupby("session_date", sort=False)
+    sess_open = g["open"].transform("first")
+
+    for n in swing_windows:
+        nn = int(n)
+        rh_c = f"pa_range_high_{nn}"
+        rl_c = f"pa_range_low_{nn}"
+        if rh_c not in out.columns or rl_c not in out.columns:
+            newc[f"pa_mm_range_up_{nn}"] = pd.Series(np.nan, index=out.index, dtype=float)
+            newc[f"pa_mm_range_down_{nn}"] = pd.Series(
+                np.nan, index=out.index, dtype=float
+            )
+            newc[f"near_pa_mm_range_up_atr_{nn}"] = pd.Series(
+                np.nan, index=out.index, dtype=float
+            )
+            newc[f"near_pa_mm_range_down_atr_{nn}"] = pd.Series(
+                np.nan, index=out.index, dtype=float
+            )
+            continue
+        rh = out[rh_c].astype(float)
+        rl = out[rl_c].astype(float)
+        mm_up = (rh - sess_open.astype(float)).clip(lower=0.0)
+        mm_dn = (sess_open.astype(float) - rl).clip(lower=0.0)
+        newc[f"pa_mm_range_up_{nn}"] = mm_up
+        newc[f"pa_mm_range_down_{nn}"] = mm_dn
+        newc[f"near_pa_mm_range_up_atr_{nn}"] = (c - rh).abs() / atr
+        newc[f"near_pa_mm_range_down_atr_{nn}"] = (c - rl).abs() / atr
+
+    return pd.concat([out, pd.DataFrame(newc)], axis=1)

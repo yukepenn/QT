@@ -16,6 +16,12 @@
 | Strategy config validation | `test_strategy_config_validation.py` |
 | Context key | `test_strategy_context_keys.py` |
 | PA context cache scope | `test_pa_context_key_scope.py` |
+| PA Brooks bar primitives | `test_pa_bar_primitives.py` |
+| PA Brooks swing primitives | `test_pa_swing_primitives.py` |
+| PA regime / router features | `test_pa_regime_router_features.py` |
+| PA magnet / level features | `test_pa_level_magnet_features.py` |
+| PA common helpers | `test_pa_common.py` |
+| PA required_features no LOOKAHEAD | `test_pa_required_features_no_lookahead.py` |
 | Combiner behavior hash | `test_combiner_behavior.py` |
 | Cost-as-R metrics | `test_cost_as_r_metrics.py` |
 | Daily metrics | `test_daily_metrics.py` |
