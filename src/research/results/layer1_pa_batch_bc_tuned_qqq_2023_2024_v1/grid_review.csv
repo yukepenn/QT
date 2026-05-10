@@ -1,0 +1,8 @@
+strategy,tuned_yaml,raw_grid_size,capped,max_combos,supports_fast,validate_ok,notes
+pa_broad_channel_zone,src/strategies/testing_parameters/pa_broad_channel_zone_tuned_v1.yaml,864,false,,true,true,
+pa_climax_reversal,src/strategies/testing_parameters/pa_climax_reversal_tuned_v1.yaml,1296,false,,true,true,
+pa_second_entry_pullback,src/strategies/testing_parameters/pa_second_entry_pullback_tuned_v1.yaml,1152,false,,true,true,
+pa_wedge_reversal,src/strategies/testing_parameters/pa_wedge_reversal_tuned_v1.yaml,432,false,,true,true,
+pa_buy_sell_close_trend,src/strategies/testing_parameters/pa_buy_sell_close_trend_tuned_v1.yaml,324,false,,true,true,
+pa_generic_breakout_pullback,src/strategies/testing_parameters/pa_generic_breakout_pullback_tuned_v1.yaml,1024,false,,true,true,
+

@@ -1,0 +1,6 @@
+pa_broad_channel_zone
+pa_second_entry_pullback
+pa_wedge_reversal
+pa_buy_sell_close_trend
+pa_generic_breakout_pullback
+

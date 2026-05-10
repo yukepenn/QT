@@ -1,0 +1,10 @@
+tag=
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v1
+candidates_written=5
+
+candidates:
+  PA_CLIMAX_REVERSAL_001 pa_climax_reversal score=1.6779 trades=37
+  PA_CLIMAX_REVERSAL_002 pa_climax_reversal score=1.6779 trades=37
+  PA_CLIMAX_REVERSAL_003 pa_climax_reversal score=1.6779 trades=37
+  PA_CLIMAX_REVERSAL_004 pa_climax_reversal score=1.6779 trades=37
+  PA_CLIMAX_REVERSAL_005 pa_climax_reversal score=1.6779 trades=37

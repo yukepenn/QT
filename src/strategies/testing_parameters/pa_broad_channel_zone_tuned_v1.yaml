@@ -1,0 +1,28 @@
+strategy: pa_broad_channel_zone
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [45, 60, 90]
+  signal.entry_end_minute: [210, 270, 330]
+  signal.broad_bull_score_min: [0.16, 0.22, 0.28]
+  signal.max_pullback_depth_atr: [1.0, 1.5]
+  risk.stop_mode: [range_low, signal_low]
+  risk.target_mode: [fixed_r, prior_high]
+  risk.target_r: [1.25, 1.5]
+  backtest.max_hold_minutes: [60, 90]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.pa_regime_window: 30
+  signal.require_vwap_context: false
+  signal.block_climax: true
+  signal.climax_score_max: 0.78
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+

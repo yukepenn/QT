@@ -1,0 +1,28 @@
+strategy: pa_buy_sell_close_trend
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [30, 60]
+  signal.entry_end_minute: [180, 210, 270]
+  signal.body_pct_min: [0.48, 0.56, 0.64]
+  signal.trend_score_min: [0.28, 0.35, 0.42]
+  risk.target_r: [1.0, 1.25]
+  backtest.max_hold_minutes: [15, 30, 45]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.pa_regime_window: 30
+  signal.require_vwap_side: false
+  signal.block_climax: true
+  signal.climax_score_max: 0.75
+  risk.stop_mode: last_pullback_low
+  risk.target_mode: fixed_r
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+

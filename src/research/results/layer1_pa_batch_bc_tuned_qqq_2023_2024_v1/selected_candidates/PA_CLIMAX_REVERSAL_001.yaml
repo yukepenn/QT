@@ -1,0 +1,111 @@
+candidate_id: PA_CLIMAX_REVERSAL_001
+strategy: pa_climax_reversal
+asset: equity
+symbol: QQQ
+strategy_family: pa_climax_reversal
+conflict_group: QQQ_directional
+default_priority: 45
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: pa_climax_reversal
+  conflict_group: QQQ_directional
+  default_priority: 45
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 1.677919805913571
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_climax_reversal\sweep_20260510_170555_layer1_pa_batch_bc_tuned_qqq_2023_2024_v1\results.csv
+  row_index: 68
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_climax_reversal\sweep_20260510_170555_layer1_pa_batch_bc_tuned_qqq_2023_2024_v1
+metrics:
+  trades: 37
+  profit_factor: 1.7018950437319085
+  total_r: 9.343596441470282
+  win_rate: 0.5135135135135135
+  total_net_pnl: 4.815000000000623
+  avg_r: 0.2525296335532508
+  avg_net_pnl: 0.1301351351351519
+  max_drawdown_pnl: -2.1299999999999386
+  max_drawdown_r: -5.218720562427478
+  avg_bars_held: 7.567567567567567
+  stop_count: 18
+  target_count: 19
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 0
+config:
+  strategy: pa_climax_reversal
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_regime_window: 30
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 180
+    climax_score_min: 0.52
+    bar_range_expansion_min: 1.5
+    bear_context_min: 0.3
+    max_dist_below_vwap_atr: -0.12
+    use_bar_range_expansion: true
+  risk:
+    stop_mode: signal_low
+    target_mode: fixed_r
+    target_r: 1.5
+    atr_buffer_mult: 0.4
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 65

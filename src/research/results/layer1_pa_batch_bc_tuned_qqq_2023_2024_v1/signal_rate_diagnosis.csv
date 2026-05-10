@@ -1,0 +1,7 @@
+strategy,raw_grid_size,result_rows,combos_with_trades,combos_zero_trades,max_trades,median_trades_nonzero,p75_trades_nonzero,best_total_r,best_profit_factor,best_max_drawdown_r,best_avg_bars_held,classification
+pa_broad_channel_zone,864,96,0,96,0,,,0.0,0.0,0.0,0.0,still_zero_trade
+pa_climax_reversal,1296,216,216,0,79,43.0,69.5,8.473958239646038,2.006682577565746,-3.1102380952380058,7.115384615384615,improved
+pa_second_entry_pullback,1152,192,160,32,52,10.5,17.0,1.281433251389278,2.538671673680182,-1.1301659616009478,1.0,improved
+pa_wedge_reversal,432,72,72,0,107,87.5,107.0,-0.290226973144716,1.0552631578948093,-7.19741862501086,7.514705882352941,no_change
+pa_buy_sell_close_trend,324,54,54,0,401,355.0,391.0,2.731556485838767,1.0305949608300309,-7.053555630942611,27.52142857142857,no_change
+pa_generic_breakout_pullback,1024,256,0,256,0,,,0.0,0.0,0.0,0.0,still_zero_trade

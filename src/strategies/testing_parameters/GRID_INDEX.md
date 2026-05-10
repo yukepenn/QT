@@ -68,6 +68,19 @@ Legend: **status** = how the grid is used in current research; **result root** =
 | pa_buy_sell_close_trend | `pa_buy_sell_close_trend_focused.yaml` | Strong-close continuation | Active | `layer1_pa_batch_bc_qqq_2023_2024/` | ~432 raw; **5** strict Layer 1 YAMLs |
 | pa_generic_breakout_pullback | `pa_generic_breakout_pullback_focused.yaml` | Breakout pullback | Active | same | ~432 raw; zero-trade 2023–2024 |
 
+### PA Batch B/C — tuned grids v1 (`*_tuned_v1.yaml`)
+
+Purpose: grid/gate tuning after baseline `layer1_pa_batch_bc_qqq_2023_2024/` yielded strict candidates from **one** family only (see `layer1_pa_batch_bc_summary.md`). Expected result root: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v1/`.
+
+| Strategy | File | Purpose | Status | Raw grid (v1) | Expected result root |
+|----------|------|---------|--------|---------------|----------------------|
+| pa_broad_channel_zone | `pa_broad_channel_zone_tuned_v1.yaml` | Recover signal rate from zero-trade baseline | To be swept | 864 | `layer1_pa_batch_bc_tuned_qqq_2023_2024_v1/` |
+| pa_climax_reversal | `pa_climax_reversal_tuned_v1.yaml` | Tighten quality (high activity, weak edge) | To be swept | 1296 | same |
+| pa_second_entry_pullback | `pa_second_entry_pullback_tuned_v1.yaml` | Increase trade count (tiny-n baseline) | To be swept | 1152 | same |
+| pa_wedge_reversal | `pa_wedge_reversal_tuned_v1.yaml` | Tighten wedge proxy / context | To be swept | 432 | same |
+| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_tuned_v1.yaml` | Reduce hold-time/cost sensitivity while preserving edge | To be swept | 324 | same |
+| pa_generic_breakout_pullback | `pa_generic_breakout_pullback_tuned_v1.yaml` | Recover signal rate from zero-trade baseline | To be swept | 1024 | same |
+
 ---
 
 ## 2. Refined grids (`*_refined_v1.yaml`)

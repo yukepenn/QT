@@ -1,0 +1,28 @@
+strategy: pa_climax_reversal
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [60, 90]
+  signal.entry_end_minute: [180, 210, 270]
+  signal.climax_score_min: [0.52, 0.64, 0.76]
+  signal.bar_range_expansion_min: [1.35, 1.5]
+  signal.bear_context_min: [0.22, 0.3]
+  risk.stop_mode: [atr_buffer, signal_low]
+  risk.target_r: [1.2, 1.5, 1.9]
+  backtest.max_hold_minutes: [30, 50, 65]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.pa_regime_window: 30
+  signal.max_dist_below_vwap_atr: -0.12
+  signal.use_bar_range_expansion: true
+  risk.target_mode: fixed_r
+  risk.atr_buffer_mult: 0.4
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+

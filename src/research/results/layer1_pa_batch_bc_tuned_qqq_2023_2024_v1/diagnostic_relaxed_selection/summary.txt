@@ -1,0 +1,20 @@
+tag=
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v1\diagnostic_relaxed_selection
+candidates_written=15
+
+candidates:
+  PA_CLIMAX_REVERSAL_001 pa_climax_reversal score=2.0334 trades=26
+  PA_CLIMAX_REVERSAL_002 pa_climax_reversal score=2.0334 trades=26
+  PA_CLIMAX_REVERSAL_003 pa_climax_reversal score=2.0334 trades=26
+  PA_CLIMAX_REVERSAL_004 pa_climax_reversal score=1.8169 trades=27
+  PA_CLIMAX_REVERSAL_005 pa_climax_reversal score=1.8169 trades=27
+  PA_WEDGE_REVERSAL_001 pa_wedge_reversal score=0.8275 trades=68
+  PA_WEDGE_REVERSAL_002 pa_wedge_reversal score=0.8275 trades=68
+  PA_WEDGE_REVERSAL_003 pa_wedge_reversal score=0.8275 trades=68
+  PA_WEDGE_REVERSAL_004 pa_wedge_reversal score=0.8275 trades=68
+  PA_WEDGE_REVERSAL_005 pa_wedge_reversal score=0.8275 trades=68
+  PA_BUY_SELL_CLOSE_TREND_001 pa_buy_sell_close_trend score=0.8324 trades=280
+  PA_BUY_SELL_CLOSE_TREND_002 pa_buy_sell_close_trend score=0.7932 trades=280
+  PA_BUY_SELL_CLOSE_TREND_003 pa_buy_sell_close_trend score=0.7287 trades=276
+  PA_BUY_SELL_CLOSE_TREND_004 pa_buy_sell_close_trend score=0.7066 trades=276
+  PA_BUY_SELL_CLOSE_TREND_005 pa_buy_sell_close_trend score=0.6958 trades=273
