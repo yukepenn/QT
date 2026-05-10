@@ -74,4 +74,21 @@ def add_prior_day_levels(
     pr = out["prior_day_range"].replace(0.0, np.nan)
     out["gap_prior_range_norm"] = out["gap_from_prior_close"].astype(float) / pr
 
+    day_low_tbl = (
+        out.groupby("session_date", sort=False)["low"].min().reset_index(name="_day_session_low").sort_values("session_date")
+    )
+    dl = day_low_tbl["_day_session_low"].astype(float)
+    day_low_tbl["prior_3day_low"] = dl.shift(1).rolling(3, min_periods=1).min()
+    day_low_tbl["prior_5day_low"] = dl.shift(1).rolling(5, min_periods=1).min()
+    wp = pd.to_datetime(day_low_tbl["session_date"]).dt.to_period("W-MON")
+    week_min_low = day_low_tbl.groupby(wp, sort=False)["_day_session_low"].min()
+    prev_week_min_low = week_min_low.sort_index().shift(1)
+    day_low_tbl["previous_week_low"] = wp.map(prev_week_min_low).astype(float)
+
+    out = out.merge(
+        day_low_tbl[["session_date", "prior_3day_low", "prior_5day_low", "previous_week_low"]],
+        on="session_date",
+        how="left",
+    )
+
     return out

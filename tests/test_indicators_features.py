@@ -35,6 +35,7 @@ def test_indicator_columns_and_no_lookahead() -> None:
         stochastic_tuples=((14, 3),),
         cci_windows=(14,),
         adx_windows=(14,),
+        supertrend_tuples=((15, 200),),
     )
     out = add_indicator_features(base, spec, copy=False, allow_overwrite=True)
     assert "ema_5" in out.columns and "ema_slope_5" in out.columns
@@ -42,7 +43,7 @@ def test_indicator_columns_and_no_lookahead() -> None:
     assert "macd_line_12_26" in out.columns
     assert "stoch_k_14" in out.columns
     assert "cci_14" in out.columns
-    assert "adx_14" in out.columns
+    assert "supertrend_line_15_200" in out.columns and "supertrend_dir_15_200" in out.columns
     bad = [c for c in indicator_column_names(spec) if "LOOKAHEAD" in c]
     assert not bad
 
@@ -50,7 +51,16 @@ def test_indicator_columns_and_no_lookahead() -> None:
 def test_ema_cross_uses_prior_bar_only() -> None:
     raw = _raw_df()
     base = build_basic_features(raw, copy=True)
-    spec = IndicatorsFeatureConfig(ema_windows=(3, 5), sma_windows=(), rsi_windows=(), macd_tuples=(), stochastic_tuples=(), cci_windows=(), adx_windows=())
+    spec = IndicatorsFeatureConfig(
+        ema_windows=(3, 5),
+        sma_windows=(),
+        rsi_windows=(),
+        macd_tuples=(),
+        stochastic_tuples=(),
+        cci_windows=(),
+        adx_windows=(),
+        supertrend_tuples=(),
+    )
     out = add_indicator_features(base, spec, copy=False, allow_overwrite=True)
     assert len(out) == len(base)
 
@@ -58,8 +68,8 @@ def test_ema_cross_uses_prior_bar_only() -> None:
 def test_feature_key_indicators_changes() -> None:
     from src.features.feature_key import feature_key_from_config
 
-    a = feature_key_from_config({"features": {"indicators": {"ema_windows": [9], "sma_windows": [], "rsi_windows": [], "macd_tuples": [], "stochastic_tuples": [], "cci_windows": [], "adx_windows": []}}})
-    b = feature_key_from_config({"features": {"indicators": {"ema_windows": [10], "sma_windows": [], "rsi_windows": [], "macd_tuples": [], "stochastic_tuples": [], "cci_windows": [], "adx_windows": []}}})
+    a = feature_key_from_config({"features": {"indicators": {"ema_windows": [9], "sma_windows": [], "rsi_windows": [], "macd_tuples": [], "stochastic_tuples": [], "cci_windows": [], "adx_windows": [], "supertrend_tuples": []}}})
+    b = feature_key_from_config({"features": {"indicators": {"ema_windows": [10], "sma_windows": [], "rsi_windows": [], "macd_tuples": [], "stochastic_tuples": [], "cci_windows": [], "adx_windows": [], "supertrend_tuples": []}}})
     assert a != b
 
 

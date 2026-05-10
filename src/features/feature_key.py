@@ -73,6 +73,23 @@ def _normalize_stoch_tuples(raw: Any) -> tuple[tuple[int, int], ...]:
     return tuple(out)
 
 
+def _normalize_supertrend_tuples(raw: Any) -> tuple[tuple[int, int], ...]:
+    it = _as_iterable(raw)
+    if not it:
+        return ()
+    out: list[tuple[int, int]] = []
+    for row in it:
+        if isinstance(row, (list, tuple)) and len(row) == 2:
+            try:
+                atr_w = int(row[0])
+                mult = float(row[1])
+                mult_z = int(round(mult * 100.0))
+                out.append((atr_w, mult_z))
+            except (TypeError, ValueError):
+                continue
+    return tuple(out)
+
+
 def indicators_config_from_dict(raw: dict[str, Any] | None) -> IndicatorsFeatureConfig:
     if raw is None:
         return IndicatorsFeatureConfig()
@@ -84,6 +101,7 @@ def indicators_config_from_dict(raw: dict[str, Any] | None) -> IndicatorsFeature
         stochastic_tuples=_normalize_stoch_tuples(raw.get("stochastic_tuples")),
         cci_windows=normalize_int_tuple(raw.get("cci_windows"), ()),
         adx_windows=normalize_int_tuple(raw.get("adx_windows"), ()),
+        supertrend_tuples=_normalize_supertrend_tuples(raw.get("supertrend_tuples")),
     )
 
 

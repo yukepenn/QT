@@ -1,0 +1,27 @@
+strategy: multi_day_level_trap
+
+grid:
+  signal.level_type: [prior_3day_low, prior_5day_low]
+  signal.confirm_mode: [close_reclaim, momentum_turn]
+  risk.stop_mode: [failed_extreme, atr_buffered_extreme]
+  risk.target_mode: [fixed_r, vwap]
+  risk.target_r: [1.0, 1.25]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  signal.entry_start_minute: 60
+  signal.entry_end_minute: 270
+  signal.fail_window_bars: 3
+  signal.level_buffer_atr: 0.1
+  signal.require_vwap_alignment: false
+  signal.min_close_location: 0.5
+  risk.atr_buffer: 0.1
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+  backtest.max_hold_minutes: 45

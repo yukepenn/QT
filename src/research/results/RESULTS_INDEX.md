@@ -51,6 +51,10 @@ This index classifies **result roots** without moving or deleting them.
   - **status**: tuned_v1 winner trade-quality / bucket diagnostics
   - **keep**: yes
 
+- **`strategy_library_v2_completion_summary.md`** (+ `strategy_library_v2_completion_*.{md,csv}`)
+  - **status**: Strategy Library v2 **completion** pack (9 new plugins + feature deltas + Jan smoke health)
+  - **keep**: yes (no heavy sweep outputs)
+
 ## B. Reference / engineering docs
 
 - **Hardening docs**: `hardening_*`, `rerun_plan_after_hardening.md`, `PRE_HARDENING_STALE.md` markers

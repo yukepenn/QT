@@ -1,0 +1,10 @@
+strategy,already_existed,registered,supports_fast,metadata_ok,parameters_yaml_exists,focused_yaml_exists,jan_smoke_exit_code,jan_smoke_notes,recommended_next_action
+sma20_reclaim_reject,false,true,true,true,true,true,0,nonzero trades on Jan 2025 sample,ok_for_layer1
+macd_momentum_turn,false,true,true,true,true,true,0,required full macd tuple set for grid Cartesian product,ok_for_layer1
+stochastic_oversold_cross,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1
+cci_extreme_snapback,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1
+adx_dmi_trend_continuation,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1
+supertrend_atr_flip,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1
+large_candle_failure,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1
+multi_day_level_trap,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1; overlap_risk_vs_prior_day_level_trap
+prior_close_reclaim,false,true,true,true,true,true,0,wiring smoke passed,ok_for_layer1

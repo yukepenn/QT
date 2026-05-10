@@ -16,20 +16,29 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from src.strategies.strategy.adx_dmi_trend_continuation import AdxDmiTrendContinuationStrategy
 from src.strategies.strategy.afternoon_continuation import AfternoonContinuationStrategy
 from src.strategies.strategy.base import BaseStrategy, validate_required_features_no_lookahead
 from src.strategies.strategy.bollinger_band_fade_chop import BollingerBandFadeChopStrategy
 from src.strategies.strategy.bollinger_squeeze_breakout import BollingerSqueezeBreakoutStrategy
+from src.strategies.strategy.cci_extreme_snapback import CciExtremeSnapbackStrategy
 from src.strategies.strategy.consecutive_bar_exhaustion import ConsecutiveBarExhaustionStrategy
 from src.strategies.strategy.donchian_channel_breakout import DonchianChannelBreakoutStrategy
 from src.strategies.strategy.failed_orb import FailedOrbStrategy
 from src.strategies.strategy.gap_acceptance_failure import GapAcceptanceFailureStrategy
 from src.strategies.strategy.intraday_ma_crossover import IntradayMaCrossoverStrategy
+from src.strategies.strategy.large_candle_failure import LargeCandleFailureStrategy
+from src.strategies.strategy.macd_momentum_turn import MacdMomentumTurnStrategy
 from src.strategies.strategy.midday_compression_breakout import MiddayCompressionBreakoutStrategy
+from src.strategies.strategy.multi_day_level_trap import MultiDayLevelTrapStrategy
 from src.strategies.strategy.orb_continuation import ORBContinuationStrategy
 from src.strategies.strategy.orb_retest_continuation import OrbRetestContinuationStrategy
+from src.strategies.strategy.prior_close_reclaim import PriorCloseReclaimStrategy
 from src.strategies.strategy.prior_day_level_trap import PriorDayLevelTrapStrategy
 from src.strategies.strategy.rsi_failure_swing import RsiFailureSwingStrategy
+from src.strategies.strategy.sma20_reclaim_reject import Sma20ReclaimRejectStrategy
+from src.strategies.strategy.stochastic_oversold_cross import StochasticOversoldCrossStrategy
+from src.strategies.strategy.supertrend_atr_flip import SupertrendAtrFlipStrategy
 from src.strategies.strategy.vwap_reclaim_reject import VwapReclaimRejectStrategy
 from src.strategies.strategy.vwap_reversal import VWAPReversalStrategy
 from src.strategies.strategy.vwap_trend_pullback import VwapTrendPullbackStrategy
@@ -60,6 +69,15 @@ _STRATEGY_BY_NAME: dict[str, type[BaseStrategy]] = {
     "gap_acceptance_failure": GapAcceptanceFailureStrategy,
     "midday_compression_breakout": MiddayCompressionBreakoutStrategy,
     "afternoon_continuation": AfternoonContinuationStrategy,
+    "sma20_reclaim_reject": Sma20ReclaimRejectStrategy,
+    "macd_momentum_turn": MacdMomentumTurnStrategy,
+    "stochastic_oversold_cross": StochasticOversoldCrossStrategy,
+    "cci_extreme_snapback": CciExtremeSnapbackStrategy,
+    "adx_dmi_trend_continuation": AdxDmiTrendContinuationStrategy,
+    "supertrend_atr_flip": SupertrendAtrFlipStrategy,
+    "large_candle_failure": LargeCandleFailureStrategy,
+    "multi_day_level_trap": MultiDayLevelTrapStrategy,
+    "prior_close_reclaim": PriorCloseReclaimStrategy,
 }
 
 

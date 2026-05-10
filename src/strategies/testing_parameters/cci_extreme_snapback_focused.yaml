@@ -1,0 +1,27 @@
+strategy: cci_extreme_snapback
+
+grid:
+  features.cci_window: [14, 20]
+  signal.oversold_level: [-150, -200]
+  signal.trigger_mode: [cross_above_oversold, cross_above_zero]
+  risk.stop_mode: [swing_low, atr_buffer]
+  risk.target_r: [1.0, 1.25]
+
+fixed:
+  features.swing_lookback: 10
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  signal.entry_start_minute: 60
+  signal.entry_end_minute: 270
+  signal.require_price_confirmation: true
+  signal.require_vwap_filter: false
+  risk.target_mode: fixed_r
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+  backtest.max_hold_minutes: 30

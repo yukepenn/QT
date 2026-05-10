@@ -1,5 +1,9 @@
 ### [Unreleased] – 2026-05-09
 
+- Feat(strategies): **Strategy Library v2 completion** — nine new plugins (`sma20_reclaim_reject`, `macd_momentum_turn`, `stochastic_oversold_cross`, `cci_extreme_snapback`, `adx_dmi_trend_continuation`, `supertrend_atr_flip`, `large_candle_failure`, `multi_day_level_trap`, `prior_close_reclaim`) with parameters + focused YAMLs; loader **16 → 25** strategies; `metadata.yaml` entries.
+- Feat(features): **SuperTrend** indicator columns (`supertrend_line_*`, `supertrend_dir_*`) + `supertrend_tuples` in `IndicatorsFeatureConfig` / `feature_key`; **multi-session lows** `prior_3day_low`, `prior_5day_low`, `previous_week_low` in `levels.py`.
+- Test(strategies): `test_strategy_library_v2_completion_registration.py`, `test_strategy_library_v2_completion_features.py`, `test_levels_multiday_no_lookahead.py`; indicator test updated for SuperTrend + `atr_like_15`.
+- Docs(research): `strategy_library_v2_completion_{summary,health,audit,feature_audit,repo_inventory,implementation_plan}.*` (+ CSV companions). **Layer 2 / mini-WFO v4–v5 / full WFO not run.** Next recommendation: **`RUN_LAYER1_V2_COMPLETION_2023_2024`**.
 - Feat(strategies): **Batch 1 squeeze tuned_v2** — `bollinger_squeeze_breakout_tuned_v2.yaml` (stricter bandwidth + `min_risk_per_share: 0.05`; 576-combo grid).
 - Feat(research): **tuned_v1 winner diagnostics** — `gen_batch1_tuned_v1_cost_diagnostics.py`, curated `batch1_tuned_v1_cost_diagnostics/` (exit-reason / risk / entry-hour buckets).
 - Feat(research): **Layer 1 slippage stress helper** — `layer1_row_slippage_eval.py` (re-sim top filtered rows at alternate `slippage_per_share`).

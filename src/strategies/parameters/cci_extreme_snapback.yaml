@@ -1,0 +1,47 @@
+strategy: cci_extreme_snapback
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 20, 30]
+  price_action_windows: [3, 5, 10, 20, 30, 60]
+  volume_windows: [20, 30]
+  indicators:
+    ema_windows: []
+    sma_windows: []
+    rsi_windows: []
+    macd_tuples: []
+    stochastic_tuples: []
+    cci_windows: [14, 20, 30]
+    adx_windows: []
+    supertrend_tuples: []
+  channels: {}
+  regime: {}
+  cci_window: 20
+  swing_lookback: 10
+
+signal:
+  side: long_only
+  atr_column: atr_like_20
+  entry_start_minute: 60
+  entry_end_minute: 270
+  oversold_level: -150
+  trigger_mode: cross_above_oversold
+  require_price_confirmation: true
+  require_vwap_filter: false
+
+risk:
+  stop_mode: signal_candle_low
+  target_mode: fixed_r
+  target_r: 1.25
+  atr_buffer_mult: 0.35
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 30

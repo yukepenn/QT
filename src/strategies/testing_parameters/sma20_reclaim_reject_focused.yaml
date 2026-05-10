@@ -1,0 +1,29 @@
+strategy: sma20_reclaim_reject
+
+grid:
+  features.ma_window: [20, 30]
+  signal.reference_line: [sma, ema]
+  signal.min_bars_below_line: [3, 5]
+  signal.confirm_mode: [close_reclaim, break_3bar_high]
+  risk.stop_mode: [reclaim_candle_low, atr_buffer]
+  risk.target_r: [1.0, 1.25]
+
+fixed:
+  signal.side: long_only
+  signal.atr_column: atr_like_20
+  signal.entry_start_minute: 60
+  signal.entry_end_minute: 270
+  signal.reclaim_buffer_atr: 0.05
+  signal.require_line_slope: false
+  signal.require_vwap_side: false
+  risk.target_mode: fixed_r
+  risk.line_buffer_atr: 0.1
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
+  backtest.max_hold_minutes: 45

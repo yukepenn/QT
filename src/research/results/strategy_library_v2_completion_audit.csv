@@ -1,0 +1,10 @@
+strategy,file_ok,metadata_yaml,parameters_yaml,focused_yaml,supports_fast,jan_smoke_ok,notes
+sma20_reclaim_reject,yes,yes,yes,yes,yes,yes,
+macd_momentum_turn,yes,yes,yes,yes,yes,yes,macd_tuples superset for grid
+stochastic_oversold_cross,yes,yes,yes,yes,yes,yes,
+cci_extreme_snapback,yes,yes,yes,yes,yes,yes,
+adx_dmi_trend_continuation,yes,yes,yes,yes,yes,yes,
+supertrend_atr_flip,yes,yes,yes,yes,yes,yes,vol_windows include atr_window
+large_candle_failure,yes,yes,yes,yes,yes,yes,
+multi_day_level_trap,yes,yes,yes,yes,yes,yes,overlap doc vs prior_day_level_trap
+prior_close_reclaim,yes,yes,yes,yes,yes,yes,

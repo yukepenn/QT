@@ -40,6 +40,7 @@ Commit curated, small artifacts that summarize experiments:
   - `candidate_summary.md` (when present)
   - `sweep_manifest.csv` (and optional `.md`)
   - summary MDs (e.g. `layer1_*_summary.md`)
+  - Strategy Library v2 **completion** research pack (nine plugins; wiring smokes only): `strategy_library_v2_completion_summary.md`, `strategy_library_v2_completion_{health,audit,feature_audit,repo_inventory,implementation_plan}.{md,csv}` (CSV companions where listed)
   - Strategy Library v2 Batch 1 research pack:
     - `strategy_library_v2_batch1_plan.md`, `strategy_library_v2_batch1_audit.{md,csv}`, `strategy_library_v2_batch1_grid_review.{md,csv}`, `strategy_library_v2_batch1_health.{md,csv}`, `strategy_library_v2_batch1_summary.md`
     - `reduced_layer2_v2_batch1_design.md` (Batch 1 Layer 2 rationale + links to configs)

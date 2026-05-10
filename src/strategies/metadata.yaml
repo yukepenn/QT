@@ -115,3 +115,75 @@ afternoon_continuation:
   default_priority: 68
   default_active_start_minute: 240
   default_active_end_minute: 360
+
+multi_day_level_trap:
+  family: multi_day_level_trap
+  conflict_group: QQQ_directional
+  default_priority: 58
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; distinct multi-session lows vs prior_day_level_trap."
+
+adx_dmi_trend_continuation:
+  family: trend_strength_continuation
+  conflict_group: QQQ_directional
+  default_priority: 56
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; ADX/DMI + continuation trigger."
+
+supertrend_atr_flip:
+  family: atr_trend_following
+  conflict_group: QQQ_directional
+  default_priority: 54
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; session supertrend flip/pullback."
+
+macd_momentum_turn:
+  family: macd_momentum_shift
+  conflict_group: QQQ_directional
+  default_priority: 53
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; MACD turn + EMA20 filter."
+
+prior_close_reclaim:
+  family: value_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 52
+  default_active_start_minute: 15
+  default_active_end_minute: 270
+  notes: "v2_completion long-only MVP; reclaim prior session close."
+
+sma20_reclaim_reject:
+  family: moving_average_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 51
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; SMA/EMA reclaim."
+
+large_candle_failure:
+  family: price_action_failure
+  conflict_group: QQQ_directional
+  default_priority: 50
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; large red failure reclaim."
+
+stochastic_oversold_cross:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 49
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; stoch oversold cross."
+
+cci_extreme_snapback:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 47
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+  notes: "v2_completion long-only MVP; CCI extreme snapback."

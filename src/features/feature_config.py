@@ -119,6 +119,9 @@ FEATURE_COLUMNS = {
         "gap_from_prior_close",
         "gap_pct_from_prior_close",
         "gap_prior_range_norm",
+        "prior_3day_low",
+        "prior_5day_low",
+        "previous_week_low",
     ],
     "price_action": [
         "bar_range",
@@ -190,12 +193,13 @@ from src.features.regime import regime_column_names
 
 _REGISTRY_INDICATORS = IndicatorsFeatureConfig(
     ema_windows=(7, 9, 10, 12, 14, 20, 26, 50),
-    sma_windows=(20, 50),
+    sma_windows=(20, 30, 50),
     rsi_windows=(7, 14),
-    macd_tuples=((12, 26, 9),),
-    stochastic_tuples=((14, 3),),
-    cci_windows=(20,),
-    adx_windows=(14,),
+    macd_tuples=((8, 21, 9), (12, 26, 9)),
+    stochastic_tuples=((14, 3), (20, 3)),
+    cci_windows=(14, 20, 30),
+    adx_windows=(14, 20),
+    supertrend_tuples=((10, 200), (14, 200), (14, 300), (20, 200)),
 )
 _REGISTRY_CHANNELS = ChannelsFeatureConfig(
     bb_windows=(20, 30),
@@ -270,6 +274,9 @@ FEATURE_COLUMN_DESCRIPTIONS = {
     "intraday_low_so_far": "Cumulative low within session up to current bar (safe).",
     "gap_from_prior_close": "Current session open minus prior session close.",
     "gap_pct_from_prior_close": "gap / prior_day_close.",
+    "prior_3day_low": "Min session low over the 3 completed sessions before the current session_date (excludes current session).",
+    "prior_5day_low": "Min session low over the 5 completed sessions before the current session_date (excludes current session).",
+    "previous_week_low": "Min session low over all completed sessions in the prior ISO week (W-MON anchor; excludes current week).",
     "ret_1m": "1-minute percent return within session.",
     "tr": "True range approximation within session.",
 }

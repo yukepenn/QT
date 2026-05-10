@@ -14,6 +14,8 @@ class IndicatorsFeatureConfig:
     stochastic_tuples: tuple[tuple[int, int], ...] = ()  # (k_window, d_smooth)
     cci_windows: tuple[int, ...] = ()
     adx_windows: tuple[int, ...] = ()
+    # (atr_window, mult_z) where mult_z = int(round(mult * 100)), e.g. 2.0 -> 200
+    supertrend_tuples: tuple[tuple[int, int], ...] = ()
 
 
 @dataclass(frozen=True)

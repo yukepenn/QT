@@ -46,7 +46,52 @@ def indicator_column_names(spec: IndicatorsFeatureConfig) -> list[str]:
                 f"adx_slope_{w}",
             ]
         )
+    for atr_w, mult_z in spec.supertrend_tuples:
+        cols.extend(
+            [
+                f"supertrend_line_{atr_w}_{mult_z}",
+                f"supertrend_dir_{atr_w}_{mult_z}",
+            ]
+        )
     return cols
+
+
+def _supertrend_session_np(
+    close: np.ndarray,
+    high: np.ndarray,
+    low: np.ndarray,
+    atr: np.ndarray,
+    mult: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    c = close.astype(np.float64)
+    h = high.astype(np.float64)
+    l = low.astype(np.float64)
+    a = atr.astype(np.float64)
+    n = len(c)
+    hl2 = 0.5 * (h + l)
+    bu = hl2 + mult * a
+    bl = hl2 - mult * a
+    fu = np.empty(n, dtype=np.float64)
+    fl = np.empty(n, dtype=np.float64)
+    dir_ = np.ones(n, dtype=np.int8)
+    line = np.empty(n, dtype=np.float64)
+    for i in range(n):
+        if i == 0:
+            fu[i] = bu[i]
+            fl[i] = bl[i]
+            dir_[i] = 1
+            line[i] = fl[i]
+            continue
+        fu[i] = bu[i] if (bu[i] < fu[i - 1] or c[i - 1] > fu[i - 1]) else fu[i - 1]
+        fl[i] = bl[i] if (bl[i] > fl[i - 1] or c[i - 1] < fl[i - 1]) else fl[i - 1]
+        if c[i] > fu[i - 1]:
+            dir_[i] = 1
+        elif c[i] < fl[i - 1]:
+            dir_[i] = -1
+        else:
+            dir_[i] = dir_[i - 1]
+        line[i] = fl[i] if dir_[i] == 1 else fu[i]
+    return line, dir_
 
 
 def _rsi_wilder(close: pd.Series, window: int, grouper: pd.Series) -> pd.Series:
@@ -169,6 +214,31 @@ def add_indicator_features(
         new_cols[f"minus_di_{w}"] = minus_di
         new_cols[f"adx_{w}"] = adx
         new_cols[f"adx_slope_{w}"] = adx.groupby(sd).transform(lambda s: s - s.shift(1))
+
+    for atr_w, mult_z in spec.supertrend_tuples:
+        mult = float(mult_z) / 100.0
+        acol = f"atr_like_{atr_w}"
+        if acol not in out.columns:
+            raise ValueError(
+                f"indicators.supertrend requires {acol!r}; extend features.vol_windows to include {atr_w}"
+            )
+        ar_line = np.empty(len(out), dtype=np.float64)
+        ar_dir = np.zeros(len(out), dtype=np.int8)
+        i0 = 0
+        for _, g in out.groupby("session_date", sort=False):
+            line, dire = _supertrend_session_np(
+                g["close"].to_numpy(dtype=np.float64),
+                g["high"].to_numpy(dtype=np.float64),
+                g["low"].to_numpy(dtype=np.float64),
+                g[acol].to_numpy(dtype=np.float64),
+                mult,
+            )
+            n = len(g)
+            ar_line[i0 : i0 + n] = line
+            ar_dir[i0 : i0 + n] = dire
+            i0 += n
+        new_cols[f"supertrend_line_{atr_w}_{mult_z}"] = pd.Series(ar_line, index=out.index)
+        new_cols[f"supertrend_dir_{atr_w}_{mult_z}"] = pd.Series(ar_dir, index=out.index, dtype=np.int8)
 
     if new_cols:
         out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)

@@ -1,0 +1,9 @@
+family,reused_columns,new_columns_required,notes
+moving_average_reclaim,sma_*, ema_*, atr_like_20 vwap rolling_high_3_prior,none,
+macd_momentum_shift,macd_* ema_20 vwap atr_like_20,none,Include all (fast,slow) pairs used by YAML grid
+oscillator_reversal,stoch_* or cci_* vwap atr rolling_high_3_prior,none,
+trend_strength_continuation,adx_* plus_di minus_di ema_20 vwap atr rolling_high_3_prior,none,
+atr_trend_following,supertrend_* ema_20 vwap atr,vol_windows must cover atr_window
+price_action_failure,bar_range is_red atr vwap,none,
+multi_day_level_trap,prior_*_low close_location prev_* vwap atr,none,Overlap risk vs prior_day_level_trap
+value_reclaim,prior_day_close vwap atr rolling_high_3_prior,none,Not gap_acceptance_failure

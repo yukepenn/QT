@@ -1,0 +1,13 @@
+path,exists,notes
+README.md,yes,User-facing overview
+PROJECT_STATUS.md,yes,Status snapshot
+PROGRESS.md,yes,Chronological log
+CHANGES.md,yes,Release notes
+docs/ARTIFACT_POLICY.md,yes,Artifact policy
+src/backtest/fast.py,yes,Strategy-agnostic Numba engine
+src/backtest/sweep.py,yes,Layer 1 sweep
+src/features/indicators.py,yes,Extended with supertrend
+src/features/levels.py,yes,Extended with multi-day lows
+src/strategies/loader.py,yes,+9 strategy registrations
+src/strategies/metadata.yaml,yes,+9 entries
+tests/test_strategy_library_v2_completion_registration.py,yes,Registration + smoke arrays
