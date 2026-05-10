@@ -6,7 +6,7 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before cleanup | `4601c7d` — `Docs(handoff): PA BC NEED staging label` |
-| New commit | `1e0f2af` — tip of `main` after cleanup (`cea3a58` = `Chore(repo): clean stale research artifacts`; follow-up doc commits) |
+| New commit | **Tip:** run `git rev-parse HEAD` / `git log -5 --oneline` — primary cleanup commit is **`cea3a58`** (`Chore(repo): clean stale research artifacts`) |
 | Push status | **Pushed** to `origin/main` |
 | Working tree | Curated cleanup artifacts + doc/index updates only; **no** new `sweep_*` / `top_runs/` committed |
 | Known untracked local-only | Regenerated **`repo_cleanup_inventory.csv`** may list local-only dirs; re-run `python src/research/repo_cleanup_inventory.py` after large local sweeps |
