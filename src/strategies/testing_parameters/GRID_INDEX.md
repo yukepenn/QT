@@ -98,6 +98,15 @@ Post-P0 diagnostics + post-key-fix Layer 1 rerun. Result root: `src/research/res
 | pa_second_entry_pullback | `pa_second_entry_pullback_tuned_v2.yaml` | 576 | Looser context/pullback |
 | pa_wedge_reversal | `pa_wedge_reversal_tuned_v2.yaml` | 144 | Small wedge retest |
 
+### PA Batch B/C — tuned grids v3 (`*_tuned_v3.yaml`)
+
+Post–Layer 2 v2 **diversity** iteration. Result root: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/`. Gate preflight: `src/research/results/pa_batch_bc_gate_diagnostics_v3_preflight/`. Summary: `layer1_pa_batch_bc_tuned_v3_summary.md`.
+
+| Strategy | File | Raw grid | Purpose |
+|----------|------|---------:|---------|
+| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_tuned_v3.yaml` | 1152 | Entry/VWAP-side + **target_r** × **max_hold** cost probe (≤1500) |
+| pa_climax_reversal | `pa_climax_reversal_tuned_v3.yaml` | 1152 | **Signal-first** axes (climax/bear/VWAP dist / windows / bexp) + stop/target/hold |
+
 ---
 
 ## 2. Refined grids (`*_refined_v1.yaml`)

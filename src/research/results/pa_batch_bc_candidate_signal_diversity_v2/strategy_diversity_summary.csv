@@ -1,0 +1,3 @@
+strategy,n_candidates,n_unique_pure_signal_hash,n_unique_signal_hash,total_signals_sum
+pa_buy_sell_close_trend,5,4,5,2315
+pa_climax_reversal,5,1,2,255

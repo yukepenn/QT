@@ -39,6 +39,12 @@ This index classifies **result roots** without moving or deleting them.
   - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v1_summary.md`). **PA Batch B/C Layer 2 / mini-WFO / full WFO / live not run.**
   - **keep:** yes
 
+- **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/`**
+  - **status:** PA Batch B+C **tuned grids v3** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_tuned_qqq_2023_2024_v3`
+  - **purpose:** diversity-aware grids (`*_tuned_v3.yaml`) → gate preflight `pa_batch_bc_gate_diagnostics_v3_preflight/` → sweeps (two strategies) → **10** strict YAMLs; `pa_batch_bc_candidate_signal_diversity_v3/`; optional `selected_candidates_diverse/`; `pa_batch_bc_exit_diagnostics_v3/`; `candidate_signal_diversity.py` / `select_diverse_candidates.py`
+  - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v3_summary.md`) — climax strict set still **one** `pure_signal_hash`; **reduced Layer 2 v3 not run**
+  - **keep:** yes
+
 - **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`**
   - **status:** PA Batch B+C **tuned grids v2** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_tuned_qqq_2023_2024_v2`
   - **purpose:** diagnostic-first `*_tuned_v2.yaml` → gate preflight (`pa_batch_bc_gate_diagnostics_v2_preflight/`) → sweeps (four strategies; two skipped preflight) → manifest → **10** strict YAMLs (**5** `pa_buy_sell_close_trend` + **5** `pa_climax_reversal`); `signal_rate_diagnosis.*`; `candidate_fast_context_check.*`; `pa_batch_bc_exit_diagnostics_v2/`; optional `diagnostic_relaxed_selection/` (**DIAGNOSTIC ONLY**)
