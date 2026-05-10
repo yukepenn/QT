@@ -2,6 +2,8 @@
 
 This index classifies committed Layer 2 result roots without deleting them.
 
+**Note:** PA Batch A (`pa_*` plugins) has **no** Layer 2 combiner root yet — see `src/research/results/pa_batch_a_implementation_summary.md`.
+
 ## A. Active / current
 
 - **`layer2_qqq_2020_20260430_posthardening_strict_v1/`**
