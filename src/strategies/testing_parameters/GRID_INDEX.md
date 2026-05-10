@@ -72,6 +72,8 @@ Legend: **status** = how the grid is used in current research; **result root** =
 
 Purpose: grid/gate tuning after baseline `layer1_pa_batch_bc_qqq_2023_2024/` yielded strict candidates from **one** family only (see `layer1_pa_batch_bc_summary.md`). Expected result root: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v1/`.
 
+Gate / exit diagnostics on tuned v1 YAMLs (QQQ 2023–2024 design aid; **not** a sweep): `src/research/results/pa_batch_bc_gate_diagnostics_v1/`, `src/research/results/pa_batch_bc_exit_diagnostics_v1/`.
+
 | Strategy | File | Purpose | Status | Raw grid (v1) | Expected result root |
 |----------|------|---------|--------|---------------|----------------------|
 | pa_broad_channel_zone | `pa_broad_channel_zone_tuned_v1.yaml` | Recover signal rate from zero-trade baseline | To be swept | 864 | `layer1_pa_batch_bc_tuned_qqq_2023_2024_v1/` |

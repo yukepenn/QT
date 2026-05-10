@@ -38,6 +38,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 
 **Next phase**
 
+- **PA Batch B/C diagnostics v1:** Gate + exit summaries under `src/research/results/pa_batch_bc_gate_diagnostics_v1/` and `pa_batch_bc_exit_diagnostics_v1/` (scripts `pa_gate_diagnostics.py`, `pa_exit_diagnostics.py`) — design aid for tuned **v2** grids; **not** a Layer 1 sweep.
 - **Layer 3 smoke v1:** Run fixed-system temporal checks with `python src/walkforward/runner.py --config src/walkforward/configs/qqq_fixed_system_smoke_v1.yaml` (see `PROJECT_STATUS.md`). Still **not** full walk-forward and **not** live-ready.
 - **Layer 3 smoke diagnosis v1:** Component decomposition run: `python src/walkforward/runner.py --config src/walkforward/configs/qqq_fixed_system_diagnosis_v1.yaml --tag layer3_diagnosis --use-signal-cache` (optional `--signal-cache-root` on OneDrive). Outputs: `src/walkforward/results/layer3_smoke_v1_diagnosis_qqq_components/`. **Not** mini-WFO.
 - **Layer 3 mini-WFO v1 (causal single split):** Train 2023–2024 → select Layer 1 + Layer 2 on train only → freeze → test 2025–2026 once: `python src/walkforward/mini_wfo.py --config src/walkforward/configs/qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml --tag mini_wfo_v1 --use-signal-cache --signal-cache-root <cache>` (`--validate-only`, `--resume-from layer2`, `--resume-from after_sweep`). Curated outputs: `src/walkforward/results/layer3_mini_wfo_qqq_2023_2024_train_2025_202604_test_v1/`. **Not** full WFO.

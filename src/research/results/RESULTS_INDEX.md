@@ -30,6 +30,14 @@ This index classifies **result roots** without moving or deleting them.
   - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v1_summary.md`). **PA Batch B/C Layer 2 / mini-WFO / full WFO / live not run.**
   - **keep:** yes
 
+- **`pa_batch_bc_gate_diagnostics_v1/`**
+  - **purpose:** gate pass-rate CSV/MD for tuned v1 PA YAMLs (QQQ 2023–2024); supports bottleneck analysis before tuned v2 grid design (`pa_gate_diagnostics.py`).
+  - **keep:** yes
+
+- **`pa_batch_bc_exit_diagnostics_v1/`**
+  - **purpose:** exit / slippage-stress summaries from existing Layer 1 candidate YAMLs (`pa_exit_diagnostics.py`).
+  - **keep:** yes
+
 - **`layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`**
   - **status:** PA Batch A **tuned grids v1** Layer 1 (QQQ 2023–01–01 → 2024–12–31)
   - **purpose:** `*_tuned_v1.yaml` sweeps → **10** strict YAMLs (trading-range + failed-trap); `signal_rate_diagnosis.*`, `layer1_pa_batch_a_tuned_v1_summary.md`
