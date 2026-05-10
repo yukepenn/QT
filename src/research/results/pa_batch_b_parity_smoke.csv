@@ -1,0 +1,5 @@
+strategy,symbol,start,end,max_combos,parity_mismatch_fields,status
+pa_broad_channel_zone,QQQ,2025-01-01,2025-01-31,2,0,ok
+pa_climax_reversal,QQQ,2025-01-01,2025-01-31,2,0,ok
+pa_second_entry_pullback,QQQ,2025-01-01,2025-01-31,2,0,ok
+pa_wedge_reversal,QQQ,2025-01-01,2025-01-31,2,0,ok

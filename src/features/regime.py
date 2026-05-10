@@ -32,6 +32,9 @@ def pa_regime_column_names(pa: PaFeatureConfig) -> list[str]:
                 f"pa_strong_breakout_score_{nn}",
                 f"pa_tight_bull_channel_score_{nn}",
                 f"pa_tight_bear_channel_score_{nn}",
+                f"pa_broad_bull_channel_score_{nn}",
+                f"pa_broad_bear_channel_score_{nn}",
+                f"pa_bar_range_expansion_{nn}",
                 f"pa_trading_range_score_{nn}",
                 f"pa_climax_score_{nn}",
                 f"pa_overlap_score_{nn}",
@@ -39,6 +42,7 @@ def pa_regime_column_names(pa: PaFeatureConfig) -> list[str]:
                 f"pa_followthrough_down_{nn}",
             ]
         )
+    cols.append("pa_distance_from_vwap_atr")
     return cols
 
 
@@ -76,6 +80,8 @@ def add_regime_features(
     ensure_columns(df, ["session_date", "close", "vwap", atr_col], context="regime")
 
     out = safe_copy(df, copy)
+    if "bar_range" not in out.columns:
+        out["bar_range"] = (out["high"].astype(float) - out["low"].astype(float)).abs()
     sd = out["session_date"]
     g = out.groupby(sd, sort=False)
     c = out["close"].astype(float)
@@ -141,6 +147,23 @@ def add_regime_features(
         new_cols[f"pa_tight_bull_channel_score_{nn}"] = np.clip((0.5 + 0.5 * trend_norm) * narrow * np.clip(reff, 0.0, 1.0), 0.0, 1.0)
         new_cols[f"pa_tight_bear_channel_score_{nn}"] = np.clip((0.5 - 0.5 * trend_norm) * narrow * np.clip(reff, 0.0, 1.0), 0.0, 1.0)
 
+        brng = out["bar_range"].astype(float)
+        mbr = g["bar_range"].transform(lambda s, w=nn: s.shift(1).rolling(w, min_periods=1).mean())
+        new_cols[f"pa_bar_range_expansion_{nn}"] = brng / (mbr.astype(float) + 1e-12)
+
+        broad = np.clip(rw_atr / (2.0 + 0.05 * float(nn)), 0.0, 1.0)
+        wide_pen = 1.0 - narrow * 0.65
+        new_cols[f"pa_broad_bull_channel_score_{nn}"] = np.clip(
+            (0.5 + 0.5 * trend_norm) * broad * wide_pen * np.clip(reff, 0.0, 1.0),
+            0.0,
+            1.0,
+        )
+        new_cols[f"pa_broad_bear_channel_score_{nn}"] = np.clip(
+            (0.5 - 0.5 * trend_norm) * broad * wide_pen * np.clip(reff, 0.0, 1.0),
+            0.0,
+            1.0,
+        )
+
         new_cols[f"pa_trading_range_score_{nn}"] = np.clip(
             (1.0 - np.abs(ts) / (4.0 + np.abs(ts))) * (0.5 + 0.5 * (1.0 - np.clip(reff, 0.0, 1.0))),
             0.0,
@@ -160,6 +183,8 @@ def add_regime_features(
         new_cols[f"pa_followthrough_down_{nn}"] = (
             (bear_b > 0.5) & (prev_bear > 0.5) & (c < prev_c1.fillna(c))
         ).astype(np.int8)
+
+    new_cols["pa_distance_from_vwap_atr"] = (c - out["vwap"].astype(float)) / (atr + 1e-12)
 
     if new_cols:
         out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)

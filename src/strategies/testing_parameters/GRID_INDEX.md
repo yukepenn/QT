@@ -52,6 +52,15 @@ Legend: **status** = how the grid is used in current research; **result root** =
 | pa_tight_channel_pullback | `pa_tight_channel_pullback_tuned_v1.yaml` | Loosened channel / pullback | Active | same | No strict (weak PF) |
 | pa_mtr_reversal | `pa_mtr_reversal_tuned_v1.yaml` | Loosened MTR proxy | Active | same | No strict (sparse) |
 
+### PA Batch B — implementation grids (`*_focused.yaml`)
+
+| Strategy | File | Purpose | Status | Notes |
+|----------|------|---------|--------|-------|
+| pa_broad_channel_zone | `pa_broad_channel_zone_focused.yaml` | Broad channel buy-zone | Smoke / future Layer 1 | ~288 combos |
+| pa_climax_reversal | `pa_climax_reversal_focused.yaml` | Climax fade | Smoke / future Layer 1 | ~288 combos |
+| pa_second_entry_pullback | `pa_second_entry_pullback_focused.yaml` | Second-entry pullback | Smoke / future Layer 1 | ~288 combos |
+| pa_wedge_reversal | `pa_wedge_reversal_focused.yaml` | Wedge reversal proxy | Smoke / future Layer 1 | ~288 combos |
+
 ---
 
 ## 2. Refined grids (`*_refined_v1.yaml`)

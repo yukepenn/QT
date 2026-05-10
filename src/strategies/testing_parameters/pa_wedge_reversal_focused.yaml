@@ -1,0 +1,24 @@
+strategy: pa_wedge_reversal
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [45, 75]
+  signal.entry_end_minute: [210, 300]
+  signal.min_wedge_pushes: [2.2, 2.8]
+  risk.target_r: [1.25, 1.55, 1.9]
+  risk.stop_mode: [signal_low, atr_buffer]
+  risk.target_mode: [fixed_r, vwap]
+  backtest.max_hold_minutes: [55, 70, 85]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.pa_regime_window: 30
+  signal.bear_context_min: 0.18
+  risk.atr_buffer_mult: 0.4
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

@@ -1,0 +1,5 @@
+strategy,symbol,start,end,testing_config,max_combos,combinations_completed,max_trades_in_run,note
+pa_broad_channel_zone,QQQ,2025-01-01,2025-01-31,pa_broad_channel_zone_focused.yaml,18,18,0,signal-rate note only; not a parity failure
+pa_climax_reversal,QQQ,2025-01-01,2025-01-31,pa_climax_reversal_focused.yaml,18,18,4,profitability not interpreted
+pa_second_entry_pullback,QQQ,2025-01-01,2025-01-31,pa_second_entry_pullback_focused.yaml,18,18,0,signal-rate note only
+pa_wedge_reversal,QQQ,2025-01-01,2025-01-31,pa_wedge_reversal_focused.yaml,18,18,6,profitability not interpreted

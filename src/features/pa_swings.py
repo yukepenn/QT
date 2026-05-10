@@ -32,6 +32,7 @@ def pa_swing_column_names(spec: PaFeatureConfig) -> list[str]:
                 f"pa_leg_direction_{nn}",
                 f"pa_pullback_depth_atr_{nn}",
                 f"pa_wedge_push_count_{nn}",
+                f"pa_higher_low_proxy_{nn}",
             ]
         )
     return cols
@@ -104,6 +105,9 @@ def add_pa_swing_features(
             lambda s, w=nn: s.rolling(w, min_periods=1).sum().shift(1)
         )
         new_cols[f"pa_wedge_push_count_{nn}"] = wsum.clip(lower=0.0, upper=float(nn))
+
+        # Prior range low vs current low: coarse "higher low" vs the rolling buy zone anchor.
+        new_cols[f"pa_higher_low_proxy_{nn}"] = (lo > rl).astype(np.int8)
 
     out = pd.concat([out, pd.DataFrame(new_cols)], axis=1)
     return out

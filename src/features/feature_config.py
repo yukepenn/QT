@@ -273,8 +273,11 @@ FEATURE_DEPENDENCIES = {
     "regime": [
         "session_date",
         "close",
+        "high",
+        "low",
         "vwap",
         "atr_like_20",
+        "bar_range",
         "close_location",
         "body_pct",
         "overlap_bar",

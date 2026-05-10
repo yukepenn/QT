@@ -65,6 +65,10 @@ def test_pa_strategies_require_no_lookahead_columns() -> None:
         "pa_failed_range_breakout_trap",
         "pa_tight_channel_pullback",
         "pa_mtr_reversal",
+        "pa_broad_channel_zone",
+        "pa_climax_reversal",
+        "pa_second_entry_pullback",
+        "pa_wedge_reversal",
     ):
         s = load_strategy(name)
         bad = [c for c in s.required_features() if "LOOKAHEAD" in str(c)]
@@ -85,6 +89,9 @@ def test_build_features_from_config_includes_pa_columns() -> None:
     assert "pa_prior_high_10" in feat.columns
     assert "pa_trading_range_score_30" in feat.columns
     assert "near_vwap_atr" in feat.columns
+    assert "pa_distance_from_vwap_atr" in feat.columns
+    assert "pa_broad_bull_channel_score_30" in feat.columns
+    assert "pa_higher_low_proxy_10" in feat.columns
 
 
 def test_add_pa_swing_on_slice_has_expected_columns() -> None:

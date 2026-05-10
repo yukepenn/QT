@@ -223,3 +223,39 @@ pa_mtr_reversal:
   default_active_end_minute: 330
   cost_sensitivity: medium
   notes: "PA Batch A — coarse bear-to-bull reversal proxy; higher target_r default."
+
+pa_broad_channel_zone:
+  family: pa_broad_channel
+  conflict_group: QQQ_directional
+  default_priority: 47
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch B — broad bull-channel buy-zone pullback; prior-exclusive range + broad channel score."
+
+pa_climax_reversal:
+  family: pa_climax_reversal
+  conflict_group: QQQ_directional
+  default_priority: 45
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch B — climax / exhaustion fade; diagnostic-first."
+
+pa_second_entry_pullback:
+  family: pa_second_entry
+  conflict_group: QQQ_directional
+  default_priority: 48
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch B — second-entry pullback proxy (two-leg / higher-low); not ORB."
+
+pa_wedge_reversal:
+  family: pa_wedge_reversal
+  conflict_group: QQQ_directional
+  default_priority: 45
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch B — wedge / three-push reversal proxy; prior-exclusive push count."

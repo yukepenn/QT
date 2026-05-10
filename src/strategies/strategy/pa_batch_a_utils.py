@@ -36,6 +36,7 @@ def long_stop_target(
     low: float,
     high: float,
     atr: float,
+    vwap: float,
     stop_mode: str,
     target_mode: str,
     target_r: float,
@@ -48,7 +49,11 @@ def long_stop_target(
     """Return (stop, target, target_mode_code, target_r_multiple) or None if invalid long geometry."""
     if stop_mode == "range_low":
         sl = float(range_low)
+    elif stop_mode == "channel_low":
+        sl = float(range_low)
     elif stop_mode == "signal_low":
+        sl = float(low)
+    elif stop_mode in ("climax_low", "second_entry_low", "wedge_low"):
         sl = float(low)
     elif stop_mode == "pullback_low":
         sl = float(low)
@@ -58,6 +63,10 @@ def long_stop_target(
         sl = float(low)
     elif stop_mode == "range_low_buffer":
         sl = float(range_low) - 0.05 * float(atr)
+    elif stop_mode == "breakout_point_buffer":
+        sl = float(range_high) - float(atr_buf_mult) * float(atr)
+    elif stop_mode == "last_pullback_low":
+        sl = float(range_low)
     elif stop_mode == "atr_buffer":
         sl = float(close) - float(atr_buf_mult) * float(atr)
     else:
@@ -84,6 +93,21 @@ def long_stop_target(
         tmc = TM_FIXED_R
         tr = (tgt - float(close)) / risk if risk > 0 else float(target_r)
     elif target_mode == "prior_swing_high":
+        tgt = max(float(close) + 1e-6 * risk, float(range_high))
+        tmc = TM_FIXED_R
+        tr = (tgt - float(close)) / risk if risk > 0 else float(target_r)
+    elif target_mode == "vwap":
+        if math.isfinite(float(vwap)):
+            tgt = float(vwap)
+        else:
+            tgt = float(close) + float(target_r) * risk
+        tmc = TM_FIXED_R
+        tr = (tgt - float(close)) / risk if risk > 0 else float(target_r)
+    elif target_mode in ("climax_mid", "channel_mid"):
+        tgt = max(float(close) + 1e-6 * risk, float(range_mid))
+        tmc = TM_FIXED_R
+        tr = (tgt - float(close)) / risk if risk > 0 else float(target_r)
+    elif target_mode == "prior_high":
         tgt = max(float(close) + 1e-6 * risk, float(range_high))
         tmc = TM_FIXED_R
         tr = (tgt - float(close)) / risk if risk > 0 else float(target_r)
@@ -116,6 +140,7 @@ def finalize_long_signals_df(
     range_mid: np.ndarray,
     range_high: np.ndarray,
     upper_third: np.ndarray,
+    vwap: np.ndarray | None = None,
 ) -> dict[str, Any]:
     n = len(work)
     cand_short = np.zeros(n, dtype=np.bool_)
@@ -129,6 +154,7 @@ def finalize_long_signals_df(
     tr = np.zeros(n, dtype=np.float64)
     rsk = np.zeros(n, dtype=np.float64)
     min_risk = float(get_min_risk_per_share(config))
+    vw = vwap if vwap is not None else np.full(n, np.nan, dtype=np.float64)
     for i in range(n):
         if not fl[i]:
             continue
@@ -137,6 +163,7 @@ def finalize_long_signals_df(
             low=float(low[i]),
             high=float(high[i]),
             atr=float(atr[i]),
+            vwap=float(vw[i]),
             stop_mode=stop_mode,
             target_mode=target_mode,
             target_r=target_r,
