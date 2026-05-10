@@ -1,0 +1,19 @@
+# Family candidate summary
+
+| family | n_candidates |
+| --- | --- |
+| oscillator_reversal | 15 |
+| afternoon_trend | 5 |
+| atr_trend_following | 5 |
+| gap_behavior | 5 |
+| multi_day_level_trap | 5 |
+| opening_reversal | 5 |
+| pa_climax_reversal | 5 |
+| pa_close_trend_continuation | 5 |
+| pa_range_breakout_failure | 5 |
+| pa_trading_range | 5 |
+| value_reclaim | 5 |
+| vwap_reclaim | 5 |
+| vwap_trend | 5 |
+| macd_momentum_shift | 3 |
+| opening_momentum | 3 |

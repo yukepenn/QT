@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Feat(research): **Global Layer 1 QQQ 2023–2024 v1** — `global_strategy_audit.py`, `run_global_layer1.py`; `global_strategy_audit_v1/`; `layer1_global_qqq_2023_2024_v1/` (manifest, strict `selected_candidates/` ×81, diversity + fast-context, gate doc, summary); `global_candidate_signal_diversity_qqq_2023_2024_v1/`; `global_branch_leaderboard_v1.{csv,md}`; `global_layer1_qqq_2023_2024_design.md`, `global_layer2_qqq_2023_2024_design.md`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, **`NEXT_HANDOFF`**. **Global Layer 2 not run** (gate: 81 > 80 YAML cap). **No** mini-WFO/full WFO/live; sweep folders under `testing_parameters_results/**` uncommitted.
+
 - Docs(handoff): **NEXT_HANDOFF** — push status for repo cleanup (`9ba6f41`).
 
 - Chore(repo): **stale research artifact cleanup** — `src/research/repo_cleanup_inventory.py`; `repo_cleanup_inventory.{csv,md}`, `repo_cleanup_keep_policy.md`, `repo_cleanup_delete_plan.{csv,md}`, `repo_cleanup_summary.md`, `test_suite_cleanup_audit.{csv,md}`; remove tracked **`PRE_HARDENING_STALE` / `STALE`** Layer 1/2 roots; clear **`testing_parameters_results/`** sweep scratch; README / indexes / policy / handoff updates. **No** Layer 1/2/WFO; **no** test deletions.

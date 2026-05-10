@@ -5,59 +5,73 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before cleanup | `4601c7d` — `Docs(handoff): PA BC NEED staging label` |
-| New commit | **Tip:** run `git rev-parse HEAD` / `git log -5 --oneline` — primary cleanup commit is **`cea3a58`** (`Chore(repo): clean stale research artifacts`) |
-| Push status | **Pushed** to `origin/main` |
-| Working tree | Curated cleanup artifacts + doc/index updates only; **no** new `sweep_*` / `top_runs/` committed |
-| Known untracked local-only | Regenerated **`repo_cleanup_inventory.csv`** may list local-only dirs; re-run `python src/research/repo_cleanup_inventory.py` after large local sweeps |
+| Latest commit before this work | `4e25f4a` — `Docs(handoff): stable cleanup tip pointer` |
+| New commit | **Design global Layer 1 and Layer 2** — use `git log -1 --oneline` for SHA |
+| Push status | **Pushed** to `origin/main` *(if push fails, retry from network)* |
+| Working tree | Expected clean post-commit; **`src/strategies/testing_parameters_results/**`** remains local-only (sweeps for this Layer 1 run) — **do not** `git add` it |
+| Known untracked local-only | `repo_cleanup_inventory.csv` regeneration; any sweep folders under `testing_parameters_results/` |
 
 ## B. Task scope
 
 | | |
 |--|--|
-| Requested | Repo cleanup before global Layer 1/2: inventory, keep policy, LOW-risk deletes, test audit, index/doc updates |
-| Completed | `repo_cleanup_inventory.py` + CSV/MD outputs; **`repo_cleanup_keep_policy.md`**, **`repo_cleanup_delete_plan.*`**, **`repo_cleanup_summary.md`**, **`test_suite_cleanup_audit.*`**; **`git rm`** four stale roots; cleared **`testing_parameters_results/`** children (keep **`.gitkeep`**); removed listed untracked heavy diagnostics; updated **README**, **PROJECT_STATUS**, **PROGRESS**, **CHANGES**, **RESULTS_INDEX** ×2, **CONFIG_INDEX**, **ARTIFACT_POLICY**, **`recovery_status_before.md`**, this file |
-| Intentionally not done | MEDIUM/HIGH-risk result-root deletes; **no** test file deletions; **no** new Layer 1/2/WFO/live runs |
+| Requested | Global research pipeline: strategy audit, Global Layer 1 QQQ 2023–2024, diversity + fast-context, summaries / leaderboard, Global Layer 2 **design**, conditional Layer 2 only if gates pass |
+| Completed | `global_strategy_audit.py` + `global_strategy_audit_v1/`; `run_global_layer1.py` (manifest, skip list, selection, post-analysis); full **30** runnable sweeps → **`layer1_global_qqq_2023_2024_v1/`**; **81** strict YAMLs; `global_candidate_signal_diversity_qqq_2023_2024_v1/`; `global_branch_leaderboard_v1.*`; `global_layer1_qqq_2023_2024_design.md`; `global_layer2_qqq_2023_2024_design.md`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, `PROGRESS`, `CHANGES`, this file |
+| Intentionally not done | **Global Layer 2 execution** (configs under `src/combiner/configs/layer2_qqq_global_*` and combiner results root **not** created); **mini-WFO**, **full WFO**, **live/paper**; **SPY**; no new strategies or feature primitives |
 
 ## C. Files changed
 
 | Area | Paths |
 |------|--------|
-| Deleted (tracked) | `src/research/results/layer1_all10_qqq_2020_20260430_v1/**`, `layer1_all10_qqq_v1/**`, `src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed/**`, `layer2_qqq_v1/**` |
-| Deleted (local) | `src/strategies/testing_parameters_results/**` (except `.gitkeep`); untracked `feature_store_stats.json` / `candidate_precompute_profile*.csv` under several `layer2_*` roots; `pa_batch_bc_gate_diagnostics_v3_preflight/pa_gate_rows.jsonl` |
-| Added / updated | `src/research/repo_cleanup_inventory.py`, `src/research/results/repo_cleanup_*.{csv,md}`, `test_suite_cleanup_audit.*`, root + index + policy docs above |
-| Tests | **No** `tests/**` changes |
+| Source | `src/research/global_strategy_audit.py`, `src/research/run_global_layer1.py` |
+| Tests | **None** |
+| Configs / combiner | **None** (Layer 2 not run) |
+| Research results / docs | `src/research/results/global_strategy_audit_v1/**`, `global_layer1_qqq_2023_2024_design.md`, `global_layer2_qqq_2023_2024_design.md`, `layer1_global_qqq_2023_2024_v1/**`, `global_candidate_signal_diversity_qqq_2023_2024_v1/**`, `global_branch_leaderboard_v1.{csv,md}`, `RESULTS_INDEX.md` |
+| Root docs | `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
+| Intentionally untracked | `src/strategies/testing_parameters_results/**` (sweep outputs tagged `layer1_global_qqq_2023_2024_v1`) |
 
 ## D. Validation
 
 | Check | Result |
 |--------|--------|
 | `pytest -q` | **363 passed** |
-| `compileall` | **OK** |
+| `python -m compileall -q src` | **OK** |
 | `loader.py --list` | **35** strategies |
 | Parity (failed_orb, PA tuned v3 ×2) | **OK** (`TOTAL_MISMATCH_FIELDS approx=0`) |
-| Boundary greps | **OK** — `LOOKAHEAD` only in documented feature names / guards; **`_feat_key`** / **`DfSignalStrategy`** not in tracked `*.py` |
+| Boundary `git grep` | **OK** — `LOOKAHEAD` in documented feature names; `_feat_key` / `DfSignalStrategy` hits only in **markdown** under `src/research/results` (not in `*.py`) |
 | Heavy `git ls-files` pattern | **No hits** |
-| `*.py` under `src/*/results/` | **None** |
+| No `*.py` under `src/*/results` | **OK** (PowerShell glob returned empty) |
 
-## E. Cleanup results
+## E. Research results
 
 | Metric | Value |
 |--------|--------|
-| Tracked roots removed | **4** (`layer1_all10_qqq_2020_20260430_v1`, `layer1_all10_qqq_v1`, `layer2_qqq_2020_20260430_v2_relaxed`, `layer2_qqq_v1`) |
-| `testing_parameters_results` | Children cleared (LOW-risk local scratch) |
-| Tests audited | **73** files — all **KEEP** / parser **REVIEW** only; **0** deleted |
-| Manual review backlog | Older PA intermediates, `layer2_qqq_v2_relaxed/` — see **`repo_cleanup_summary.md` §8** |
+| Strategies in audit CSV | **35** |
+| Runnable READY + grid ≤1500 | **30** sweeps executed |
+| Skipped (grid >1500 or non-READY in audit) | **5** (see `skipped_strategies.*`) |
+| Long / short / both | See `strategy_side_support_matrix.*`; short only where YAML/metadata exposes axes (**no** forced short) |
+| Layer 1 run | **Complete** — `sweep_manifest.csv` |
+| Strict `selected_candidates` YAML count | **81** |
+| Distinct `strategy_family` in strict CSV | **15** |
+| Diversity | `candidate_signal_diversity.csv`, `duplicate_signal_groups.csv`, `strategy_diversity_summary.*`, `family_candidate_summary.*` |
+| Fast-context | All **`ok`** (`fast_context_check.*`) |
+| Layer 2 | **Design only** — gate **NO** (`81` > `80` cap per `global_layer2_gate_decision.md`) |
+| Decision | **`TUNE_GLOBAL_LAYER1_OR_BUCKETS`** — e.g. `--top-per-strategy 4` or slightly stricter filter, then re-check gate before any Layer 2 run |
 
 ## F. Explicit non-runs
 
-- **Layer 1**, **Layer 2**, **mini-WFO**, **full WFO**, **live/paper**
+- **mini-WFO**
+- **full WFO**
+- **live / paper**
+- **Global Layer 2 combiner** (gate failed)
 
 ## G. Risks / caveats
 
-- Legacy YAML **`layer2_qqq_v1.yaml`** / **`layer2_sweep_qqq_v1.yaml`** / **`layer2_qqq_2020_20260430_v2_relaxed.yaml`** remain; **candidate_root paths in comments are gone** — use post-hardening configs + roots (**CONFIG_INDEX.md** §F).
-- Historical markdown (e.g. **`recovery_status_before.md`**) may still mention removed paths; top banner added where touched.
+- **Prerun gate** failed by **one** YAML over the documented **80** cap; families/diversity/fast-context otherwise pass.
+- **13** strategies produced **no** strict candidate (filters or sweep shape); see `no_candidate_strategies.txt` and leaderboard zeros.
+- **`pa_generic_breakout_pullback`**, **`pa_broad_channel_zone`**: manifest shows **0** `result_rows` / zero-trade style outcomes — treat as fragile for global promotion until repaired in a later phase.
+- **In-sample only** (2023–2024 QQQ); no OOS claims.
 
 ## H. Recommended next step
 
-**Global Layer 1 / global Layer 2 design** (windows, symbol set, which post-hardening baselines anchor “global”) — **not** PA B/C v4 tuning, **not** mini-WFO execution until that design lands.
+**Exactly one:** **tune global Layer 1 / buckets** — reduce `--top-per-strategy` or tighten one strict axis, re-run `run_global_layer1.py`, and re-evaluate `global_layer2_gate_decision.md` before authoring executable Layer 2 YAMLs.

@@ -1,0 +1,13 @@
+adx_dmi_trend_continuation
+large_candle_failure
+sma20_reclaim_reject
+pa_wedge_reversal
+orb_retest_continuation
+vwap_reversal
+prior_day_level_trap
+bollinger_squeeze_breakout
+pa_generic_breakout_pullback
+pa_second_entry_pullback
+pa_mtr_reversal
+pa_tight_channel_pullback
+pa_broad_channel_zone

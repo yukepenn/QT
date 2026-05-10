@@ -1,0 +1,94 @@
+candidate_id: PRIOR_CLOSE_RECLAIM_004
+strategy: prior_close_reclaim
+asset: equity
+symbol: QQQ
+strategy_family: value_reclaim
+conflict_group: QQQ_directional
+default_priority: 52
+default_active_start_minute: 15
+default_active_end_minute: 270
+metadata:
+  family: value_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 52
+  default_active_start_minute: 15
+  default_active_end_minute: 270
+selection:
+  score: 1.3461123339330268
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\prior_close_reclaim\sweep_20260510_232202_layer1_global_qqq_2023_2024_v1\results.csv
+  row_index: 11
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\prior_close_reclaim\sweep_20260510_232202_layer1_global_qqq_2023_2024_v1
+metrics:
+  trades: 45
+  profit_factor: 1.3096805860893093
+  total_r: 15.04080872351796
+  win_rate: 0.4888888888888889
+  total_net_pnl: 2.1646672967641507
+  avg_r: 0.3342401938559546
+  avg_net_pnl: 0.04810371770587
+  max_drawdown_pnl: -1.955520900081865
+  max_drawdown_r: -6.039346100301729
+  avg_bars_held: 8.0
+  stop_count: 23
+  target_count: 19
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 3
+config:
+  strategy: prior_close_reclaim
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 30
+    entry_end_minute: 180
+    min_bars_below_prior_close: 5
+    reclaim_buffer_atr: 0.05
+    require_vwap_reclaim: false
+    confirm_mode: break_3bar_high
+  risk:
+    stop_mode: reclaim_candle_low
+    target_mode: vwap
+    target_r: 1.25
+    prior_close_buffer_atr: 0.1
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45

@@ -1,0 +1,74 @@
+candidate_id: VWAP_TREND_PULLBACK_005
+strategy: vwap_trend_pullback
+asset: equity
+symbol: QQQ
+strategy_family: vwap_trend
+conflict_group: QQQ_directional
+default_priority: 75
+default_active_start_minute: 60
+default_active_end_minute: 300
+metadata:
+  family: vwap_trend
+  conflict_group: QQQ_directional
+  default_priority: 75
+  default_active_start_minute: 60
+  default_active_end_minute: 300
+selection:
+  score: 0.8869346561424792
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_trend_pullback\sweep_20260510_232503_layer1_global_qqq_2023_2024_v1\results.csv
+  row_index: 245
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_trend_pullback\sweep_20260510_232503_layer1_global_qqq_2023_2024_v1
+metrics:
+  trades: 164
+  profit_factor: 1.067527456218515
+  total_r: 7.174463184552176
+  win_rate: 0.4390243902439024
+  total_net_pnl: 2.2750000000016257
+  avg_r: 0.0437467267350742
+  avg_net_pnl: 0.0138719512195221
+  max_drawdown_pnl: -4.534999999999059
+  max_drawdown_r: -9.305568830582974
+  avg_bars_held: 9.042682926829269
+  stop_count: 92
+  target_count: 69
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 3
+config:
+  strategy: vwap_trend_pullback
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 60
+    entry_end_minute: 180
+    trend_window: 60
+    min_vwap_persistence: 0.8
+    pullback_tolerance_atr: 0.5
+    confirm_mode: momentum_turn
+    require_volume_dryup: false
+    max_pullback_volume_ratio: 0.8
+  risk:
+    stop_mode: pullback_low
+    vwap_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.5
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45

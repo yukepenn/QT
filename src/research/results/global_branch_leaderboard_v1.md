@@ -1,0 +1,34 @@
+# Global branch leaderboard v1
+
+| strategy | family | side_policy | manifest_status | strict_candidate_count | best_total_r_manifest | best_pf_manifest | best_max_dd_r_manifest | best_trades_manifest | n_unique_pure_hash | result_rows_sweep |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| adx_dmi_trend_continuation | trend_strength_continuation | long_only | ok | 0 | -46.679191410842925 | 1.0440646025854992 | -69.09039290866416 | 450 |  | 32 |
+| cci_extreme_snapback | oscillator_reversal | long_only | ok | 5 | 0.4368487050840561 | 1.9451754385964903 | -2.0403603603603235 | 4 | 3 | 32 |
+| large_candle_failure | price_action_failure | long_only | ok | 0 | -19.081422245580416 | 0.9890318203334268 | -46.31019654299072 | 457 |  | 32 |
+| macd_momentum_turn | macd_momentum_shift | long_only | ok | 3 | 11.698983494032298 | 1.090355037410327 | -16.9189125746812 | 501 | 3 | 32 |
+| multi_day_level_trap | multi_day_level_trap | long_only | ok | 5 | 4.5487671547494095 | 1.4199218750000608 | -6.265579726514017 | 48 | 2 | 32 |
+| prior_close_reclaim | value_reclaim | long_only | ok | 5 | 7.60407941310537 | 1.629032373574469 | -7.949179415074949 | 24 | 2 | 32 |
+| stochastic_oversold_cross | oscillator_reversal | long_only | ok | 5 | 38.05416199327347 | 1.2154160046857063 | -14.508229608959262 | 502 | 3 | 32 |
+| supertrend_atr_flip | atr_trend_following | long_only | ok | 5 | 19.992991064042485 | 1.1205485790154186 | -19.675038945204943 | 502 | 3 | 32 |
+| sma20_reclaim_reject | moving_average_reclaim | long_only | ok | 0 | -1.415905515637168 | 0.9702985101900804 | -25.058500471547102 | 502 |  | 64 |
+| pa_wedge_reversal | pa_wedge_reversal | long_only | ok | 0 | -1.4662761713651682 | 1.0266687340104277 | -11.040696739722325 | 54 |  | 144 |
+| gap_acceptance_failure | gap_behavior | long_only | ok | 5 | 20.00108438327635 | 1.577570480928719 | -6.023748222814444 | 129 | 1 | 192 |
+| afternoon_continuation | afternoon_trend | long_only | ok | 5 | 10.417147784806946 | 1.2851432880845386 | -5.006677691074555 | 237 | 1 | 256 |
+| orb_retest_continuation | opening_momentum | long_only | ok | 0 | -1.8004709980606783 | 1.018090632276578 | -27.735820981926963 | 309 |  | 256 |
+| vwap_reversal | mean_reversion | long+short | ok | 0 | -70.7337461449601 | 1.1873619138326246 | -72.85884499213734 | 276 |  | 480 |
+| orb_continuation | opening_momentum | long+short | ok | 3 | 5.399337685516121 | 1.0639438000326902 | -23.188338875048775 | 353 | 3 | 512 |
+| prior_day_level_trap | key_level_trap | long_only | ok | 0 | 10.837863477853546 | 1.0392674766684609 | -13.417503221133606 | 134 |  | 512 |
+| vwap_reclaim_reject | vwap_reclaim | long_only | ok | 5 | 28.38448860569918 | 1.2222127804215297 | -7.374574138597863 | 202 | 2 | 512 |
+| vwap_trend_pullback | vwap_trend | long_only | ok | 5 | 8.899917093091727 | 1.210980876002508 | -17.377517111655813 | 150 | 2 | 512 |
+| bollinger_squeeze_breakout | volatility_expansion | long_only | ok | 0 | 6.823118116136275 | 1.04829675045989 | -21.413602703141866 | 268 |  | 72 |
+| pa_failed_range_breakout_trap | pa_range_breakout_failure | long_only | ok | 5 | 34.88500285947301 | 1.329076539833796 | -43.20632030970974 | 220 | 2 | 576 |
+| pa_generic_breakout_pullback | pa_breakout_pullback | long_only | ok | 0 | 0.0 | 0.0 | 0.0 | 0 |  | 576 |
+| pa_second_entry_pullback | pa_second_entry | long_only | ok | 0 | 1.444444444444655 | inf | 0.0 | 1 |  | 576 |
+| pa_trading_range_bls_hs | pa_trading_range | long_only | ok | 5 | 25.57343522621101 | 1.469831727562135 | -22.172181130782096 | 63 | 2 | 288 |
+| failed_orb | opening_reversal | long_only | ok | 5 | 3.8738176791134906 | 1.2030111968692587 | -15.798669579456956 | 202 | 3 | 768 |
+| pa_mtr_reversal | pa_major_trend_reversal | long_only | ok | 0 | 3.7464716448556095 | inf | 0.0 | 1 |  | 768 |
+| pa_tight_channel_pullback | pa_channel_pullback | long_only | ok | 0 | 0.8710509348807959 | inf | 0.0 | 1 |  | 768 |
+| rsi_failure_swing | oscillator_reversal | long_only | ok | 5 | 4.80386363694312 | 1.525360824742347 | -8.281018809208064 | 83 | 3 | 128 |
+| pa_broad_channel_zone | pa_broad_channel | long_only | ok | 0 | 0.0 | 0.0 | 0.0 | 0 |  | 972 |
+| pa_buy_sell_close_trend | pa_close_trend_continuation | long_only | ok | 5 | 41.56264706078157 | 1.260109394287692 | -13.77849607688373 | 461 | 2 | 1152 |
+| pa_climax_reversal | pa_climax_reversal | long_only | ok | 5 | 5.910439715605149 | 1.3580040526850088 | -6.290149133855962 | 50 | 1 | 1152 |

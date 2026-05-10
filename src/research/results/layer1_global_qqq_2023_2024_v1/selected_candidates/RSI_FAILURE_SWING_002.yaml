@@ -1,0 +1,95 @@
+candidate_id: RSI_FAILURE_SWING_002
+strategy: rsi_failure_swing
+asset: equity
+symbol: QQQ
+strategy_family: oscillator_reversal
+conflict_group: QQQ_directional
+default_priority: 50
+default_active_start_minute: 30
+default_active_end_minute: 330
+metadata:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 50
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+selection:
+  score: 1.352729840516716
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260510_234100_layer1_global_qqq_2023_2024_v1\results.csv
+  row_index: 109
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\rsi_failure_swing\sweep_20260510_234100_layer1_global_qqq_2023_2024_v1
+metrics:
+  trades: 83
+  profit_factor: 1.5098969072165729
+  total_r: 6.011590722261673
+  win_rate: 0.5180722891566265
+  total_net_pnl: 12.365000000001372
+  avg_r: 0.0724288038826707
+  avg_net_pnl: 0.1489759036144743
+  max_drawdown_pnl: -4.13499999999965
+  max_drawdown_r: -7.44831204229072
+  avg_bars_held: 23.89156626506024
+  stop_count: 22
+  target_count: 11
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 50
+config:
+  strategy: rsi_failure_swing
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows:
+      - 7
+      - 14
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+    rsi_window: 14
+    swing_lookback: 14
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 30
+    entry_end_minute: 270
+    oversold_level: 25
+    trigger_mode: price_break_3bar_high_after_oversold
+    require_vwap_filter: true
+  risk:
+    stop_mode: swing_low
+    target_mode: fixed_r
+    target_r: 1.5
+    atr_buffer_mult: 0.4
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

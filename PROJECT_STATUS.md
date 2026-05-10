@@ -10,6 +10,8 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
+**2026-05-10 (global Layer 1 design):** **`global_strategy_audit_v1/`** + **`layer1_global_qqq_2023_2024_v1/`** (QQQ 2023–2024, all audit-runnable strategies ≤1500 grid; **81** strict YAMLs); **`global_layer2_qqq_2023_2024_design.md`**; conditional Global Layer 2 **not run** (prerun gate: count **>** 80). See **`src/research/results/global_layer1_qqq_2023_2024_design.md`** and **`NEXT_HANDOFF.md`**.
+
 **2026-05-10 (repo hygiene):** Removed **stale** Layer 1/2 result roots (`PRE_HARDENING_STALE.md` / `STALE.md`) and cleared **`testing_parameters_results/`** sweep scratch; see **`src/research/results/repo_cleanup_summary.md`**. **No** Layer 1/2/WFO reruns; **no** test deletion.
 
 ## 2. Current architecture (high level)
