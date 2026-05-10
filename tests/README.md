@@ -29,6 +29,7 @@
 | Cost-as-R metrics | `test_cost_as_r_metrics.py` |
 | Daily metrics | `test_daily_metrics.py` |
 | Postprocess helpers | `test_combiner_postprocess.py` |
+| Layer 1 candidate / raw-sweep signal diversity | `test_candidate_signal_diversity.py`, `test_select_diverse_candidates.py`, `test_sweep_result_signal_diversity.py`, `test_export_diverse_candidates_from_results.py` |
 
 Run all:
 

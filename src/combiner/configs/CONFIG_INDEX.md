@@ -123,6 +123,17 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **grid**: **144** combos (3 × 3 × 2 × 2 × 2 × 2)
   - **results**: `src/combiner/results/layer2_qqq_pa_batch_bc_tuned_v2_2023_2024/layer2_pa_batch_bc_tuned_v2_summary.md`
 
+### PA Batch B/C — diversity-repaired v3 reduced Layer 2 (QQQ 2023–2024)
+
+- **`layer2_qqq_pa_batch_bc_repaired_v3_2023_2024.yaml`**
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **candidate_root**: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/selected_candidates_repaired/selected_candidates`
+  - **purpose**: same axes as tuned v2 block, but YAMLs from **raw-sweep** diversity repair (`export_diverse_candidates_from_results.py` + `sweep_result_signal_diversity.py`)
+- **`layer2_sweep_qqq_pa_batch_bc_repaired_v3_2023_2024.yaml`**
+  - **base_config**: YAML above
+  - **grid**: **96** combos (3 × 2 × 2 × 2 × 2 × 2)
+  - **results**: `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/layer2_pa_batch_bc_repaired_v3_summary.md`
+
 **Batch 1 tuned v2 squeeze note:** `bollinger_squeeze_breakout_tuned_v2.yaml` exists for a stricter squeeze grid; **no** Layer 2 YAMLs were added in that phase because Layer 1 candidate export was **empty** (see `strategy_library_v2_batch1_tuning_v2_summary.md`).
 
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)

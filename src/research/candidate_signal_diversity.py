@@ -136,6 +136,77 @@ _DIVERSITY_FIELDS = [
 ]
 
 
+def analyze_merged_config(
+    strategy: str,
+    cfg: dict[str, Any],
+    *,
+    store: FeatureStore,
+) -> dict[str, Any]:
+    """Compute signal fingerprints for an already-merged strategy config dict."""
+    row: dict[str, Any] = {}
+    strat = load_strategy(strategy)
+    strat.validate_config(cfg)
+
+    fk = feature_key_from_config(cfg)
+    row["feature_key_short"] = _short(fk, 320)
+    row["context_key_short"] = _short(strat.context_key(cfg), 320)
+
+    feat = store.get_features(cfg)
+    ctx = strat.prepare_signal_context(feat, cfg)
+    arr = strat.generate_signal_arrays_from_context(ctx, cfg)
+    valid = np.asarray(arr["valid"], dtype=bool)
+    side = np.asarray(arr["side"], dtype=np.int8)
+    stp = np.asarray(arr["stop"], dtype=np.float64)
+    tgtp = np.asarray(arr["target_preview"], dtype=np.float64)
+    tr = np.asarray(arr["target_r"], dtype=np.float64)
+
+    ix = np.flatnonzero(valid)
+    row["n_signals"] = int(ix.size)
+    row["n_long_signals"] = int(np.sum(side[ix] == 1))
+    row["n_short_signals"] = int(np.sum(side[ix] == -1))
+    ts_all = feat["ts_utc"].iloc[ix]
+    row["total_unique_timestamps"] = int(ts_all.nunique())
+    if ix.size:
+        row["first_signal_ts"] = str(ts_all.min())
+        row["last_signal_ts"] = str(ts_all.max())
+        mg = _mean_gap_minutes(ts_all)
+        row["mean_gap_minutes"] = "" if mg is None else mg
+    else:
+        row["first_signal_ts"] = ""
+        row["last_signal_ts"] = ""
+        row["mean_gap_minutes"] = ""
+    pure_entries: list[tuple[str, int]] = []
+    sig_entries: list[tuple[str, int, float, float, float]] = []
+    st_tgt: list[tuple[float, float, float]] = []
+    for i in ix:
+        tsi = feat["ts_utc"].iloc[int(i)]
+        ts_iso = pd.Timestamp(tsi).isoformat()
+        si = int(side[int(i)])
+        pure_entries.append((ts_iso, si))
+        st_tgt.append((float(stp[int(i)]), float(tgtp[int(i)]), float(tr[int(i)])))
+        sig_entries.append(
+            (
+                ts_iso,
+                si,
+                float(stp[int(i)]),
+                float(tgtp[int(i)]),
+                float(tr[int(i)]),
+            )
+        )
+    row["pure_signal_hash"] = (
+        pure_signal_hash_entries(pure_entries) if pure_entries else ""
+    )
+    row["signal_hash"] = (
+        signal_fingerprint_entries(sig_entries) if sig_entries else ""
+    )
+    row["stop_target_hash"] = stop_target_hash_entries(st_tgt) if st_tgt else ""
+    row["reason_hash"] = reason_hash_stable(strategy)
+    row["behavior_hash_quality"] = _behavior_quality(int(ix.size))
+    row["status"] = "ok"
+    row["error"] = ""
+    return row
+
+
 def analyze_one_yaml(
     ypath: Path,
     *,
@@ -163,64 +234,26 @@ def analyze_one_yaml(
             row["warning"] = m.get("warning", "")
 
         cfg = _load_merged_config(doc)
-        strat = load_strategy(strategy)
-        strat.validate_config(cfg)
-
-        fk = feature_key_from_config(cfg)
-        row["feature_key_short"] = _short(fk, 320)
-        row["context_key_short"] = _short(strat.context_key(cfg), 320)
-
-        feat = store.get_features(cfg)
-        ctx = strat.prepare_signal_context(feat, cfg)
-        arr = strat.generate_signal_arrays_from_context(ctx, cfg)
-        valid = np.asarray(arr["valid"], dtype=bool)
-        side = np.asarray(arr["side"], dtype=np.int8)
-        stp = np.asarray(arr["stop"], dtype=np.float64)
-        tgtp = np.asarray(arr["target_preview"], dtype=np.float64)
-        tr = np.asarray(arr["target_r"], dtype=np.float64)
-
-        ix = np.flatnonzero(valid)
-        row["n_signals"] = int(ix.size)
-        row["n_long_signals"] = int(np.sum(side[ix] == 1))
-        row["n_short_signals"] = int(np.sum(side[ix] == -1))
-        ts_all = feat["ts_utc"].iloc[ix]
-        row["total_unique_timestamps"] = int(ts_all.nunique())
-        if ix.size:
-            row["first_signal_ts"] = str(ts_all.min())
-            row["last_signal_ts"] = str(ts_all.max())
-            mg = _mean_gap_minutes(ts_all)
-            row["mean_gap_minutes"] = "" if mg is None else mg
-        pure_entries: list[tuple[str, int]] = []
-        sig_entries: list[tuple[str, int, float, float, float]] = []
-        st_tgt: list[tuple[float, float, float]] = []
-        for i in ix:
-            tsi = feat["ts_utc"].iloc[int(i)]
-            ts_iso = pd.Timestamp(tsi).isoformat()
-            si = int(side[int(i)])
-            pure_entries.append((ts_iso, si))
-            st_tgt.append(
-                (float(stp[int(i)]), float(tgtp[int(i)]), float(tr[int(i)])))
-            sig_entries.append(
-                (
-                    ts_iso,
-                    si,
-                    float(stp[int(i)]),
-                    float(tgtp[int(i)]),
-                    float(tr[int(i)]),
-                )
-            )
-        row["pure_signal_hash"] = (
-            pure_signal_hash_entries(pure_entries) if pure_entries else ""
-        )
-        row["signal_hash"] = (
-            signal_fingerprint_entries(sig_entries) if sig_entries else ""
-        )
-        row["stop_target_hash"] = (
-            stop_target_hash_entries(st_tgt) if st_tgt else ""
-        )
-        row["reason_hash"] = reason_hash_stable(strategy)
-        row["behavior_hash_quality"] = _behavior_quality(int(ix.size))
-        row["status"] = "ok"
+        core = analyze_merged_config(strategy, cfg, store=store)
+        for k in (
+            "n_signals",
+            "n_long_signals",
+            "n_short_signals",
+            "first_signal_ts",
+            "last_signal_ts",
+            "pure_signal_hash",
+            "signal_hash",
+            "stop_target_hash",
+            "reason_hash",
+            "behavior_hash_quality",
+            "total_unique_timestamps",
+            "mean_gap_minutes",
+            "feature_key_short",
+            "context_key_short",
+            "status",
+            "error",
+        ):
+            row[k] = core.get(k, "")
     except Exception as e:
         row["status"] = "error"
         row["error"] = f"{type(e).__name__}: {e}"

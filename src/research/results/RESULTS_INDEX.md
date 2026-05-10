@@ -42,7 +42,12 @@ This index classifies **result roots** without moving or deleting them.
 - **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/`**
   - **status:** PA Batch B+C **tuned grids v3** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_tuned_qqq_2023_2024_v3`
   - **purpose:** diversity-aware grids (`*_tuned_v3.yaml`) → gate preflight `pa_batch_bc_gate_diagnostics_v3_preflight/` → sweeps (two strategies) → **10** strict YAMLs; `pa_batch_bc_candidate_signal_diversity_v3/`; optional `selected_candidates_diverse/`; `pa_batch_bc_exit_diagnostics_v3/`; `candidate_signal_diversity.py` / `select_diverse_candidates.py`
-  - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v3_summary.md`) — climax strict set still **one** `pure_signal_hash`; **reduced Layer 2 v3 not run**
+  - **decision (strict top-5):** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v3_summary.md`) — climax strict set still **one** `pure_signal_hash` among the **score-top five**
+  - **repair (selector / raw audit, 2026-05-10):** `pa_batch_bc_climax_diversity_repair_plan.md`, `pa_batch_bc_raw_signal_diversity_v3/`, `src/research/sweep_result_signal_diversity.py`, `src/research/export_diverse_candidates_from_results.py`, `selected_candidates_repaired/`, `pa_batch_bc_candidate_signal_diversity_repaired_v3/`, `repaired_candidate_decision.md` (**RUN_LAYER2_REPAIRED_V3**)
+  - **keep:** yes
+
+- **`pa_batch_bc_diversity_repair_summary.md`**
+  - **status:** cross-cutting write-up for climax diversity repair + repaired Layer 2 follow-up
   - **keep:** yes
 
 - **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`**

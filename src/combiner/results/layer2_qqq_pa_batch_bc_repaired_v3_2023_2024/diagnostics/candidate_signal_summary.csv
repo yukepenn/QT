@@ -1,0 +1,5 @@
+candidate_id,strategy,family,warning,candidate_rank,priority,score,signals,long_signals,short_signals,first_signal_ts,last_signal_ts,avg_signal_minute,median_signal_minute,active_start,active_end
+PA_BUY_SELL_CLOSE_TREND_DIVERSE_001,pa_buy_sell_close_trend,pa_close_trend_continuation,,1,44,1.436613939607784,443,443,0,2023-01-03 16:00:00+00:00,2024-12-31 15:39:00+00:00,131.09255079006772,121.0,60,330
+PA_BUY_SELL_CLOSE_TREND_DIVERSE_002,pa_buy_sell_close_trend,pa_close_trend_continuation,,2,44,1.3853612460924698,461,461,0,2023-01-03 16:00:00+00:00,2024-12-31 15:39:00+00:00,127.00867678958785,116.0,60,330
+PA_CLIMAX_REVERSAL_DIVERSE_001,pa_climax_reversal,pa_climax_reversal,,1,45,1.249296174403407,50,50,0,2023-01-03 15:37:00+00:00,2024-11-25 17:25:00+00:00,117.82,112.0,45,330
+PA_CLIMAX_REVERSAL_DIVERSE_002,pa_climax_reversal,pa_climax_reversal,,2,45,1.2425176585383195,50,50,0,2023-01-03 15:37:00+00:00,2024-11-25 17:25:00+00:00,117.62,112.0,45,330
