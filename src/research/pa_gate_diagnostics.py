@@ -34,6 +34,33 @@ from src.strategies.loader import (
 )
 from src.strategies.strategy.pa_batch_a_utils import finalize_long_signals_df
 
+_GATE_CSV_FIELDS: tuple[str, ...] = (
+    "strategy",
+    "symbol",
+    "start",
+    "end",
+    "testing_config",
+    "total_bars",
+    "bars_entry_window",
+    "pass_regime_broad_bull",
+    "pass_zone_below_upper_third",
+    "pass_pullback_depth_band",
+    "pass_vwap_context",
+    "pass_bull_reversal_or_break_bar",
+    "pass_climax_block",
+    "final_valid_signals",
+)
+
+
+def _normalize_gate_row(row: dict[str, Any]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for k in _GATE_CSV_FIELDS:
+        if k in row:
+            out[k] = row[k]
+        else:
+            out[k] = ""
+    return out
+
 
 def _merge_first_combo(testing_path: Path, strategy: str) -> dict[str, Any]:
     data = yaml.safe_load(testing_path.read_text(encoding="utf-8"))
@@ -58,12 +85,22 @@ def _gates_broad_channel(ctx: Any, config: dict[str, Any]) -> dict[str, float]:
     vwap_min = float(sig.get("vwap_context_min_atr", -0.15))
     block_clx = bool(sig.get("block_climax", True))
     clx_max = float(sig.get("climax_score_max", 0.78))
+    zone_max_frac = float(sig.get("zone_max_frac", 1.0 / 3.0))
 
     n = ctx.n
     minute = ctx.minute
     win = (minute >= es) & (minute <= ee)
     bb = win & np.isfinite(ctx.pa_bbull) & (ctx.pa_bbull >= thr)
-    zone = bb & np.isfinite(ctx.close) & (ctx.close <= ctx.pa_rlt)
+    width = ctx.pa_rh - ctx.pa_rl
+    zone_top = ctx.pa_rl + zone_max_frac * width
+    zone = (
+        bb
+        & np.isfinite(ctx.close)
+        & np.isfinite(width)
+        & (width > 0.0)
+        & np.isfinite(zone_top)
+        & (ctx.close <= zone_top)
+    )
     pd_ok = (
         zone & np.isfinite(ctx.pa_pd) & (ctx.pa_pd >= min_pd) & (ctx.pa_pd <= max_pd)
     )
@@ -170,11 +207,13 @@ def main(argv: list[str] | None = None) -> int:
             "final_valid_signals": float(arr["valid"].sum()),
         }
 
+    row = _normalize_gate_row(row)
+
     args.output_root.mkdir(parents=True, exist_ok=True)
     flat_path = args.output_root / "pa_gate_rows.csv"
     write_header = not flat_path.exists()
     with flat_path.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(row.keys()))
+        w = csv.DictWriter(f, fieldnames=list(_GATE_CSV_FIELDS))
         if write_header:
             w.writeheader()
         w.writerow(row)

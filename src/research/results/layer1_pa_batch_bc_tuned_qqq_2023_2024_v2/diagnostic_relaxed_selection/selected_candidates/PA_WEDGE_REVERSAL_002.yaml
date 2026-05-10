@@ -1,0 +1,108 @@
+candidate_id: PA_WEDGE_REVERSAL_002
+strategy: pa_wedge_reversal
+asset: equity
+symbol: QQQ
+strategy_family: pa_wedge_reversal
+conflict_group: QQQ_directional
+default_priority: 45
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: pa_wedge_reversal
+  conflict_group: QQQ_directional
+  default_priority: 45
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 0.6716573929519842
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v2\sweep_pa_wedge_reversal\results.csv
+  row_index: 10
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v2\sweep_pa_wedge_reversal
+metrics:
+  trades: 54
+  profit_factor: 1.0266687340104277
+  total_r: -1.4662761713651682
+  win_rate: 0.3518518518518518
+  total_net_pnl: 0.1376000000001909
+  avg_r: -0.0271532624326883
+  avg_net_pnl: 0.0025481481481516
+  max_drawdown_pnl: -1.447199999999782
+  max_drawdown_r: -11.040696739722325
+  avg_bars_held: 1.7962962962962965
+  stop_count: 35
+  target_count: 19
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 0
+config:
+  strategy: pa_wedge_reversal
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_regime_window: 30
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 180
+    min_wedge_pushes: 3.0
+    bear_context_min: 0.26
+  risk:
+    stop_mode: atr_buffer
+    target_mode: fixed_r
+    target_r: 2.0
+    atr_buffer_mult: 0.4
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

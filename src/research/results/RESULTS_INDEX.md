@@ -30,12 +30,26 @@ This index classifies **result roots** without moving or deleting them.
   - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer1_pa_batch_bc_tuned_v1_summary.md`). **PA Batch B/C Layer 2 / mini-WFO / full WFO / live not run.**
   - **keep:** yes
 
+- **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`**
+  - **status:** PA Batch B+C **tuned grids v2** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_tuned_qqq_2023_2024_v2`
+  - **purpose:** diagnostic-first `*_tuned_v2.yaml` → gate preflight (`pa_batch_bc_gate_diagnostics_v2_preflight/`) → sweeps (four strategies; two skipped preflight) → manifest → **10** strict YAMLs (**5** `pa_buy_sell_close_trend` + **5** `pa_climax_reversal`); `signal_rate_diagnosis.*`; `candidate_fast_context_check.*`; `pa_batch_bc_exit_diagnostics_v2/`; optional `diagnostic_relaxed_selection/` (**DIAGNOSTIC ONLY**)
+  - **decision:** **`PROCEED_TO_PA_BATCH_BC_REDUCED_LAYER2_DESIGN`** (`layer1_pa_batch_bc_tuned_v2_summary.md`) — **design doc only** `reduced_layer2_pa_batch_bc_tuned_v2_design.md`; **Layer 2 / mini-WFO / full WFO / live not run**
+  - **keep:** yes
+
 - **`pa_batch_bc_gate_diagnostics_v1/`**
-  - **purpose:** gate pass-rate CSV/MD for tuned v1 PA YAMLs (QQQ 2023–2024); supports bottleneck analysis before tuned v2 grid design (`pa_gate_diagnostics.py`).
+  - **purpose:** gate pass-rate CSV/MD for tuned **v1** PA YAMLs (QQQ 2023–2024); bottleneck analysis (`pa_gate_diagnostics.py`).
+  - **keep:** yes
+
+- **`pa_batch_bc_gate_diagnostics_v2_preflight/`**
+  - **purpose:** gate pass-rate CSV/MD for tuned **v2** YAMLs before sweeps (`pa_gate_diagnostics.py`).
   - **keep:** yes
 
 - **`pa_batch_bc_exit_diagnostics_v1/`**
   - **purpose:** exit / slippage-stress summaries from existing Layer 1 candidate YAMLs (`pa_exit_diagnostics.py`).
+  - **keep:** yes
+
+- **`pa_batch_bc_exit_diagnostics_v2/`**
+  - **purpose:** exit / **0.02** slippage stress on **tuned v2 strict** candidates (`pa_exit_diagnostics.py`).
   - **keep:** yes
 
 - **`layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`**

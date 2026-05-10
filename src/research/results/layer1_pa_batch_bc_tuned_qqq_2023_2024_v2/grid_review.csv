@@ -1,0 +1,7 @@
+strategy,yaml_path,raw_grid_size,full_or_capped,unsupported_omitted,key_blocker_addressed,expected_risk,notes
+pa_broad_channel_zone,src/strategies/testing_parameters/pa_broad_channel_zone_tuned_v2.yaml,972,full,,zone vs lower-third hard ceiling; zone_max_frac 0.5–2/3,May add marginal longs in mid-range; still long-only structure,
+pa_generic_breakout_pullback,src/strategies/testing_parameters/pa_generic_breakout_pullback_tuned_v2.yaml,576,full,,pullback band / overlap / followthrough / min depth,Wider pullback test ATR may increase false entries,
+pa_buy_sell_close_trend,src/strategies/testing_parameters/pa_buy_sell_close_trend_tuned_v2.yaml,576,full,,max-hold + PF vs v1 short-hold regression,Longer holds can increase drawdown duration,
+pa_climax_reversal,src/strategies/testing_parameters/pa_climax_reversal_tuned_v2.yaml,576,full,,small robustness around v1 strict hull,Still in-sample curve risk,
+pa_second_entry_pullback,src/strategies/testing_parameters/pa_second_entry_pullback_tuned_v2.yaml,576,full,,context + depth loosening,Tiny-n PF corners possible,
+pa_wedge_reversal,src/strategies/testing_parameters/pa_wedge_reversal_tuned_v2.yaml,144,full,,small quality retest only,Low grid spend; may not move needle,

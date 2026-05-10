@@ -1,0 +1,7 @@
+strategy,baseline_best_trades,baseline_best_total_r,baseline_best_pf,v1_best_trades,v1_best_total_r,v1_best_pf,v2_best_trades,v2_best_total_r,v2_best_pf,v2_notes
+pa_broad_channel_zone,0,0.0,0.0,0,0.0,0.0,skipped,skipped,skipped,preflight finals 0; sweep skipped
+pa_generic_breakout_pullback,0,0.0,0.0,0,0.0,0.0,skipped,skipped,skipped,preflight finals 0; sweep skipped
+pa_buy_sell_close_trend,413,24.07,1.230,280,2.732,1.031,461,41.563,1.260,recovered PF & total_r vs v1 with longer holds
+pa_climax_reversal,93,-13.71,0.879,26,8.474,2.007,51,6.226,1.373,v2 smaller n vs baseline activity; PF above 1 vs baseline
+pa_second_entry_pullback,8,6.58,2.387,2,1.281,2.539,8,5.327,2.080,still sparse; max trades 8 in-window
+pa_wedge_reversal,126,-10.09,0.964,68,-0.290,1.055,54,-1.466,1.027,weak total_r; PF ~1

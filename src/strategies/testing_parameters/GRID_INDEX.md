@@ -83,6 +83,19 @@ Gate / exit diagnostics on tuned v1 YAMLs (QQQ 2023–2024 design aid; **not** a
 | pa_buy_sell_close_trend | `pa_buy_sell_close_trend_tuned_v1.yaml` | Reduce hold-time/cost sensitivity while preserving edge | To be swept | 324 | same |
 | pa_generic_breakout_pullback | `pa_generic_breakout_pullback_tuned_v1.yaml` | Recover signal rate from zero-trade baseline | To be swept | 1024 | same |
 
+### PA Batch B/C — tuned grids v2 (`*_tuned_v2.yaml`)
+
+Post-P0 diagnostics + post-key-fix Layer 1 rerun. Result root: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`. Gate preflight: `src/research/results/pa_batch_bc_gate_diagnostics_v2_preflight/`.
+
+| Strategy | File | Raw grid | Purpose |
+|----------|------|---------:|---------|
+| pa_broad_channel_zone | `pa_broad_channel_zone_tuned_v2.yaml` | 972 | `zone_max_frac` + regime/hold axes — **sweep skipped** (preflight finals 0) |
+| pa_generic_breakout_pullback | `pa_generic_breakout_pullback_tuned_v2.yaml` | 576 | Loosen pullback/overlap/followthrough — **sweep skipped** (preflight 0) |
+| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_tuned_v2.yaml` | 576 | Longer holds + moderate filters |
+| pa_climax_reversal | `pa_climax_reversal_tuned_v2.yaml` | 576 | Small hull around v1 |
+| pa_second_entry_pullback | `pa_second_entry_pullback_tuned_v2.yaml` | 576 | Looser context/pullback |
+| pa_wedge_reversal | `pa_wedge_reversal_tuned_v2.yaml` | 144 | Small wedge retest |
+
 ---
 
 ## 2. Refined grids (`*_refined_v1.yaml`)

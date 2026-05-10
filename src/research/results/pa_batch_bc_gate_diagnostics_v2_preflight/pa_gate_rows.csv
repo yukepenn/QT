@@ -1,0 +1,7 @@
+strategy,symbol,start,end,testing_config,total_bars,bars_entry_window,pass_regime_broad_bull,pass_zone_below_upper_third,pass_pullback_depth_band,pass_vwap_context,pass_bull_reversal_or_break_bar,pass_climax_block,final_valid_signals
+pa_broad_channel_zone,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_broad_channel_zone_tuned_v2.yaml,194880.0,98237.0,1648.0,1.0,0.0,0.0,0.0,0.0,0.0
+pa_generic_breakout_pullback,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_generic_breakout_pullback_tuned_v2.yaml,194880.0,98237.0,,,,,,,0.0
+pa_buy_sell_close_trend,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_buy_sell_close_trend_tuned_v2.yaml,194880.0,83327.0,,,,,,,434.0
+pa_climax_reversal,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_climax_reversal_tuned_v2.yaml,194880.0,75797.0,,,,,,,90.0
+pa_second_entry_pullback,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_second_entry_pullback_tuned_v2.yaml,194880.0,98237.0,,,,,,,26.0
+pa_wedge_reversal,QQQ,2023-01-01,2024-12-31,src/strategies/testing_parameters/pa_wedge_reversal_tuned_v2.yaml,194880.0,60742.0,,,,,,,91.0

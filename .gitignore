@@ -345,3 +345,9 @@ src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1_diagnostics_local/
 !src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/rank_high_trade_systems.md
 !src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/high_trade_cost_review.csv
 !src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/high_trade_cost_review.md
+
+# PA Batch B/C tuned v2 Layer 1 QQQ 2023–2024 (each sweep dir contains only results/summary/configs/stats)
+!src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_buy_sell_close_trend/
+!src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_climax_reversal/
+!src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_second_entry_pullback/
+!src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_wedge_reversal/

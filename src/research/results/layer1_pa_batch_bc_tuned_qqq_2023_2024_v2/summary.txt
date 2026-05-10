@@ -1,0 +1,15 @@
+tag=tuned_v2
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v2
+candidates_written=10
+
+candidates:
+  PA_BUY_SELL_CLOSE_TREND_001 pa_buy_sell_close_trend score=1.3854 trades=461
+  PA_BUY_SELL_CLOSE_TREND_002 pa_buy_sell_close_trend score=1.3821 trades=461
+  PA_BUY_SELL_CLOSE_TREND_003 pa_buy_sell_close_trend score=1.3818 trades=466
+  PA_BUY_SELL_CLOSE_TREND_004 pa_buy_sell_close_trend score=1.3657 trades=468
+  PA_BUY_SELL_CLOSE_TREND_005 pa_buy_sell_close_trend score=1.3450 trades=459
+  PA_CLIMAX_REVERSAL_001 pa_climax_reversal score=1.2687 trades=51
+  PA_CLIMAX_REVERSAL_002 pa_climax_reversal score=1.2687 trades=51
+  PA_CLIMAX_REVERSAL_003 pa_climax_reversal score=1.1600 trades=51
+  PA_CLIMAX_REVERSAL_004 pa_climax_reversal score=1.1600 trades=51
+  PA_CLIMAX_REVERSAL_005 pa_climax_reversal score=1.0954 trades=51

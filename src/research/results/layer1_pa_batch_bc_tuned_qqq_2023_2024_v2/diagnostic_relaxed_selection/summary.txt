@@ -1,0 +1,25 @@
+tag=tuned_v2_relaxed
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_tuned_qqq_2023_2024_v2\diagnostic_relaxed_selection
+candidates_written=20
+
+candidates:
+  PA_BUY_SELL_CLOSE_TREND_001 pa_buy_sell_close_trend score=1.3854 trades=461
+  PA_BUY_SELL_CLOSE_TREND_002 pa_buy_sell_close_trend score=1.3821 trades=461
+  PA_BUY_SELL_CLOSE_TREND_003 pa_buy_sell_close_trend score=1.3818 trades=466
+  PA_BUY_SELL_CLOSE_TREND_004 pa_buy_sell_close_trend score=1.3657 trades=468
+  PA_BUY_SELL_CLOSE_TREND_005 pa_buy_sell_close_trend score=1.3450 trades=459
+  PA_CLIMAX_REVERSAL_001 pa_climax_reversal score=1.2687 trades=51
+  PA_CLIMAX_REVERSAL_002 pa_climax_reversal score=1.2687 trades=51
+  PA_CLIMAX_REVERSAL_003 pa_climax_reversal score=1.1600 trades=51
+  PA_CLIMAX_REVERSAL_004 pa_climax_reversal score=1.1600 trades=51
+  PA_CLIMAX_REVERSAL_005 pa_climax_reversal score=1.0954 trades=51
+  PA_SECOND_ENTRY_PULLBACK_001 pa_second_entry_pullback score=1.6009 trades=16
+  PA_SECOND_ENTRY_PULLBACK_002 pa_second_entry_pullback score=1.6009 trades=16
+  PA_SECOND_ENTRY_PULLBACK_003 pa_second_entry_pullback score=1.6009 trades=16
+  PA_SECOND_ENTRY_PULLBACK_004 pa_second_entry_pullback score=1.6009 trades=16
+  PA_SECOND_ENTRY_PULLBACK_005 pa_second_entry_pullback score=1.6009 trades=16
+  PA_WEDGE_REVERSAL_001 pa_wedge_reversal score=0.6717 trades=54
+  PA_WEDGE_REVERSAL_002 pa_wedge_reversal score=0.6717 trades=54
+  PA_WEDGE_REVERSAL_003 pa_wedge_reversal score=0.6717 trades=54
+  PA_WEDGE_REVERSAL_004 pa_wedge_reversal score=0.6717 trades=54
+  PA_WEDGE_REVERSAL_005 pa_wedge_reversal score=0.6717 trades=54

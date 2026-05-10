@@ -1,0 +1,28 @@
+strategy: pa_generic_breakout_pullback
+
+# Raw grid: 2*2*3*2*2*2*2*1*2*3 = 576. Loosen geometry / followthrough vs v1; no new code params.
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [45, 60]
+  signal.entry_end_minute: [240, 330]
+  signal.pullback_test_atr: [0.35, 0.5, 0.65]
+  signal.min_pullback_depth_atr: [0.0, 0.1]
+  signal.overlap_score_max: [0.55, 0.72]
+  signal.require_followthrough_recent: [false, true]
+  risk.stop_mode: [pullback_low]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.25, 1.5]
+  backtest.max_hold_minutes: [30, 60, 90]
+
+fixed:
+  features.orb_open_minutes: 15
+  features.pa_regime_window: 30
+  signal.recent_breakout_lookback: 6
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

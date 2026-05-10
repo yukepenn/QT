@@ -74,6 +74,9 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
         validate_nonnegative_number(
             "signal.min_pullback_depth_atr", sig.get("min_pullback_depth_atr", 0.05)
         )
+        zmf = float(sig.get("zone_max_frac", 1.0 / 3.0))
+        if not (0.0 < zmf <= 1.0):
+            raise ValueError("signal.zone_max_frac must be in (0, 1]")
         sm = str(risk.get("stop_mode", "range_low"))
         if sm not in ("channel_low", "range_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -170,6 +173,7 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
         vwap_min = float(sig.get("vwap_context_min_atr", -0.15))
         block_clx = bool(sig.get("block_climax", True))
         clx_max = float(sig.get("climax_score_max", 0.78))
+        zone_max_frac = float(sig.get("zone_max_frac", 1.0 / 3.0))
 
         n = ctx.n
         cand = np.zeros(n, dtype=np.bool_)
@@ -178,7 +182,15 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
                 continue
             if not math.isfinite(ctx.pa_bbull[i]) or ctx.pa_bbull[i] < thr:
                 continue
-            if not math.isfinite(ctx.close[i]) or ctx.close[i] > ctx.pa_rlt[i]:
+            if not math.isfinite(ctx.close[i]) or not math.isfinite(
+                ctx.pa_rl[i]
+            ) or not math.isfinite(ctx.pa_rh[i]):
+                continue
+            width = ctx.pa_rh[i] - ctx.pa_rl[i]
+            if not math.isfinite(width) or width <= 0.0:
+                continue
+            zone_top = ctx.pa_rl[i] + zone_max_frac * width
+            if ctx.close[i] > zone_top:
                 continue
             if (
                 not math.isfinite(ctx.pa_pd[i])
@@ -257,6 +269,7 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             float(sig.get("broad_bull_score_min", 0.28)),
             float(sig.get("max_pullback_depth_atr", 1.15)),
             float(sig.get("min_pullback_depth_atr", 0.05)),
+            float(sig.get("zone_max_frac", 1.0 / 3.0)),
             bool(sig.get("require_vwap_context", False)),
             float(sig.get("vwap_context_min_atr", -0.15)),
             bool(sig.get("block_climax", True)),

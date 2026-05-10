@@ -7,6 +7,7 @@ Layer 1 sweep dedupe uses `normalized_param_key`. These fields were **added** so
 | All PA strategies above | `signal.entry_start_minute`, `signal.entry_end_minute`, `risk.atr_buffer_mult`, `risk.max_trades_per_day`, `risk.min_risk_per_share` (via `nz`) |
 | `pa_mtr_reversal` | `signal.wedge_push_min` (was missing vs array generation) |
 | `pa_tight_channel_pullback` | `signal.block_climax`, `signal.climax_score_max` |
+| `pa_broad_channel_zone` | `signal.zone_max_frac` (buy-zone depth in rolling range; default `1/3` preserves legacy lower-third gate) |
 
 ## Impact on prior Layer 1 artifacts
 

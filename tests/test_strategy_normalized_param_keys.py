@@ -45,6 +45,7 @@ PA_SPECS: list[tuple[str, list[tuple[str, object]]]] = [
             ("signal.broad_bull_score_min", 0.11),
             ("signal.entry_start_minute", 77),
             ("features.pa_range_window", 55),
+            ("signal.zone_max_frac", 0.55),
         ],
     ),
     (

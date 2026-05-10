@@ -1,0 +1,4 @@
+pa_broad_channel_zone
+pa_generic_breakout_pullback
+pa_second_entry_pullback
+pa_wedge_reversal
