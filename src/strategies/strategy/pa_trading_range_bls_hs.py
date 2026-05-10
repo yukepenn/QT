@@ -67,8 +67,12 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.trading_range_score_min", sig.get("trading_range_score_min", 0.35))
-        validate_nonnegative_number("signal.min_range_width_atr", sig.get("min_range_width_atr", 0.8))
+        validate_nonnegative_number(
+            "signal.trading_range_score_min", sig.get("trading_range_score_min", 0.35)
+        )
+        validate_nonnegative_number(
+            "signal.min_range_width_atr", sig.get("min_range_width_atr", 0.8)
+        )
         sm = str(risk.get("stop_mode", "range_low"))
         if sm not in ("range_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -76,7 +80,9 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
         if tm not in ("fixed_r", "range_mid", "upper_third"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.5))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35)
+        )
 
     def required_features(self) -> list[str]:
         base = [
@@ -120,7 +126,9 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaTrBlsCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaTrBlsCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         regw = pa_regime_window(config)
@@ -132,7 +140,9 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             raise ValueError(f"{self.name}: missing {trs!r}")
         reff_col = f"range_efficiency_{regw}"
         if reff_col not in work.columns:
-            raise ValueError(f"{self.name}: missing {reff_col!r} (set features.regime.windows to include {regw})")
+            raise ValueError(
+                f"{self.name}: missing {reff_col!r} (set features.regime.windows to include {regw})"
+            )
         vcc_col = f"vwap_cross_count_{regw}"
         if vcc_col not in work.columns:
             raise ValueError(f"{self.name}: missing {vcc_col!r}")
@@ -158,7 +168,9 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             reff=work[reff_col].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaTrBlsCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -176,7 +188,11 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
                 continue
             if not math.isfinite(ctx.pa_tr[i]) or ctx.pa_tr[i] < thr:
                 continue
-            if not math.isfinite(ctx.close[i]) or not math.isfinite(ctx.pa_rlt[i]) or ctx.close[i] > ctx.pa_rlt[i]:
+            if (
+                not math.isfinite(ctx.close[i])
+                or not math.isfinite(ctx.pa_rlt[i])
+                or ctx.close[i] > ctx.pa_rlt[i]
+            ):
                 continue
             if ctx.pa_rw_atr[i] < min_rw:
                 continue
@@ -217,12 +233,20 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             upper_third=upper_third,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

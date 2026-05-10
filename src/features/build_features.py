@@ -12,9 +12,18 @@ if str(_ROOT) not in sys.path:
 
 import pandas as pd
 
-from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, PaFeatureConfig, RegimeFeatureConfig
+from src.features.build_types import (
+    ChannelsFeatureConfig,
+    IndicatorsFeatureConfig,
+    PaFeatureConfig,
+    RegimeFeatureConfig,
+)
 from src.features.channels import add_channel_features
-from src.features.feature_config import FEATURE_COLUMNS, RAW_COLUMNS, validate_no_registry_duplicates
+from src.features.feature_config import (
+    FEATURE_COLUMNS,
+    RAW_COLUMNS,
+    validate_no_registry_duplicates,
+)
 from src.features.indicators import add_indicator_features
 from src.features.levels import add_pa_proximity_features, add_prior_day_levels
 from src.features.orb import add_orb
@@ -47,27 +56,56 @@ def build_basic_features(
     ch = channels or ChannelsFeatureConfig()
     reg = regime or RegimeFeatureConfig()
     pa_spec = pa or PaFeatureConfig()
-    vol_merged = tuple(sorted(set(int(x) for x in vol_windows) | {int(pa_spec.atr_window), 20}))
-    price_action_merged = tuple(sorted(set(int(x) for x in price_action_windows) | {20}))
+    vol_merged = tuple(
+        sorted(set(int(x) for x in vol_windows) | {int(pa_spec.atr_window), 20})
+    )
+    price_action_merged = tuple(
+        sorted(set(int(x) for x in price_action_windows) | {20})
+    )
     atr_col = f"atr_like_{int(pa_spec.atr_window)}"
 
     out = add_time_features(df, copy=copy, allow_overwrite=allow_overwrite)
     out = add_vwap(out, bands=vwap_bands, copy=False, allow_overwrite=allow_overwrite)
-    out = add_orb(out, open_minutes=orb_open_minutes, copy=False, allow_overwrite=allow_overwrite)
+    out = add_orb(
+        out, open_minutes=orb_open_minutes, copy=False, allow_overwrite=allow_overwrite
+    )
     out = add_prior_day_levels(out, copy=False, allow_overwrite=allow_overwrite)
-    out = add_intraday_volatility(out, windows=vol_merged, copy=False, allow_overwrite=allow_overwrite)
-    out = add_price_action_features(out, windows=price_action_merged, pa=pa_spec, copy=False, allow_overwrite=allow_overwrite)
-    out = add_volume_features(out, windows=volume_windows, copy=False, allow_overwrite=allow_overwrite)
+    out = add_intraday_volatility(
+        out, windows=vol_merged, copy=False, allow_overwrite=allow_overwrite
+    )
+    out = add_price_action_features(
+        out,
+        windows=price_action_merged,
+        pa=pa_spec,
+        copy=False,
+        allow_overwrite=allow_overwrite,
+    )
+    out = add_volume_features(
+        out, windows=volume_windows, copy=False, allow_overwrite=allow_overwrite
+    )
     out = add_indicator_features(out, ind, copy=False, allow_overwrite=allow_overwrite)
     out = add_channel_features(out, ch, copy=False, allow_overwrite=allow_overwrite)
-    out = add_pa_swing_features(out, pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
-    out = add_pa_proximity_features(out, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
-    out = add_regime_features(out, reg, pa=pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
+    out = add_pa_swing_features(
+        out, pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite
+    )
+    out = add_pa_proximity_features(
+        out, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite
+    )
+    out = add_regime_features(
+        out,
+        reg,
+        pa=pa_spec,
+        atr_col=atr_col,
+        copy=False,
+        allow_overwrite=allow_overwrite,
+    )
     return out
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Read bars and build basic features (in-memory).")
+    p = argparse.ArgumentParser(
+        description="Read bars and build basic features (in-memory)."
+    )
     p.add_argument("--asset", choices=["equity", "futures"], required=True)
     p.add_argument("--symbol", default=None)
     p.add_argument("--root", default=None)
@@ -125,8 +163,14 @@ def main(argv: list[str] | None = None) -> int:
         preserved = preserved and raw_snap["ts_utc"].equals(out["ts_utc"])
 
     print(f"rows={len(out)}", flush=True)
-    print(f"min_ts_utc={out['ts_utc'].min().isoformat() if len(out) else 'n/a'}", flush=True)
-    print(f"max_ts_utc={out['ts_utc'].max().isoformat() if len(out) else 'n/a'}", flush=True)
+    print(
+        f"min_ts_utc={out['ts_utc'].min().isoformat() if len(out) else 'n/a'}",
+        flush=True,
+    )
+    print(
+        f"max_ts_utc={out['ts_utc'].max().isoformat() if len(out) else 'n/a'}",
+        flush=True,
+    )
     print(f"raw_column_count={len(raw_subset)}", flush=True)
     print(f"final_column_count={len(out.columns)}", flush=True)
     feat_cols = [c for c in out.columns if c not in RAW_COLUMNS]

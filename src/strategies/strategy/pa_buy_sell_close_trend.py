@@ -65,8 +65,12 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.body_pct_min", sig.get("body_pct_min", 0.52))
-        validate_nonnegative_number("signal.trend_score_min", sig.get("trend_score_min", 0.35))
+        validate_nonnegative_number(
+            "signal.body_pct_min", sig.get("body_pct_min", 0.52)
+        )
+        validate_nonnegative_number(
+            "signal.trend_score_min", sig.get("trend_score_min", 0.35)
+        )
         sm = str(risk.get("stop_mode", "signal_low"))
         if sm not in ("signal_low", "last_pullback_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -74,7 +78,9 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
         if tm != "fixed_r":
             raise ValueError(f"risk.target_mode invalid: {tm!r} (only fixed_r in MVP)")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.2))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35)
+        )
 
     def required_features(self) -> list[str]:
         regw = 30
@@ -111,7 +117,9 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaBuySellCloseCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaBuySellCloseCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         regw = pa_regime_window(config)
@@ -141,7 +149,9 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaBuySellCloseCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -196,12 +206,20 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

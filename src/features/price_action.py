@@ -35,9 +35,13 @@ def add_price_action_features(
 ) -> pd.DataFrame:
     module_name = "price_action"
     cols = FEATURE_COLUMNS[module_name]
-    add_or_overwrite_columns(df, cols, module_name=module_name, allow_overwrite=allow_overwrite)
+    add_or_overwrite_columns(
+        df, cols, module_name=module_name, allow_overwrite=allow_overwrite
+    )
 
-    ensure_columns(df, ["session_date", "open", "high", "low", "close"], context="price_action")
+    ensure_columns(
+        df, ["session_date", "open", "high", "low", "close"], context="price_action"
+    )
 
     out = safe_copy(df, copy)
     pa_spec = pa or PaFeatureConfig()
@@ -80,17 +84,25 @@ def add_price_action_features(
     strong_bull = (c > o) & (out["body_pct"] >= sbp)
     strong_bear = (c < o) & (out["body_pct"] >= sbp)
     out["bull_reversal_bar"] = (
-        strong_bull & (l < g["low"].shift(1).fillna(l)) & (c > g["open"].shift(1).fillna(o))
+        strong_bull
+        & (l < g["low"].shift(1).fillna(l))
+        & (c > g["open"].shift(1).fillna(o))
     ).astype(np.int8)
     out["bear_reversal_bar"] = (
-        strong_bear & (h > g["high"].shift(1).fillna(h)) & (c < g["open"].shift(1).fillna(o))
+        strong_bear
+        & (h > g["high"].shift(1).fillna(h))
+        & (c < g["open"].shift(1).fillna(o))
     ).astype(np.int8)
 
     sid = pd.factorize(out["session_date"], sort=False)[0].astype(np.int32)
     ig = out["is_green"].to_numpy(dtype=np.int8)
     ir = out["is_red"].to_numpy(dtype=np.int8)
-    out["consecutive_green_bars"] = pd.Series(_streak_from_bool(ig, sid, len(out)), index=out.index, dtype=np.int32)
-    out["consecutive_red_bars"] = pd.Series(_streak_from_bool(ir, sid, len(out)), index=out.index, dtype=np.int32)
+    out["consecutive_green_bars"] = pd.Series(
+        _streak_from_bool(ig, sid, len(out)), index=out.index, dtype=np.int32
+    )
+    out["consecutive_red_bars"] = pd.Series(
+        _streak_from_bool(ir, sid, len(out)), index=out.index, dtype=np.int32
+    )
     cg = out["consecutive_green_bars"].to_numpy()
     cr = out["consecutive_red_bars"].to_numpy()
     for k in (2, 3, 4):
@@ -100,15 +112,22 @@ def add_price_action_features(
     prev_h, prev_l = g["high"].shift(1), g["low"].shift(1)
     overlap = np.minimum(h, prev_h.fillna(h)) - np.maximum(l, prev_l.fillna(l))
     out["overlap_bar"] = (overlap > 1e-9).astype(np.int8)
-    out["tail_bar"] = ((out["lower_wick"] > out["body_abs"] * 1.5) & (out["lower_wick"] > out["upper_wick"])).astype(np.int8)
+    out["tail_bar"] = (
+        (out["lower_wick"] > out["body_abs"] * 1.5)
+        & (out["lower_wick"] > out["upper_wick"])
+    ).astype(np.int8)
 
     out["prev_high_by_session"] = g["high"].shift(1)
     out["prev_low_by_session"] = g["low"].shift(1)
     out["prev_close_by_session"] = g["close"].shift(1)
 
     for n in windows:
-        rh = g["high"].transform(lambda s, w=n: s.rolling(w, min_periods=1).max().shift(1))
-        rl = g["low"].transform(lambda s, w=n: s.rolling(w, min_periods=1).min().shift(1))
+        rh = g["high"].transform(
+            lambda s, w=n: s.rolling(w, min_periods=1).max().shift(1)
+        )
+        rl = g["low"].transform(
+            lambda s, w=n: s.rolling(w, min_periods=1).min().shift(1)
+        )
         out[f"rolling_high_{n}_prior"] = rh
         out[f"rolling_low_{n}_prior"] = rl
         out[f"rolling_range_{n}_prior"] = rh - rl

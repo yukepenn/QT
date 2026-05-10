@@ -145,7 +145,9 @@ def finalize_long_signals_df(
     n = len(work)
     cand_short = np.zeros(n, dtype=np.bool_)
     max_tr = int((config.get("risk") or {}).get("max_trades_per_day", 1))
-    fl, _ = thin_first_signal_per_session_numba(cand_long, cand_short, session_id, max_tr)
+    fl, _ = thin_first_signal_per_session_numba(
+        cand_long, cand_short, session_id, max_tr
+    )
     side = np.zeros(n, dtype=np.int8)
     valid = np.zeros(n, dtype=np.bool_)
     stp = np.zeros(n, dtype=np.float64)
@@ -197,13 +199,17 @@ def finalize_long_signals_df(
     }
 
 
-def signals_df_from_arrays(work: pd.DataFrame, strategy_name: str, arr: dict[str, Any], config: dict[str, Any]) -> pd.DataFrame:
+def signals_df_from_arrays(
+    work: pd.DataFrame, strategy_name: str, arr: dict[str, Any], config: dict[str, Any]
+) -> pd.DataFrame:
     out = init_standard_signal_columns(work, strategy_name=strategy_name, copy=True)
     out["sig_side"] = arr["side"]
     out["sig_valid"] = arr["valid"]
     out["sig_stop"] = arr["stop"]
     out["sig_target"] = arr["target_preview"]
-    out["sig_target_mode"] = np.where(arr["target_mode_code"] == TM_FIXED_R, "fixed_r", "")
+    out["sig_target_mode"] = np.where(
+        arr["target_mode_code"] == TM_FIXED_R, "fixed_r", ""
+    )
     out["sig_target_r"] = arr["target_r"]
     out["sig_risk_per_share"] = arr["risk_preview"]
     out.loc[out["sig_valid"], "sig_reason"] = f"{strategy_name}_long"

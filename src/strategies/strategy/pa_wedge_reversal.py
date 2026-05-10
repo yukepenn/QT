@@ -64,7 +64,9 @@ class PaWedgeReversalStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.min_wedge_pushes", sig.get("min_wedge_pushes", 2.5))
+        validate_nonnegative_number(
+            "signal.min_wedge_pushes", sig.get("min_wedge_pushes", 2.5)
+        )
         sm = str(risk.get("stop_mode", "signal_low"))
         if sm not in ("wedge_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -72,7 +74,9 @@ class PaWedgeReversalStrategy(BaseStrategy):
         if tm not in ("fixed_r", "vwap", "prior_swing_high"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.45))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.4))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.4)
+        )
 
     def required_features(self) -> list[str]:
         base = [
@@ -112,7 +116,9 @@ class PaWedgeReversalStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaWedgeRevCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaWedgeRevCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -129,7 +135,8 @@ class PaWedgeReversalStrategy(BaseStrategy):
             vwap=work["vwap"].to_numpy(dtype=np.float64),
             pa_wp=work[f"pa_wedge_push_count_{rw}"].to_numpy(dtype=np.float64),
             pa_bear=(
-                work[f"pa_broad_bear_channel_score_{rw}"] + work[f"pa_tight_bear_channel_score_{rw}"]
+                work[f"pa_broad_bear_channel_score_{rw}"]
+                + work[f"pa_tight_bear_channel_score_{rw}"]
             ).to_numpy(dtype=np.float64),
             pa_leg=work[f"pa_leg_direction_{rw}"].to_numpy(dtype=np.int8),
             bull_rev=work["bull_reversal_bar"].to_numpy(dtype=np.int8),
@@ -139,7 +146,9 @@ class PaWedgeReversalStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaWedgeRevCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -188,12 +197,20 @@ class PaWedgeReversalStrategy(BaseStrategy):
             vwap=ctx.vwap,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

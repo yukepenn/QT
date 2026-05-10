@@ -65,9 +65,15 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.broad_bull_score_min", sig.get("broad_bull_score_min", 0.28))
-        validate_nonnegative_number("signal.max_pullback_depth_atr", sig.get("max_pullback_depth_atr", 1.15))
-        validate_nonnegative_number("signal.min_pullback_depth_atr", sig.get("min_pullback_depth_atr", 0.05))
+        validate_nonnegative_number(
+            "signal.broad_bull_score_min", sig.get("broad_bull_score_min", 0.28)
+        )
+        validate_nonnegative_number(
+            "signal.max_pullback_depth_atr", sig.get("max_pullback_depth_atr", 1.15)
+        )
+        validate_nonnegative_number(
+            "signal.min_pullback_depth_atr", sig.get("min_pullback_depth_atr", 0.05)
+        )
         sm = str(risk.get("stop_mode", "range_low"))
         if sm not in ("channel_low", "range_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -75,7 +81,9 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
         if tm not in ("fixed_r", "channel_mid", "range_mid", "prior_high"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.5))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35)
+        )
 
     def required_features(self) -> list[str]:
         base = [
@@ -116,7 +124,9 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaBroadChannelCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaBroadChannelCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -145,7 +155,9 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             pa_clx=work[f"pa_climax_score_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaBroadChannelCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -168,9 +180,16 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
                 continue
             if not math.isfinite(ctx.close[i]) or ctx.close[i] > ctx.pa_rlt[i]:
                 continue
-            if not math.isfinite(ctx.pa_pd[i]) or ctx.pa_pd[i] < min_pd or ctx.pa_pd[i] > max_pd:
+            if (
+                not math.isfinite(ctx.pa_pd[i])
+                or ctx.pa_pd[i] < min_pd
+                or ctx.pa_pd[i] > max_pd
+            ):
                 continue
-            if req_v and (not math.isfinite(ctx.vwap[i]) or ctx.close[i] < ctx.vwap[i] + vwap_min * ctx.atr[i]):
+            if req_v and (
+                not math.isfinite(ctx.vwap[i])
+                or ctx.close[i] < ctx.vwap[i] + vwap_min * ctx.atr[i]
+            ):
                 continue
             if ctx.bull_rev[i] == 0:
                 continue
@@ -206,12 +225,20 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             vwap=ctx.vwap,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

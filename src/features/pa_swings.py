@@ -50,10 +50,16 @@ def add_pa_swing_features(
     if not cols:
         return safe_copy(df, copy)
 
-    add_or_overwrite_columns(df, cols, module_name="pa_swings", allow_overwrite=allow_overwrite)
-    ensure_columns(df, ["session_date", "open", "high", "low", "close"], context="pa_swings")
+    add_or_overwrite_columns(
+        df, cols, module_name="pa_swings", allow_overwrite=allow_overwrite
+    )
+    ensure_columns(
+        df, ["session_date", "open", "high", "low", "close"], context="pa_swings"
+    )
     if atr_col not in df.columns:
-        raise ValueError(f"pa_swings requires {atr_col!r} (extend features.vol_windows / indicators)")
+        raise ValueError(
+            f"pa_swings requires {atr_col!r} (extend features.vol_windows / indicators)"
+        )
 
     out = safe_copy(df, copy)
     g = out.groupby("session_date", sort=False)
@@ -66,8 +72,12 @@ def add_pa_swing_features(
     for n in spec.swing_windows:
         nn = int(n)
         # Prior-exclusive rolling extrema: rolling max/min over N bars ending at t-1 (shift after rolling).
-        rh = g["high"].transform(lambda s, w=nn: s.rolling(w, min_periods=1).max().shift(1))
-        rl = g["low"].transform(lambda s, w=nn: s.rolling(w, min_periods=1).min().shift(1))
+        rh = g["high"].transform(
+            lambda s, w=nn: s.rolling(w, min_periods=1).max().shift(1)
+        )
+        rl = g["low"].transform(
+            lambda s, w=nn: s.rolling(w, min_periods=1).min().shift(1)
+        )
         new_cols[f"pa_prior_high_{nn}"] = rh
         new_cols[f"pa_prior_low_{nn}"] = rl
         new_cols[f"pa_range_high_{nn}"] = rh
@@ -85,20 +95,36 @@ def add_pa_swing_features(
 
         outside_prev = (h.shift(1) > rh.shift(1)) | (lo.shift(1) < rl.shift(1))
         inside_now = (c >= rl) & (c <= rh)
-        new_cols[f"pa_close_back_inside_{nn}"] = (inside_now & outside_prev.fillna(False)).astype(np.int8)
+        new_cols[f"pa_close_back_inside_{nn}"] = (
+            inside_now & outside_prev.fillna(False)
+        ).astype(np.int8)
 
-        new_cols[f"pa_failed_breakout_down_{nn}"] = ((lo < rl) & (c > rl)).astype(np.int8)
+        new_cols[f"pa_failed_breakout_down_{nn}"] = ((lo < rl) & (c > rl)).astype(
+            np.int8
+        )
         new_cols[f"pa_failed_breakout_up_{nn}"] = ((h > rh) & (c < rh)).astype(np.int8)
 
         prev_c = g["close"].transform(lambda s, w=nn: s.shift(nn))
         ld = c.astype(float) - prev_c.astype(float)
-        leg = np.sign(np.where(np.isfinite(ld.to_numpy(dtype=float)), ld.to_numpy(dtype=float), 0.0)).astype(np.int8)
-        new_cols[f"pa_leg_direction_{nn}"] = pd.Series(leg, index=out.index, dtype=np.int8)
+        leg = np.sign(
+            np.where(
+                np.isfinite(ld.to_numpy(dtype=float)), ld.to_numpy(dtype=float), 0.0
+            )
+        ).astype(np.int8)
+        new_cols[f"pa_leg_direction_{nn}"] = pd.Series(
+            leg, index=out.index, dtype=np.int8
+        )
 
         mid_s = mid.astype(float)
         up_leg = c.astype(float) > mid_s
-        depth = np.where(up_leg, (rh.astype(float) - c.astype(float)) / (atr + 1e-12), (c.astype(float) - rl.astype(float)) / (atr + 1e-12))
-        new_cols[f"pa_pullback_depth_atr_{nn}"] = pd.Series(depth, index=out.index, dtype=float)
+        depth = np.where(
+            up_leg,
+            (rh.astype(float) - c.astype(float)) / (atr + 1e-12),
+            (c.astype(float) - rl.astype(float)) / (atr + 1e-12),
+        )
+        new_cols[f"pa_pullback_depth_atr_{nn}"] = pd.Series(
+            depth, index=out.index, dtype=float
+        )
 
         rising = (lo > g["low"].shift(1)).astype(float)
         wsum = rising.groupby(out["session_date"]).transform(

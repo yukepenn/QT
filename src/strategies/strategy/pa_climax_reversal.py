@@ -67,8 +67,12 @@ class PaClimaxReversalStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.climax_score_min", sig.get("climax_score_min", 0.45))
-        validate_nonnegative_number("signal.bar_range_expansion_min", sig.get("bar_range_expansion_min", 1.35))
+        validate_nonnegative_number(
+            "signal.climax_score_min", sig.get("climax_score_min", 0.45)
+        )
+        validate_nonnegative_number(
+            "signal.bar_range_expansion_min", sig.get("bar_range_expansion_min", 1.35)
+        )
         sm = str(risk.get("stop_mode", "signal_low"))
         if sm not in ("climax_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -76,7 +80,9 @@ class PaClimaxReversalStrategy(BaseStrategy):
         if tm not in ("fixed_r", "vwap", "climax_mid", "range_mid"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.35))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.4))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.4)
+        )
 
     def required_features(self) -> list[str]:
         base = [
@@ -120,7 +126,9 @@ class PaClimaxReversalStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaClimaxRevCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaClimaxRevCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -139,7 +147,8 @@ class PaClimaxReversalStrategy(BaseStrategy):
             atr=atr_series(work, config).to_numpy(dtype=np.float64),
             vwap=work["vwap"].to_numpy(dtype=np.float64),
             pa_bear=(
-                work[f"pa_tight_bear_channel_score_{rw}"] + work[f"pa_broad_bear_channel_score_{rw}"]
+                work[f"pa_tight_bear_channel_score_{rw}"]
+                + work[f"pa_broad_bear_channel_score_{rw}"]
             ).to_numpy(dtype=np.float64),
             pa_clx=work[f"pa_climax_score_{rw}"].to_numpy(dtype=np.float64),
             pa_brexp=work[f"pa_bar_range_expansion_{rw}"].to_numpy(dtype=np.float64),
@@ -153,7 +162,9 @@ class PaClimaxReversalStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaClimaxRevCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -173,7 +184,9 @@ class PaClimaxReversalStrategy(BaseStrategy):
             if not math.isfinite(ctx.pa_bear[i]) or ctx.pa_bear[i] < bear_min:
                 continue
             clx_ok = math.isfinite(ctx.pa_clx[i]) and ctx.pa_clx[i] >= clx_min
-            exp_ok = (not use_bexp) or (math.isfinite(ctx.pa_brexp[i]) and ctx.pa_brexp[i] >= bexp_min)
+            exp_ok = (not use_bexp) or (
+                math.isfinite(ctx.pa_brexp[i]) and ctx.pa_brexp[i] >= bexp_min
+            )
             if not (clx_ok or exp_ok):
                 continue
             if not math.isfinite(ctx.pa_dvw[i]) or ctx.pa_dvw[i] > max_below:
@@ -212,12 +225,20 @@ class PaClimaxReversalStrategy(BaseStrategy):
             vwap=ctx.vwap,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

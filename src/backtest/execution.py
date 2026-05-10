@@ -52,7 +52,9 @@ def actual_risk_per_share(side: int, entry: float, stop: float) -> float:
     return float("nan")
 
 
-def compute_fixed_r_target(side: int, entry: float, risk: float, target_r: float) -> float:
+def compute_fixed_r_target(
+    side: int, entry: float, risk: float, target_r: float
+) -> float:
     if side == 1:
         return float(entry) + float(target_r) * float(risk)
     if side == -1:
@@ -60,9 +62,15 @@ def compute_fixed_r_target(side: int, entry: float, risk: float, target_r: float
     return float("nan")
 
 
-def estimate_round_trip_cost_per_share(slippage_per_share: float, commission_per_trade: float, quantity: float) -> float:
+def estimate_round_trip_cost_per_share(
+    slippage_per_share: float, commission_per_trade: float, quantity: float
+) -> float:
     """Approximate per-share round-trip cost for cost-as-R diagnostics."""
-    if not (is_finite_price(slippage_per_share) and is_finite_price(commission_per_trade) and is_finite_price(quantity)):
+    if not (
+        is_finite_price(slippage_per_share)
+        and is_finite_price(commission_per_trade)
+        and is_finite_price(quantity)
+    ):
         return float("nan")
     q = float(quantity)
     if q <= 0:
@@ -106,7 +114,9 @@ def validate_trade_setup(
     if target_mode == "fixed_r":
         if target_r is None or not valid_target_r(float(target_r)):
             return False, "invalid_target_r", float(risk), float("nan")
-        resolved = compute_fixed_r_target(side, float(entry), float(risk), float(target_r))
+        resolved = compute_fixed_r_target(
+            side, float(entry), float(risk), float(target_r)
+        )
         if not is_finite_price(resolved):
             return False, "invalid_price_nan", float(risk), float("nan")
         return True, "ok", float(risk), float(resolved)
@@ -120,4 +130,3 @@ def validate_trade_setup(
         return True, "ok", float(risk), tgt
 
     return False, "invalid_target_mode", float(risk), float("nan")
-

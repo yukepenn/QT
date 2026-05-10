@@ -29,12 +29,12 @@ class BaseStrategy(ABC):
     performance_tier: str = "A_true_context_fast_core"
 
     @abstractmethod
-    def required_features(self) -> list[str]:
-        ...
+    def required_features(self) -> list[str]: ...
 
     @abstractmethod
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
-        ...
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame: ...
 
     def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> Any:
         return df
@@ -50,13 +50,20 @@ class BaseStrategy(ABC):
                 return tuple(_freeze(x) for x in obj)
             return obj
 
-        return (_freeze(config.get("features") or {}), _freeze(config.get("signal") or {}), _freeze(config.get("risk") or {}), _freeze(config.get("backtest") or {}))
+        return (
+            _freeze(config.get("features") or {}),
+            _freeze(config.get("signal") or {}),
+            _freeze(config.get("risk") or {}),
+            _freeze(config.get("backtest") or {}),
+        )
 
     def validate_config(self, config: dict[str, Any]) -> None:
         """Optional hook: raise ValueError (or NotImplementedError) if config is invalid."""
         return None
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if isinstance(ctx, pd.DataFrame):
             return self.generate_signal_arrays(ctx, config)
         raise NotImplementedError(
@@ -64,8 +71,12 @@ class BaseStrategy(ABC):
             "override prepare_signal_context + generate_signal_arrays_from_context for optimized fast path"
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        raise NotImplementedError(f"{self.name} does not implement fast signal arrays (generate_signal_arrays)")
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        raise NotImplementedError(
+            f"{self.name} does not implement fast signal arrays (generate_signal_arrays)"
+        )
 
 
 def validate_standard_signal_columns(df: pd.DataFrame) -> None:
@@ -74,7 +85,9 @@ def validate_standard_signal_columns(df: pd.DataFrame) -> None:
         raise ValueError(f"missing standard signal columns: {missing}")
 
 
-def validate_required_features_no_lookahead(*, strategy_name: str, required_features: list[str]) -> None:
+def validate_required_features_no_lookahead(
+    *, strategy_name: str, required_features: list[str]
+) -> None:
     bad = [c for c in required_features if "LOOKAHEAD" in str(c)]
     if bad:
         raise ValueError(

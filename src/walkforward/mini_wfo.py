@@ -41,6 +41,7 @@ from src.walkforward.mini_wfo_selection import (
 # Config loading + CLI
 # =============================================================================
 
+
 def load_mini_wfo_config(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as f:
         doc = yaml.safe_load(f)
@@ -54,7 +55,9 @@ def run(argv: list[str] | None = None) -> int:
     p.add_argument("--config", required=True, help="Path to mini-WFO YAML config.")
     p.add_argument("--tag", default="mini_wfo", help="Tag for subprocess logs.")
     p.add_argument("--validate-only", action="store_true")
-    p.add_argument("--use-signal-cache", action="store_true", help="Forward to Layer 2 / test.")
+    p.add_argument(
+        "--use-signal-cache", action="store_true", help="Forward to Layer 2 / test."
+    )
     p.add_argument("--signal-cache-root", default=None)
     p.add_argument("--refresh-signal-cache", action="store_true")
     p.add_argument(
@@ -90,8 +93,12 @@ def run(argv: list[str] | None = None) -> int:
     if not exp_root.is_absolute():
         exp_root = Path.cwd() / exp_root
 
-    cache_yaml = (cfg.get("cache") or {}).get("signal_cache_root") or ".cache/qt/mini_wfo_candidate_signals"
-    use_cache = bool(args.use_signal_cache or (cfg.get("cache") or {}).get("use_signal_cache"))
+    cache_yaml = (cfg.get("cache") or {}).get(
+        "signal_cache_root"
+    ) or ".cache/qt/mini_wfo_candidate_signals"
+    use_cache = bool(
+        args.use_signal_cache or (cfg.get("cache") or {}).get("use_signal_cache")
+    )
     sc_root = args.signal_cache_root or cache_yaml
 
     grid = (cfg.get("layer2") or {}).get("grid") or {}
@@ -105,11 +112,15 @@ def run(argv: list[str] | None = None) -> int:
         print(f"  Layer 2 raw grid size: {n_combo}")
         print(f"  output_root={exp_root}")
         print(f"  strategies primary={(cfg.get('layer1') or {}).get('strategies')}")
-        print(f"  optional diagnostics={(cfg.get('layer1') or {}).get('allow_optional_diagnostics')}")
-        if isinstance(((cfg.get("layer1") or {}).get("testing_configs")), dict) and (cfg.get("layer1") or {}).get(
-            "testing_configs"
-        ):
-            print(f"  testing_configs overrides={list(((cfg.get('layer1') or {}).get('testing_configs') or {}).keys())}")
+        print(
+            f"  optional diagnostics={(cfg.get('layer1') or {}).get('allow_optional_diagnostics')}"
+        )
+        if isinstance(((cfg.get("layer1") or {}).get("testing_configs")), dict) and (
+            cfg.get("layer1") or {}
+        ).get("testing_configs"):
+            print(
+                f"  testing_configs overrides={list(((cfg.get('layer1') or {}).get('testing_configs') or {}).keys())}"
+            )
         print(f"  signal_cache: use={use_cache} root={sc_root}")
         return 0
 
@@ -129,6 +140,7 @@ def run(argv: list[str] | None = None) -> int:
 # =============================================================================
 # Small utilities (filesystem / YAML / typing hygiene)
 # =============================================================================
+
 
 def _run_cmd(cmd: list[str], *, cwd: Path) -> None:
     print(f"[mini_wfo] CMD: {' '.join(cmd)}", flush=True)
@@ -169,12 +181,18 @@ def _to_yaml_plain(obj: Any) -> Any:
         return [_to_yaml_plain(v) for v in obj]
     return str(obj)
 
+
 # =============================================================================
 # Train Layer 2 config builder
 # =============================================================================
 
+
 def _build_layer2_train_configs(
-    cfg: dict[str, Any], *, exp_root: Path, cwd: Path, signal_cache_root_override: str | None = None
+    cfg: dict[str, Any],
+    *,
+    exp_root: Path,
+    cwd: Path,
+    signal_cache_root_override: str | None = None,
 ) -> tuple[Path, Path]:
     """Return paths (base_config, sweep_config) under train_layer2."""
     paths = cfg["paths"]
@@ -186,13 +204,17 @@ def _build_layer2_train_configs(
 
     base: dict[str, Any] = {
         "name": "layer2_mini_wfo_train",
-        "candidate_root": str(cand_sel.relative_to(cwd) if cand_sel.is_relative_to(cwd) else cand_sel),
+        "candidate_root": str(
+            cand_sel.relative_to(cwd) if cand_sel.is_relative_to(cwd) else cand_sel
+        ),
         "execution": {
             "commission_per_trade": float(exec_cfg.get("commission_per_trade", 0.0)),
             "slippage_per_share": float(exec_cfg.get("slippage_per_share", 0.01)),
             "eod_exit_minute": int(exec_cfg.get("eod_exit_minute", 389)),
             "no_new_after_minute": int(exec_cfg.get("no_new_after_minute", 360)),
-            "recompute_target_from_entry": bool(exec_cfg.get("recompute_target_from_entry", True)),
+            "recompute_target_from_entry": bool(
+                exec_cfg.get("recompute_target_from_entry", True)
+            ),
             "min_risk_per_share": float(exec_cfg.get("min_risk_per_share", 0.03)),
         },
         "system": {
@@ -219,12 +241,22 @@ def _build_layer2_train_configs(
         "base_config": "layer2_train_config.yaml",
         "grid": layer2_block.get("grid") or {},
         "fixed": {
-            "execution.commission_per_trade": float(exec_cfg.get("commission_per_trade", 0.0)),
-            "execution.slippage_per_share": float(exec_cfg.get("slippage_per_share", 0.01)),
+            "execution.commission_per_trade": float(
+                exec_cfg.get("commission_per_trade", 0.0)
+            ),
+            "execution.slippage_per_share": float(
+                exec_cfg.get("slippage_per_share", 0.01)
+            ),
             "execution.eod_exit_minute": int(exec_cfg.get("eod_exit_minute", 389)),
-            "execution.no_new_after_minute": int(exec_cfg.get("no_new_after_minute", 360)),
-            "execution.recompute_target_from_entry": bool(exec_cfg.get("recompute_target_from_entry", True)),
-            "execution.min_risk_per_share": float(exec_cfg.get("min_risk_per_share", 0.03)),
+            "execution.no_new_after_minute": int(
+                exec_cfg.get("no_new_after_minute", 360)
+            ),
+            "execution.recompute_target_from_entry": bool(
+                exec_cfg.get("recompute_target_from_entry", True)
+            ),
+            "execution.min_risk_per_share": float(
+                exec_cfg.get("min_risk_per_share", 0.03)
+            ),
             "system.max_open_positions": int(exec_cfg.get("max_open_positions", 1)),
         },
     }
@@ -241,9 +273,11 @@ def _build_layer2_train_configs(
     _write_yaml(sweep_path, sweep_doc)
     return base_path, sweep_path
 
+
 # =============================================================================
 # Candidate ID hygiene (avoid collisions across experiments)
 # =============================================================================
+
 
 def _rename_candidate_prefix(selected_dir: Path, *, prefix: str) -> None:
     """Rename FAILED_ORB_001 -> MINIWFO_FAILED_ORB_001 and update YAML bodies + selected_candidates.csv."""
@@ -295,9 +329,11 @@ def _rename_candidate_prefix(selected_dir: Path, *, prefix: str) -> None:
         df["config_yaml"] = df["config_yaml"].map(_rewrite_cell)
     df.to_csv(csv_path, index=False)
 
+
 # =============================================================================
 # Layer 2 sweep helpers / curated export
 # =============================================================================
+
 
 def _latest_sweep_dir(root: Path) -> Path | None:
     if not root.is_dir():
@@ -324,9 +360,11 @@ def _copy_curated_train_outputs(exp_root: Path, analysis: Path) -> None:
         if src.is_file():
             shutil.copy2(src, exp_root / dst_name)
 
+
 # =============================================================================
 # Reference comparisons (from previously recorded smoke baselines)
 # =============================================================================
+
 
 def _reference_comparison_rows(test_window: str) -> list[ComparisonRow]:
     return [
@@ -360,9 +398,11 @@ def _reference_comparison_rows(test_window: str) -> list[ComparisonRow]:
         ),
     ]
 
+
 # =============================================================================
 # Main pipeline: Layer 1 → candidates → Layer 2 → postprocess → freeze → test
 # =============================================================================
+
 
 def _run_full_pipeline(
     cfg: dict[str, Any],
@@ -394,36 +434,42 @@ def _run_full_pipeline(
     diag = [str(x) for x in (l1.get("allow_optional_diagnostics") or [])]
     strategies_csv = ",".join(primary + diag)
     tag_l1 = str(l1.get("tag") or tag)
-    testing_cfgs = (l1.get("testing_configs") or {}) if isinstance(l1.get("testing_configs"), dict) else {}
+    testing_cfgs = (
+        (l1.get("testing_configs") or {})
+        if isinstance(l1.get("testing_configs"), dict)
+        else {}
+    )
 
     if resume_from == "all":
         l1_cmd = [
-                sys.executable,
-                str(cwd / "src/research/run_layer1_focused.py"),
-                "--asset",
-                str(cfg.get("asset", "equity")),
-                "--symbols",
-                "QQQ",
-                "--start",
-                str(train["start"]),
-                "--end",
-                str(train["end"]),
-                "--strategies",
-                strategies_csv,
-                "--tag",
-                tag_l1,
-                "--output-root",
-                str(layer1_root),
-                "--top",
-                str(int(l1.get("top_per_strategy", 5)) * 20),
-                "--min-trades",
-                "20",
+            sys.executable,
+            str(cwd / "src/research/run_layer1_focused.py"),
+            "--asset",
+            str(cfg.get("asset", "equity")),
+            "--symbols",
+            "QQQ",
+            "--start",
+            str(train["start"]),
+            "--end",
+            str(train["end"]),
+            "--strategies",
+            strategies_csv,
+            "--tag",
+            tag_l1,
+            "--output-root",
+            str(layer1_root),
+            "--top",
+            str(int(l1.get("top_per_strategy", 5)) * 20),
+            "--min-trades",
+            "20",
         ]
         for strat, pth in sorted(testing_cfgs.items()):
             l1_cmd.extend(["--testing-config-override", f"{strat}={pth}"])
         _run_cmd(l1_cmd, cwd=cwd)
 
-        shutil.copy2(layer1_root / "sweep_manifest.csv", exp_root / "train_layer1_manifest.csv")
+        shutil.copy2(
+            layer1_root / "sweep_manifest.csv", exp_root / "train_layer1_manifest.csv"
+        )
 
         cs = cfg.get("candidate_selection") or {}
         strict = cs.get("strict") or {}
@@ -437,7 +483,13 @@ def _run_full_pipeline(
             "--output-root",
             str(train_candidates),
             "--top-per-strategy",
-            str(int(cs.get("max_candidates_per_strategy") or l1.get("top_per_strategy") or 5)),
+            str(
+                int(
+                    cs.get("max_candidates_per_strategy")
+                    or l1.get("top_per_strategy")
+                    or 5
+                )
+            ),
             "--min-trades",
             str(int(strict.get("min_trades", 40))),
             "--min-profit-factor",
@@ -471,11 +523,17 @@ def _run_full_pipeline(
             )
         _run_cmd(sel_cmd, cwd=cwd)
 
-        shutil.copy2(train_candidates / "candidate_summary.md", exp_root / "train_candidate_summary.md")
+        shutil.copy2(
+            train_candidates / "candidate_summary.md",
+            exp_root / "train_candidate_summary.md",
+        )
 
         _rename_candidate_prefix(sel_dir, prefix="MINIWFO")
 
-        shutil.copy2(train_candidates / "selected_candidates.csv", exp_root / "train_selected_candidates.csv")
+        shutil.copy2(
+            train_candidates / "selected_candidates.csv",
+            exp_root / "train_selected_candidates.csv",
+        )
     else:
         if resume_from in ("layer2", "after_sweep"):
             if not sel_dir.is_dir() or not any(sel_dir.glob("*.yaml")):
@@ -483,17 +541,26 @@ def _run_full_pipeline(
                     f"--resume-from {resume_from} requires existing YAMLs under {sel_dir}"
                 )
             man_csv = layer1_root / "sweep_manifest.csv"
-            if man_csv.is_file() and not (exp_root / "train_layer1_manifest.csv").is_file():
+            if (
+                man_csv.is_file()
+                and not (exp_root / "train_layer1_manifest.csv").is_file()
+            ):
                 shutil.copy2(man_csv, exp_root / "train_layer1_manifest.csv")
             csum = train_candidates / "candidate_summary.md"
-            if csum.is_file() and not (exp_root / "train_candidate_summary.md").is_file():
+            if (
+                csum.is_file()
+                and not (exp_root / "train_candidate_summary.md").is_file()
+            ):
                 shutil.copy2(csum, exp_root / "train_candidate_summary.md")
             scsv = train_candidates / "selected_candidates.csv"
             if scsv.is_file():
                 shutil.copy2(scsv, exp_root / "train_selected_candidates.csv")
 
     base_cfg_path, sweep_cfg_path = _build_layer2_train_configs(
-        cfg, exp_root=exp_root, cwd=cwd, signal_cache_root_override=signal_cache_root if use_signal_cache else None
+        cfg,
+        exp_root=exp_root,
+        cwd=cwd,
+        signal_cache_root_override=signal_cache_root if use_signal_cache else None,
     )
 
     if resume_from == "after_sweep":
@@ -634,32 +701,49 @@ def _run_full_pipeline(
     exp_name = str(cfg["experiment"].get("name") or "mini_wfo")
     sys_id = f"{exp_name}_frozen_rank1"
 
-    metrics_train = {k: best.get(k) for k in ("trades", "total_r", "profit_factor", "profit_factor_r", "max_drawdown_r", "combiner_score")}
+    metrics_train = {
+        k: best.get(k)
+        for k in (
+            "trades",
+            "total_r",
+            "profit_factor",
+            "profit_factor_r",
+            "max_drawdown_r",
+            "combiner_score",
+        )
+    }
 
     frozen_doc = _to_yaml_plain(
         {
-        "system_id": sys_id,
-        "source": {
-            "train_start": train["start"],
-            "train_end": train["end"],
-            "selected_from": "train_layer2_behavior_unique",
-            "selected_rank": 1,
-        },
-        "candidate_root": str(sel_dir.resolve().as_posix()),
-        "candidate_ids": cand_ids,
-        "combiner": merged,
-        "cost": {
-            "commission_per_trade": merged.get("execution", {}).get("commission_per_trade"),
-            "slippage_per_share": merged.get("execution", {}).get("slippage_per_share"),
-            "stress_slippage_per_share": (cfg.get("execution") or {}).get("stress_slippage_per_share") or [0.02, 0.03],
-        },
-        "selection_reason": (
-            "Train-only gates + primary-set preference + MTD/cooldown/priority policy scoring "
-            f"(audit={json.dumps(audit, default=str)})"
-        ),
-        "selection_metrics_train": metrics_train,
-        "live_ready": False,
-        "research_status": "mini_wfo_selected_train_only",
+            "system_id": sys_id,
+            "source": {
+                "train_start": train["start"],
+                "train_end": train["end"],
+                "selected_from": "train_layer2_behavior_unique",
+                "selected_rank": 1,
+            },
+            "candidate_root": str(sel_dir.resolve().as_posix()),
+            "candidate_ids": cand_ids,
+            "combiner": merged,
+            "cost": {
+                "commission_per_trade": merged.get("execution", {}).get(
+                    "commission_per_trade"
+                ),
+                "slippage_per_share": merged.get("execution", {}).get(
+                    "slippage_per_share"
+                ),
+                "stress_slippage_per_share": (cfg.get("execution") or {}).get(
+                    "stress_slippage_per_share"
+                )
+                or [0.02, 0.03],
+            },
+            "selection_reason": (
+                "Train-only gates + primary-set preference + MTD/cooldown/priority policy scoring "
+                f"(audit={json.dumps(audit, default=str)})"
+            ),
+            "selection_metrics_train": metrics_train,
+            "live_ready": False,
+            "research_status": "mini_wfo_selected_train_only",
         }
     )
     _write_yaml(frozen_dir / "selected_frozen_system.yaml", frozen_doc)
@@ -683,7 +767,9 @@ def _run_full_pipeline(
         "Selection uses **train 2023–2024 only**; test performance is out-of-sample for this YAML.",
         "",
     ]
-    (frozen_dir / "selection_decision.md").write_text("\n".join(decision_md), encoding="utf-8")
+    (frozen_dir / "selection_decision.md").write_text(
+        "\n".join(decision_md), encoding="utf-8"
+    )
 
     (exp_root / "train_layer2_selection_audit.md").write_text(
         "# Train Layer 2 selection audit\n\n```json\n"
@@ -693,7 +779,9 @@ def _run_full_pipeline(
     )
 
     exec_o = cfg.get("execution") or {}
-    stress = [float(x) for x in (exec_o.get("stress_slippage_per_share") or [0.02, 0.03])]
+    stress = [
+        float(x) for x in (exec_o.get("stress_slippage_per_share") or [0.02, 0.03])
+    ]
     out_o = cfg.get("outputs") or {}
 
     test_root.mkdir(parents=True, exist_ok=True)
@@ -717,7 +805,9 @@ def _run_full_pipeline(
         save_compact_trades=bool(out_o.get("save_compact_trades")),
         save_full_signal_logs=bool(out_o.get("save_full_signal_logs")),
         save_rejected_signals=bool(out_o.get("save_rejected_signals")),
-        stress_slippages=sorted(set([float(exec_o.get("slippage_per_share", 0.01))] + stress)),
+        stress_slippages=sorted(
+            set([float(exec_o.get("slippage_per_share", 0.01))] + stress)
+        ),
         save_monthly_breakdown=bool(out_o.get("save_monthly_breakdown", True)),
         save_equity=False,
         tag=f"{tag}_test",
@@ -728,9 +818,15 @@ def _run_full_pipeline(
     if (test_root / "cost_stress.csv").is_file():
         shutil.copy2(test_root / "cost_stress.csv", test_root / "test_cost_stress.csv")
     if (test_root / "monthly_breakdown.csv").is_file():
-        shutil.copy2(test_root / "monthly_breakdown.csv", test_root / "test_monthly_breakdown.csv")
+        shutil.copy2(
+            test_root / "monthly_breakdown.csv",
+            test_root / "test_monthly_breakdown.csv",
+        )
     if (test_root / "daily_trade_number_breakdown.csv").is_file():
-        shutil.copy2(test_root / "daily_trade_number_breakdown.csv", test_root / "test_daily_trade_number_breakdown.csv")
+        shutil.copy2(
+            test_root / "daily_trade_number_breakdown.csv",
+            test_root / "test_daily_trade_number_breakdown.csv",
+        )
 
     metrics_json = test_root / "metrics.json"
     summary_txt = ["# Mini-WFO test summary", ""]
@@ -739,7 +835,9 @@ def _run_full_pipeline(
             mj = json.load(f)
         for k in sorted(mj.keys()):
             summary_txt.append(f"- **{k}**: {mj[k]}")
-    (test_root / "test_summary.md").write_text("\n".join(summary_txt) + "\n", encoding="utf-8")
+    (test_root / "test_summary.md").write_text(
+        "\n".join(summary_txt) + "\n", encoding="utf-8"
+    )
 
     test_win = f"{test['start']} — {test['end']}"
     rows = _reference_comparison_rows(test_win)
@@ -775,13 +873,22 @@ def _run_full_pipeline(
             interpretation="Causal path: Layer 1+2 on train only, frozen for test.",
         )
     )
-    pd.DataFrame([r.as_dict() for r in rows]).to_csv(exp_root / "comparison_to_fixed_smoke.csv", index=False)
-    cmp_md = ["# Comparison to fixed smoke references", "", "| system | trades | total_r | PF_R | note |", "|---|---:|---:|---|---|"]
+    pd.DataFrame([r.as_dict() for r in rows]).to_csv(
+        exp_root / "comparison_to_fixed_smoke.csv", index=False
+    )
+    cmp_md = [
+        "# Comparison to fixed smoke references",
+        "",
+        "| system | trades | total_r | PF_R | note |",
+        "|---|---:|---:|---|---|",
+    ]
     for r in rows:
         cmp_md.append(
             f"| {r.system} | {r.trades} | {r.total_r} | {r.PF_R} | {r.interpretation[:80]}… |"
         )
-    (exp_root / "comparison_to_fixed_smoke.md").write_text("\n".join(cmp_md) + "\n", encoding="utf-8")
+    (exp_root / "comparison_to_fixed_smoke.md").write_text(
+        "\n".join(cmp_md) + "\n", encoding="utf-8"
+    )
 
     # LOOKAHEAD diagnostic only (never used for selection).
     _write_oracle_diagnostic(
@@ -792,16 +899,21 @@ def _run_full_pipeline(
         cost_df_train=cost_df,
         selected_row=best,
         top_n=min(50, len(behavior_df)) if len(behavior_df) else 0,
-        signal_cache_root_override=str(signal_cache_root) if signal_cache_root else None,
+        signal_cache_root_override=(
+            str(signal_cache_root) if signal_cache_root else None
+        ),
     )
 
-    decision = _classify_decision(m_last, test_root / "monthly_breakdown.csv", test_root / "cost_stress.csv")
+    decision = _classify_decision(
+        m_last, test_root / "monthly_breakdown.csv", test_root / "cost_stress.csv"
+    )
     fill = _enrich_summary_placeholders(exp_root, best)
     summary_md = _build_final_summary(cfg, exp_root, decision, m_last, fill)
     (exp_root / "mini_wfo_summary.md").write_text(summary_md, encoding="utf-8")
 
     print(f"[mini_wfo] DONE decision={decision} root={exp_root}", flush=True)
     return 0
+
 
 # =============================================================================
 # Reporting helpers (summary fill + decision heuristics)
@@ -834,7 +946,9 @@ def _write_selection_audit(
 
     slip002_by_ur: dict[int, float] | None = None
     if cost_df is not None and len(cost_df) and "unique_rank" in cost_df.columns:
-        sub = cost_df[cost_df["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9]
+        sub = cost_df[
+            cost_df["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9
+        ]
         slip002_by_ur = {}
         for ur, g in sub.groupby("unique_rank"):
             slip002_by_ur[int(ur)] = float(g.iloc[0].get("total_r", 0.0) or 0.0)
@@ -861,10 +975,14 @@ def _write_selection_audit(
                 "candidate_ids_json": r.get("candidate_ids_json"),
                 "train_trades": r.get("trades"),
                 "train_total_r": r.get("total_r"),
-                "train_profit_factor_r": r.get("profit_factor_r", r.get("profit_factor")),
+                "train_profit_factor_r": r.get(
+                    "profit_factor_r", r.get("profit_factor")
+                ),
                 "train_max_drawdown_r": r.get("max_drawdown_r"),
                 "train_slip_0_02_total_r": (
-                    slip002_by_ur.get(int(r.get("unique_rank") or -1)) if slip002_by_ur else None
+                    slip002_by_ur.get(int(r.get("unique_rank") or -1))
+                    if slip002_by_ur
+                    else None
                 ),
                 "eligible": bool(eligible),
                 "rejection_reasons": "|".join(reasons),
@@ -899,21 +1017,30 @@ def _write_selection_audit(
         f"- eligible_rows_after_filters: **{int(df_out['eligible'].sum()) if 'eligible' in df_out.columns and len(df_out) else 0}**",
         "",
     ]
-    (exp_root / "selection_audit.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+    (exp_root / "selection_audit.md").write_text(
+        "\n".join(md_lines) + "\n", encoding="utf-8"
+    )
 
     out_json = {
         "train_window": cfg.get("train") or {},
         "test_window": cfg.get("test") or {},
         "strategy_universe_layer1": (cfg.get("layer1") or {}).get("strategies") or [],
-        "optional_diagnostics_layer1": (cfg.get("layer1") or {}).get("allow_optional_diagnostics") or [],
+        "optional_diagnostics_layer1": (cfg.get("layer1") or {}).get(
+            "allow_optional_diagnostics"
+        )
+        or [],
         "layer2_grid_raw_size": layer2_raw_combo_count((layer2_meta.get("grid") or {})),
         "selection_rules": sel,
         "selection_meta": selection_meta,
         "selected_candidate_set": str(selected_row.get("candidate_set", "")),
-        "selected_candidate_ids": json.loads(str(selected_row.get("candidate_ids_json"))),
+        "selected_candidate_ids": json.loads(
+            str(selected_row.get("candidate_ids_json"))
+        ),
         "systems_considered": df_out.to_dict(orient="records"),
     }
-    (exp_root / "selection_audit.json").write_text(json.dumps(out_json, indent=2, default=str), encoding="utf-8")
+    (exp_root / "selection_audit.json").write_text(
+        json.dumps(out_json, indent=2, default=str), encoding="utf-8"
+    )
 
 
 def _write_oracle_diagnostic(
@@ -933,13 +1060,22 @@ def _write_oracle_diagnostic(
 
     if behavior_df is None or len(behavior_df) == 0:
         out_csv.write_text("", encoding="utf-8")
-        out_md.write_text("# ORACLE / LOOKAHEAD DIAGNOSTIC (empty)\n\nNo behavior-unique rows available.\n", encoding="utf-8")
+        out_md.write_text(
+            "# ORACLE / LOOKAHEAD DIAGNOSTIC (empty)\n\nNo behavior-unique rows available.\n",
+            encoding="utf-8",
+        )
         return
 
     # Train cost stress at 0.02 (for reporting only).
     train_slip002_by_ur: dict[int, float] = {}
-    if cost_df_train is not None and len(cost_df_train) and "unique_rank" in cost_df_train.columns:
-        sub = cost_df_train[cost_df_train["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9]
+    if (
+        cost_df_train is not None
+        and len(cost_df_train)
+        and "unique_rank" in cost_df_train.columns
+    ):
+        sub = cost_df_train[
+            cost_df_train["slippage_per_share"].astype(float).sub(0.02).abs() < 1e-9
+        ]
         for ur, g in sub.groupby("unique_rank"):
             train_slip002_by_ur[int(ur)] = float(g.iloc[0].get("total_r", 0.0) or 0.0)
 
@@ -956,9 +1092,13 @@ def _write_oracle_diagnostic(
     test_stress_df = cost_stress(
         unique_df=head,
         output_root=oracle_root,
-        candidate_root=Path(str((cfg.get("paths") or {}).get("output_root", exp_root)))  # unused; overwritten below
-        if False
-        else Path(exp_root / "train_candidates" / "selected_candidates"),
+        candidate_root=(
+            Path(
+                str((cfg.get("paths") or {}).get("output_root", exp_root))
+            )  # unused; overwritten below
+            if False
+            else Path(exp_root / "train_candidates" / "selected_candidates")
+        ),
         base_config_path=base_layer2_config_path,
         asset=str(cfg.get("asset", "equity")),
         symbol=str(cfg.get("symbol", "QQQ")),
@@ -967,7 +1107,8 @@ def _write_oracle_diagnostic(
         data_dir="data/raw/ibkr",
         top_n=int(top_n),
         use_signal_cache=True,
-        signal_cache_root=signal_cache_root_override or (cfg.get("cache") or {}).get("signal_cache_root"),
+        signal_cache_root=signal_cache_root_override
+        or (cfg.get("cache") or {}).get("signal_cache_root"),
     )
 
     def _pick(df: pd.DataFrame, *, slip: float) -> pd.DataFrame:
@@ -976,7 +1117,9 @@ def _write_oracle_diagnostic(
     base01 = _pick(test_stress_df, slip=0.01)
     base02 = _pick(test_stress_df, slip=0.02)
 
-    def _best_row(df: pd.DataFrame, col: str, *, require_pos: bool = False) -> pd.Series | None:
+    def _best_row(
+        df: pd.DataFrame, col: str, *, require_pos: bool = False
+    ) -> pd.Series | None:
         if df is None or len(df) == 0 or col not in df.columns:
             return None
         d = df.copy()
@@ -1004,24 +1147,43 @@ def _write_oracle_diagnostic(
             "cooldown": r.get("cooldown_after_loss_minutes"),
             "priority_policy": r.get("priority_policy"),
             "candidate_ids": r.get("candidate_ids_json"),
-            "train_total_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("total_r"))
-            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
-            else None,
-            "train_pf_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("profit_factor_r"))
-            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
-            else None,
-            "train_maxdd_r": float(behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("max_drawdown_r"))
-            if "unique_rank" in behavior_df.columns and len(behavior_df[behavior_df["unique_rank"] == ur])
-            else None,
+            "train_total_r": (
+                float(
+                    behavior_df[behavior_df["unique_rank"] == ur].iloc[0].get("total_r")
+                )
+                if "unique_rank" in behavior_df.columns
+                and len(behavior_df[behavior_df["unique_rank"] == ur])
+                else None
+            ),
+            "train_pf_r": (
+                float(
+                    behavior_df[behavior_df["unique_rank"] == ur]
+                    .iloc[0]
+                    .get("profit_factor_r")
+                )
+                if "unique_rank" in behavior_df.columns
+                and len(behavior_df[behavior_df["unique_rank"] == ur])
+                else None
+            ),
+            "train_maxdd_r": (
+                float(
+                    behavior_df[behavior_df["unique_rank"] == ur]
+                    .iloc[0]
+                    .get("max_drawdown_r")
+                )
+                if "unique_rank" in behavior_df.columns
+                and len(behavior_df[behavior_df["unique_rank"] == ur])
+                else None
+            ),
             "train_0_02_total_r": train_slip002_by_ur.get(ur),
             "test_total_r": r.get("total_r"),
             "test_pf_r": r.get("profit_factor_r"),
             "test_maxdd_r": r.get("max_drawdown_r"),
-            "test_0_02_total_r": float(
-                base02[base02["unique_rank"] == ur].iloc[0].get("total_r")
-            )
-            if len(base02[base02["unique_rank"] == ur])
-            else None,
+            "test_0_02_total_r": (
+                float(base02[base02["unique_rank"] == ur].iloc[0].get("total_r"))
+                if len(base02[base02["unique_rank"] == ur])
+                else None
+            ),
             "interpretation": "ORACLE (LOOKAHEAD): evaluated on test; never selectable.",
         }
 
@@ -1048,7 +1210,9 @@ def _write_oracle_diagnostic(
     out_md.write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
-def _enrich_summary_placeholders(exp_root: Path, best: pd.Series | None) -> dict[str, str]:
+def _enrich_summary_placeholders(
+    exp_root: Path, best: pd.Series | None
+) -> dict[str, str]:
     """Replace placeholder lines in render_mini_wfo_summary_md."""
     out: dict[str, str] = {}
 
@@ -1073,7 +1237,20 @@ def _enrich_summary_placeholders(exp_root: Path, best: pd.Series | None) -> dict
     bh = exp_root / "train_layer2_behavior_unique.csv"
     if bh.is_file() and Path(bh).stat().st_size > 0:
         bdf = pd.read_csv(bh)
-        cols = [c for c in ("behavior_rank", "candidate_set", "top_per_strategy", "max_trades_per_day", "trades", "total_r", "profit_factor_r", "max_drawdown_r") if c in bdf.columns]
+        cols = [
+            c
+            for c in (
+                "behavior_rank",
+                "candidate_set",
+                "top_per_strategy",
+                "max_trades_per_day",
+                "trades",
+                "total_r",
+                "profit_factor_r",
+                "max_drawdown_r",
+            )
+            if c in bdf.columns
+        ]
         out["l2"] = _md_table(bdf.head(15)[cols]) + "\n"
     else:
         out["l2"] = "*(no behavior-unique table)*\n"
@@ -1111,7 +1288,9 @@ def _enrich_summary_placeholders(exp_root: Path, best: pd.Series | None) -> dict
             for slip in (0.02, 0.03):
                 row = cdf[(cdf["slippage_per_share"].astype(float) - slip).abs() < 1e-9]
                 if len(row):
-                    out["test"] += f"| slip_{slip:g}_total_r | {row.iloc[0]['total_r']} |\n"
+                    out[
+                        "test"
+                    ] += f"| slip_{slip:g}_total_r | {row.iloc[0]['total_r']} |\n"
     else:
         out["test"] = "*(test metrics missing)*\n"
 
@@ -1125,8 +1304,23 @@ def _enrich_summary_placeholders(exp_root: Path, best: pd.Series | None) -> dict
             mo2["abs_r"] = mo2["total_r"].astype(float).abs()
             dom = mo2.loc[mo2["abs_r"].idxmax(), "period"] if len(mo2) else ""
             frac = _monthly_concentration(mb)
-            out["monthly"] = _md_table(mo[["period", "trades", "total_r", "profit_factor_r", "max_drawdown_r"]]) + "\n\n"
-            out["monthly"] += f"- **Largest |monthly total_r|:** {dom} (concentration ratio max|R|/sum|R| ≈ {frac:.2f} if defined).\n"
+            out["monthly"] = (
+                _md_table(
+                    mo[
+                        [
+                            "period",
+                            "trades",
+                            "total_r",
+                            "profit_factor_r",
+                            "max_drawdown_r",
+                        ]
+                    ]
+                )
+                + "\n\n"
+            )
+            out[
+                "monthly"
+            ] += f"- **Largest |monthly total_r|:** {dom} (concentration ratio max|R|/sum|R| ≈ {frac:.2f} if defined).\n"
         else:
             out["monthly"] = "*(empty monthly breakdown)*\n"
     else:
@@ -1161,7 +1355,9 @@ def _monthly_concentration(mb_path: Path) -> float | None:
     return top / s
 
 
-def _classify_decision(metrics: dict[str, Any], monthly_csv: Path, cost_csv: Path | None = None) -> str:
+def _classify_decision(
+    metrics: dict[str, Any], monthly_csv: Path, cost_csv: Path | None = None
+) -> str:
     tr = float(metrics.get("total_r") or 0.0)
     pfr = float(metrics.get("profit_factor_r") or metrics.get("profit_factor") or 0.0)
     mc = _monthly_concentration(monthly_csv)
@@ -1201,7 +1397,9 @@ def _build_final_summary(
             "(Filled by mini-WFO runner from manifest + selected candidates.)",
             fill.get("l1", ""),
         )
-        base = base.replace("(Filled by runner from behavior-unique / cost tables.)", fill.get("l2", ""))
+        base = base.replace(
+            "(Filled by runner from behavior-unique / cost tables.)", fill.get("l2", "")
+        )
         base = base.replace("(Filled by runner.)", fill.get("frozen", ""), 1)
         base = base.replace("(Filled by runner.)", fill.get("test", ""), 1)
         base = base.replace("(Filled by runner.)", fill.get("monthly", ""), 1)
@@ -1211,7 +1409,9 @@ def _build_final_summary(
         if "## 8. Monthly stability" in base and fill.get("daily"):
             base = base.replace(
                 "## 8. Monthly stability",
-                "### Daily trade-number profile\n\n" + fill["daily"] + "\n## 8. Monthly stability",
+                "### Daily trade-number profile\n\n"
+                + fill["daily"]
+                + "\n## 8. Monthly stability",
             )
     extra = [
         "---",
@@ -1225,9 +1425,13 @@ def _build_final_summary(
         "",
     ]
     if decision == "PASS":
-        extra.append("Proceed toward **full Layer 3 WFO v1** with a **reduced grid** aligned to this family.")
+        extra.append(
+            "Proceed toward **full Layer 3 WFO v1** with a **reduced grid** aligned to this family."
+        )
     elif decision == "CAUTION":
-        extra.append("Run **one more mini-WFO** or refine the strategy family before full WFO.")
+        extra.append(
+            "Run **one more mini-WFO** or refine the strategy family before full WFO."
+        )
     else:
         extra.append("Return to **Layer 1 family / diagnosis** before expanding scope.")
     extra.append("")

@@ -16,38 +16,65 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from src.strategies.strategy.adx_dmi_trend_continuation import AdxDmiTrendContinuationStrategy
+from src.strategies.strategy.adx_dmi_trend_continuation import (
+    AdxDmiTrendContinuationStrategy,
+)
 from src.strategies.strategy.afternoon_continuation import AfternoonContinuationStrategy
-from src.strategies.strategy.base import BaseStrategy, validate_required_features_no_lookahead
-from src.strategies.strategy.bollinger_band_fade_chop import BollingerBandFadeChopStrategy
-from src.strategies.strategy.bollinger_squeeze_breakout import BollingerSqueezeBreakoutStrategy
+from src.strategies.strategy.base import (
+    BaseStrategy,
+    validate_required_features_no_lookahead,
+)
+from src.strategies.strategy.bollinger_band_fade_chop import (
+    BollingerBandFadeChopStrategy,
+)
+from src.strategies.strategy.bollinger_squeeze_breakout import (
+    BollingerSqueezeBreakoutStrategy,
+)
 from src.strategies.strategy.cci_extreme_snapback import CciExtremeSnapbackStrategy
-from src.strategies.strategy.consecutive_bar_exhaustion import ConsecutiveBarExhaustionStrategy
-from src.strategies.strategy.donchian_channel_breakout import DonchianChannelBreakoutStrategy
+from src.strategies.strategy.consecutive_bar_exhaustion import (
+    ConsecutiveBarExhaustionStrategy,
+)
+from src.strategies.strategy.donchian_channel_breakout import (
+    DonchianChannelBreakoutStrategy,
+)
 from src.strategies.strategy.failed_orb import FailedOrbStrategy
 from src.strategies.strategy.gap_acceptance_failure import GapAcceptanceFailureStrategy
 from src.strategies.strategy.intraday_ma_crossover import IntradayMaCrossoverStrategy
 from src.strategies.strategy.large_candle_failure import LargeCandleFailureStrategy
 from src.strategies.strategy.macd_momentum_turn import MacdMomentumTurnStrategy
-from src.strategies.strategy.midday_compression_breakout import MiddayCompressionBreakoutStrategy
+from src.strategies.strategy.midday_compression_breakout import (
+    MiddayCompressionBreakoutStrategy,
+)
 from src.strategies.strategy.multi_day_level_trap import MultiDayLevelTrapStrategy
 from src.strategies.strategy.orb_continuation import ORBContinuationStrategy
-from src.strategies.strategy.orb_retest_continuation import OrbRetestContinuationStrategy
+from src.strategies.strategy.orb_retest_continuation import (
+    OrbRetestContinuationStrategy,
+)
 from src.strategies.strategy.prior_close_reclaim import PriorCloseReclaimStrategy
 from src.strategies.strategy.prior_day_level_trap import PriorDayLevelTrapStrategy
 from src.strategies.strategy.pa_broad_channel_zone import PaBroadChannelZoneStrategy
 from src.strategies.strategy.pa_buy_sell_close_trend import PaBuySellCloseTrendStrategy
 from src.strategies.strategy.pa_climax_reversal import PaClimaxReversalStrategy
-from src.strategies.strategy.pa_failed_range_breakout_trap import PaFailedRangeBreakoutTrapStrategy
-from src.strategies.strategy.pa_generic_breakout_pullback import PaGenericBreakoutPullbackStrategy
+from src.strategies.strategy.pa_failed_range_breakout_trap import (
+    PaFailedRangeBreakoutTrapStrategy,
+)
+from src.strategies.strategy.pa_generic_breakout_pullback import (
+    PaGenericBreakoutPullbackStrategy,
+)
 from src.strategies.strategy.pa_mtr_reversal import PaMtrReversalStrategy
-from src.strategies.strategy.pa_second_entry_pullback import PaSecondEntryPullbackStrategy
-from src.strategies.strategy.pa_tight_channel_pullback import PaTightChannelPullbackStrategy
+from src.strategies.strategy.pa_second_entry_pullback import (
+    PaSecondEntryPullbackStrategy,
+)
+from src.strategies.strategy.pa_tight_channel_pullback import (
+    PaTightChannelPullbackStrategy,
+)
 from src.strategies.strategy.pa_trading_range_bls_hs import PaTradingRangeBlsHsStrategy
 from src.strategies.strategy.pa_wedge_reversal import PaWedgeReversalStrategy
 from src.strategies.strategy.rsi_failure_swing import RsiFailureSwingStrategy
 from src.strategies.strategy.sma20_reclaim_reject import Sma20ReclaimRejectStrategy
-from src.strategies.strategy.stochastic_oversold_cross import StochasticOversoldCrossStrategy
+from src.strategies.strategy.stochastic_oversold_cross import (
+    StochasticOversoldCrossStrategy,
+)
 from src.strategies.strategy.supertrend_atr_flip import SupertrendAtrFlipStrategy
 from src.strategies.strategy.vwap_reclaim_reject import VwapReclaimRejectStrategy
 from src.strategies.strategy.vwap_reversal import VWAPReversalStrategy
@@ -110,7 +137,9 @@ def load_strategy(name: str) -> BaseStrategy:
     if cls is None:
         raise ValueError(f"unknown strategy: {name!r}")
     s = cls()
-    validate_required_features_no_lookahead(strategy_name=s.name, required_features=s.required_features())
+    validate_required_features_no_lookahead(
+        strategy_name=s.name, required_features=s.required_features()
+    )
     return s
 
 

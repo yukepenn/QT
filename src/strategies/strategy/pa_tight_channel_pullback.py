@@ -64,8 +64,12 @@ class PaTightChannelPullbackStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.tight_bull_score_min", sig.get("tight_bull_score_min", 0.38))
-        validate_nonnegative_number("signal.max_pullback_depth_atr", sig.get("max_pullback_depth_atr", 1.1))
+        validate_nonnegative_number(
+            "signal.tight_bull_score_min", sig.get("tight_bull_score_min", 0.38)
+        )
+        validate_nonnegative_number(
+            "signal.max_pullback_depth_atr", sig.get("max_pullback_depth_atr", 1.1)
+        )
         sm = str(risk.get("stop_mode", "pullback_low"))
         if sm not in ("pullback_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -111,7 +115,9 @@ class PaTightChannelPullbackStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaTcpCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaTcpCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_regime_window(config)
         ac = atr_col_name(config)
@@ -149,7 +155,9 @@ class PaTightChannelPullbackStrategy(BaseStrategy):
             vwap=work["vwap"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaTcpCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -198,12 +206,20 @@ class PaTightChannelPullbackStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

@@ -1,4 +1,4 @@
-# Secrets / env
+# Secrets
 .env
 .venv/
 venv/
@@ -17,20 +17,20 @@ venv/
 *.memmap
 *.parquet
 
-# Local research caches / dumps (never commit)
-.cache/
-data/cache/
-PROJECT_STRUCTURE_AND_SCRIPTS.txt
-
 # Jupyter / OS
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
 
-# Raw market data (do not commit)
+# Caches
+.cache/
+data/cache/
+PROJECT_STRUCTURE_AND_SCRIPTS.txt
+
+# Data
 data/raw/
 
-# Heavy generated combiner outputs (keep curated CSV/MD via negation below)
+# Heavy combiner outputs (keep curated CSV/MD via negation below)
 src/combiner/results/benchmarks/
 src/combiner/results/**/trades.csv
 src/combiner/results/**/equity.csv
@@ -42,7 +42,7 @@ src/combiner/results/**/run_*/
 src/combiner/results/**/fixed_runs/
 src/combiner/results/**/sweep_*/
 
-# Heavy generated research outputs (keep curated summaries in src/research/results)
+# Heavy research outputs (keep curated summaries in src/research/results)
 src/research/results/**/trades.csv
 src/research/results/**/equity.csv
 src/research/results/**/candidate_signal_log.csv
@@ -51,7 +51,7 @@ src/research/results/**/top_runs/
 src/research/results/**/run_*/
 src/research/results/**/sweep_*/
 
-# Layer 3 walkforward smoke — heavy paths (curated CSV/MD via selective git add)
+# Heavy walkforward outputs (curated CSV/MD via selective git add)
 src/walkforward/results/**/trades.csv
 src/walkforward/results/**/equity.csv
 src/walkforward/results/**/candidate_signal_log.csv
@@ -86,12 +86,12 @@ src/research/results/**/candidate_signal_log.csv
 src/research/results/**/rejected_signals.csv
 src/walkforward/results/**/config_resolved.yaml
 
-# Strategy sweep heavy outputs
+# Heavy strategy outputs (per-strategy sweep trees)
 src/strategies/testing_parameters_results/**/trades.csv
 src/strategies/testing_parameters_results/**/equity.csv
 src/strategies/testing_parameters_results/**/sweep_*/
 
-# Curated Layer 2 / research summaries (force-include)
+# Curated summaries (force-include exceptions for tracked CSV/MD/YAML)
 !src/combiner/results/layer2_qqq_v1/layer2_summary.md
 !src/combiner/results/layer2_qqq_v1/fixed_run_summary.csv
 !src/combiner/results/layer2_qqq_v1/fixed_run_summary.md

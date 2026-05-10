@@ -63,7 +63,9 @@ class PaFailedRangeBreakoutTrapStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.fail_window_bars", sig.get("fail_window_bars", 4))
+        validate_nonnegative_number(
+            "signal.fail_window_bars", sig.get("fail_window_bars", 4)
+        )
         sm = str(risk.get("stop_mode", "failed_extreme"))
         if sm not in ("failed_extreme", "range_low_buffer", "signal_low"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -109,7 +111,9 @@ class PaFailedRangeBreakoutTrapStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaFbTrapCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaFbTrapCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -140,7 +144,9 @@ class PaFailedRangeBreakoutTrapStrategy(BaseStrategy):
             pa_tr=work[trs].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaFbTrapCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -182,12 +188,20 @@ class PaFailedRangeBreakoutTrapStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

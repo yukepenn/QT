@@ -208,7 +208,12 @@ FEATURE_COLUMNS = {
     ],
 }
 
-from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, PaFeatureConfig, RegimeFeatureConfig
+from src.features.build_types import (
+    ChannelsFeatureConfig,
+    IndicatorsFeatureConfig,
+    PaFeatureConfig,
+    RegimeFeatureConfig,
+)
 from src.features.channels import channel_column_names
 from src.features.indicators import indicator_column_names
 from src.features.pa_swings import pa_swing_column_names
@@ -373,9 +378,13 @@ def validate_no_registry_duplicates() -> None:
     for mod, cols in FEATURE_COLUMNS.items():
         for c in cols:
             if c in seen:
-                raise ValueError(f"Feature column {c!r} declared in more than one module (duplicate registry)")
+                raise ValueError(
+                    f"Feature column {c!r} declared in more than one module (duplicate registry)"
+                )
             seen.add(c)
 
     overlap = seen.intersection(set(RAW_COLUMNS))
     if overlap:
-        raise ValueError(f"Feature column(s) collide with RAW_COLUMNS: {sorted(overlap)}")
+        raise ValueError(
+            f"Feature column(s) collide with RAW_COLUMNS: {sorted(overlap)}"
+        )

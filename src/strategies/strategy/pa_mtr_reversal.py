@@ -64,7 +64,9 @@ class PaMtrReversalStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.bear_channel_score_min", sig.get("bear_channel_score_min", 0.35))
+        validate_nonnegative_number(
+            "signal.bear_channel_score_min", sig.get("bear_channel_score_min", 0.35)
+        )
         validate_positive_number("risk.target_r", risk.get("target_r", 2.2))
         sm = str(risk.get("stop_mode", "major_low"))
         if sm not in ("major_low", "signal_low", "atr_buffer"):
@@ -102,9 +104,16 @@ class PaMtrReversalStrategy(BaseStrategy):
 
     def context_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
         sig = config.get("signal") or {}
-        return ("pa_mtr", pa_range_window(config), float(sig.get("bear_channel_score_min", 0.35)), str(sig.get("atr_column", "atr_like_20")))
+        return (
+            "pa_mtr",
+            pa_range_window(config),
+            float(sig.get("bear_channel_score_min", 0.35)),
+            str(sig.get("atr_column", "atr_like_20")),
+        )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaMtrCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaMtrCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -133,7 +142,9 @@ class PaMtrReversalStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaMtrCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -150,7 +161,9 @@ class PaMtrReversalStrategy(BaseStrategy):
                 continue
             if not math.isfinite(ctx.tbs_bear[i]) or ctx.tbs_bear[i] < bmin:
                 continue
-            test_low = math.isfinite(ctx.pa_pl[i]) and ctx.low[i] <= ctx.pa_pl[i] * 1.001
+            test_low = (
+                math.isfinite(ctx.pa_pl[i]) and ctx.low[i] <= ctx.pa_pl[i] * 1.001
+            )
             if not (test_low or ctx.fbd[i] != 0):
                 continue
             if ctx.bull_rev[i] == 0:
@@ -179,12 +192,20 @@ class PaMtrReversalStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

@@ -31,7 +31,16 @@ class FastBacktestConfig:
 
 
 def prepare_backtest_arrays(df: pd.DataFrame) -> dict[str, Any]:
-    need = ["ts_utc", "ts_ny", "session_date", "minute_from_open", "open", "high", "low", "close"]
+    need = [
+        "ts_utc",
+        "ts_ny",
+        "session_date",
+        "minute_from_open",
+        "open",
+        "high",
+        "low",
+        "close",
+    ]
     miss = [c for c in need if c not in df.columns]
     if miss:
         raise ValueError(f"prepare_backtest_arrays missing: {miss}")
@@ -310,7 +319,24 @@ def _simulate_numba(
 
         i += 1
 
-    return tc, t_sig, t_ent, t_ex, t_side, t_ep, t_xp, t_stop, t_tgt, t_risk, t_net, t_r, t_exr, t_bars, t_mfe, t_mae
+    return (
+        tc,
+        t_sig,
+        t_ent,
+        t_ex,
+        t_side,
+        t_ep,
+        t_xp,
+        t_stop,
+        t_tgt,
+        t_risk,
+        t_net,
+        t_r,
+        t_exr,
+        t_bars,
+        t_mfe,
+        t_mae,
+    )
 
 
 def _profit_factor_numba(net: np.ndarray) -> float:

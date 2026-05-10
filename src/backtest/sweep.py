@@ -64,7 +64,9 @@ def _apply_display_filters(df: pd.DataFrame, args: argparse.Namespace) -> pd.Dat
     if args.max_eod_count is not None:
         out = out[out["eod_count"].astype(int) <= int(args.max_eod_count)]
     if args.max_end_of_data_count is not None:
-        out = out[out["end_of_data_count"].astype(int) <= int(args.max_end_of_data_count)]
+        out = out[
+            out["end_of_data_count"].astype(int) <= int(args.max_end_of_data_count)
+        ]
     if args.min_profit_factor is not None:
         out = out[out["profit_factor"].astype(float) >= float(args.min_profit_factor)]
     if args.min_total_r is not None:
@@ -155,7 +157,9 @@ def validate_testing_grid_for_strategy(strategy: str, testing: dict[str, Any]) -
         try:
             strat.validate_config(cfg)
         except Exception as e:
-            raise ValueError(f"{strategy} testing grid combo[{i}] {combo_flat!r}: {e}") from e
+            raise ValueError(
+                f"{strategy} testing grid combo[{i}] {combo_flat!r}: {e}"
+            ) from e
 
 
 def _metrics_row(
@@ -187,7 +191,9 @@ def _metrics_row(
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Run parameter sweep from testing_parameters YAML (Numba fast path).")
+    p = argparse.ArgumentParser(
+        description="Run parameter sweep from testing_parameters YAML (Numba fast path)."
+    )
     p.add_argument("--strategy", default="orb_continuation")
     p.add_argument("--asset", choices=["equity", "futures"], default="equity")
     p.add_argument("--symbols", nargs="+", default=None)
@@ -204,8 +210,18 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--profile", action="store_true")
     p.add_argument("--max-combos", type=int, default=None)
     p.add_argument("--progress-every", type=int, default=25)
-    p.add_argument("--testing-config", type=str, default=None, help="Path to testing grid YAML (must match --strategy).")
-    p.add_argument("--tag", type=str, default=None, help="Suffix for result folder name (sanitized).")
+    p.add_argument(
+        "--testing-config",
+        type=str,
+        default=None,
+        help="Path to testing grid YAML (must match --strategy).",
+    )
+    p.add_argument(
+        "--tag",
+        type=str,
+        default=None,
+        help="Suffix for result folder name (sanitized).",
+    )
     p.add_argument("--max-avg-bars-held", type=float, default=None)
     p.add_argument("--max-eod-count", type=int, default=None)
     p.add_argument("--max-end-of-data-count", type=int, default=None)
@@ -422,7 +438,10 @@ def main(argv: list[str] | None = None) -> int:
 
     display_cols = _display_columns(res, args.strategy)
 
-    print(f"\nafter min_trades={args.min_trades}, display_filters -> rows={len(filt_disp)} (from {len(filt)} post-min-trades)", flush=True)
+    print(
+        f"\nafter min_trades={args.min_trades}, display_filters -> rows={len(filt_disp)} (from {len(filt)} post-min-trades)",
+        flush=True,
+    )
     print(f"top {topn} by {sort_col} (display only):", flush=True)
     if topn:
         show_cols = [c for c in display_cols if c in head.columns]
@@ -443,18 +462,43 @@ def main(argv: list[str] | None = None) -> int:
             out = Path(args.out_dir)
         else:
             suf = f"_{_safe_tag(args.tag)}" if args.tag else ""
-            out = strategy_root() / "testing_parameters_results" / args.strategy / f"sweep_{ts}{suf}"
+            out = (
+                strategy_root()
+                / "testing_parameters_results"
+                / args.strategy
+                / f"sweep_{ts}{suf}"
+            )
         out.mkdir(parents=True, exist_ok=True)
         res.to_csv(out / "results.csv", index=False)
         sum_show = [c for c in display_cols if c in head.columns]
         filt_parts = [
             f"min_trades>={args.min_trades}",
-            *( [f"avg_bars_held<={args.max_avg_bars_held}"] if args.max_avg_bars_held is not None else [] ),
-            *( [f"eod_count<={args.max_eod_count}"] if args.max_eod_count is not None else [] ),
-            *( [f"end_of_data_count<={args.max_end_of_data_count}"] if args.max_end_of_data_count is not None else [] ),
-            *( [f"profit_factor>={args.min_profit_factor}"] if args.min_profit_factor is not None else [] ),
-            *( [f"total_r>={args.min_total_r}"] if args.min_total_r is not None else [] ),
-            *( [f"max_drawdown_r>={args.max_drawdown_r}"] if args.max_drawdown_r is not None else [] ),
+            *(
+                [f"avg_bars_held<={args.max_avg_bars_held}"]
+                if args.max_avg_bars_held is not None
+                else []
+            ),
+            *(
+                [f"eod_count<={args.max_eod_count}"]
+                if args.max_eod_count is not None
+                else []
+            ),
+            *(
+                [f"end_of_data_count<={args.max_end_of_data_count}"]
+                if args.max_end_of_data_count is not None
+                else []
+            ),
+            *(
+                [f"profit_factor>={args.min_profit_factor}"]
+                if args.min_profit_factor is not None
+                else []
+            ),
+            *([f"total_r>={args.min_total_r}"] if args.min_total_r is not None else []),
+            *(
+                [f"max_drawdown_r>={args.max_drawdown_r}"]
+                if args.max_drawdown_r is not None
+                else []
+            ),
         ]
         summary_lines = [
             f"strategy={args.strategy}",
@@ -484,7 +528,9 @@ def main(argv: list[str] | None = None) -> int:
             encoding="utf-8",
         )
         (out / "feature_store_stats.json").write_text(
-            json.dumps(feature_store_stats_by_symbol, indent=2, sort_keys=True, default=str),
+            json.dumps(
+                feature_store_stats_by_symbol, indent=2, sort_keys=True, default=str
+            ),
             encoding="utf-8",
         )
         t_save += time.perf_counter() - t_sv0

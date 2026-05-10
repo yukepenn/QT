@@ -7,7 +7,12 @@ from typing import Any, Iterable
 
 import pandas as pd
 
-from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, PaFeatureConfig, RegimeFeatureConfig
+from src.features.build_types import (
+    ChannelsFeatureConfig,
+    IndicatorsFeatureConfig,
+    PaFeatureConfig,
+    RegimeFeatureConfig,
+)
 from src.features.build_features import build_basic_features
 
 
@@ -111,7 +116,9 @@ def channels_config_from_dict(raw: dict[str, Any] | None) -> ChannelsFeatureConf
     return ChannelsFeatureConfig(
         bb_windows=normalize_int_tuple(raw.get("bb_windows"), ()),
         bb_stds=normalize_float_tuple(raw.get("bb_stds"), ()),
-        bb_bandwidth_lookbacks=normalize_int_tuple(raw.get("bb_bandwidth_lookbacks"), ()),
+        bb_bandwidth_lookbacks=normalize_int_tuple(
+            raw.get("bb_bandwidth_lookbacks"), ()
+        ),
         donchian_windows=normalize_int_tuple(raw.get("donchian_windows"), ()),
     )
 
@@ -155,12 +162,22 @@ def feature_config_from_strategy_config(cfg: dict[str, Any]) -> FeatureBuildConf
         orb_open_minutes=int(feat.get("orb_open_minutes", 15)),
         vwap_bands=normalize_float_tuple(feat.get("vwap_bands"), (1.0, 2.0)),
         vol_windows=normalize_int_tuple(feat.get("vol_windows"), (5, 15, 30)),
-        price_action_windows=normalize_int_tuple(feat.get("price_action_windows"), (3, 5, 10, 20, 30, 60)),
+        price_action_windows=normalize_int_tuple(
+            feat.get("price_action_windows"), (3, 5, 10, 20, 30, 60)
+        ),
         volume_windows=normalize_int_tuple(feat.get("volume_windows"), (20, 30, 60)),
-        indicators=indicators_config_from_dict(feat.get("indicators") if isinstance(feat.get("indicators"), dict) else None),
-        channels=channels_config_from_dict(feat.get("channels") if isinstance(feat.get("channels"), dict) else None),
-        regime=regime_config_from_dict(feat.get("regime") if isinstance(feat.get("regime"), dict) else None),
-        pa=pa_config_from_dict(feat.get("pa") if isinstance(feat.get("pa"), dict) else None),
+        indicators=indicators_config_from_dict(
+            feat.get("indicators") if isinstance(feat.get("indicators"), dict) else None
+        ),
+        channels=channels_config_from_dict(
+            feat.get("channels") if isinstance(feat.get("channels"), dict) else None
+        ),
+        regime=regime_config_from_dict(
+            feat.get("regime") if isinstance(feat.get("regime"), dict) else None
+        ),
+        pa=pa_config_from_dict(
+            feat.get("pa") if isinstance(feat.get("pa"), dict) else None
+        ),
     )
 
 
@@ -179,9 +196,13 @@ def feature_key_from_config(cfg: dict[str, Any]) -> tuple[tuple[str, Any], ...]:
     )
 
 
-def build_features_from_config(raw_df: pd.DataFrame, cfg: dict[str, Any]) -> pd.DataFrame:
+def build_features_from_config(
+    raw_df: pd.DataFrame, cfg: dict[str, Any]
+) -> pd.DataFrame:
     f = feature_config_from_strategy_config(cfg)
-    vol_merged = tuple(sorted(set(int(x) for x in f.vol_windows) | {int(f.pa.atr_window), 20}))
+    vol_merged = tuple(
+        sorted(set(int(x) for x in f.vol_windows) | {int(f.pa.atr_window), 20})
+    )
     return build_basic_features(
         raw_df,
         orb_open_minutes=int(f.orb_open_minutes),

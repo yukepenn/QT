@@ -349,7 +349,11 @@ def _simulate_combiner_numba(
                         bad_code = REJ_INVALID_TARGET_R
                     else:
                         if int(recomp_flag[ci]) != 0:
-                            tgt_px = ent_price + trv * act_risk if sd == 1 else ent_price - trv * act_risk
+                            tgt_px = (
+                                ent_price + trv * act_risk
+                                if sd == 1
+                                else ent_price - trv * act_risk
+                            )
                         else:
                             tgt_px = tprev
                 else:
@@ -553,7 +557,11 @@ def simulate_combiner_numba(
     n = int(backtest_arrays["n"])
     nc = len(candidates)
 
-    pol = PRIORITY_SCORE_ADJUSTED if str(combiner_cfg.priority_policy).lower() == "score_adjusted_priority" else PRIORITY_METADATA_ONLY
+    pol = (
+        PRIORITY_SCORE_ADJUSTED
+        if str(combiner_cfg.priority_policy).lower() == "score_adjusted_priority"
+        else PRIORITY_METADATA_ONLY
+    )
     opp = 1 if combiner_cfg.opposite_direction_skip_all else 0
 
     side_m = candidate_arrays["side"]
@@ -664,7 +672,9 @@ def simulate_combiner_numba(
             run += float(trows[ti]["net_pnl"])
             ti += 1
         equity[bi] = run
-    equity_df = pd.DataFrame({"bar_idx": np.arange(n_bars, dtype=np.int32), "equity": equity})
+    equity_df = pd.DataFrame(
+        {"bar_idx": np.arange(n_bars, dtype=np.int32), "equity": equity}
+    )
 
     log_df = pd.DataFrame()
     rej_df = pd.DataFrame()
@@ -759,12 +769,20 @@ def simulate_combiner_legacy_logs(
             return p + adj
         return p
 
-    def log_sig(bar_i: int, ci: int, sel: bool, reason: str, sel_id: str, open_cid: str) -> None:
+    def log_sig(
+        bar_i: int, ci: int, sel: bool, reason: str, sel_id: str, open_cid: str
+    ) -> None:
         sp = candidate_specs[ci]
         logs.append(
             {
-                "ts_utc": pd.Timestamp(ts_utc[bar_i]).isoformat() if bar_i < len(ts_utc) else "",
-                "session_date": str(session_date[bar_i]) if bar_i < len(session_date) else "",
+                "ts_utc": (
+                    pd.Timestamp(ts_utc[bar_i]).isoformat()
+                    if bar_i < len(ts_utc)
+                    else ""
+                ),
+                "session_date": (
+                    str(session_date[bar_i]) if bar_i < len(session_date) else ""
+                ),
                 "minute_from_open": int(minute[bar_i]) if bar_i < len(minute) else -1,
                 "candidate_id": sp.candidate_id,
                 "strategy": sp.strategy,
@@ -846,7 +864,10 @@ def simulate_combiner_legacy_logs(
                 eligible.sort(
                     key=lambda cj: (
                         -eff_pri(cj),
-                        -float((candidate_specs[cj].selection or {}).get("score", 0.0) or 0.0),
+                        -float(
+                            (candidate_specs[cj].selection or {}).get("score", 0.0)
+                            or 0.0
+                        ),
                         candidate_specs[cj].candidate_rank,
                         cj,
                     )
@@ -869,13 +890,21 @@ def simulate_combiner_legacy_logs(
                 if not bad:
                     if tm == 1:
                         if int(recompute_target[best]) != 0:
-                            tgt_px = ent_price + tr * act_risk if sd == 1 else ent_price - tr * act_risk
+                            tgt_px = (
+                                ent_price + tr * act_risk
+                                if sd == 1
+                                else ent_price - tr * act_risk
+                            )
                         else:
                             tgt_px = tprev
                     else:
                         tgt_px = tprev
 
-                mr = float(min_risk_per_candidate[best]) if best < len(min_risk_per_candidate) else 0.0
+                mr = (
+                    float(min_risk_per_candidate[best])
+                    if best < len(min_risk_per_candidate)
+                    else 0.0
+                )
                 risk_too_small = (not bad) and mr > 0.0 and act_risk < mr
                 if bad or risk_too_small:
                     if risk_too_small:
@@ -883,7 +912,14 @@ def simulate_combiner_legacy_logs(
                         log_sig(i, best, False, "risk_too_small", "", open_cid)
                         for cj in eligible:
                             if cj != best:
-                                log_sig(i, cj, False, "lower_priority_conflict", best_id0, open_cid)
+                                log_sig(
+                                    i,
+                                    cj,
+                                    False,
+                                    "lower_priority_conflict",
+                                    best_id0,
+                                    open_cid,
+                                )
                     else:
                         log_sig(i, best, False, "invalid_target_or_risk", "", open_cid)
                     i += 1
@@ -1045,8 +1081,13 @@ def simulate_combiner_legacy_logs(
             run += float(trows[ti]["net_pnl"])
             ti += 1
         equity[bi] = run
-    equity_df = pd.DataFrame({"bar_idx": np.arange(n_bars, dtype=np.int32), "equity": equity})
-    rej = log_df[(log_df["selected"] == False) & (log_df["rejection_reason"].astype(str).str.len() > 0)].copy()
+    equity_df = pd.DataFrame(
+        {"bar_idx": np.arange(n_bars, dtype=np.int32), "equity": equity}
+    )
+    rej = log_df[
+        (log_df["selected"] == False)
+        & (log_df["rejection_reason"].astype(str).str.len() > 0)
+    ].copy()
 
     return {
         "trades_df": trades_df,

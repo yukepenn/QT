@@ -64,7 +64,9 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.pullback_test_atr", sig.get("pullback_test_atr", 0.35))
+        validate_nonnegative_number(
+            "signal.pullback_test_atr", sig.get("pullback_test_atr", 0.35)
+        )
         sm = str(risk.get("stop_mode", "pullback_low"))
         if sm not in ("pullback_low", "breakout_point_buffer", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -72,7 +74,9 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
         if tm not in ("fixed_r", "prior_high"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.45))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35)
+        )
 
     def required_features(self) -> list[str]:
         regw = 30
@@ -113,7 +117,9 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaGenBrkCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaGenBrkCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         regw = pa_regime_window(config)
@@ -142,7 +148,9 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaGenBrkCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -206,12 +214,20 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:

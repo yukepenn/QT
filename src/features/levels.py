@@ -18,8 +18,19 @@ def add_pa_proximity_features(
 ) -> pd.DataFrame:
     """Distance-to-level in ATR units (lower = closer); requires prior-day + VWAP + ATR."""
     cols = FEATURE_COLUMNS["pa_proximity"]
-    add_or_overwrite_columns(df, cols, module_name="pa_proximity", allow_overwrite=allow_overwrite)
-    need = ["session_date", "close", "vwap", "prior_day_high", "prior_day_low", "prior_day_close", "session_open", atr_col]
+    add_or_overwrite_columns(
+        df, cols, module_name="pa_proximity", allow_overwrite=allow_overwrite
+    )
+    need = [
+        "session_date",
+        "close",
+        "vwap",
+        "prior_day_high",
+        "prior_day_low",
+        "prior_day_close",
+        "session_open",
+        atr_col,
+    ]
     for c in need:
         if c not in df.columns:
             raise ValueError(f"add_pa_proximity_features missing {c!r}")
@@ -27,7 +38,9 @@ def add_pa_proximity_features(
     rh20 = "rolling_high_20_prior"
     rl20 = "rolling_low_20_prior"
     if rh20 not in df.columns or rl20 not in df.columns:
-        raise ValueError("add_pa_proximity_features requires rolling_high_20_prior / rolling_low_20_prior")
+        raise ValueError(
+            "add_pa_proximity_features requires rolling_high_20_prior / rolling_low_20_prior"
+        )
 
     out = safe_copy(df, copy)
     c = out["close"].astype(float)
@@ -63,9 +76,13 @@ def add_prior_day_levels(
     """
     module_name = "levels"
     cols = FEATURE_COLUMNS[module_name]
-    add_or_overwrite_columns(df, cols, module_name=module_name, allow_overwrite=allow_overwrite)
+    add_or_overwrite_columns(
+        df, cols, module_name=module_name, allow_overwrite=allow_overwrite
+    )
 
-    ensure_columns(df, ["session_date", "open", "high", "low", "close"], context="levels")
+    ensure_columns(
+        df, ["session_date", "open", "high", "low", "close"], context="levels"
+    )
 
     out = safe_copy(df, copy)
 
@@ -108,13 +125,18 @@ def add_prior_day_levels(
     out["intraday_low_so_far"] = g["low"].cummin().astype(float)
 
     out["gap_from_prior_close"] = out["session_open"] - out["prior_day_close"]
-    out["gap_pct_from_prior_close"] = out["gap_from_prior_close"] / out["prior_day_close"]
+    out["gap_pct_from_prior_close"] = (
+        out["gap_from_prior_close"] / out["prior_day_close"]
+    )
 
     pr = out["prior_day_range"].replace(0.0, np.nan)
     out["gap_prior_range_norm"] = out["gap_from_prior_close"].astype(float) / pr
 
     day_low_tbl = (
-        out.groupby("session_date", sort=False)["low"].min().reset_index(name="_day_session_low").sort_values("session_date")
+        out.groupby("session_date", sort=False)["low"]
+        .min()
+        .reset_index(name="_day_session_low")
+        .sort_values("session_date")
     )
     dl = day_low_tbl["_day_session_low"].astype(float)
     day_low_tbl["prior_3day_low"] = dl.shift(1).rolling(3, min_periods=1).min()
@@ -125,7 +147,9 @@ def add_prior_day_levels(
     day_low_tbl["previous_week_low"] = wp.map(prev_week_min_low).astype(float)
 
     out = out.merge(
-        day_low_tbl[["session_date", "prior_3day_low", "prior_5day_low", "previous_week_low"]],
+        day_low_tbl[
+            ["session_date", "prior_3day_low", "prior_5day_low", "previous_week_low"]
+        ],
         on="session_date",
         how="left",
     )

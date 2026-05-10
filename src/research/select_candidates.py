@@ -43,7 +43,9 @@ def _parse_cell_value(v: Any) -> Any:
         return None
     if isinstance(v, str):
         s = v.strip()
-        if (s.startswith("[") and s.endswith("]")) or (s.startswith("(") and s.endswith(")")):
+        if (s.startswith("[") and s.endswith("]")) or (
+            s.startswith("(") and s.endswith(")")
+        ):
             try:
                 return json.loads(s.replace("(", "[").replace(")", "]"))
             except json.JSONDecodeError:
@@ -345,7 +347,9 @@ def _main_manifest(
                 warn = "relaxed_filter"
                 fu = "relaxed"
         if filt.empty:
-            cand_lines.append(f"- **{strategy}**: no candidates passing filters (strict or relaxed)")
+            cand_lines.append(
+                f"- **{strategy}**: no candidates passing filters (strict or relaxed)"
+            )
             continue
 
         chunk, slog = _emit_yaml_and_rows(
@@ -367,7 +371,9 @@ def _main_manifest(
 
     out_csv = out_dir / "selected_candidates.csv"
     pd.DataFrame(all_rows).to_csv(out_csv, index=False)
-    (out_dir / "candidate_summary.md").write_text("\n".join(cand_lines) + "\n", encoding="utf-8")
+    (out_dir / "candidate_summary.md").write_text(
+        "\n".join(cand_lines) + "\n", encoding="utf-8"
+    )
 
     summary_lines = [
         f"tag={args.tag or ''}",
@@ -389,7 +395,9 @@ def _main_manifest(
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Select Layer 1 candidates from sweep results.")
+    p = argparse.ArgumentParser(
+        description="Select Layer 1 candidates from sweep results."
+    )
     p.add_argument(
         "--manifest",
         type=Path,
@@ -404,7 +412,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Repeatable: strategy_name=glob or path to results.csv",
     )
     p.add_argument("--top-k", type=int, default=3)
-    p.add_argument("--top-per-strategy", type=int, default=None, help="Alias for --top-k in manifest mode.")
+    p.add_argument(
+        "--top-per-strategy",
+        type=int,
+        default=None,
+        help="Alias for --top-k in manifest mode.",
+    )
     p.add_argument("--min-trades", type=int, default=0)
     p.add_argument("--min-profit-factor", type=float, default=None)
     p.add_argument("--min-total-r", type=float, default=None)
@@ -413,10 +426,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--max-eod-count", type=int, default=None)
     p.add_argument("--max-end-of-data-count", type=int, default=None)
     p.add_argument("--max-max-hold-count", type=int, default=None)
-    p.add_argument("--sort-by", default="candidate_score", choices=("candidate_score", "profit_factor", "total_r"))
+    p.add_argument(
+        "--sort-by",
+        default="candidate_score",
+        choices=("candidate_score", "profit_factor", "total_r"),
+    )
     p.add_argument("--ascending", action="store_true")
     p.add_argument("--out-dir", type=str, default=None)
-    p.add_argument("--output-root", type=str, default=None, metavar="PATH", help="Alias for --out-dir.")
+    p.add_argument(
+        "--output-root",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help="Alias for --out-dir.",
+    )
     p.add_argument("--tag", default="")
     p.add_argument(
         "--allow-relaxed-fallback",
@@ -469,7 +492,9 @@ def main(argv: list[str] | None = None) -> int:
     top_k = int(args.top_per_strategy or args.top_k)
 
     if args.manifest:
-        return _main_manifest(args, cwd=cwd, out_dir=out_dir, sel_dir=sel_dir, top_k=top_k)
+        return _main_manifest(
+            args, cwd=cwd, out_dir=out_dir, sel_dir=sel_dir, top_k=top_k
+        )
 
     if not args.result:
         print("ERROR need --result STRATEGY=path or --manifest", file=sys.stderr)
@@ -515,14 +540,19 @@ def main(argv: list[str] | None = None) -> int:
         "candidates:",
     ]
     for r in all_rows:
-        summary_lines.append(f"  {r['candidate_id']} {r['strategy']} score={r['candidate_score']:.4f} trades={r['trades']}")
+        summary_lines.append(
+            f"  {r['candidate_id']} {r['strategy']} score={r['candidate_score']:.4f} trades={r['trades']}"
+        )
 
     (out_dir / "summary.txt").write_text("\n".join(summary_lines), encoding="utf-8")
 
     print(f"Wrote {out_csv}", flush=True)
     print(f"Wrote {len(all_rows)} YAML files under {sel_dir}", flush=True)
     for r in all_rows:
-        print(f"  {r['candidate_id']} strategy={r['strategy']} score={r['candidate_score']:.4f}", flush=True)
+        print(
+            f"  {r['candidate_id']} strategy={r['strategy']} score={r['candidate_score']:.4f}",
+            flush=True,
+        )
     return 0
 
 

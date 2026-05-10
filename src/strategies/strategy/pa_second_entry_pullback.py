@@ -65,8 +65,12 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
             "signal.entry_end_minute",
             sig.get("entry_end_minute"),
         )
-        validate_nonnegative_number("signal.context_score_min", sig.get("context_score_min", 0.3))
-        validate_nonnegative_number("signal.min_wedge_pushes_alt", sig.get("min_wedge_pushes_alt", 2.0))
+        validate_nonnegative_number(
+            "signal.context_score_min", sig.get("context_score_min", 0.3)
+        )
+        validate_nonnegative_number(
+            "signal.min_wedge_pushes_alt", sig.get("min_wedge_pushes_alt", 2.0)
+        )
         sm = str(risk.get("stop_mode", "signal_low"))
         if sm not in ("second_entry_low", "signal_low", "atr_buffer"):
             raise ValueError(f"risk.stop_mode invalid: {sm!r}")
@@ -74,7 +78,9 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
         if tm not in ("fixed_r", "prior_high"):
             raise ValueError(f"risk.target_mode invalid: {tm!r}")
         validate_positive_number("risk.target_r", risk.get("target_r", 1.5))
-        validate_nonnegative_number("risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35))
+        validate_nonnegative_number(
+            "risk.atr_buffer_mult", risk.get("atr_buffer_mult", 0.35)
+        )
 
     def required_features(self) -> list[str]:
         base = [
@@ -114,7 +120,9 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
             str(sig.get("atr_column", "atr_like_20")),
         )
 
-    def prepare_signal_context(self, df: pd.DataFrame, config: dict[str, Any]) -> PaSecondEntryCtx:
+    def prepare_signal_context(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> PaSecondEntryCtx:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
         rw = pa_range_window(config)
         ac = atr_col_name(config)
@@ -128,8 +136,12 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
             low=work["low"].to_numpy(dtype=np.float64),
             high=work["high"].to_numpy(dtype=np.float64),
             atr=atr_series(work, config).to_numpy(dtype=np.float64),
-            pa_bbull=work[f"pa_broad_bull_channel_score_{rw}"].to_numpy(dtype=np.float64),
-            pa_tbull=work[f"pa_tight_bull_channel_score_{rw}"].to_numpy(dtype=np.float64),
+            pa_bbull=work[f"pa_broad_bull_channel_score_{rw}"].to_numpy(
+                dtype=np.float64
+            ),
+            pa_tbull=work[f"pa_tight_bull_channel_score_{rw}"].to_numpy(
+                dtype=np.float64
+            ),
             pa_pd=work[f"pa_pullback_depth_atr_{rw}"].to_numpy(dtype=np.float64),
             pa_hl=work[f"pa_higher_low_proxy_{rw}"].to_numpy(dtype=np.int8),
             pa_wp=work[f"pa_wedge_push_count_{rw}"].to_numpy(dtype=np.float64),
@@ -140,7 +152,9 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
             pa_rut=work[f"pa_range_upper_third_{rw}"].to_numpy(dtype=np.float64),
         )
 
-    def generate_signal_arrays_from_context(self, ctx: Any, config: dict[str, Any]) -> dict[str, Any]:
+    def generate_signal_arrays_from_context(
+        self, ctx: Any, config: dict[str, Any]
+    ) -> dict[str, Any]:
         if not isinstance(ctx, PaSecondEntryCtx):
             raise TypeError(ctx)
         sig = config.get("signal") or {}
@@ -162,7 +176,11 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
                 ctx_sc = max(float(ctx.pa_bbull[i]), float(ctx.pa_tbull[i]))
             if not math.isfinite(ctx_sc) or ctx_sc < ctx_min:
                 continue
-            if not math.isfinite(ctx.pa_pd[i]) or ctx.pa_pd[i] < min_pd or ctx.pa_pd[i] > max_pd:
+            if (
+                not math.isfinite(ctx.pa_pd[i])
+                or ctx.pa_pd[i] < min_pd
+                or ctx.pa_pd[i] > max_pd
+            ):
                 continue
             two_leg = (ctx.pa_wp[i] >= min_wp) or (ctx.pa_hl[i] != 0)
             if not two_leg:
@@ -195,12 +213,20 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
             upper_third=ctx.pa_rut,
         )
 
-    def generate_signal_arrays(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
-        return self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+    def generate_signal_arrays(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
 
-    def generate_signals(self, df: pd.DataFrame, config: dict[str, Any]) -> pd.DataFrame:
+    def generate_signals(
+        self, df: pd.DataFrame, config: dict[str, Any]
+    ) -> pd.DataFrame:
         work = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
-        arr = self.generate_signal_arrays_from_context(self.prepare_signal_context(df, config), config)
+        arr = self.generate_signal_arrays_from_context(
+            self.prepare_signal_context(df, config), config
+        )
         return signals_df_from_arrays(work, self.name, arr, config)
 
     def normalized_param_key(self, config: dict[str, Any]) -> tuple[Any, ...]:
