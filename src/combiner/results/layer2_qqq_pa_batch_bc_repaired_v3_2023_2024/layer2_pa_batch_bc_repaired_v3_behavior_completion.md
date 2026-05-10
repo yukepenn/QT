@@ -4,7 +4,7 @@ Window: QQQ **2023-01-01 → 2024-12-31**. Candidate root: `layer1_pa_batch_bc_t
 
 ## 1. Why this rerun was necessary
 
-The first repaired Layer 2 sweep used **`--detail-top 0`**, so **`top_runs/`** trade folders were not written. Postprocess therefore **skipped meaningful behavior dedupe** (no `trades.csv` to hash). The earlier summary still said **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`**, which was **not** justified until behavior evidence existed.
+The first repaired Layer 2 sweep used **`--detail-top 0`**, so **`top_runs/`** trade folders were not written. Postprocess therefore **skipped meaningful behavior dedupe** (no `trades.csv` to hash). Until this rerun, the correct handoff staging label was **`NEED_LAYER2_REPAIRED_V3_BEHAVIOR_COMPLETION`** (behavior gate unevaluated); **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** was **not** justified. The earlier summary still used proceed language, which was **not** valid until behavior evidence existed.
 
 This pass re-swept with **`--detail-top 15`** (local sweep dir **`sweep_20260510_221442/`**, not committed) and postprocessed with **`--write-behavior-unique`**, **`--dedupe-top 50`**, **`--behavior-dedupe-top 30`**, **`--cost-stress-top 10`**, **`--write-period-breakdowns`**.
 

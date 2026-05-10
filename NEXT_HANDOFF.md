@@ -5,10 +5,11 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
+| Repository HEAD | `068d41e` — `Docs(handoff): clarify PA BC behavior gate commits` |
 | Pre-task HEAD | `e73316d` (after prior diversity-repair handoff) |
 | Behavior-gate commit | `25faa94` — `Complete PA Batch B/C Layer 2 behavior gate` |
 | Handoff hash fix (docs only) | `57943cd` — `Docs(handoff): fix PA BC behavior gate hash` |
-| Push status | **Pushed** to `origin/main` |
+| Push status | **Pushed** to `origin/main` (re-push after this doc pass if new commit) |
 | Working tree | Curated Layer 2 repaired v3 **behavior + cost** CSV/MD only; **`sweep_20260510_221442/`**, **`top_runs/`**, raw `trades.csv` / `feature_store_stats.json` / heavy precompute CSVs **local / untracked** |
 
 ## B. Task scope
@@ -31,11 +32,11 @@
 
 | Check | Result |
 |--------|--------|
-| `pytest -q` | **363 passed** (before edits) |
+| `pytest -q` | **363 passed** (re-run 2026-05-10) |
 | `compileall` | **OK** |
 | `loader.py --list` | **35** strategies |
-| Parity (failed_orb, PA tuned v3 ×2) | **OK** |
-| Boundary (`LOOKAHEAD` in features/strategies; `_feat_key` / `DfSignalStrategy` in `src/**/*.py`) | **OK** (no `_feat_key` / `DfSignalStrategy` in `.py`) |
+| Parity (failed_orb, PA tuned v3 ×2) | **OK** (re-run 2026-05-10) |
+| Boundary | **OK** — `LOOKAHEAD` only in documented feature names / guards; **`_feat_key`** / **`DfSignalStrategy`** not in tracked **`*.py`** (occurrences in research `*.md` only) |
 | Heavy `git ls-files` pattern | **No hits** |
 
 ## E. Behavior completion (facts)
@@ -52,9 +53,12 @@
 
 ## F. Decision
 
-**`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** — see `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`.
+### Decision timeline (do not conflate stages)
 
-**`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN` retracted** (insufficient `behavior_unique`; cost-robust slice is single-family).
+| When | Correct staging label |
+|------|------------------------|
+| After Layer 1 diversity repair, **before** behavior rerun (`--detail-top 0` skipped `behavior_unique`) | **`NEED_LAYER2_REPAIRED_V3_BEHAVIOR_COMPLETION`** — **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** was **not** valid; Layer 1 YAML diversity (**H1**, **6** YAMLs, **3 / 3** `pure_signal_hash` per family) was fine, but the **Layer 2 behavior gate was unevaluated**. |
+| After `25faa94` (behavior + cost tables complete) | **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** — see `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`. **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN` retracted** (insufficient `behavior_unique`; `cost_robust_systems` is single-family). |
 
 ## G. Explicit non-runs
 
