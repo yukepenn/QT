@@ -85,11 +85,17 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **window**: 2023‑01‑01 → 2026‑04‑30
   - **keep**: yes
 
-## C. Stale / superseded (do not use for new decisions)
+## C. Removed from repository (2026-05-10)
+
+Stale Layer 2 roots below were **`git rm`’d**; use **post-hardening** strict/relaxed **v1** folders in §B instead:
+
+- **`layer2_qqq_2020_20260430_v2_relaxed/`** — pre-hardening (`PRE_HARDENING_STALE.md`)
+- **`layer2_qqq_v1/`** — legacy (`STALE.md`)
+
+## D. Stale / superseded (historical description — paths in §C removed)
 
 - **`layer2_qqq_2020_20260430_v2_relaxed/`**
   - **status**: stale for ranking (pre-hardening candidate root)
-  - **summary**: `layer2_v2_2020_summary.md` already warns about staleness
   - **replacement**: post-hardening 2020 strict/relaxed roots
 
 - **`layer2_qqq_v1/`**

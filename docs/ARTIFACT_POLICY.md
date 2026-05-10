@@ -107,3 +107,8 @@ Treat like Layer 2 results roots:
 - Per-fold Layer 2 profiling dumps under smoke (`candidate_precompute_profile*.csv`, `candidates_used.csv`, `feature_store_stats.json`) should remain local — see `.gitignore` rules under `src/walkforward/results/`.
 - **Diagnosis v1** (`layer3_smoke_v1_diagnosis_qqq_components/`): commit aggregate CSVs + `layer3_smoke_diagnosis_summary.md` + `layer3_smoke_summary.md`; large per-fold trees optional/local unless intentionally curated small.
 
+## 9. Repository cleanup (2026-05-10)
+
+- Stale **research / combiner result roots** marked **`PRE_HARDENING_STALE.md`** or **`STALE.md`** may be **`git rm`’d** after **RESULTS_INDEX** / **CONFIG_INDEX** point to replacements (`src/research/results/repo_cleanup_summary.md`).
+- **`src/strategies/testing_parameters_results/**`** — Layer 1 sweep scratch only; safe to delete locally; optional **`.gitkeep`** may remain so the directory stays in git.
+

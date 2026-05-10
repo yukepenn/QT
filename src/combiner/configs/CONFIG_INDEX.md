@@ -157,17 +157,17 @@ Directory: **`src/combiner/configs/frozen/diagnosis/`**
 - **Status:** `mini_wfo.py` driver only — generates train-local Layer 2 base/sweep YAMLs under the run’s `train_layer2/` tree; not a default Layer 2 research baseline (use sections A–B for that).
 - **Example:** `qqq_mini_wfo_2023_2024_train_2025_202604_test_v1.yaml` — QQQ train 2023–2024 / test 2025–2026, narrowed strategy family, fixed 288-combo grid.
 
-## F. Legacy / deprecated (do not use for new decisions)
+## F. Legacy / deprecated YAML (configs kept; old **result** roots removed 2026-05-10)
+
+The YAML files below remain for **historical command reference**. Their original **`candidate_root` paths were deleted** from the repo — use **post-hardening** configs + `layer1_all10_qqq_*_posthardening_v1/selected_candidates` for new work (see **RESULTS_INDEX.md**).
 
 - **`layer2_qqq_2020_20260430_v2_relaxed.yaml`** (+ sweep)
-  - **candidate_root**: `src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates`
-  - **status**: **pre-hardening** candidate root (see `PRE_HARDENING_STALE.md`)
-  - **replacement**: post-hardening 2020 strict/relaxed configs above
+  - **candidate_root (removed)**: `src/research/results/layer1_all10_qqq_2020_20260430_v1/selected_candidates`
+  - **replacement**: `layer2_qqq_2020_20260430_posthardening_{strict,relaxed}.yaml` + post-hardening Layer 1 roots
 
 - **`layer2_qqq_v1.yaml`** (+ sweep)
-  - **candidate_root**: `src/research/results/layer1_all10_qqq_v1/selected_candidates`
-  - **status**: legacy baseline / recovery template
-  - **replacement**: post-hardening 2020/2025 configs
+  - **candidate_root (removed)**: `src/research/results/layer1_all10_qqq_v1/selected_candidates`
+  - **replacement**: `layer2_qqq_2023_20260430_posthardening_{strict,relaxed}.yaml` + `layer1_all10_qqq_2023_20260430_posthardening_v1/`
 
 - **`orb_vwap_simple.yaml`**
   - **status**: early prototype / reference only

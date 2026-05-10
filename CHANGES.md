@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Chore(repo): **stale research artifact cleanup** — `src/research/repo_cleanup_inventory.py`; `repo_cleanup_inventory.{csv,md}`, `repo_cleanup_keep_policy.md`, `repo_cleanup_delete_plan.{csv,md}`, `repo_cleanup_summary.md`, `test_suite_cleanup_audit.{csv,md}`; remove tracked **`PRE_HARDENING_STALE` / `STALE`** Layer 1/2 roots; clear **`testing_parameters_results/`** sweep scratch; README / indexes / policy / handoff updates. **No** Layer 1/2/WFO; **no** test deletions.
+
 - Docs(handoff): **PA Batch B/C** — `NEXT_HANDOFF.md` + `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`: interim staging **`NEED_LAYER2_REPAIRED_V3_BEHAVIOR_COMPLETION`** vs post-`25faa94` **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**; validation table clarified (`_feat_key` / `DfSignalStrategy` in `*.py` only).
 
 - Feat(combiner): **PA Batch B/C repaired Layer 2 v3 — behavior gate** — re-sweep with `--detail-top 15`; postprocess `--write-behavior-unique`; `behavior_unique_systems.{csv,md}`, `behavior_unique_run_map.csv`, refreshed `top_unique_*`, `cost_stress/*`, `cost_robust_systems.*`; `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`; `layer2_pa_batch_bc_repaired_v3_summary.md` (**`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**; retract prior **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`**). `.gitignore` behavior un-ignore; `README.md`, `PROJECT_STATUS.md`, `RESULTS_INDEX` ×2, `pa_batch_bc_diversity_repair_summary.md`. **Sweep `sweep_*` / `top_runs/` not committed.**

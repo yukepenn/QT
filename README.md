@@ -133,7 +133,7 @@ Registered plugins (also in `loader.py`):
 - `donchian_channel_breakout`
 - `consecutive_bar_exhaustion`
 
-**Strategy Library v1 snapshot:** Current sweep-ready status is summarized in **`src/research/results/layer1_all10_qqq_v1/fast_core_status_current.csv`** (Layer 1 bundle metadata in **`sweep_manifest.csv`**). The loader currently registers **35** strategies (**v1 + v2 Batch 1 + v2 completion + PA Batch A–C** plugins); completion plugin pack: **`src/research/results/strategy_library_v2_completion_summary.md`**. **QQQ 2023–2024 Layer 1 economics** for the nine completion names: **`src/research/results/layer1_v2_completion_qqq_2023_2024/`** (manifest + **30** candidate YAMLs; summary `layer1_v2_completion_summary.md`). **Reduced Layer 2 v2 completion** (same window): configs `layer2_qqq_v2_completion_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_2023_2024.yaml`; curated results **`src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md`** (**decision: `TUNE_COMPLETION_GRIDS_FIRST`**). **Layer 2 v2 completion tuned v1:** configs `layer2_qqq_v2_completion_tuned_v1_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_tuned_v1_2023_2024.yaml`; curated **`src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/layer2_v2_completion_tuned_v1_summary.md`** (**`TUNE_COMPLETION_GRIDS_AGAIN`**). **Layer 2 v2 completion tuned v2 high-trade:** configs `layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml`; curated **`src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/layer2_v2_completion_tuned_v2_high_trade_summary.md`** (**`TUNE_COMPLETION_GRIDS_AGAIN`**; **`behavior_unique` = 2**; high-trade **0.02** issue documented). mini-WFO v4/v5 + full WFO **not** run. Design / run plan: `reduced_layer2_v2_completion_design.md`, `reduced_layer2_v2_completion_run_plan.md`; tuning plan / toxic-path diagnosis: `layer2_v2_completion_tuning_plan.md`, `layer2_v2_completion_toxic_path_diagnosis.md`; tuned v2 plan: `layer2_v2_completion_tuned_v2_high_trade_plan.md`.
+**Strategy Library v1 snapshot:** Use **post-hardening** Layer 1 bundles (e.g. **`src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/sweep_manifest.csv`**) instead of removed legacy `layer1_all10_qqq_v1/`. The loader currently registers **35** strategies (**v1 + v2 Batch 1 + v2 completion + PA Batch A–C** plugins); completion plugin pack: **`src/research/results/strategy_library_v2_completion_summary.md`**. **QQQ 2023–2024 Layer 1 economics** for the nine completion names: **`src/research/results/layer1_v2_completion_qqq_2023_2024/`** (manifest + **30** candidate YAMLs; summary `layer1_v2_completion_summary.md`). **Reduced Layer 2 v2 completion** (same window): configs `layer2_qqq_v2_completion_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_2023_2024.yaml`; curated results **`src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md`** (**decision: `TUNE_COMPLETION_GRIDS_FIRST`**). **Layer 2 v2 completion tuned v1:** configs `layer2_qqq_v2_completion_tuned_v1_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_tuned_v1_2023_2024.yaml`; curated **`src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/layer2_v2_completion_tuned_v1_summary.md`** (**`TUNE_COMPLETION_GRIDS_AGAIN`**). **Layer 2 v2 completion tuned v2 high-trade:** configs `layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml` + `layer2_sweep_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml`; curated **`src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/layer2_v2_completion_tuned_v2_high_trade_summary.md`** (**`TUNE_COMPLETION_GRIDS_AGAIN`**; **`behavior_unique` = 2**; high-trade **0.02** issue documented). mini-WFO v4/v5 + full WFO **not** run. Design / run plan: `reduced_layer2_v2_completion_design.md`, `reduced_layer2_v2_completion_run_plan.md`; tuning plan / toxic-path diagnosis: `layer2_v2_completion_tuning_plan.md`, `layer2_v2_completion_toxic_path_diagnosis.md`; tuned v2 plan: `layer2_v2_completion_tuned_v2_high_trade_plan.md`.
 
 **Generic risk hygiene (`risk.min_risk_per_share`)**
 
@@ -197,13 +197,13 @@ data/raw parquet
 **Layer 1 focused sweep bundle (all registered strategies, saved results):**
 
 ```bash
-python src/research/run_layer1_focused.py --asset equity --symbols QQQ --start 2025-01-01 --end 2026-04-30 --strategies all --tag layer1_qqq_v1 --output-root src/research/results/layer1_all10_qqq_v1 --top 50 --min-trades 30 --progress-every 50 --resume
+python src/research/run_layer1_focused.py --asset equity --symbols QQQ --start 2023-01-01 --end 2026-04-30 --strategies all --tag layer1_qqq_posthardening_2023 --output-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1 --top 50 --min-trades 30 --progress-every 50 --resume
 ```
 
 Then select candidates from **`sweep_manifest.csv`**:
 
 ```bash
-python src/research/select_candidates.py --manifest src/research/results/layer1_all10_qqq_v1/sweep_manifest.csv --output-root src/research/results/layer1_all10_qqq_v1 --top-per-strategy 5 --min-trades 50 --min-profit-factor 1.05 --min-total-r 0 --max-drawdown-r -40 --max-avg-bars-held 90 --max-eod-count 0 --max-end-of-data-count 0 --allow-relaxed-fallback
+python src/research/select_candidates.py --manifest src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/sweep_manifest.csv --output-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1 --top-per-strategy 5 --min-trades 50 --min-profit-factor 1.05 --min-total-r 0 --max-drawdown-r -40 --max-avg-bars-held 90 --max-eod-count 0 --max-end-of-data-count 0 --allow-relaxed-fallback
 ```
 
 **Readable vs fast array parity (QQQ Jan sample):**
@@ -505,26 +505,26 @@ src/strategies/testing_parameters_results/<strategy>/sweep_<timestamp>[_<tag>]/
 3. **`src/combiner/run.py`** loads those YAMLs, applies **combiner-only** rules from **`src/combiner/configs/*.yaml`** (priorities, active windows, daily limits, execution costs), builds aligned fast signal arrays per candidate, and runs the **MVP simulator** (one open position, priority tie-break, rejected-signal logging).
 4. Strategy **parameters** always come from candidate YAMLs; combiner YAML controls **routing and portfolio-level risk only**.
 
-**Layer 2 Combiner v1 (all-10 library):** candidate YAMLs from **`src/research/results/layer1_all10_qqq_v1/selected_candidates/`**; one shared bar stream; signals precomputed once per run/sweep; inner routing uses **Numba** (`simulate_combiner_numba`) for fast sweeps and optional detailed Python logs for inspection. Typical flow: **diagnostics** → **fixed `run.py` candidate sets** → **`sweep.py`** rule grid (signals precomputed once for the full YAML universe, then **`enabled_mask`** per combo).
+**Layer 2 Combiner (post-hardening all-10 example):** candidate YAMLs from **`src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates/`**; configs **`src/combiner/configs/layer2_qqq_2023_20260430_posthardening_strict.yaml`** + **`layer2_sweep_qqq_2023_20260430_posthardening_strict.yaml`**; output root **`src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/`**. Legacy `layer2_qqq_v1` / `layer1_all10_qqq_v1` **result folders were removed** (`repo_cleanup_summary.md`).
 
 ```bash
-python src/combiner/run.py --candidate-root src/research/results/layer1_all10_qqq_v1/selected_candidates --config src/combiner/configs/layer2_qqq_v1.yaml --asset equity --symbol QQQ --start 2025-01-01 --end 2026-04-30 --diagnostics-only --candidate-set all_with_relaxed --top-per-strategy 5 --output-root src/combiner/results/layer2_qqq_v1
+python src/combiner/run.py --candidate-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates --config src/combiner/configs/layer2_qqq_2023_20260430_posthardening_strict.yaml --asset equity --symbol QQQ --start 2023-01-01 --end 2026-04-30 --diagnostics-only --candidate-set all_with_relaxed --top-per-strategy 5 --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1
 
-python src/combiner/run.py --candidate-root src/research/results/layer1_all10_qqq_v1/selected_candidates --config src/combiner/configs/layer2_qqq_v1.yaml --asset equity --symbol QQQ --start 2025-01-01 --end 2026-04-30 --candidate-set strict_core --top-per-strategy 3 --tag strict_core_top3 --detailed --output-root src/combiner/results/layer2_qqq_v1
+python src/combiner/run.py --candidate-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates --config src/combiner/configs/layer2_qqq_2023_20260430_posthardening_strict.yaml --asset equity --symbol QQQ --start 2023-01-01 --end 2026-04-30 --candidate-set strict_core --top-per-strategy 3 --tag strict_core_top3 --detailed --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1
 
-python src/combiner/sweep.py --candidate-root src/research/results/layer1_all10_qqq_v1/selected_candidates --config src/combiner/configs/layer2_sweep_qqq_v1.yaml --asset equity --symbol QQQ --start 2025-01-01 --end 2026-04-30 --output-root src/combiner/results/layer2_qqq_v1 --top 20 --detail-top 10 --progress-every 100 --tag sweep_v1
+python src/combiner/sweep.py --candidate-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates --config src/combiner/configs/layer2_sweep_qqq_2023_20260430_posthardening_strict.yaml --asset equity --symbol QQQ --start 2023-01-01 --end 2026-04-30 --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1 --top 20 --detail-top 10 --progress-every 100 --tag sweep_posthardening
 ```
 
 **Postprocess** (diagnostics markdown, sweep dedupe, fixed-run rollup, cost stress):
 
 ```bash
-python src/combiner/postprocess.py --diagnostics-dir src/combiner/results/layer2_qqq_v1/diagnostics --diagnostics-date-range "2025-01-01 — 2026-04-30" --output-root src/combiner/results/layer2_qqq_v1
+python src/combiner/postprocess.py --diagnostics-dir src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/diagnostics --diagnostics-date-range "2023-01-01 — 2026-04-30" --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1
 
-python src/combiner/postprocess.py --sweep-dir src/combiner/results/layer2_qqq_v1/sweep_<timestamp>_sweep_v1_full --output-root src/combiner/results/layer2_qqq_v1 --dedupe-top 50
+python src/combiner/postprocess.py --sweep-dir src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/sweep_<timestamp>_sweep_posthardening --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1 --dedupe-top 50
 
-python src/combiner/postprocess.py --sweep-dir src/combiner/results/layer2_qqq_v1/sweep_<timestamp>_sweep_v1_full --output-root src/combiner/results/layer2_qqq_v1 --dedupe-top 50 --cost-stress-top 5 --candidate-root src/research/results/layer1_all10_qqq_v1/selected_candidates --config src/combiner/configs/layer2_qqq_v1.yaml --asset equity --symbol QQQ --start 2025-01-01 --end 2026-04-30
+python src/combiner/postprocess.py --sweep-dir src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/sweep_<timestamp>_sweep_posthardening --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1 --dedupe-top 50 --cost-stress-top 5 --candidate-root src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates --config src/combiner/configs/layer2_qqq_2023_20260430_posthardening_strict.yaml --asset equity --symbol QQQ --start 2023-01-01 --end 2026-04-30
 
-python src/combiner/postprocess.py --collect-fixed-runs src/combiner/results/layer2_qqq_v1/fixed_runs --output-root src/combiner/results/layer2_qqq_v1
+python src/combiner/postprocess.py --collect-fixed-runs src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/fixed_runs --output-root src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1
 ```
 
 #### Layer 2 postprocess diagnostics (hardened)
@@ -540,7 +540,7 @@ python src/combiner/postprocess.py --collect-fixed-runs src/combiner/results/lay
 
 Saved Layer 1/Layer 2 **result folders from before these diagnostics are still stale** until you rerun sweeps with the hardened code; use postprocess outputs only on **fresh** sweep exports.
 
-Artifacts default under **`src/combiner/results/layer2_qqq_v1/`** (`run_<timestamp>_<tag>/`, `diagnostics/`, `sweep_<timestamp>_<tag>/`).
+Artifacts default under **`src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/`** (`run_<timestamp>_<tag>/`, `diagnostics/`, `sweep_<timestamp>_<tag>/`).
 
 **MVP combiner behavior (legacy ORB+VWAP sample `orb_vwap_simple.yaml`):** one symbol, **max one** open position, session/day caps from YAML, **`no_new_after_minute`**, **`slippage_per_share: 0.01`**, **`commission_per_trade: 0.0`**. Priorities in that sample favor ORB over VWAP when both fire.
 
@@ -570,7 +570,7 @@ python src/combiner/run.py --candidate-root src/research/results/layer1_orb_vwap
 python src/combiner/run.py --candidate-root src/research/results/layer1_orb_vwap_qqq/selected_candidates --config src/combiner/configs/orb_vwap_simple.yaml --asset equity --symbol QQQ --start 2025-01-01 --end 2026-04-30 --top-per-strategy 1 --strategies orb_continuation vwap_reversal --tag orb_vwap_top1
 ```
 
-Outputs land under **`src/combiner/results/run_<timestamp>_<tag>/`** or **`layer2_qqq_v1/run_<timestamp>_<tag>/`** (`trades.csv`, `equity.csv`, `metrics.json`, **`candidate_signal_log.csv`**, **`rejected_signals.csv`**, `candidates_used.csv`, `config_resolved.yaml`, `summary.txt`).
+Outputs land under **`src/combiner/results/run_<timestamp>_<tag>/`** or **`layer2_qqq_2023_20260430_posthardening_strict_v1/run_<timestamp>_<tag>/`** (`trades.csv`, `equity.csv`, `metrics.json`, **`candidate_signal_log.csv`**, **`rejected_signals.csv`**, `candidates_used.csv`, `config_resolved.yaml`, `summary.txt`).
 
 ## 11. Current ORB continuation baseline
 

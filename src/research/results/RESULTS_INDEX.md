@@ -170,11 +170,20 @@ This index classifies **result roots** without moving or deleting them.
   - `pre_layer3_gate_readiness_summary.md`
 - **Data coverage docs:** `data_backfill_spy_qqq_2020_20260430/` (SPY incomplete; QQQ is the research symbol)
 
-## C. Stale / superseded (keep for history; do not use for new decisions)
+## C. Removed from repository (2026-05-10)
+
+The following **stale** roots were deleted from the working tree (see `repo_cleanup_summary.md`); use **post-hardening** replacements in §A–B:
+
+- **`layer1_all10_qqq_2020_20260430_v1/`** — pre-hardening (`PRE_HARDENING_STALE.md`) → **`layer1_all10_qqq_2020_20260430_posthardening_v1/`**
+- **`layer1_all10_qqq_v1/`** — legacy (`STALE.md`) → **`layer1_all10_qqq_*_posthardening_v1/`**
+
+## D. Stale / superseded (historical index only — paths above removed 2026-05-10)
+
+The bullets below describe **what these roots were** before removal; they are **not** present in the repo anymore:
 
 - **`layer1_all10_qqq_2020_20260430_v1/`**
   - **status**: stale (pre-hardening)
-  - **marker**: includes `PRE_HARDENING_STALE.md`
+  - **marker**: included `PRE_HARDENING_STALE.md`
   - **replacement**: `layer1_all10_qqq_2020_20260430_posthardening_v1/`
 
 - **`layer1_all10_qqq_v1/`**

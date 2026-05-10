@@ -10,6 +10,8 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
+**2026-05-10 (repo hygiene):** Removed **stale** Layer 1/2 result roots (`PRE_HARDENING_STALE.md` / `STALE.md`) and cleared **`testing_parameters_results/`** sweep scratch; see **`src/research/results/repo_cleanup_summary.md`**. **No** Layer 1/2/WFO reruns; **no** test deletion.
+
 ## 2. Current architecture (high level)
 
 - **Raw data:** local only under `data/raw/` (gitignored).

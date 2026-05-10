@@ -1,3 +1,5 @@
+> **Historical (2026-05-10):** This note predates current git layout. Paths such as `layer2_qqq_v1/` and `layer1_all10_qqq_v1/` **result folders were removed** from the repo; see `repo_cleanup_summary.md` and **RESULTS_INDEX.md** for active replacements.
+
 # Recovery status — before restore actions (Phase 0)
 
 Timestamp: emergency recovery audit (local workspace).

@@ -1,0 +1,6 @@
+path,tracked,delete_method,reason,replacement_path,risk_level
+src/research/results/layer1_all10_qqq_2020_20260430_v1,yes,git_rm,PRE_HARDENING_STALE.md; superseded by post-hardening roots,src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/,LOW
+src/research/results/layer1_all10_qqq_v1,yes,git_rm,STALE.md + replacement documented in RESULTS_INDEX.md,src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/ ; layer1_all10_qqq_2025_20260430_posthardening_v1/,LOW
+src/combiner/results/layer2_qqq_2020_20260430_v2_relaxed,yes,git_rm,PRE_HARDENING_STALE.md; superseded by post-hardening roots,src/combiner/results/layer2_qqq_2023_20260430_posthardening_strict_v1/ (see RESULTS_INDEX.md),LOW
+src/combiner/results/layer2_qqq_v1,yes,git_rm,STALE.md + replacement documented in RESULTS_INDEX.md,post-hardening Layer 2 roots (RESULTS_INDEX.md),LOW
+src/strategies/testing_parameters_results,yes,local_delete,Layer 1 sweep scratch outputs (children removed; .gitkeep retained if present),recreated by Layer 1 sweeps (see ARTIFACT_POLICY.md),LOW
