@@ -1,0 +1,12 @@
+NOTE: diagnostic relaxed selection only — non-authoritative; do not merge into primary selected_candidates.
+
+tag=
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_a_qqq_2023_2024\diagnostic_relaxed_selection
+candidates_written=5
+
+candidates:
+  PA_FAILED_RANGE_BREAKOUT_TRAP_001 pa_failed_range_breakout_trap score=-0.1203 trades=331
+  PA_FAILED_RANGE_BREAKOUT_TRAP_002 pa_failed_range_breakout_trap score=-0.1203 trades=331
+  PA_FAILED_RANGE_BREAKOUT_TRAP_003 pa_failed_range_breakout_trap score=-0.1933 trades=331
+  PA_FAILED_RANGE_BREAKOUT_TRAP_004 pa_failed_range_breakout_trap score=-0.1933 trades=331
+  PA_FAILED_RANGE_BREAKOUT_TRAP_005 pa_failed_range_breakout_trap score=-0.2464 trades=331

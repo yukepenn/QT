@@ -1,0 +1,5 @@
+strategy,raw_grid_size,capped,max_combos_if_capped,recommendation,notes
+pa_trading_range_bls_hs,108,no,,run_full_grid,
+pa_failed_range_breakout_trap,108,no,,run_full_grid,
+pa_tight_channel_pullback,108,no,,run_full_grid,
+pa_mtr_reversal,108,no,,run_full_grid,

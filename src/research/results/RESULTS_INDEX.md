@@ -4,10 +4,16 @@ This index classifies **result roots** without moving or deleting them.
 
 ## A. Active / current
 
-- **PA Batch A (price-action branch — planning + smokes)** — curated docs only (no formal Layer 1 root yet):
+- **PA Batch A (price-action branch — planning + smokes)** — curated docs:
   - `pa_batch_a_plan.md`, `pa_repo_formatting_check.md`, `pa_feature_foundation_summary.md`
   - `pa_batch_a_parity_smoke.{md,csv}`, `pa_batch_a_jan2025_smoke.{md,csv}`, `pa_batch_a_implementation_summary.md`
-  - **status:** feature foundation + four strategies in `loader` (**29** total); Jan 2025 wiring/parity smokes only; **Layer 1 2023–2024 not run** unless user approves (`RUN_PA_BATCH_A_LAYER1_2023_2024` recommended in summary).
+  - **status:** feature foundation + four strategies in `loader` (**29** total); formal economics in **`layer1_pa_batch_a_qqq_2023_2024/`** (see below).
+  - **keep:** yes
+
+- **`layer1_pa_batch_a_qqq_2023_2024/`**
+  - **status:** formal PA Batch A Layer 1 (QQQ 2023–01–01 → 2024–12–31)
+  - **purpose:** focused sweeps → `sweep_manifest.*` → strict `select_candidates` (**4** YAMLs, `pa_failed_range_breakout_trap` only) + optional `diagnostic_relaxed_selection/` + `signal_rate_diagnosis.*` + `candidate_fast_context_check.*`
+  - **decision:** **`TUNE_PA_BATCH_A_GRIDS_FIRST`** (`layer1_pa_batch_a_summary.md`). **PA Layer 2 / mini-WFO / full WFO not run.**
   - **keep:** yes
 
 - **`layer1_all10_qqq_2020_20260430_posthardening_v1/`**

@@ -1,0 +1,5 @@
+strategy,raw_grid_size,result_rows,combos_with_trades,combos_zero_trades,max_trades,median_trades,p75_trades,best_total_r,best_pf,best_dd,all_zero_trade,likely_reason
+pa_trading_range_bls_hs,108,18,18,0,443,426.0,443.0,-6.926086072115588,1.0949331400032578,-37.83523065708953,False,viable_signal_rate
+pa_failed_range_breakout_trap,108,18,18,0,331,331.0,331.0,2.8418226562883504,1.1346511235006562,-47.19068448183416,False,viable_signal_rate
+pa_tight_channel_pullback,108,18,18,0,14,14.0,14.0,-3.038573414888264,0.9426751592358592,-5.866495492810472,False,gate_too_strict_or_bug_suspected
+pa_mtr_reversal,108,18,18,0,1,1.0,1.0,1.9791666666666865,,0.0,False,gate_too_strict_or_bug_suspected

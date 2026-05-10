@@ -1,0 +1,5 @@
+candidate_yaml,strategy,candidate_id,status,detail,n_bars,array_len
+PA_FAILED_RANGE_BREAKOUT_TRAP_001.yaml,pa_failed_range_breakout_trap,PA_FAILED_RANGE_BREAKOUT_TRAP_001,ok,,7800,7800
+PA_FAILED_RANGE_BREAKOUT_TRAP_002.yaml,pa_failed_range_breakout_trap,PA_FAILED_RANGE_BREAKOUT_TRAP_002,ok,,7800,7800
+PA_FAILED_RANGE_BREAKOUT_TRAP_003.yaml,pa_failed_range_breakout_trap,PA_FAILED_RANGE_BREAKOUT_TRAP_003,ok,,7800,7800
+PA_FAILED_RANGE_BREAKOUT_TRAP_004.yaml,pa_failed_range_breakout_trap,PA_FAILED_RANGE_BREAKOUT_TRAP_004,ok,,7800,7800

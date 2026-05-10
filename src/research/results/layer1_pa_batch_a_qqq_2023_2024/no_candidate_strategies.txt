@@ -1,0 +1,3 @@
+pa_trading_range_bls_hs
+pa_tight_channel_pullback
+pa_mtr_reversal

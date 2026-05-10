@@ -1,0 +1,5 @@
+strategy,supports_fast,required_features_count,lookahead_in_required,default_yaml_ok,focused_yaml_ok,validate_merged_ok,raw_grid_size,grid_too_large_gt_1500,feature_key_ok,build_features_sample_ok,notes
+pa_trading_range_bls_hs,True,29,False,True,True,True,108,False,True,True,
+pa_failed_range_breakout_trap,True,26,False,True,True,True,108,False,True,True,
+pa_tight_channel_pullback,True,31,False,True,True,True,108,False,True,True,
+pa_mtr_reversal,True,26,False,True,True,True,108,False,True,True,

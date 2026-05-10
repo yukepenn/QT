@@ -317,7 +317,7 @@ def _main_manifest(
         strategy = str(mrow.get("strategy", "")).strip()
         status = str(mrow.get("status", "")).strip()
         rcsv = str(mrow.get("results_csv", "")).strip()
-        if status != "ok":
+        if status not in ("ok", "ok_zero_trade"):
             cand_lines.append(f"- **{strategy}**: skipped (status={status})")
             continue
         csv_path = Path(rcsv)

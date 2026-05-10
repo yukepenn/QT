@@ -71,10 +71,12 @@ def _best_row_metrics(df: pd.DataFrame) -> dict[str, Any]:
         d = df.sort_values(sort_col, ascending=False, na_position="last").iloc[0]
     else:
         d = df.iloc[0]
+    pfr = d["profit_factor_r"] if "profit_factor_r" in d.index else None
     return {
         "best_profit_factor": float(d.get("profit_factor", float("nan")))
         if pd.notna(d.get("profit_factor"))
         else None,
+        "best_profit_factor_r": float(pfr) if pfr is not None and pd.notna(pfr) else None,
         "best_total_r": float(d.get("total_r", float("nan"))) if pd.notna(d.get("total_r")) else None,
         "best_total_net_pnl": float(d.get("total_net_pnl", float("nan")))
         if pd.notna(d.get("total_net_pnl"))
@@ -97,6 +99,10 @@ def _best_row_metrics(df: pd.DataFrame) -> dict[str, Any]:
 MANIFEST_FIELDS = [
     "strategy",
     "status",
+    "elapsed_sec",
+    "capped",
+    "max_combos",
+    "raw_grid_size",
     "sweep_folder",
     "results_csv",
     "summary_txt",
@@ -104,9 +110,9 @@ MANIFEST_FIELDS = [
     "grid_size",
     "combinations_completed",
     "combinations_skipped_duplicate",
-    "elapsed_sec",
     "result_rows",
     "best_profit_factor",
+    "best_profit_factor_r",
     "best_total_r",
     "best_total_net_pnl",
     "best_trades",
@@ -145,13 +151,14 @@ def _write_manifest_md(path: Path, rows: list[dict[str, Any]]) -> None:
     lines = [
         "# Layer 1 sweep manifest",
         "",
-        "| strategy | status | elapsed_sec | result_rows | best_pf | best_total_r | sweep_folder |",
-        "|----------|--------|-------------|-------------|---------|--------------|--------------|",
+        "| strategy | status | elapsed_sec | capped | raw_grid | result_rows | best_pf | best_total_r | sweep_folder |",
+        "|----------|--------|-------------|--------|----------|-------------|---------|--------------|--------------|",
     ]
     for row in rows:
         lines.append(
             f"| {row.get('strategy','')} | {row.get('status','')} | {row.get('elapsed_sec','')} | "
-            f"{row.get('result_rows','')} | {row.get('best_profit_factor','')} | "
+            f"{row.get('capped','')} | {row.get('raw_grid_size','')} | {row.get('result_rows','')} | "
+            f"{row.get('best_profit_factor','')} | "
             f"{row.get('best_total_r','')} | {Path(str(row.get('sweep_folder',''))).name} |"
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -235,6 +242,10 @@ def main(argv: list[str] | None = None) -> int:
             row = {
                 "strategy": strategy,
                 "status": "missing_focused_yaml",
+                "elapsed_sec": "",
+                "capped": "",
+                "max_combos": "",
+                "raw_grid_size": "",
                 "sweep_folder": "",
                 "results_csv": "",
                 "summary_txt": "",
@@ -242,9 +253,9 @@ def main(argv: list[str] | None = None) -> int:
                 "grid_size": "",
                 "combinations_completed": "",
                 "combinations_skipped_duplicate": "",
-                "elapsed_sec": "",
                 "result_rows": "",
                 "best_profit_factor": "",
+                "best_profit_factor_r": "",
                 "best_total_r": "",
                 "best_total_net_pnl": "",
                 "best_trades": "",
@@ -264,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.resume:
             prev = manifest_by.get(strategy)
-            if prev and str(prev.get("status", "")).strip() == "ok":
+            if prev and str(prev.get("status", "")).strip() in ("ok", "ok_zero_trade"):
                 rc_path = Path(str(prev.get("results_csv", "")))
                 if rc_path.is_file():
                     print(f"[SKIP] strategy={strategy} already completed manifest ok + results exist", flush=True)
@@ -287,6 +298,10 @@ def main(argv: list[str] | None = None) -> int:
             row = {
                 "strategy": strategy,
                 "status": "grid_validation_failed",
+                "elapsed_sec": "",
+                "capped": "",
+                "max_combos": "",
+                "raw_grid_size": gs,
                 "sweep_folder": "",
                 "results_csv": "",
                 "summary_txt": "",
@@ -294,9 +309,9 @@ def main(argv: list[str] | None = None) -> int:
                 "grid_size": gs,
                 "combinations_completed": "",
                 "combinations_skipped_duplicate": "",
-                "elapsed_sec": "",
                 "result_rows": "",
                 "best_profit_factor": "",
+                "best_profit_factor_r": "",
                 "best_total_r": "",
                 "best_total_net_pnl": "",
                 "best_trades": "",
@@ -369,6 +384,7 @@ def main(argv: list[str] | None = None) -> int:
         notes = ""
         result_rows = 0
         best: dict[str, Any] = {}
+        df = pd.DataFrame()
         if code == 0 and results_csv.is_file():
             df = pd.read_csv(results_csv)
             result_rows = len(df)
@@ -378,9 +394,22 @@ def main(argv: list[str] | None = None) -> int:
         elif code != 0:
             notes = f"subprocess_exit_{code}"
 
+        all_zero = False
+        if code == 0 and result_rows > 0 and "trades" in df.columns:
+            all_zero = float(df["trades"].astype(float).max()) <= 0.0
+        sweep_status = "ok" if code == 0 else f"exit_{code}"
+        if code == 0 and all_zero:
+            sweep_status = "ok_zero_trade"
+            if not notes:
+                notes = "all_combos_zero_trades"
+
         row = {
             "strategy": strategy,
-            "status": "ok" if code == 0 else f"exit_{code}",
+            "status": sweep_status,
+            "elapsed_sec": round(elapsed, 3),
+            "capped": "false",
+            "max_combos": "",
+            "raw_grid_size": gs,
             "sweep_folder": str(sweep_dir.resolve()) if sweep_dir else "",
             "results_csv": str(results_csv.resolve()) if results_csv.is_file() else "",
             "summary_txt": str(summary_txt.resolve()) if summary_txt.is_file() else "",
@@ -388,9 +417,9 @@ def main(argv: list[str] | None = None) -> int:
             "grid_size": gs,
             "combinations_completed": summ.get("combinations_completed", ""),
             "combinations_skipped_duplicate": summ.get("combinations_skipped_duplicate", ""),
-            "elapsed_sec": round(elapsed, 3),
             "result_rows": result_rows,
             "best_profit_factor": best.get("best_profit_factor", ""),
+            "best_profit_factor_r": best.get("best_profit_factor_r", ""),
             "best_total_r": best.get("best_total_r", ""),
             "best_total_net_pnl": best.get("best_total_net_pnl", ""),
             "best_trades": best.get("best_trades", ""),

@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-09
 
+- Feat(research): **PA Batch A formal Layer 1 QQQ 2023–2024** — curated `layer1_pa_batch_a_qqq_2023_2024/` (manifest, selection, diagnosis, summary; decision **`TUNE_PA_BATCH_A_GRIDS_FIRST`**). **`run_layer1_focused.py`:** richer sweep manifest + `ok_zero_trade`; **`select_candidates.py`:** treat `ok_zero_trade` like `ok` for manifest CSV paths. **PA Layer 2 / mini-WFO / full WFO not run.**
+- Docs: `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `src/research/results/RESULTS_INDEX.md`, `src/strategies/testing_parameters/GRID_INDEX.md`, `docs/ARTIFACT_POLICY.md`.
 - Feat(strategies+features): **PA Batch A foundation** — `pa_swings` + PA bar/regime/proximity features; four PA plugins (long-only MVP), YAMLs, loader **29** strategies, `metadata.yaml`; tests `test_pa_features_no_lookahead.py`, `test_pa_strategy_registration.py`, `test_pa_*_signal.py`; curated `src/research/results/pa_batch_a_*` (plan, parity/Jan smokes, implementation summary). Jan 2025 QQQ wiring + parity smokes only; **Layer 1 / Layer 2 / WFO not run.**
 - Docs(research): PA Batch A — `pa_batch_a_*`, `GRID_INDEX.md` (PA section), `src/research/results/RESULTS_INDEX.md`; `README.md`, `PROJECT_STATUS.md`, `docs/ARTIFACT_POLICY.md`.
 - Docs(combiner): `src/combiner/results/RESULTS_INDEX.md` — PA Batch A has no Layer 2 root yet (pointer to research summary).

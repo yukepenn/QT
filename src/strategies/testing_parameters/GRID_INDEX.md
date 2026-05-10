@@ -38,10 +38,10 @@ Legend: **status** = how the grid is used in current research; **result root** =
 
 | Strategy | File | Purpose | Status | Last known result root | Notes |
 |----------|------|---------|--------|------------------------|-------|
-| pa_trading_range_bls_hs | `pa_trading_range_bls_hs_focused.yaml` | PA trading-range BLS/HS long MVP | Active (smoke) | *(formal Layer 1 pending approval)* → `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` | Jan 2025 smoke only so far |
-| pa_failed_range_breakout_trap | `pa_failed_range_breakout_trap_focused.yaml` | Failed rolling-range breakout trap | Active (smoke) | same | |
-| pa_tight_channel_pullback | `pa_tight_channel_pullback_focused.yaml` | Tight bull channel pullback | Active (smoke) | same | |
-| pa_mtr_reversal | `pa_mtr_reversal_focused.yaml` | Major trend reversal proxy | Active (smoke) | same | |
+| pa_trading_range_bls_hs | `pa_trading_range_bls_hs_focused.yaml` | PA trading-range BLS/HS long MVP | Active | `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` | Formal Layer 1 2023–2024; no strict YAML (see summary) |
+| pa_failed_range_breakout_trap | `pa_failed_range_breakout_trap_focused.yaml` | Failed rolling-range breakout trap | Active | same | **4** strict YAMLs; best in-batch edge |
+| pa_tight_channel_pullback | `pa_tight_channel_pullback_focused.yaml` | Tight bull channel pullback | Active | same | Sparse; tune grid |
+| pa_mtr_reversal | `pa_mtr_reversal_focused.yaml` | Major trend reversal proxy | Active | same | Ultra-sparse on focused grid |
 
 ---
 

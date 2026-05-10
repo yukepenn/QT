@@ -16,7 +16,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 - **Features:** built from raw bars via `src/features/build_features.py`; **FeatureStore v1** provides in-memory reuse.
 - **Strategies:** plugins under `src/strategies/strategy/` implementing fast context path:
   `prepare_signal_context` → `generate_signal_arrays_from_context`.
-- **PA Batch A (Brooks-style branch):** deterministic **`pa_*`** features (`price_action`, `pa_swings`, extended `regime`, optional `levels` proximity) plus four long-only MVP plugins; **loader = 29** strategies. Wiring validated with Jan 2025 parity + capped sweeps; **formal Layer 1 2023–2024 not run** unless approved — see `src/research/results/pa_batch_a_implementation_summary.md`.
+- **PA Batch A (Brooks-style branch):** deterministic **`pa_*`** features (`price_action`, `pa_swings`, extended `regime`, optional `levels` proximity) plus four long-only MVP plugins; **loader = 29** strategies. Formal Layer 1 QQQ 2023–2024: `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` (`layer1_pa_batch_a_summary.md` — **`TUNE_PA_BATCH_A_GRIDS_FIRST`**). **PA Layer 2 / mini-WFO / full WFO not run.** See also `pa_batch_a_implementation_summary.md`.
 - **Layer 1 sweep:** `src/backtest/sweep.py` (fast Numba path).
 - **Candidate selection:** `src/research/select_candidates.py` exports `selected_candidates/*.yaml`.
 - **Layer 2:** `src/combiner/run.py`, `src/combiner/sweep.py`, `src/combiner/postprocess.py`.
@@ -30,6 +30,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 ### Layer 1 (candidate libraries)
 
+- **PA Batch A (QQQ 2023–2024):** `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` — four focused sweeps (108 raw → 18 dedup rows each), manifest, strict selection (**4** YAMLs, `pa_failed_range_breakout_trap` only), diagnostic relaxed subfolder, signal-rate diagnosis, fast-context check. Decision **`TUNE_PA_BATCH_A_GRIDS_FIRST`**. **PA Layer 2 / mini-WFO / full WFO not run.**
 - **Active (post-hardening):**
   - `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/`
   - `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/`
