@@ -16,7 +16,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 - **Features:** built from raw bars via `src/features/build_features.py`; **FeatureStore v1** provides in-memory reuse.
 - **Strategies:** plugins under `src/strategies/strategy/` implementing fast context path:
   `prepare_signal_context` → `generate_signal_arrays_from_context`.
-- **PA Batch A (Brooks-style branch):** deterministic **`pa_*`** features (`price_action`, `pa_swings`, extended `regime`, optional `levels` proximity) plus four long-only MVP plugins; **loader = 29** strategies. Formal Layer 1 QQQ 2023–2024: `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` (`layer1_pa_batch_a_summary.md` — **`TUNE_PA_BATCH_A_GRIDS_FIRST`**). **PA Layer 2 / mini-WFO / full WFO not run.** See also `pa_batch_a_implementation_summary.md`.
+- **PA Batch A (Brooks-style branch):** deterministic **`pa_*`** features (`price_action`, `pa_swings`, extended `regime`, optional `levels` proximity) plus four long-only MVP plugins; **loader = 29** strategies. Layer 1 QQQ 2023–2024: baseline `layer1_pa_batch_a_qqq_2023_2024/` (**`TUNE_PA_BATCH_A_GRIDS_FIRST`**); **tuned grids v1** `layer1_pa_batch_a_tuned_qqq_2023_2024_v1/` (**`PROCEED_TO_PA_BATCH_A_REDUCED_LAYER2_DESIGN`**, design-only `reduced_layer2_pa_batch_a_tuned_design.md`). **PA Layer 2 / mini-WFO / full WFO not run.** See `pa_batch_a_implementation_summary.md`.
 - **Layer 1 sweep:** `src/backtest/sweep.py` (fast Numba path).
 - **Candidate selection:** `src/research/select_candidates.py` exports `selected_candidates/*.yaml`.
 - **Layer 2:** `src/combiner/run.py`, `src/combiner/sweep.py`, `src/combiner/postprocess.py`.
@@ -30,7 +30,8 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 ### Layer 1 (candidate libraries)
 
-- **PA Batch A (QQQ 2023–2024):** `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` — four focused sweeps (108 raw → 18 dedup rows each), manifest, strict selection (**4** YAMLs, `pa_failed_range_breakout_trap` only), diagnostic relaxed subfolder, signal-rate diagnosis, fast-context check. Decision **`TUNE_PA_BATCH_A_GRIDS_FIRST`**. **PA Layer 2 / mini-WFO / full WFO not run.**
+- **PA Batch A — tuned Layer 1 v1 (QQQ 2023–2024):** `src/research/results/layer1_pa_batch_a_tuned_qqq_2023_2024_v1/` — four `*_tuned_v1.yaml` sweeps (≤768 raw rows each), manifest, strict **10** YAMLs (**5** trading-range + **5** failed-trap), signal diagnosis vs baseline, fast-context check; plan `layer1_pa_batch_a_tuning_plan.md`. Decision **`PROCEED_TO_PA_BATCH_A_REDUCED_LAYER2_DESIGN`** (`layer1_pa_batch_a_tuned_v1_summary.md`); design-only **`reduced_layer2_pa_batch_a_tuned_design.md`**. **PA Layer 2 / mini-WFO / full WFO not run.**
+- **PA Batch A — formal Layer 1 (QQQ 2023–2024):** `src/research/results/layer1_pa_batch_a_qqq_2023_2024/` — four focused sweeps (108 raw → 18 dedup rows each), manifest, strict selection (**4** YAMLs, `pa_failed_range_breakout_trap` only), diagnostic relaxed subfolder, signal-rate diagnosis, fast-context check. Decision **`TUNE_PA_BATCH_A_GRIDS_FIRST`**. **Superseded for multi-family candidates by tuned v1 root above.**
 - **Active (post-hardening):**
   - `src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1/`
   - `src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1/`

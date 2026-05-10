@@ -10,6 +10,12 @@ This index classifies **result roots** without moving or deleting them.
   - **status:** feature foundation + four strategies in `loader` (**29** total); formal economics in **`layer1_pa_batch_a_qqq_2023_2024/`** (see below).
   - **keep:** yes
 
+- **`layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`**
+  - **status:** PA Batch A **tuned grids v1** Layer 1 (QQQ 2023–01–01 → 2024–12–31)
+  - **purpose:** `*_tuned_v1.yaml` sweeps → **10** strict YAMLs (trading-range + failed-trap); `signal_rate_diagnosis.*`, `layer1_pa_batch_a_tuned_v1_summary.md`
+  - **decision:** **`PROCEED_TO_PA_BATCH_A_REDUCED_LAYER2_DESIGN`**; design sketch `reduced_layer2_pa_batch_a_tuned_design.md` (**no** Layer 2 execution)
+  - **keep:** yes
+
 - **`layer1_pa_batch_a_qqq_2023_2024/`**
   - **status:** formal PA Batch A Layer 1 (QQQ 2023–01–01 → 2024–12–31)
   - **purpose:** focused sweeps → `sweep_manifest.*` → strict `select_candidates` (**4** YAMLs, `pa_failed_range_breakout_trap` only) + optional `diagnostic_relaxed_selection/` + `signal_rate_diagnosis.*` + `candidate_fast_context_check.*`

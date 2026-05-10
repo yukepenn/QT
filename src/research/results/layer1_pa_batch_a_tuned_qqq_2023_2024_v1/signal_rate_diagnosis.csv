@@ -1,0 +1,16 @@
+strategy,metric,original_layer1,tuned_v1,comparison_notes
+pa_trading_range_bls_hs,max_trades,409,415,improved_activity
+pa_trading_range_bls_hs,best_total_r_manifest_pf_row,-6.93,25.57,improved
+pa_trading_range_bls_hs,best_profit_factor_manifest,1.095,1.470,improved
+pa_trading_range_bls_hs,strict_yaml_count,0,5,improved
+pa_failed_range_breakout_trap,max_trades,331,378,improved
+pa_failed_range_breakout_trap,best_total_r_manifest_pf_row,2.84,34.89,improved
+pa_failed_range_breakout_trap,best_max_dd_r_manifest,-47.19,-43.21,improved_dd
+pa_failed_range_breakout_trap,best_total_r_among_trades_ge_30,2.84,86.44,improved_best_r_heavy_churn_row
+pa_failed_range_breakout_trap,strict_yaml_count,4,5,improved_diversity_pair_with_range
+pa_tight_channel_pullback,max_trades,14,58,still_sparse_vs_strict_threshold_but_more_fills
+pa_tight_channel_pullback,best_pf_among_trades_ge_30,0.943,0.682,weak_edge
+pa_tight_channel_pullback,strict_yaml_count,0,0,high_activity_weak_edge
+pa_mtr_reversal,max_trades,1,12,still_sparse
+pa_mtr_reversal,combos_trades_ge_30,0,0,still_sparse
+pa_mtr_reversal,strict_yaml_count,0,0,still_sparse

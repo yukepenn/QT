@@ -1,0 +1,5 @@
+strategy,tuned_yaml,raw_grid_size,capped,max_combos,notes
+pa_trading_range_bls_hs,pa_trading_range_bls_hs_tuned_v1.yaml,576,false,,full sweep
+pa_failed_range_breakout_trap,pa_failed_range_breakout_trap_tuned_v1.yaml,576,false,,full sweep
+pa_tight_channel_pullback,pa_tight_channel_pullback_tuned_v1.yaml,768,false,,full sweep
+pa_mtr_reversal,pa_mtr_reversal_tuned_v1.yaml,768,false,,full sweep

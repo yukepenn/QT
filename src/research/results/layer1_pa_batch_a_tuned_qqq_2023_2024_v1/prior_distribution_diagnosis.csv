@@ -1,0 +1,5 @@
+strategy,note,result_rows,combos_with_trades,max_trades,median_trades,p75_trades,best_total_r,best_pf,best_max_dd_r,csv_available
+pa_trading_range_bls_hs,manifest_layer1,18,18,409,426,443,-6.926,1.095,-37.835,false
+pa_failed_range_breakout_trap,manifest_layer1,18,18,331,331,331,2.842,1.135,-47.191,false
+pa_tight_channel_pullback,manifest_layer1,18,18,14,14,14,-3.039,0.943,-5.866,false
+pa_mtr_reversal,manifest_layer1,18,18,1,1,1,1.979,inf,0.0,false

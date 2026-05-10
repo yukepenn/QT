@@ -1,0 +1,111 @@
+candidate_id: PA_TRADING_RANGE_BLS_HS_004
+strategy: pa_trading_range_bls_hs
+asset: equity
+symbol: QQQ
+strategy_family: pa_trading_range
+conflict_group: QQQ_directional
+default_priority: 48
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: pa_trading_range
+  conflict_group: QQQ_directional
+  default_priority: 48
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 1.1852678220318376
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_trading_range_bls_hs\sweep_20260510_063851_layer1_pa_batch_a_tuned_qqq_2023_2024_v1\results.csv
+  row_index: 47
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_trading_range_bls_hs\sweep_20260510_063851_layer1_pa_batch_a_tuned_qqq_2023_2024_v1
+metrics:
+  trades: 63
+  profit_factor: 1.469831727562135
+  total_r: 25.57343522621101
+  win_rate: 0.238095238095238
+  total_net_pnl: 2.395343096629631
+  avg_r: 0.4059275432731906
+  avg_net_pnl: 0.0380213189941211
+  max_drawdown_pnl: -2.521624999999574
+  max_drawdown_r: -22.172181130782096
+  avg_bars_held: 3.0
+  stop_count: 48
+  target_count: 15
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 0
+config:
+  strategy: pa_trading_range_bls_hs
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_range_window: 60
+    pa_regime_window: 30
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 180
+    trading_range_score_min: 0.62
+    min_range_width_atr: 1.0
+    confirm_mode: bull_reversal_only
+    block_strong_bear_breakout: true
+  risk:
+    stop_mode: atr_buffer
+    target_mode: range_mid
+    target_r: 1.25
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

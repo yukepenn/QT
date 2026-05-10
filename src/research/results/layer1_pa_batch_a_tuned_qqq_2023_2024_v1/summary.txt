@@ -1,0 +1,15 @@
+tag=
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_a_tuned_qqq_2023_2024_v1
+candidates_written=10
+
+candidates:
+  PA_TRADING_RANGE_BLS_HS_001 pa_trading_range_bls_hs score=1.1853 trades=63
+  PA_TRADING_RANGE_BLS_HS_002 pa_trading_range_bls_hs score=1.1853 trades=63
+  PA_TRADING_RANGE_BLS_HS_003 pa_trading_range_bls_hs score=1.1853 trades=63
+  PA_TRADING_RANGE_BLS_HS_004 pa_trading_range_bls_hs score=1.1853 trades=63
+  PA_TRADING_RANGE_BLS_HS_005 pa_trading_range_bls_hs score=0.9855 trades=101
+  PA_FAILED_RANGE_BREAKOUT_TRAP_001 pa_failed_range_breakout_trap score=0.8867 trades=220
+  PA_FAILED_RANGE_BREAKOUT_TRAP_002 pa_failed_range_breakout_trap score=0.8867 trades=220
+  PA_FAILED_RANGE_BREAKOUT_TRAP_003 pa_failed_range_breakout_trap score=0.8867 trades=220
+  PA_FAILED_RANGE_BREAKOUT_TRAP_004 pa_failed_range_breakout_trap score=0.8867 trades=220
+  PA_FAILED_RANGE_BREAKOUT_TRAP_005 pa_failed_range_breakout_trap score=0.8498 trades=220

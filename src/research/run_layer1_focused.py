@@ -19,7 +19,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.backtest.sweep import validate_testing_grid_for_strategy
-from src.strategies.loader import available_strategies, grid_size, load_testing_config, strategy_root
+from src.strategies.loader import available_strategies, grid_size, strategy_root
 
 SWEEP_PY = _ROOT / "src" / "backtest" / "sweep.py"
 
@@ -281,18 +281,15 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"[SKIP] strategy={strategy} already completed manifest ok + results exist", flush=True)
                     continue
 
-        try:
-            testing = load_testing_config(strategy)
-            gs = grid_size(testing) if testing else ""
-        except Exception:
-            gs = ""
-
+        gs = ""
+        testing_doc: dict[str, Any] | None = None
         try:
             with focused.open(encoding="utf-8") as f:
                 testing_doc = yaml.safe_load(f)
             if not isinstance(testing_doc, dict) or testing_doc.get("strategy") != strategy:
                 raise ValueError(f"testing YAML strategy mismatch in {focused}")
             validate_testing_grid_for_strategy(strategy, testing_doc)
+            gs = grid_size(testing_doc)
         except Exception as e:
             print(f"[ERROR] {strategy} grid validation failed: {e}", flush=True)
             row = {

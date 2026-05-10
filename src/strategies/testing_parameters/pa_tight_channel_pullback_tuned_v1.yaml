@@ -1,0 +1,26 @@
+strategy: pa_tight_channel_pullback
+
+grid:
+  signal.side: [long_only]
+  signal.entry_start_minute: [60, 90]
+  signal.entry_end_minute: [180, 270]
+  features.pa_regime_window: [30]
+  signal.tight_bull_score_min: [0.34, 0.42]
+  signal.max_pullback_depth_atr: [1.3, 1.5]
+  signal.block_climax: [false, true]
+  risk.stop_mode: [pullback_low, signal_low, atr_buffer]
+  risk.target_mode: [fixed_r, range_high]
+  risk.target_r: [1.0, 1.25]
+  backtest.max_hold_minutes: [45, 60]
+
+fixed:
+  features.orb_open_minutes: 15
+  signal.require_vwap_side: false
+  risk.atr_buffer_mult: 0.35
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true
