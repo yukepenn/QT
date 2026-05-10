@@ -17,6 +17,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.research.scoring import candidate_score, passes_filters, safe_float
+from src.strategies.loader import set_nested
 from src.strategies.metadata import get_strategy_metadata
 
 PREFIXES = ("features.", "signal.", "risk.", "backtest.")
@@ -66,7 +67,7 @@ def unflatten_config_from_row(row: pd.Series) -> dict[str, Any]:
                 key = col[len(prefix) :]
                 v = _parse_cell_value(val)
                 if key and v is not None and not (isinstance(v, float) and pd.isna(v)):
-                    out.setdefault(section, {})[key] = v
+                    set_nested(out.setdefault(section, {}), key, v)
                 break
     pj = row.get("params_json")
     if isinstance(pj, str) and pj.strip():
@@ -86,7 +87,7 @@ def unflatten_config_from_row(row: pd.Series) -> dict[str, Any]:
                             key = k[len(prefix) :]
                             vv = _parse_cell_value(v)
                             if key and vv is not None:
-                                out.setdefault(section, {})[key] = vv
+                                set_nested(out.setdefault(section, {}), key, vv)
                             break
         except json.JSONDecodeError:
             pass
@@ -296,12 +297,17 @@ def _main_manifest(
         max_end_of_data_count=args.max_end_of_data_count,
         max_max_hold_count=args.max_max_hold_count,
     )
+    relaxed_max_abh = (
+        float(args.relaxed_max_avg_bars_held)
+        if getattr(args, "relaxed_max_avg_bars_held", None) is not None
+        else args.max_avg_bars_held
+    )
     relaxed_ns = argparse.Namespace(
         min_trades=int(args.relaxed_min_trades),
         min_profit_factor=float(args.relaxed_min_profit_factor),
         min_total_r=float(args.relaxed_min_total_r),
         max_drawdown_r=float(args.relaxed_max_drawdown_r),
-        max_avg_bars_held=args.max_avg_bars_held,
+        max_avg_bars_held=relaxed_max_abh,
         max_eod_count=args.max_eod_count,
         max_end_of_data_count=args.max_end_of_data_count,
         max_max_hold_count=args.max_max_hold_count,
@@ -440,6 +446,12 @@ def main(argv: list[str] | None = None) -> int:
         type=float,
         default=-100.0,
         help="Manifest relaxed fallback: max drawdown R floor (default -100).",
+    )
+    p.add_argument(
+        "--relaxed-max-avg-bars-held",
+        type=float,
+        default=None,
+        help="Manifest relaxed fallback: max avg bars held (default: same as strict --max-avg-bars-held).",
     )
     args = p.parse_args(argv)
 

@@ -1,0 +1,108 @@
+candidate_id: SUPERTREND_ATR_FLIP_002
+strategy: supertrend_atr_flip
+asset: equity
+symbol: QQQ
+strategy_family: atr_trend_following
+conflict_group: QQQ_directional
+default_priority: 54
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: atr_trend_following
+  conflict_group: QQQ_directional
+  default_priority: 54
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 0.9100517809045575
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\supertrend_atr_flip\sweep_20260510_003548_layer1_v2_completion_qqq_2023_2024\results.csv
+  row_index: 9
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\supertrend_atr_flip\sweep_20260510_003548_layer1_v2_completion_qqq_2023_2024
+metrics:
+  trades: 496
+  profit_factor: 1.0946324852829392
+  total_r: 17.983024194397707
+  win_rate: 0.4979838709677419
+  total_net_pnl: 17.200535714291277
+  avg_r: 0.0362560971661244
+  avg_net_pnl: 0.0346784994239743
+  max_drawdown_pnl: -13.635357142856265
+  max_drawdown_r: -14.014363533467495
+  avg_bars_held: 33.895161290322584
+  stop_count: 216
+  target_count: 170
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 110
+config:
+  strategy: supertrend_atr_flip
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 10
+    - 14
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows:
+      - 20
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples:
+      - - 10
+        - 2.0
+      - - 14
+        - 2.0
+      - - 14
+        - 3.0
+      - - 20
+        - 2.0
+      - - 20
+        - 3.0
+    atr_window: 14
+    supertrend_mult: 3.0
+    ema_window: 20
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 90
+    entry_end_minute: 270
+    trigger_mode: supertrend_flip_up
+    require_ema_filter: false
+    require_vwap_side: false
+  risk:
+    stop_mode: supertrend_line
+    target_mode: fixed_r
+    target_r: 1.25
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

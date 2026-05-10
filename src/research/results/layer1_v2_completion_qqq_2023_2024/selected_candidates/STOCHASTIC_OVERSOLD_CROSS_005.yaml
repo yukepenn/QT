@@ -1,0 +1,99 @@
+candidate_id: STOCHASTIC_OVERSOLD_CROSS_005
+strategy: stochastic_oversold_cross
+asset: equity
+symbol: QQQ
+strategy_family: oscillator_reversal
+conflict_group: QQQ_directional
+default_priority: 49
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 49
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 0.36156696367241703
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\stochastic_oversold_cross\sweep_20260510_003508_layer1_v2_completion_qqq_2023_2024\results.csv
+  row_index: 26
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\stochastic_oversold_cross\sweep_20260510_003508_layer1_v2_completion_qqq_2023_2024
+metrics:
+  trades: 502
+  profit_factor: 1.05778421010905
+  total_r: 9.6558982623887
+  win_rate: 0.5258964143426295
+  total_net_pnl: 5.046675000004541
+  avg_r: 0.0192348570963918
+  avg_net_pnl: 0.0100531374502082
+  max_drawdown_pnl: -12.001874999998051
+  max_drawdown_r: -27.87569532715649
+  avg_bars_held: 4.7848605577689245
+  stop_count: 237
+  target_count: 263
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 2
+config:
+  strategy: stochastic_oversold_cross
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples:
+      - - 14
+        - 3
+      - - 20
+        - 3
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    stoch_window: 20
+    stoch_smooth: 3
+    swing_lookback: 10
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    oversold_level: 25
+    confirm_mode: k_cross_d
+    require_vwap_filter: false
+  risk:
+    stop_mode: atr_buffer
+    target_mode: fixed_r
+    target_r: 1.0
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

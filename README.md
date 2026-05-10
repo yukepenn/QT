@@ -123,7 +123,7 @@ Registered plugins (also in `loader.py`):
 - `donchian_channel_breakout`
 - `consecutive_bar_exhaustion`
 
-**Strategy Library v1 snapshot:** Current sweep-ready status is summarized in **`src/research/results/layer1_all10_qqq_v1/fast_core_status_current.csv`** (Layer 1 bundle metadata in **`sweep_manifest.csv`**). The loader currently registers **25** strategies (**v1 + v2 Batch 1 + v2 completion** plugins); completion pack: **`src/research/results/strategy_library_v2_completion_summary.md`** (Jan 2025 wiring smokes only; **Layer 1 economics for the nine new names not run**).
+**Strategy Library v1 snapshot:** Current sweep-ready status is summarized in **`src/research/results/layer1_all10_qqq_v1/fast_core_status_current.csv`** (Layer 1 bundle metadata in **`sweep_manifest.csv`**). The loader currently registers **25** strategies (**v1 + v2 Batch 1 + v2 completion** plugins); completion plugin pack: **`src/research/results/strategy_library_v2_completion_summary.md`**. **QQQ 2023–2024 Layer 1 economics** for the nine completion names: **`src/research/results/layer1_v2_completion_qqq_2023_2024/`** (manifest + **30** candidate YAMLs; summary `layer1_v2_completion_summary.md`). **Layer 2 for this track not run** (design: `src/research/results/reduced_layer2_v2_completion_design.md`).
 
 **Generic risk hygiene (`risk.min_risk_per_share`)**
 

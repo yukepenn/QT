@@ -1,0 +1,35 @@
+tag=layer1_v2_completion_qqq_2023_2024
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_v2_completion_qqq_2023_2024
+candidates_written=30
+
+candidates:
+  MACD_MOMENTUM_TURN_001 macd_momentum_turn score=0.7907 trades=497
+  MACD_MOMENTUM_TURN_002 macd_momentum_turn score=0.7535 trades=501
+  MACD_MOMENTUM_TURN_003 macd_momentum_turn score=0.6224 trades=501
+  STOCHASTIC_OVERSOLD_CROSS_001 stochastic_oversold_cross score=1.3455 trades=502
+  STOCHASTIC_OVERSOLD_CROSS_002 stochastic_oversold_cross score=1.0264 trades=502
+  STOCHASTIC_OVERSOLD_CROSS_003 stochastic_oversold_cross score=0.5154 trades=502
+  STOCHASTIC_OVERSOLD_CROSS_004 stochastic_oversold_cross score=0.3785 trades=502
+  STOCHASTIC_OVERSOLD_CROSS_005 stochastic_oversold_cross score=0.3616 trades=502
+  CCI_EXTREME_SNAPBACK_001 cci_extreme_snapback score=1.6788 trades=122
+  CCI_EXTREME_SNAPBACK_002 cci_extreme_snapback score=1.6578 trades=122
+  CCI_EXTREME_SNAPBACK_003 cci_extreme_snapback score=1.2360 trades=289
+  CCI_EXTREME_SNAPBACK_004 cci_extreme_snapback score=1.1802 trades=76
+  CCI_EXTREME_SNAPBACK_005 cci_extreme_snapback score=1.1247 trades=289
+  ADX_DMI_TREND_CONTINUATION_001 adx_dmi_trend_continuation score=0.4169 trades=399
+  ADX_DMI_TREND_CONTINUATION_002 adx_dmi_trend_continuation score=0.2515 trades=471
+  SUPERTREND_ATR_FLIP_001 supertrend_atr_flip score=1.0343 trades=497
+  SUPERTREND_ATR_FLIP_002 supertrend_atr_flip score=0.9101 trades=496
+  SUPERTREND_ATR_FLIP_003 supertrend_atr_flip score=0.8842 trades=497
+  SUPERTREND_ATR_FLIP_004 supertrend_atr_flip score=0.8133 trades=502
+  SUPERTREND_ATR_FLIP_005 supertrend_atr_flip score=0.5840 trades=502
+  MULTI_DAY_LEVEL_TRAP_001 multi_day_level_trap score=1.2852 trades=48
+  MULTI_DAY_LEVEL_TRAP_002 multi_day_level_trap score=1.2127 trades=48
+  MULTI_DAY_LEVEL_TRAP_003 multi_day_level_trap score=1.1772 trades=48
+  MULTI_DAY_LEVEL_TRAP_004 multi_day_level_trap score=1.1361 trades=48
+  MULTI_DAY_LEVEL_TRAP_005 multi_day_level_trap score=1.0996 trades=48
+  PRIOR_CLOSE_RECLAIM_001 prior_close_reclaim score=1.6673 trades=45
+  PRIOR_CLOSE_RECLAIM_002 prior_close_reclaim score=1.6673 trades=45
+  PRIOR_CLOSE_RECLAIM_003 prior_close_reclaim score=1.3461 trades=45
+  PRIOR_CLOSE_RECLAIM_004 prior_close_reclaim score=1.3461 trades=45
+  PRIOR_CLOSE_RECLAIM_005 prior_close_reclaim score=1.2109 trades=52

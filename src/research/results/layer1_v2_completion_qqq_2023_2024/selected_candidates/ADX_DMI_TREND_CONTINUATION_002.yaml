@@ -1,0 +1,100 @@
+candidate_id: ADX_DMI_TREND_CONTINUATION_002
+strategy: adx_dmi_trend_continuation
+asset: equity
+symbol: QQQ
+strategy_family: trend_strength_continuation
+conflict_group: QQQ_directional
+default_priority: 56
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: trend_strength_continuation
+  conflict_group: QQQ_directional
+  default_priority: 56
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 0.2515139068022403
+  filters_used: relaxed
+  warning: relaxed_filter
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\adx_dmi_trend_continuation\sweep_20260510_003532_layer1_v2_completion_qqq_2023_2024\results.csv
+  row_index: 6
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\adx_dmi_trend_continuation\sweep_20260510_003532_layer1_v2_completion_qqq_2023_2024
+metrics:
+  trades: 471
+  profit_factor: 1.0139434792115072
+  total_r: -2.3894289703744658
+  win_rate: 0.5159235668789809
+  total_net_pnl: 1.0538750000031314
+  avg_r: -0.0050730976016443
+  avg_net_pnl: 0.0022375265392847
+  max_drawdown_pnl: -8.139049999998406
+  max_drawdown_r: -23.996957744449336
+  avg_bars_held: 6.679405520169851
+  stop_count: 226
+  target_count: 242
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 3
+config:
+  strategy: adx_dmi_trend_continuation
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows:
+      - 20
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows:
+      - 14
+      - 20
+      supertrend_tuples: []
+    adx_window: 14
+    ema_window: 20
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 90
+    entry_end_minute: 270
+    min_adx: 15
+    require_adx_rising: false
+    trigger_mode: ema20_reclaim
+    require_plus_di_above_minus_di: true
+    require_vwap_side: false
+  risk:
+    stop_mode: atr_buffer
+    target_mode: fixed_r
+    target_r: 1.0
+    ema_buffer_atr: 0.1
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

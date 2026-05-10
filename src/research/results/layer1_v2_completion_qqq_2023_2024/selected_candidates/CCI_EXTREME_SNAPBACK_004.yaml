@@ -1,0 +1,98 @@
+candidate_id: CCI_EXTREME_SNAPBACK_004
+strategy: cci_extreme_snapback
+asset: equity
+symbol: QQQ
+strategy_family: oscillator_reversal
+conflict_group: QQQ_directional
+default_priority: 47
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: oscillator_reversal
+  conflict_group: QQQ_directional
+  default_priority: 47
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 1.1801637619795142
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\cci_extreme_snapback\sweep_20260510_003519_layer1_v2_completion_qqq_2023_2024\results.csv
+  row_index: 19
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\cci_extreme_snapback\sweep_20260510_003519_layer1_v2_completion_qqq_2023_2024
+metrics:
+  trades: 76
+  profit_factor: 1.224433618645503
+  total_r: 10.125445826682231
+  win_rate: 0.5394736842105263
+  total_net_pnl: 3.151743750000492
+  avg_r: 0.133229550351082
+  avg_net_pnl: 0.0414703125000064
+  max_drawdown_pnl: -2.9265999999997803
+  max_drawdown_r: -6.1962795390495184
+  avg_bars_held: 10.263157894736842
+  stop_count: 35
+  target_count: 36
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 5
+config:
+  strategy: cci_extreme_snapback
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows:
+      - 14
+      - 20
+      - 30
+      adx_windows: []
+      supertrend_tuples: []
+    cci_window: 20
+    swing_lookback: 10
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    oversold_level: -150
+    trigger_mode: cross_above_oversold
+    require_price_confirmation: true
+    require_vwap_filter: false
+  risk:
+    stop_mode: atr_buffer
+    target_mode: fixed_r
+    target_r: 1.25
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

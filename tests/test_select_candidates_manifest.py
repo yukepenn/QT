@@ -129,3 +129,21 @@ def test_manifest_mode_two_strategies(tmp_path: Path, monkeypatch: pytest.Monkey
     sel = pd.read_csv(out_dir / "selected_candidates.csv")
     assert len(sel) == 3  # 2 from A + 1 from B (strict)
     assert set(sel["strategy"]) == {strat_a, strat_b}
+
+
+def test_unflatten_config_nested_features_indicators() -> None:
+    row = pd.Series(
+        {
+            "features.orb_open_minutes": 15,
+            "features.indicators.macd_tuples": "[[8, 21, 9]]",
+            "features.indicators.ema_windows": "[20]",
+            "features.vol_windows": "[5, 15]",
+            "signal.side": "long_only",
+            "params_json": "{}",
+        }
+    )
+    cfg = select_candidates.unflatten_config_from_row(row)
+    ind = cfg.get("features", {}).get("indicators", {})
+    assert ind.get("macd_tuples") == [[8, 21, 9]]
+    assert ind.get("ema_windows") == [20]
+    assert cfg["features"]["orb_open_minutes"] == 15

@@ -1,0 +1,13 @@
+# Layer 1 v2 completion — grid review
+
+| strategy | focused_yaml | raw_grid_size | recommended_max_combos | capped | reason | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| sma20_reclaim_reject | src\strategies\testing_parameters\sma20_reclaim_reject_focused.yaml | 64 | 64 | no | full_grid_raw_le_1500 | run_full_grid |
+| macd_momentum_turn | src\strategies\testing_parameters\macd_momentum_turn_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| stochastic_oversold_cross | src\strategies\testing_parameters\stochastic_oversold_cross_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| cci_extreme_snapback | src\strategies\testing_parameters\cci_extreme_snapback_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| adx_dmi_trend_continuation | src\strategies\testing_parameters\adx_dmi_trend_continuation_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| supertrend_atr_flip | src\strategies\testing_parameters\supertrend_atr_flip_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| large_candle_failure | src\strategies\testing_parameters\large_candle_failure_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| multi_day_level_trap | src\strategies\testing_parameters\multi_day_level_trap_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |
+| prior_close_reclaim | src\strategies\testing_parameters\prior_close_reclaim_focused.yaml | 32 | 32 | no | full_grid_raw_le_1500 | run_full_grid |

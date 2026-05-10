@@ -1,0 +1,2 @@
+sma20_reclaim_reject
+large_candle_failure

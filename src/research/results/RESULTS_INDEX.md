@@ -55,6 +55,13 @@ This index classifies **result roots** without moving or deleting them.
   - **status**: Strategy Library v2 **completion** pack (9 new plugins + feature deltas + Jan smoke health)
   - **keep**: yes (no heavy sweep outputs)
 
+- **`layer1_v2_completion_qqq_2023_2024/`**
+  - **status**: Layer 1 **completion** QQQ 2023–2024 (nine strategies; full focused grids; manifest + **30** selected YAMLs)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **purpose**: economics + candidate library for v2 completion track; summary `layer1_v2_completion_summary.md`
+  - **Layer 2 follow-up (design only):** `reduced_layer2_v2_completion_design.md`
+  - **keep**: yes
+
 ## B. Reference / engineering docs
 
 - **Hardening docs**: `hardening_*`, `rerun_plan_after_hardening.md`, `PRE_HARDENING_STALE.md` markers

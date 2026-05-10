@@ -1,0 +1,95 @@
+candidate_id: MULTI_DAY_LEVEL_TRAP_004
+strategy: multi_day_level_trap
+asset: equity
+symbol: QQQ
+strategy_family: multi_day_level_trap
+conflict_group: QQQ_directional
+default_priority: 58
+default_active_start_minute: 30
+default_active_end_minute: 330
+metadata:
+  family: multi_day_level_trap
+  conflict_group: QQQ_directional
+  default_priority: 58
+  default_active_start_minute: 30
+  default_active_end_minute: 330
+selection:
+  score: 1.1361128652609442
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\multi_day_level_trap\sweep_20260510_003606_layer1_v2_completion_qqq_2023_2024\results.csv
+  row_index: 20
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\multi_day_level_trap\sweep_20260510_003606_layer1_v2_completion_qqq_2023_2024
+metrics:
+  trades: 48
+  profit_factor: 1.2468355162456255
+  total_r: 3.78648684304542
+  win_rate: 0.5208333333333334
+  total_net_pnl: 3.2010000000005903
+  avg_r: 0.0788851425634462
+  avg_net_pnl: 0.0666875000000122
+  max_drawdown_pnl: -3.6845500000000015
+  max_drawdown_r: -5.090942898789863
+  avg_bars_held: 14.791666666666666
+  stop_count: 19
+  target_count: 25
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 4
+config:
+  strategy: multi_day_level_trap
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    level_type: prior_5day_low
+    fail_window_bars: 3
+    level_buffer_atr: 0.1
+    confirm_mode: close_reclaim
+    require_vwap_alignment: false
+    min_close_location: 0.5
+  risk:
+    stop_mode: atr_buffered_extreme
+    target_mode: fixed_r
+    target_r: 1.0
+    atr_buffer: 0.1
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45
