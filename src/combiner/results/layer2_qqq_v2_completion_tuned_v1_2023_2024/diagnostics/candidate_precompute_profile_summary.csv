@@ -1,0 +1,13 @@
+strategy,feature_key_short,strategy_context_key_short,candidate_count,n_feature_cache_hits,n_feature_cache_misses,n_context_cache_hits,n_context_cache_misses,sum_total_sec,mean_total_sec,max_total_sec,sum_feature_sec,sum_context_sec,sum_signal_sec,n_signal_cache_hits,n_signal_cache_misses,sum_signal_cache_load_sec,sum_signal_cache_write_sec,total_signals,total_long_signals,total_short_signals
+cci_extreme_snapback,9361da24eb7e,2f4e3d139e43,2,0,2,0,2,0.0357,0.01785,0.0187,0.0,0.0,0.0,2,0,0.0157,0.0,578,578,0
+cci_extreme_snapback,9361da24eb7e,53bb77c04c5b,2,0,2,0,2,8.8925,4.44625,8.8745,7.815,0.0,0.0,2,0,0.013399999999999999,0.0,244,244,0
+cci_extreme_snapback,9361da24eb7e,6290cdf697b8,1,0,1,0,1,0.0167,0.0167,0.0167,0.0,0.0,0.0,1,0,0.0077,0.0,76,76,0
+macd_momentum_turn,6de843d71adf,85fd0c1d33c6,1,0,1,0,1,0.0184,0.0184,0.0184,0.0,0.0,0.0,1,0,0.0086,0.0,501,501,0
+macd_momentum_turn,6de843d71adf,a227f082dd92,1,0,1,0,1,0.0172,0.0172,0.0172,0.0,0.0,0.0,1,0,0.0074,0.0,497,497,0
+macd_momentum_turn,6de843d71adf,c31ea9cec91f,1,0,1,0,1,0.018,0.018,0.018,0.0,0.0,0.0,1,0,0.0076,0.0,501,501,0
+stochastic_oversold_cross,5acc6e63032b,291dd8082c36,2,0,2,0,2,0.034,0.017,0.0175,0.0,0.0,0.0,2,0,0.0143,0.0,1004,1004,0
+stochastic_oversold_cross,5acc6e63032b,928fa66eee73,2,0,2,0,2,0.0339,0.01695,0.0172,0.0,0.0,0.0,2,0,0.0154,0.0,1004,1004,0
+stochastic_oversold_cross,5acc6e63032b,ee0373f6e123,1,0,1,0,1,0.017,0.017,0.017,0.0,0.0,0.0,1,0,0.0077,0.0,502,502,0
+supertrend_atr_flip,4aa6f2da8c11,40f6342dfebc,1,0,1,0,1,0.0173,0.0173,0.0173,0.0,0.0,0.0,1,0,0.0078,0.0,496,496,0
+supertrend_atr_flip,4aa6f2da8c11,cc6f21b0a188,2,0,2,0,2,0.034199999999999994,0.017099999999999997,0.0174,0.0,0.0,0.0,2,0,0.015,0.0,1004,1004,0
+supertrend_atr_flip,4aa6f2da8c11,ef9331a63436,2,0,2,0,2,0.034100000000000005,0.017050000000000003,0.0171,0.0,0.0,0.0,2,0,0.0135,0.0,994,994,0

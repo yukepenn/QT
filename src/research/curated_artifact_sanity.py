@@ -31,6 +31,7 @@ def build_checks() -> list[Check]:
         Path("src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1"),
         Path("src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1"),
         Path("src/combiner/results/layer2_qqq_v2_completion_2023_2024"),
+        Path("src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024"),
     ]
 
     checks: list[Check] = []

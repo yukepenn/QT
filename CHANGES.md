@@ -1,5 +1,8 @@
-### [Unreleased] – 2026-05-10
+### [Unreleased] – 2026-05-09
 
+- Feat(combiner): **Layer 2 v2 completion tuned v1 (QQQ 2023–2024)** — `layer2_qqq_v2_completion_tuned_v1_2023_2024.yaml`, `layer2_sweep_qqq_v2_completion_tuned_v1_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/` (diagnostics + snapshots, fixed rollup, **416-combo** sweep postprocess). Summary `layer2_v2_completion_tuned_v1_summary.md` (**`TUNE_COMPLETION_GRIDS_AGAIN`**). **mini-WFO v4/v5 + full WFO not run.**
+- Docs(research): `layer2_v2_completion_tuning_plan.md`, `layer2_v2_completion_toxic_path_diagnosis.{md,csv}`.
+- Chore(gitignore): force-include tuned v1 completion Layer 2 curated paths under `layer2_qqq_v2_completion_tuned_v1_2023_2024/`.
 - Feat(combiner): **reduced Layer 2 v2 completion (QQQ 2023–2024)** — `layer2_qqq_v2_completion_2023_2024.yaml`, `layer2_sweep_qqq_v2_completion_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_v2_completion_2023_2024/` (diagnostics, 15 fixed runs, **756-combo** sweep `sweep_20260510_025424`, postprocess). Summary `layer2_v2_completion_summary.md` (**`TUNE_COMPLETION_GRIDS_FIRST`**). **mini-WFO v4/v5 + full WFO not run.**
 - Chore(gitignore): force-include completion Layer 1 + Layer 2 curated paths (`layer1_v2_completion_qqq_2023_2024/*`, `layer2_qqq_v2_completion_2023_2024/*` summaries).
 - Docs: `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CONFIG_INDEX.md`, both `RESULTS_INDEX.md`, `ARTIFACT_POLICY.md`, `curated_artifact_sanity.py` (+ regenerated `curated_artifact_sanity_check.md`).
@@ -9,8 +12,6 @@
 - Feat(research): manifest **`--relaxed-max-avg-bars-held`** for relaxed fallback (completion used **150** vs strict **120**).
 - Test(research): `test_unflatten_config_nested_features_indicators` in `test_select_candidates_manifest.py`; `tests/test_run_layer1_v2_completion.py`.
 - Docs(research): `layer1_v2_completion_summary.md`, `reduced_layer2_v2_completion_design.md` (design). Layer 2 completion economics: see **`layer2_v2_completion_summary.md`** (this release).
-
-### [Unreleased] – 2026-05-09
 
 - Feat(strategies): **Strategy Library v2 completion** — nine new plugins (`sma20_reclaim_reject`, `macd_momentum_turn`, `stochastic_oversold_cross`, `cci_extreme_snapback`, `adx_dmi_trend_continuation`, `supertrend_atr_flip`, `large_candle_failure`, `multi_day_level_trap`, `prior_close_reclaim`) with parameters + focused YAMLs; loader **16 → 25** strategies; `metadata.yaml` entries.
 - Feat(features): **SuperTrend** indicator columns (`supertrend_line_*`, `supertrend_dir_*`) + `supertrend_tuples` in `IndicatorsFeatureConfig` / `feature_key`; **multi-session lows** `prior_3day_low`, `prior_5day_low`, `previous_week_low` in `levels.py`.

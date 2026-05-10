@@ -1,0 +1,17 @@
+strategy,feature_key_short,strategy_context_key_short,candidate_count,n_feature_cache_hits,n_feature_cache_misses,n_context_cache_hits,n_context_cache_misses,sum_total_sec,mean_total_sec,max_total_sec,sum_feature_sec,sum_context_sec,sum_signal_sec,n_signal_cache_hits,n_signal_cache_misses,sum_signal_cache_load_sec,sum_signal_cache_write_sec,total_signals,total_long_signals,total_short_signals
+adx_dmi_trend_continuation,38023368b0aa,68d79694295b,1,1,0,0,1,0.14,0.14,0.14,0.0,0.126,0.0032,0,1,0.0,0.0,472,472,0
+adx_dmi_trend_continuation,38023368b0aa,cdd00ff58dc0,1,0,1,0,1,12.6721,12.6721,12.6721,10.9087,0.6829,0.0208,0,1,0.0,0.0,400,400,0
+cci_extreme_snapback,9361da24eb7e,2f4e3d139e43,2,2,0,1,1,0.1479,0.07395,0.1346,0.0,0.12,0.0092,0,2,0.0,0.0,578,578,0
+cci_extreme_snapback,9361da24eb7e,53bb77c04c5b,2,1,1,1,1,10.6672,5.3336,10.6518,10.4749,0.1443,0.0264,0,2,0.0,0.0,244,244,0
+cci_extreme_snapback,9361da24eb7e,6290cdf697b8,1,1,0,0,1,0.1283,0.1283,0.1283,0.0,0.1156,0.0042,0,1,0.0,0.0,76,76,0
+macd_momentum_turn,6de843d71adf,85fd0c1d33c6,1,1,0,0,1,0.153,0.153,0.153,0.0,0.1382,0.0028,0,1,0.0,0.0,501,501,0
+macd_momentum_turn,6de843d71adf,a227f082dd92,1,0,1,0,1,11.4015,11.4015,11.4015,11.236,0.1338,0.021,0,1,0.0,0.0,497,497,0
+macd_momentum_turn,6de843d71adf,c31ea9cec91f,1,1,0,0,1,0.1435,0.1435,0.1435,0.0,0.1306,0.0028,0,1,0.0,0.0,501,501,0
+multi_day_level_trap,063ffd35ca72,0b2a267d25e5,5,4,1,4,1,9.349499999999999,1.8699,9.3021,9.123899999999999,0.1474,0.03,0,5,0.0,0.0,240,240,0
+prior_close_reclaim,063ffd35ca72,94a59f2614f2,5,5,0,4,1,0.2744,0.05488,0.2228,0.0,0.1914,0.0344,0,5,0.0,0.0,759,759,0
+stochastic_oversold_cross,5acc6e63032b,291dd8082c36,2,2,0,1,1,0.1651,0.08255,0.1498,0.0,0.1348,0.009600000000000001,0,2,0.0,0.0,1004,1004,0
+stochastic_oversold_cross,5acc6e63032b,928fa66eee73,2,1,1,1,1,10.3944,5.1972,10.3798,10.2103,0.1359,0.0271,0,2,0.0,0.0,1004,1004,0
+stochastic_oversold_cross,5acc6e63032b,ee0373f6e123,1,1,0,0,1,0.1445,0.1445,0.1445,0.0,0.1302,0.0048,0,1,0.0,0.0,502,502,0
+supertrend_atr_flip,4aa6f2da8c11,40f6342dfebc,1,1,0,0,1,0.0971,0.0971,0.0971,0.0,0.0875,0.0017,0,1,0.0,0.0,496,496,0
+supertrend_atr_flip,4aa6f2da8c11,cc6f21b0a188,2,2,0,1,1,0.099,0.0495,0.0911,0.0,0.083,0.0034,0,2,0.0,0.0,1004,1004,0
+supertrend_atr_flip,4aa6f2da8c11,ef9331a63436,2,1,1,1,1,10.2589,5.12945,10.2501,10.1403,0.0877,0.0154,0,2,0.0,0.0,994,994,0

@@ -51,5 +51,13 @@ Active roots only. Required items must be present.
 - `src/combiner/results/layer2_qqq_v2_completion_2023_2024` **diagnostics/candidate_signal_summary.csv**: OK
 - `src/combiner/results/layer2_qqq_v2_completion_2023_2024` **diagnostics/candidate_overlap_matrix.csv**: OK
 - `src/combiner/results/layer2_qqq_v2_completion_2023_2024` **diagnostics/candidate_conflict_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **dir**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **top_unique_systems.csv**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **fixed_run_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **cost_stress/cost_stress_summary.md**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **diagnostics/diagnostics_summary.md**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **diagnostics/candidate_signal_summary.csv**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **diagnostics/candidate_overlap_matrix.csv**: OK
+- `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024` **diagnostics/candidate_conflict_summary.csv**: OK
 
 Overall: **PASS**
