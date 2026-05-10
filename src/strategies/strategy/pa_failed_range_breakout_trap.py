@@ -106,8 +106,6 @@ class PaFailedRangeBreakoutTrapStrategy(BaseStrategy):
         return (
             "pa_fb_trap",
             pa_range_window(config),
-            int(sig.get("fail_window_bars", 4)),
-            bool(sig.get("require_tr_regime", False)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Refactor(strategies): **PA `context_key` cache scope** — all ten `pa_*` strategies: `context_key` = strategy tag + PA window/regime selectors used in **`prepare_signal_context`** + `atr_column`; remove threshold/risk axes from context cache key. Docs `pa_context_key_cache_*.{md}` under `src/research/results/`; tests `tests/test_pa_context_key_scope.py`; README / `PROJECT_STATUS` / `RESULTS_INDEX` / `tests/README.md`. Parity smokes unchanged; **no** Layer 1/2/WFO reruns.
+
 - Feat(research): **PA Batch B/C tuned Layer 1 v2** — `signal.zone_max_frac` (`pa_broad_channel_zone`); `*_tuned_v2.yaml`; gate preflight `pa_batch_bc_gate_diagnostics_v2_preflight/`; sweeps + `layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/` (**10** strict YAMLs: close-trend + climax); `pa_batch_bc_exit_diagnostics_v2/`; **`reduced_layer2_pa_batch_bc_tuned_v2_design.md`** (design only); Fix **`pa_gate_diagnostics.py`** stable CSV columns.
 - Fix(core): **P0 correctness pack** (prior commits on `main`): `pa_swings` session boundary; PA `normalized_param_key` completeness; combiner `validate_trade_setup` on legacy path; diagnostics scripts + curated v1 gate/exit folders.
 - Feat(research): **PA Batch B/C diagnostics v1** — `pa_gate_diagnostics.py`, `pa_exit_diagnostics.py`; curated **`pa_batch_bc_gate_diagnostics_v1/`**, **`pa_batch_bc_exit_diagnostics_v1/`** (CSV/MD); **`p0_correctness_cleanup_summary.md`**; tests `test_pa_gate_diagnostics.py`, `test_pa_exit_diagnostics.py`; indexes **`RESULTS_INDEX.md`**, **`ARTIFACT_POLICY.md`**.

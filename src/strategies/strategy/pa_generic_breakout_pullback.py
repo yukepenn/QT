@@ -112,8 +112,6 @@ class PaGenericBreakoutPullbackStrategy(BaseStrategy):
             "pa_gen_brk_pb",
             pa_range_window(config),
             pa_regime_window(config),
-            int(sig.get("recent_breakout_lookback", 6)),
-            float(sig.get("pullback_test_atr", 0.35)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

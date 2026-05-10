@@ -30,6 +30,7 @@ Data pull into Parquet is already solved; ongoing work centers on **strategy plu
 - Strategies must **not** require LOOKAHEAD columns in **`required_features`**; prefer ORB **`*_known`** for gated logic.
 - **`context_key`**: any config field that changes **`prepare_signal_context`** outputs belongs in the key.
 - **`normalized_param_key`**: any field that changes **final signals** belongs in the key.
+- **PA plugins (2026-05-10):** `context_key` was narrowed to **window / ATR-column selectors only** (plus a fixed strategy tag); score gates, entry windows, and risk/backtest axes stay in **`normalized_param_key`**. Rationale + tables: `src/research/results/pa_context_key_cache_optimization_summary.md`.
 - Layer 2 postprocess: **`top_unique_*`** = config dedupe; **`behavior_unique_*`** = trade-sequence dedupe from **`trades.csv`**.
 
 **Rerun warning**
@@ -148,7 +149,7 @@ Optional YAML under `risk`: **`min_risk_per_share`**. If set **> 0**, Layer 1 pr
 
 - Every strategy plugin may implement **`validate_config(config)`** (optional hook on `BaseStrategy`); invalid combos fail early in the readable backtest, Layer 1 sweep, Layer 2 precompute, parity checks, and `run_layer1_focused` grid preflight.
 - Shared rules live in **`src/utils/config_validation.py`** (`validate_common_strategy_config`, `validate_common_combiner_config`, etc.).
-- **`context_key(config)`** must include any parameter that changes arrays built in **`prepare_signal_context`** (so sweep/combiner context caches stay correct). **`normalized_param_key(config)`** should include parameters that change final signals or gating; unsupported or ignored YAML axes are removed or rejected (no fake grid uniqueness).
+- **`context_key(config)`** must include any parameter that changes arrays built in **`prepare_signal_context`** (so sweep/combiner context caches stay correct). **`normalized_param_key(config)`** should include parameters that change final signals or gating; unsupported or ignored YAML axes are removed or rejected (no fake grid uniqueness). Price-action (`pa_*`) strategies follow the same rule after the cache-scope pass documented under **`src/research/results/pa_context_key_cache_scope_audit.md`**.
 - Several plugins are **long-only (or single-level) MVPs**; mis-specified `side` / `level_type` / unused keys (e.g. former `features.midday_window` on `afternoon_continuation`) are rejected with clear errors.
 
 ## 1. Architecture overview

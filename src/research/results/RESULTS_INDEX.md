@@ -15,6 +15,7 @@ This index classifies **result roots** without moving or deleting them.
   - **keep:** yes
 
 - **PA Batch C (+ library handoff)** — `pa_batch_c_implementation_summary.md`, `pa_batch_c_parity_smoke.{md,csv}`, `pa_batch_c_jan2025_smoke.{md,csv}`, `pa_overlap_refinements_backlog.md`, `pa_strategy_library_completion_summary.md`
+- **PA `context_key` cache scope (engineering, 2026-05-10)** — `pa_context_key_cache_scope_audit.md`, `pa_context_key_signal_fingerprint_check.md`, `pa_context_key_cache_reuse_smoke.md`, `pa_context_key_cache_optimization_summary.md` (performance-only; tests `tests/test_pa_context_key_scope.py`)
   - **status:** two plugins; formal Layer 1 economics in **`layer1_pa_batch_bc_qqq_2023_2024/`**
   - **keep:** yes
 

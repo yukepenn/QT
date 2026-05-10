@@ -107,7 +107,6 @@ class PaMtrReversalStrategy(BaseStrategy):
         return (
             "pa_mtr",
             pa_range_window(config),
-            float(sig.get("bear_channel_score_min", 0.35)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

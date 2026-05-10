@@ -16,7 +16,6 @@ from src.strategies.strategy.pa_batch_a_utils import (
     atr_col_name,
     finalize_long_signals_df,
     pa_range_window,
-    pa_regime_window,
     signals_df_from_arrays,
 )
 from src.utils.config_validation import (
@@ -114,9 +113,6 @@ class PaSecondEntryPullbackStrategy(BaseStrategy):
         return (
             "pa_sec_entry",
             pa_range_window(config),
-            pa_regime_window(config),
-            float(sig.get("context_score_min", 0.3)),
-            bool(sig.get("require_trend_context", True)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

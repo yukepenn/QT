@@ -16,7 +16,6 @@ from src.strategies.strategy.pa_batch_a_utils import (
     atr_col_name,
     finalize_long_signals_df,
     pa_range_window,
-    pa_regime_window,
     signals_df_from_arrays,
 )
 from src.utils.config_validation import (
@@ -119,10 +118,6 @@ class PaClimaxReversalStrategy(BaseStrategy):
         return (
             "pa_climax_rev",
             pa_range_window(config),
-            pa_regime_window(config),
-            float(sig.get("climax_score_min", 0.45)),
-            float(sig.get("bear_context_min", 0.22)),
-            float(sig.get("max_dist_below_vwap_atr", -0.12)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

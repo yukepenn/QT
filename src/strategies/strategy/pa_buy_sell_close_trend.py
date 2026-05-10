@@ -111,9 +111,6 @@ class PaBuySellCloseTrendStrategy(BaseStrategy):
             "pa_buy_sell_close",
             pa_range_window(config),
             pa_regime_window(config),
-            float(sig.get("body_pct_min", 0.52)),
-            float(sig.get("trend_score_min", 0.35)),
-            bool(sig.get("require_vwap_side", False)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

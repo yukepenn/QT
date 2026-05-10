@@ -110,8 +110,6 @@ class PaTightChannelPullbackStrategy(BaseStrategy):
         return (
             "pa_tcp",
             pa_regime_window(config),
-            float(sig.get("tight_bull_score_min", 0.38)),
-            bool(sig.get("require_vwap_side", False)),
             str(sig.get("atr_column", "atr_like_20")),
         )
 

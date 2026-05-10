@@ -15,6 +15,7 @@
 | Feature key | `test_feature_key.py` |
 | Strategy config validation | `test_strategy_config_validation.py` |
 | Context key | `test_strategy_context_keys.py` |
+| PA context cache scope | `test_pa_context_key_scope.py` |
 | Combiner behavior hash | `test_combiner_behavior.py` |
 | Cost-as-R metrics | `test_cost_as_r_metrics.py` |
 | Daily metrics | `test_daily_metrics.py` |

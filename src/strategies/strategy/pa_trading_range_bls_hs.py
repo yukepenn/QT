@@ -121,8 +121,6 @@ class PaTradingRangeBlsHsStrategy(BaseStrategy):
             "pa_tr_bls",
             pa_range_window(config),
             pa_regime_window(config),
-            float(sig.get("trading_range_score_min", 0.35)),
-            str(sig.get("confirm_mode", "bull_reversal_or_failed_break")),
             str(sig.get("atr_column", "atr_like_20")),
         )
 
