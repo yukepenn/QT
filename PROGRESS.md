@@ -1,3 +1,5 @@
+- [2026-05-10] **Docs(handoff):** `NEXT_HANDOFF.md` — record repo cleanup push (`cea3a58` + `9ba6f41`).
+
 - [2026-05-10] **Repo cleanup (pre–global Layer 1/2):** `repo_cleanup_inventory.py` + `repo_cleanup_*` / `test_suite_cleanup_audit.*` under `src/research/results/`; **`git rm`** stale roots `layer1_all10_qqq_{2020_20260430_v1,v1}`, `layer2_qqq_{2020_20260430_v2_relaxed,v1}`; cleared `testing_parameters_results/` scratch + listed untracked heavy diagnostics; updated **README** (post-hardening example paths), **RESULTS_INDEX** ×2, **CONFIG_INDEX** §F, **ARTIFACT_POLICY** §9, **PROJECT_STATUS**, **NEXT_HANDOFF**, `recovery_status_before.md`. **No** test/source deletions; **no** Layer 1/2/WFO/live.
 
 - [2026-05-10] **PA Batch B/C handoff — staging label:** documented **`NEED_LAYER2_REPAIRED_V3_BEHAVIOR_COMPLETION`** as the correct pre-behavior label (vs premature **`PROCEED_…`**); post-`25faa94` decision remains **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`NEXT_HANDOFF.md`, behavior completion doc).

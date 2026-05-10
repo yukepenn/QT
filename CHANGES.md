@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Docs(handoff): **NEXT_HANDOFF** — push status for repo cleanup (`9ba6f41`).
+
 - Chore(repo): **stale research artifact cleanup** — `src/research/repo_cleanup_inventory.py`; `repo_cleanup_inventory.{csv,md}`, `repo_cleanup_keep_policy.md`, `repo_cleanup_delete_plan.{csv,md}`, `repo_cleanup_summary.md`, `test_suite_cleanup_audit.{csv,md}`; remove tracked **`PRE_HARDENING_STALE` / `STALE`** Layer 1/2 roots; clear **`testing_parameters_results/`** sweep scratch; README / indexes / policy / handoff updates. **No** Layer 1/2/WFO; **no** test deletions.
 
 - Docs(handoff): **PA Batch B/C** — `NEXT_HANDOFF.md` + `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`: interim staging **`NEED_LAYER2_REPAIRED_V3_BEHAVIOR_COMPLETION`** vs post-`25faa94` **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**; validation table clarified (`_feat_key` / `DfSignalStrategy` in `*.py` only).
