@@ -21,7 +21,12 @@ PA_BATCH_B = (
     "pa_wedge_reversal",
 )
 
-PA_ALL = PA_BATCH_A + PA_BATCH_B
+PA_BATCH_C = (
+    "pa_buy_sell_close_trend",
+    "pa_generic_breakout_pullback",
+)
+
+PA_ALL = PA_BATCH_A + PA_BATCH_B + PA_BATCH_C
 
 
 @pytest.mark.parametrize("name", PA_ALL)

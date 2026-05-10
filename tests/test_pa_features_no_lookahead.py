@@ -69,6 +69,8 @@ def test_pa_strategies_require_no_lookahead_columns() -> None:
         "pa_climax_reversal",
         "pa_second_entry_pullback",
         "pa_wedge_reversal",
+        "pa_buy_sell_close_trend",
+        "pa_generic_breakout_pullback",
     ):
         s = load_strategy(name)
         bad = [c for c in s.required_features() if "LOOKAHEAD" in str(c)]

@@ -1,0 +1,3 @@
+strategy,symbol,start,end,testing_config,max_combos,combinations_completed,max_trades_in_run,note
+pa_buy_sell_close_trend,QQQ,2025-01-01,2025-01-31,pa_buy_sell_close_trend_focused.yaml,18,18,18,profitability not interpreted
+pa_generic_breakout_pullback,QQQ,2025-01-01,2025-01-31,pa_generic_breakout_pullback_focused.yaml,18,18,0,signal-rate note; parity passes

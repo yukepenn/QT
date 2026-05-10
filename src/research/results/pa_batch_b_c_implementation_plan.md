@@ -50,3 +50,9 @@
 - No formal Layer 1 / Layer 2 for Batch B/C.
 - No mini-WFO, full WFO, live/paper.
 - Only Jan 2025 QQQ smokes (capped combos), parity, unit tests.
+
+## Implementation status (2026-05-10)
+
+- **Batch B** and **Batch C** strategy modules, YAMLs, tests, and smoke artifacts are in-repo.
+- **Brooks overlap:** backlog doc only (`pa_overlap_refinements_backlog.md`).
+- Handoff: `pa_strategy_library_completion_summary.md`.

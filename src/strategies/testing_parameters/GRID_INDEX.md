@@ -61,6 +61,13 @@ Legend: **status** = how the grid is used in current research; **result root** =
 | pa_second_entry_pullback | `pa_second_entry_pullback_focused.yaml` | Second-entry pullback | Smoke / future Layer 1 | ~288 combos |
 | pa_wedge_reversal | `pa_wedge_reversal_focused.yaml` | Wedge reversal proxy | Smoke / future Layer 1 | ~288 combos |
 
+### PA Batch C — implementation grids (`*_focused.yaml`)
+
+| Strategy | File | Purpose | Status | Notes |
+|----------|------|---------|--------|-------|
+| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_focused.yaml` | Strong-close continuation | Smoke / future Layer 1 | ~216 combos |
+| pa_generic_breakout_pullback | `pa_generic_breakout_pullback_focused.yaml` | Breakout pullback | Smoke / future Layer 1 | ~432 combos |
+
 ---
 
 ## 2. Refined grids (`*_refined_v1.yaml`)

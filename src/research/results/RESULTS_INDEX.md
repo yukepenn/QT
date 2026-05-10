@@ -14,6 +14,10 @@ This index classifies **result roots** without moving or deleting them.
   - **status:** four new plugins registered; **no** formal Layer 1/2 for Batch B in this phase
   - **keep:** yes
 
+- **PA Batch C (+ library handoff)** — `pa_batch_c_implementation_summary.md`, `pa_batch_c_parity_smoke.{md,csv}`, `pa_batch_c_jan2025_smoke.{md,csv}`, `pa_overlap_refinements_backlog.md`, `pa_strategy_library_completion_summary.md`
+  - **status:** two new plugins; overlap refinements **backlog only**
+  - **keep:** yes
+
 - **`layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`**
   - **status:** PA Batch A **tuned grids v1** Layer 1 (QQQ 2023–01–01 → 2024–12–31)
   - **purpose:** `*_tuned_v1.yaml` sweeps → **10** strict YAMLs (trading-range + failed-trap); `signal_rate_diagnosis.*`, `layer1_pa_batch_a_tuned_v1_summary.md`

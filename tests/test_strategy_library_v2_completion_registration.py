@@ -21,7 +21,7 @@ V2_COMPLETION = [
 
 
 def test_strategy_count_after_completion() -> None:
-    assert len(available_strategies()) == 33
+    assert len(available_strategies()) == 35
 
 
 def test_v2_completion_registered() -> None:

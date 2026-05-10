@@ -259,3 +259,21 @@ pa_wedge_reversal:
   default_active_end_minute: 330
   cost_sensitivity: high
   notes: "PA Batch B — wedge / three-push reversal proxy; prior-exclusive push count."
+
+pa_buy_sell_close_trend:
+  family: pa_close_trend_continuation
+  conflict_group: QQQ_directional
+  default_priority: 44
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch C — strong-close trend continuation; fast path enters next bar open only."
+
+pa_generic_breakout_pullback:
+  family: pa_breakout_pullback
+  conflict_group: QQQ_directional
+  default_priority: 46
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch C — rolling-range breakout pullback; not ORB-specific."

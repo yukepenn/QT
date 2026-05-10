@@ -36,8 +36,10 @@ from src.strategies.strategy.orb_retest_continuation import OrbRetestContinuatio
 from src.strategies.strategy.prior_close_reclaim import PriorCloseReclaimStrategy
 from src.strategies.strategy.prior_day_level_trap import PriorDayLevelTrapStrategy
 from src.strategies.strategy.pa_broad_channel_zone import PaBroadChannelZoneStrategy
+from src.strategies.strategy.pa_buy_sell_close_trend import PaBuySellCloseTrendStrategy
 from src.strategies.strategy.pa_climax_reversal import PaClimaxReversalStrategy
 from src.strategies.strategy.pa_failed_range_breakout_trap import PaFailedRangeBreakoutTrapStrategy
+from src.strategies.strategy.pa_generic_breakout_pullback import PaGenericBreakoutPullbackStrategy
 from src.strategies.strategy.pa_mtr_reversal import PaMtrReversalStrategy
 from src.strategies.strategy.pa_second_entry_pullback import PaSecondEntryPullbackStrategy
 from src.strategies.strategy.pa_tight_channel_pullback import PaTightChannelPullbackStrategy
@@ -94,6 +96,8 @@ _STRATEGY_BY_NAME: dict[str, type[BaseStrategy]] = {
     "pa_climax_reversal": PaClimaxReversalStrategy,
     "pa_second_entry_pullback": PaSecondEntryPullbackStrategy,
     "pa_wedge_reversal": PaWedgeReversalStrategy,
+    "pa_buy_sell_close_trend": PaBuySellCloseTrendStrategy,
+    "pa_generic_breakout_pullback": PaGenericBreakoutPullbackStrategy,
 }
 
 
