@@ -36,7 +36,7 @@ Summary: `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/laye
 ## 8. Decision
 
 - **Layer 1 repair path:** **validated** (H1 confirmed).
-- **Layer 2 repaired:** executed; combiner decision **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** (design-only follow-up; optional behavior rerun documented in Layer 2 summary).
+- **Layer 2 repaired:** executed with behavior completion pass (`--detail-top 15`, `--write-behavior-unique`); combiner decision updated to **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer2_pa_batch_bc_repaired_v3_behavior_completion.md`; prior **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** retracted).
 
 ## 9. Explicit non-runs
 

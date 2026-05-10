@@ -18,28 +18,33 @@ Run a **narrow reduced Layer 2** on **diversity-repaired** Layer 1 candidates (`
 ## 4. Sweep
 
 - **Grid:** **96** combos (`3 × 2 × 2 × 2 × 2 × 2`).
-- **Sweep folder:** `sweep_20260510_220219/`
-- **Note:** sweep used **`--detail-top 0`** to avoid generating heavy `top_runs/` trade CSVs under the result root (artifact hygiene). **Behavior-unique hashing was therefore skipped** in postprocess; for a full **behavior_unique ≥ 2** gate, re-run locally with e.g. **`--detail-top 8`** and postprocess with **`--write-behavior-unique`**.
+- **Latest sweep (behavior rerun):** `sweep_20260510_221442/` — **`--top 30`**, **`--detail-top 15`**, tag `sweep_repaired_v3_behavior` (**local / gitignored**; enables `top_runs/` trade logs for postprocess).
+- **Earlier sweep (no behavior):** `sweep_20260510_220219/` used **`--detail-top 0`** — kept for reference **locally only**.
 
-## 5. Representative economics (from `rank_by_total_r.csv`)
+## 5. Representative economics
 
-- **Best `total_r` row:** `combo_id=96`, `pa_batch_bc_core`, `top_per_strategy=2`, `max_trades_per_day=2`, `daily_max_loss_r=-2`, `cooldown_after_loss_minutes=15`, `score_adjusted_priority` — about **48.66** `total_r`, **1.245** `profit_factor`, **517** trades @ baseline slip **0.01** (close-trend-heavy fills; see sweep CSV for exact floats).
+- **Best `total_r` (local `rank_by_total_r.csv` / `results.csv`):** combo **96**, `pa_batch_bc_core`, `top_per_strategy=2`, `max_trades_per_day=2`, `daily_max_loss_r=-2`, `cooldown_after_loss_minutes=15`, `score_adjusted_priority` — about **48.66** `total_r`, **1.245** `profit_factor`, **517** trades @ baseline slip **0.01** in the sweep row (see `results.csv` under the latest sweep dir).
+- **Leaderboard note:** `combiner_score` sorts the **`top_unique`** slice toward **compact `pa_climax`** rows first; **portfolio `pa_batch_bc_core`** economics require **`rank_by_total_r.csv`** / **`results.csv`** (local `rank_by_*.csv` is gitignored).
 
 ## 6. Postprocess
 
-- **Dedupe:** `dedupe_top=30` → `top_unique_systems.csv` / `.md`, `top_unique_run_map.csv` (empty detailed map when no `top_runs/`).
-- **Cost stress:** `cost_stress_top=15` on unique slice — leading rows are **`pa_climax` / `PA_CLIMAX_REVERSAL_DIVERSE_001`**; **0.02** slip shows **`total_r ≈ 3.03`**, **`profit_factor ≈ 1.259`**, label **`robust_positive_at_0_02`** (see `cost_stress/cost_stress_summary.md`). **Portfolio `pa_batch_bc_core` rows are not guaranteed to appear in the top-15 cost slice**; review `rank_by_total_r.csv` / full sweep `results.csv` for core **0.02** if needed.
+- **Dedupe:** `dedupe_top=50` → `top_unique_systems.csv` / `.md`, `top_unique_run_map.csv`.
+- **Behavior dedupe:** `behavior_dedupe_top=30`, **`--write-behavior-unique`** → `behavior_unique_systems.*`, `behavior_unique_run_map.csv` — see **`layer2_pa_batch_bc_repaired_v3_behavior_completion.md`** ( **`behavior_unique = 1`** strong hash; **15 / 30** rows missing `top_runs` ).
+- **Cost stress:** `cost_stress_top=10` — see `cost_stress/cost_stress_summary.md` and `cost_stress_results.csv`.
+- **Period breakdowns:** written under the sweep’s **`top_runs/`** (gitignored).
 
 ## 7. Decision (exactly one)
 
-### **PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN**
+### **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**
 
-Rationale:
+Full evidence: **`layer2_pa_batch_bc_repaired_v3_behavior_completion.md`**.
 
-1. **Layer 1 diversity repair validated** (`strategy_diversity_summary.csv`: **3 / 3** unique `pure_signal_hash` per family on repaired YAMLs).
-2. **Layer 2 sweep** shows **healthy portfolio-scale `total_r`** on `pa_batch_bc_core` with repaired IDs.
-3. **0.02** cost stress on the inspected **unique_rank slice** is **not** the v2 failure mode for the dominant climax row (**PF > 1.05**, **`total_r` > 0 @ 0.02** on that slice).
-4. **mini-WFO is still not executed** — next step is **design-only** documentation in a future explicit phase, plus optional **behavior rerun** as above before freezing a system.
+High level:
+
+1. Layer 1 **signal-mask** diversity repair remains valid (**3 / 3** per family on YAMLs).
+2. **Trade-sequence (`behavior_unique`) diversity is still 1** on the completed slice — **not** sufficient to claim a multi-behavior combiner freeze.
+3. **`cost_robust_systems`** is **climax-only** in this pass — avoid **single-family overclaim** for “the” robust system.
+4. **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN` is retracted** until behavior **and** cost gates support it without the caveats above.
 
 ## 8. Explicit non-runs
 

@@ -132,7 +132,7 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
 - **`layer2_sweep_qqq_pa_batch_bc_repaired_v3_2023_2024.yaml`**
   - **base_config**: YAML above
   - **grid**: **96** combos (3 × 2 × 2 × 2 × 2 × 2)
-  - **results**: `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/layer2_pa_batch_bc_repaired_v3_summary.md`
+  - **results**: `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/layer2_pa_batch_bc_repaired_v3_summary.md`, `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`
 
 **Batch 1 tuned v2 squeeze note:** `bollinger_squeeze_breakout_tuned_v2.yaml` exists for a stricter squeeze grid; **no** Layer 2 YAMLs were added in that phase because Layer 1 candidate export was **empty** (see `strategy_library_v2_batch1_tuning_v2_summary.md`).
 

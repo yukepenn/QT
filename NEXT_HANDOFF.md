@@ -5,68 +5,60 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before work | `3f88882` — Feat(research): PA Batch B/C diversity v3 |
-| New commit hash | `56aed10` |
-| Commit message | `Repair PA Batch B/C candidate diversity` |
-| Push status | **Pushed** to `origin/main` (`3f88882..56aed10`) |
-| Working tree status | Curated PA B/C repair + Layer 2 repaired v3 summaries staged; heavy sweep dirs (`sweep_*`, `top_runs/`, raw `candidate_precompute_profile.csv`, `feature_store_stats.json` under repaired root) remain **local / untracked** |
-| Known untracked local-only artifacts | `src/strategies/testing_parameters_results/**`; various `**/cost_stress/candidate_precompute_profile.csv`, `**/feature_store_stats.json`; `pa_gate_rows.jsonl`; other Layer 2 precompute dumps from prior runs |
+| Pre-task HEAD | `e73316d` (after prior diversity-repair handoff) |
+| New commit hash | `2829f72` |
+| Push status | **Pushed** to `origin/main` (update if push fails) |
+| Working tree | Curated Layer 2 repaired v3 **behavior + cost** CSV/MD only; **`sweep_20260510_221442/`**, **`top_runs/`**, raw `trades.csv` / `feature_store_stats.json` / heavy precompute CSVs **local / untracked** |
 
-## B. Task Scope
+## B. Task scope
 
 | | |
 |--|--|
-| Requested task | PA Batch B/C **climax-focused** diversity repair: raw sweep audit → repaired candidate root → optional Layer 2 repaired v3; docs + tests; **no** mini/full WFO, **no** new strategies |
-| What was actually completed | `sweep_result_signal_diversity.py`, `export_diverse_candidates_from_results.py`, `candidate_signal_diversity.py` refactor; tests; `pa_batch_bc_climax_diversity_repair_plan.md`, raw audit `pa_batch_bc_raw_signal_diversity_v3/`, `selected_candidates_repaired/` (6 YAMLs), `pa_batch_bc_candidate_signal_diversity_repaired_v3/`, `repaired_candidate_decision.md` (**RUN_LAYER2_REPAIRED_V3**), `pa_batch_bc_diversity_repair_summary.md`; Layer 2 configs + curated results `layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/`; indexes + `README` / `PROJECT_STATUS` / `PROGRESS` / `CHANGES` / `.gitignore` |
-| What was intentionally not done | **mini-WFO**, **full WFO**, **live/paper**; PA Batch A tuning; new Brooks primitives; committing `sweep_20260510_220219/` or `top_runs/`; Phase 7 default-preserving climax **code** param (not needed — H1 selector) |
+| Requested | Finish **Layer 2 repaired v3** **behavior_unique** + cost evidence; **no** strategy/feature/YAML/selection code changes; **no** mini/full WFO/live |
+| Completed | Re-sweep `--detail-top 15` + postprocess `--write-behavior-unique`; `behavior_unique_*`, refreshed `top_unique_*`, `cost_stress/*`, `cost_robust_systems.*`; **`layer2_pa_batch_bc_repaired_v3_behavior_completion.md`**; updated **`layer2_pa_batch_bc_repaired_v3_summary.md`**, **`NEXT_HANDOFF.md`**, **`README.md`**, **`PROJECT_STATUS.md`**, **`PROGRESS.md`**, **`CHANGES.md`**, **`pa_batch_bc_diversity_repair_summary.md`**, **`RESULTS_INDEX.md`** (research + combiner), **`.gitignore`** |
+| Not done | **mini-WFO**, **full WFO**, **live/paper**; committing sweep / `top_runs` |
 
-## C. Files Changed
+## C. Files changed (curated)
 
-| Category | Paths (high level) |
-|----------|---------------------|
-| Source / code | `src/research/sweep_result_signal_diversity.py`, `src/research/export_diverse_candidates_from_results.py`, `src/research/candidate_signal_diversity.py` |
-| Tests | `tests/test_sweep_result_signal_diversity.py`, `tests/test_export_diverse_candidates_from_results.py` |
-| Config / YAML | `src/combiner/configs/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024.yaml`, `src/combiner/configs/layer2_sweep_qqq_pa_batch_bc_repaired_v3_2023_2024.yaml` |
-| Research results / docs | `src/research/results/pa_batch_bc_climax_diversity_repair_plan.md`, `pa_batch_bc_raw_signal_diversity_v3/*`, `pa_batch_bc_diversity_repair_summary.md`, `pa_batch_bc_candidate_signal_diversity_repaired_v3/*`, `layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/selected_candidates_repaired/**`, `repaired_candidate_decision.md`, `RESULTS_INDEX.md` |
-| Combiner results (curated) | `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/` — summary, `top_unique_*`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.*`, `diagnostics/*` **summary tables only** (see `.gitignore` force-include list) |
-| Repo docs | `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `tests/README.md`, `src/combiner/configs/CONFIG_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md`, `.gitignore`, `NEXT_HANDOFF.md` |
-| Intentionally left untracked | `sweep_20260510_220219/` under repaired Layer 2; `feature_store_stats.json`; raw `candidate_precompute_profile.csv` under `cost_stress/` / `diagnostics/` |
+| Area | Paths |
+|------|--------|
+| Combiner results | `src/combiner/results/layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/behavior_unique_systems.{csv,md}`, `behavior_unique_run_map.csv`, `top_unique_systems.{csv,md}`, `top_unique_run_map.csv`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.{csv,md}`, `layer2_pa_batch_bc_repaired_v3_{summary,behavior_completion}.md`, `diagnostics/*` summaries (if staged) |
+| Docs / indexes | `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`, `src/research/results/pa_batch_bc_diversity_repair_summary.md`, `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md`, `.gitignore` |
+| Source code | **None** |
 
-## D. Validation
+## D. Validation (this session)
 
 | Check | Result |
 |--------|--------|
-| `python -m pytest -q` | **363 passed** |
-| `python -m compileall -q src` | **OK** |
-| `python src/strategies/loader.py --list` | **35** strategies listed |
-| Parity (`failed_orb`, `pa_buy_sell_close_trend` tuned v3, `pa_climax_reversal` tuned v3, Jan 2025 window, `--max-combos 2`) | **OK** (`TOTAL_MISMATCH_FIELDS approx=0`) |
-| Boundary | `LOOKAHEAD` only in documented full-session columns + strategy guard; **`_feat_key`** / **`DfSignalStrategy`**: **no matches in `src/**/*.py`** |
-| No `*.py` under `src/*/results` | **None found** |
-| `git ls-files` heavy pattern (`top_runs`, `trades.csv`, `.parquet`, etc.) | **No tracked matches** |
+| `pytest -q` | **363 passed** (before edits) |
+| `compileall` | **OK** |
+| `loader.py --list` | **35** strategies |
+| Parity (failed_orb, PA tuned v3 ×2) | **OK** |
+| Boundary (`LOOKAHEAD` in features/strategies; `_feat_key` / `DfSignalStrategy` in `src/**/*.py`) | **OK** (no `_feat_key` / `DfSignalStrategy` in `.py`) |
+| Heavy `git ls-files` pattern | **No hits** |
 
-## E. Research / Experiment Results
+## E. Behavior completion (facts)
 
-| Item | Detail |
+| Item | Value |
 |------|--------|
-| Window | QQQ **2023-01-01 → 2024-12-31** |
-| Raw strict pool (filters in `raw_signal_diversity_summary.md`) | **Climax:** 1152 sweep rows → **176** strict eligible; unique `pure_signal_hash` in top **20 / 50 / 100** score pool: **2 / 2 / 5**. **Close-trend:** **895** strict; **8 / 13 / 26** |
-| Hypothesis | **H1 (selector)** supported — multiple climax masks exist **below** score-top-five; not H2-only |
-| Repaired Layer 1 | **6** YAMLs (`3+3`); `pa_batch_bc_candidate_signal_diversity_repaired_v3`: **3 / 3** unique pure hashes per strategy |
-| Layer 2 repaired v3 | **96** combos; sweep dir **`sweep_20260510_220219/`** (local); postprocess **behavior_unique skipped** (`--detail-top 0`); decision **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** (design-only next) |
-| Cost stress highlight | Leading **0.02** row on cost slice ≈ **`pa_climax`** / `PA_CLIMAX_REVERSAL_DIVERSE_001` — see `cost_stress/cost_stress_summary.md` |
-| Decision reached | Layer 2 summary: **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** — **do not run mini-WFO** until explicit design phase |
+| Sweep (local) | `sweep_20260510_221442` — `--detail-top 15`, `--top 30` |
+| `behavior_unique` **strong** count | **1** |
+| `top_runs` / `trades.csv` coverage | **15 / 30** rows in behavior slice had logs (**15 missing**) |
+| Dominant behavior row | `pa_climax`, **`PA_CLIMAX_REVERSAL_DIVERSE_001`**, 50 trades |
+| Cost ladder (unique_rank 1) | **0.005** → `total_r` **7.405**, PF **1.463**; **0.010** → **5.910**, **1.358**; **0.020** → **3.029**, **1.259**; **0.030** → **-1.156**, **1.124** |
+| `cost_robust_systems` | **10** rows, **all `pa_climax`** / same candidate ID |
+| Best core (`rank_by_total_r`, local) | Combo **96**, `total_r` **≈ 48.66**, PF **≈ 1.25**, **517** trades |
 
-## F. Explicit Non-Runs
+## F. Decision
+
+**`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** — see `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`.
+
+**`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN` retracted** (insufficient `behavior_unique`; cost-robust slice is single-family).
+
+## G. Explicit non-runs
 
 - **mini-WFO**, **full WFO**, **live/paper**
-- **Layer 2 on original strict v3 root** (still superseded by repair narrative)
-- **Broad v4 climax YAML / strategy param expansion** (Phase 7 code change not applied)
 
-## G. Risks / Caveats
+## H. Recommended next step
 
-- **Behavior-unique** gate not evaluated on this Layer 2 run; re-sweep locally with detail depth + postprocess if that gate blocks freeze.
-- Economics on **`pa_batch_bc_core`** at **0.02** need explicit CSV review if cost slice is climax-heavy only.
-
-## H. Recommended Next Step
-
-**Design-only: PA Batch B/C mini-WFO** — draft harness + train/test split config from **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`**; **no** execution until a dedicated phase.
+**Targeted PA Batch B/C tuning / combiner postprocess design** — e.g. fix `top_runs` mapping for missing behavior rows, widen cost stress to **`pa_batch_bc_core`** rows, or adjust grid/cost-rank thresholds. **Not** mini-WFO until behavior **and** cost tables support a multi-family story without overclaim.

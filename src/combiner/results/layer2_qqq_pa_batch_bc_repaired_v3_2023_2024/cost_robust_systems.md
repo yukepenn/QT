@@ -1,11 +1,23 @@
 # Cost-robust systems (research filters)
 
 Thresholds (not trading advice):
-- min_trades >= 300
+- min_trades >= 30
 - slippage_per_share = 0.02
 - total_r > 0.0
-- profit_factor > 1.0
-- max_drawdown_r > -100.0
+- profit_factor > 1.05
+- max_drawdown_r > -50.0
 - median_cost_r <= 0.5 (or missing)
 
-- Matching rows: **0**
+- Matching rows: **10**
+
+ unique_rank  source_combo_id candidate_set  top_per_strategy  max_trades_per_day  daily_max_loss_r  cooldown_after_loss_minutes         priority_policy  slippage_per_share  commission_per_trade  n_candidates                 candidate_ids_json  trades  total_net_pnl  total_r  profit_factor  max_drawdown_r  avg_bars_held  avg_cost_r  median_cost_r  combiner_score  robust_positive_at_0_02  robust_positive_at_0_03   cost_robustness_label
+           1               33     pa_climax                 1                   1              -1.5                            0       metadata_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           2               34     pa_climax                 1                   1              -1.5                            0 score_adjusted_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           3               35     pa_climax                 1                   1              -1.5                           15       metadata_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           4               36     pa_climax                 1                   1              -1.5                           15 score_adjusted_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           5               37     pa_climax                 1                   1              -2.0                            0       metadata_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           6               38     pa_climax                 1                   1              -2.0                            0 score_adjusted_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           7               39     pa_climax                 1                   1              -2.0                           15       metadata_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           8               40     pa_climax                 1                   1              -2.0                           15 score_adjusted_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+           9               41     pa_climax                 1                   2              -1.5                            0       metadata_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02
+          10               42     pa_climax                 1                   2              -1.5                            0 score_adjusted_priority                0.02                   0.0             1 ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50         2.6985  3.02896       1.258725        -6.55049           9.22    0.133962       0.117647        1.058425                     True                    False robust_positive_at_0_02

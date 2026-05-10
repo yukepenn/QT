@@ -1,9 +1,9 @@
 # Top unique combiner systems
 
 - Sweep rows: **96**
-- Requested top unique: **30**
-- Collected: **30** (dedupe key: candidate_set, top_per_strategy, max_trades_per_day, daily_max_loss_r, cooldown_after_loss_minutes, priority_policy, candidate_ids_json)
-- Rows scanned (sorted): **30**
+- Requested top unique: **50**
+- Collected: **50** (dedupe key: candidate_set, top_per_strategy, max_trades_per_day, daily_max_loss_r, cooldown_after_loss_minutes, priority_policy, candidate_ids_json)
+- Rows scanned (sorted): **50**
 
  unique_rank  source_rank  combo_id candidate_set  top_per_strategy  max_trades_per_day  daily_max_loss_r  cooldown_after_loss_minutes         priority_policy  n_candidates                                                   candidate_ids_json  trades  total_r  profit_factor  max_drawdown_r  avg_bars_held  combiner_score    trades_by_strategy_json                         r_by_strategy_json         rejected_by_reason_json
            1            1        33     pa_climax                 1                   1              -1.5                            0       metadata_priority             1                                   ["PA_CLIMAX_REVERSAL_DIVERSE_001"]      50 5.910440       1.358004       -6.290149           8.66        1.229296 {"pa_climax_reversal": 50}  {"pa_climax_reversal": 5.910439715605148}                              {}

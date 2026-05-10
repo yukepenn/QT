@@ -74,8 +74,8 @@ This index classifies committed Layer 2 result roots without deleting them.
 - **`layer2_qqq_pa_batch_bc_repaired_v3_2023_2024/`**
   - **status**: active **PA Batch B/C diversity-repaired v3** reduced Layer 2 (candidate root `layer1_pa_batch_bc_tuned_qqq_2023_2024_v3/selected_candidates_repaired/selected_candidates`)
   - **window**: 2023‑01‑01 → 2024‑12‑31
-  - **decision**: **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** (`layer2_pa_batch_bc_repaired_v3_summary.md`) — **mini-WFO not run**; sweep used `--detail-top 0` so **behavior-unique** postprocess was skipped (see summary for optional local rerun)
-  - **key summaries**: `layer2_pa_batch_bc_repaired_v3_summary.md`, `top_unique_systems.{csv,md}`, `top_unique_run_map.csv`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.{csv,md}`, `diagnostics/*` (curated)
+  - **decision**: **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer2_pa_batch_bc_repaired_v3_summary.md`; evidence `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`) — **behavior_unique = 1** on completed slice; **`cost_robust_systems` climax-only**; prior **`PROCEED_TO_PA_BATCH_BC_MINI_WFO_DESIGN`** retracted
+  - **key summaries**: `layer2_pa_batch_bc_repaired_v3_summary.md`, `layer2_pa_batch_bc_repaired_v3_behavior_completion.md`, `top_unique_systems.{csv,md}`, `top_unique_run_map.csv`, `behavior_unique_systems.{csv,md}`, `behavior_unique_run_map.csv`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.{csv,md}`, `diagnostics/*` (curated)
   - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/`, `feature_store_stats.json` remain gitignored / local)
 
 ## B. Reference / historical
