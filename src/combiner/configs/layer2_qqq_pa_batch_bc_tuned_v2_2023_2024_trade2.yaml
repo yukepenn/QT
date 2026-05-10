@@ -1,0 +1,59 @@
+name: layer2_qqq_pa_batch_bc_tuned_v2_2023_2024_trade2
+
+candidate_root: src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/selected_candidates
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -2.0
+  cooldown_after_loss_minutes: 15
+  cooldown_scope: session
+
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+  opposite_direction_policy: ""
+
+candidate_sets:
+  pa_close_trend:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_buy_sell_close_trend
+
+  pa_climax:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_climax_reversal
+
+  pa_batch_bc_core:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_buy_sell_close_trend
+      - pa_climax_reversal
+
+  pa_close_trend_top1_diagnostic:
+    include_warnings: false
+    max_per_strategy: 1
+    strategies:
+      - pa_buy_sell_close_trend
+
+  pa_climax_top1_diagnostic:
+    include_warnings: false
+    max_per_strategy: 1
+    strategies:
+      - pa_climax_reversal

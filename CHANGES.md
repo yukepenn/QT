@@ -1,5 +1,6 @@
 ### [Unreleased] – 2026-05-10
 
+- Feat(combiner): **PA Batch B/C tuned v2 reduced Layer 2 (QQQ 2023–2024)** — configs `layer2_qqq_pa_batch_bc_tuned_v2_2023_2024.yaml`, `layer2_qqq_pa_batch_bc_tuned_v2_2023_2024_trade2.yaml`, `layer2_sweep_qqq_pa_batch_bc_tuned_v2_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_pa_batch_bc_tuned_v2_2023_2024/` (diagnostics interpretation, fixed rollup, top/behavior dedupe, cost stress, cost-robust table). Summary `layer2_pa_batch_bc_tuned_v2_summary.md` (**`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**). **mini-WFO / full WFO / live not run.**
 - Refactor(strategies): **PA helper namespace** — `src/strategies/common/pa.py` (canonical); `pa_batch_a_utils` / `pa_common` re-export shims; side-specific `pa_failed_breakout_{down,up}_age_*` in `pa_swings` (legacy `pa_failed_breakout_age_*` = down); tests + audits (`strategy_helper_namespace_audit.md`, `pa_brooks_*_audit.md`, `pa_brooks_primitives_cleanup_summary.md`). **No** signal logic changes; **no** Layer 1/2/WFO.
 
 - Feat(features): **Brooks PA framework primitives** — bar / swing / regime-router / magnet columns (`price_action`, `pa_swings`, `regime`, `levels`, `pa_brooks_enums`, `pa_magnet_columns`); `pa_common.py` helpers; tests + `pa_brooks_*` research docs/smokes; indexes. **No** strategy signal changes; **no** Layer 1/2/WFO.

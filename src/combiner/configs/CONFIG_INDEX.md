@@ -110,6 +110,19 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **grid**: **48** combos
   - **results**: `src/combiner/results/layer2_qqq_pa_batch_a_tuned_2023_2024_v1/layer2_pa_batch_a_tuned_summary.md`
 
+### PA Batch B/C — tuned v2 reduced Layer 2 (QQQ 2023–2024)
+
+- **`layer2_qqq_pa_batch_bc_tuned_v2_2023_2024.yaml`**
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **candidate_root**: `src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/selected_candidates`
+  - **purpose**: strict **10** YAMLs only (**5** `pa_buy_sell_close_trend` + **5** `pa_climax_reversal`); sets `pa_close_trend`, `pa_climax`, `pa_batch_bc_core`
+- **`layer2_qqq_pa_batch_bc_tuned_v2_2023_2024_trade2.yaml`**
+  - **purpose**: fixed-run helper for **`max_trades_per_day: 2`**, `daily_max_loss_r: -2.0`, `cooldown_after_loss_minutes: 15` (run #7)
+- **`layer2_sweep_qqq_pa_batch_bc_tuned_v2_2023_2024.yaml`**
+  - **base_config**: YAML above
+  - **grid**: **144** combos (3 × 3 × 2 × 2 × 2 × 2)
+  - **results**: `src/combiner/results/layer2_qqq_pa_batch_bc_tuned_v2_2023_2024/layer2_pa_batch_bc_tuned_v2_summary.md`
+
 **Batch 1 tuned v2 squeeze note:** `bollinger_squeeze_breakout_tuned_v2.yaml` exists for a stricter squeeze grid; **no** Layer 2 YAMLs were added in that phase because Layer 1 candidate export was **empty** (see `strategy_library_v2_batch1_tuning_v2_summary.md`).
 
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)

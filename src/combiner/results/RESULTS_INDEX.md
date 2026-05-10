@@ -64,6 +64,13 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **key summaries**: `layer2_pa_batch_a_tuned_summary.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `cost_stress/cost_stress_summary.md`, `diagnostics/*`
   - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
 
+- **`layer2_qqq_pa_batch_bc_tuned_v2_2023_2024/`**
+  - **status**: active **PA Batch B/C tuned v2** reduced Layer 2 (strict close-trend + climax only)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **decision**: **`TUNE_PA_BATCH_BC_GRIDS_AGAIN`** (`layer2_pa_batch_bc_tuned_v2_summary.md`) — behavior dedupe **1**; mini-WFO **not** run
+  - **key summaries**: `layer2_pa_batch_bc_tuned_v2_plan.md`, `layer2_pa_batch_bc_tuned_v2_summary.md`, `diagnostics_interpretation.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `cost_stress/cost_stress_summary.md`, `cost_robust_systems.md`, `diagnostics/*` (curated)
+  - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
+
 ## B. Reference / historical
 
 - **`layer2_qqq_2023_20260430_posthardening_strict_v1/`**, **`layer2_qqq_2023_20260430_posthardening_relaxed_v1/`**

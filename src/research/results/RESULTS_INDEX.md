@@ -42,7 +42,8 @@ This index classifies **result roots** without moving or deleting them.
 - **`layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/`**
   - **status:** PA Batch B+C **tuned grids v2** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_tuned_qqq_2023_2024_v2`
   - **purpose:** diagnostic-first `*_tuned_v2.yaml` → gate preflight (`pa_batch_bc_gate_diagnostics_v2_preflight/`) → sweeps (four strategies; two skipped preflight) → manifest → **10** strict YAMLs (**5** `pa_buy_sell_close_trend` + **5** `pa_climax_reversal`); `signal_rate_diagnosis.*`; `candidate_fast_context_check.*`; `pa_batch_bc_exit_diagnostics_v2/`; optional `diagnostic_relaxed_selection/` (**DIAGNOSTIC ONLY**)
-  - **decision:** **`PROCEED_TO_PA_BATCH_BC_REDUCED_LAYER2_DESIGN`** (`layer1_pa_batch_bc_tuned_v2_summary.md`) — **design doc only** `reduced_layer2_pa_batch_bc_tuned_v2_design.md`; **Layer 2 / mini-WFO / full WFO / live not run**
+  - **decision (Layer 1):** **`PROCEED_TO_PA_BATCH_BC_REDUCED_LAYER2_DESIGN`** (`layer1_pa_batch_bc_tuned_v2_summary.md`) — combiner design `reduced_layer2_pa_batch_bc_tuned_v2_design.md`
+  - **Layer 2:** executed reduced combiner pass → `src/combiner/results/layer2_qqq_pa_batch_bc_tuned_v2_2023_2024/` — summary **`layer2_pa_batch_bc_tuned_v2_summary.md`** (**`TUNE_PA_BATCH_BC_GRIDS_AGAIN`**; **mini-WFO / full WFO / live not run**)
   - **keep:** yes
 
 - **`pa_batch_bc_gate_diagnostics_v1/`**
