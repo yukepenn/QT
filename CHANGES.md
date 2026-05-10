@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Refactor(strategies): **PA helper namespace** — `src/strategies/common/pa.py` (canonical); `pa_batch_a_utils` / `pa_common` re-export shims; side-specific `pa_failed_breakout_{down,up}_age_*` in `pa_swings` (legacy `pa_failed_breakout_age_*` = down); tests + audits (`strategy_helper_namespace_audit.md`, `pa_brooks_*_audit.md`, `pa_brooks_primitives_cleanup_summary.md`). **No** signal logic changes; **no** Layer 1/2/WFO.
+
 - Feat(features): **Brooks PA framework primitives** — bar / swing / regime-router / magnet columns (`price_action`, `pa_swings`, `regime`, `levels`, `pa_brooks_enums`, `pa_magnet_columns`); `pa_common.py` helpers; tests + `pa_brooks_*` research docs/smokes; indexes. **No** strategy signal changes; **no** Layer 1/2/WFO.
 
 - Refactor(strategies): **PA `context_key` cache scope** — all ten `pa_*` strategies: `context_key` = strategy tag + PA window/regime selectors used in **`prepare_signal_context`** + `atr_column`; remove threshold/risk axes from context cache key. Docs `pa_context_key_cache_*.{md}` under `src/research/results/`; tests `tests/test_pa_context_key_scope.py`; README / `PROJECT_STATUS` / `RESULTS_INDEX` / `tests/README.md`. Parity smokes unchanged; **no** Layer 1/2/WFO reruns.

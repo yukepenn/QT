@@ -32,6 +32,8 @@ def test_swing_extension_columns_exist() -> None:
         "pa_pullback_bar_count_10",
         "pa_two_leg_pullback_down_10",
         "pa_second_entry_buy_proxy_10",
+        "pa_failed_breakout_down_age_10",
+        "pa_failed_breakout_up_age_10",
         "pa_failed_breakout_age_10",
         "pa_breakout_attempt_count_up_10",
         "pa_trapped_bears_score_10",

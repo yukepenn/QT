@@ -23,6 +23,10 @@ This index classifies **result roots** without moving or deleting them.
   - **status:** shared `pa_*` feature columns + `strategy/pa_common.py`; **no** Layer 1/2/WFO reruns; **no** new strategies
   - **keep:** yes
 
+- **PA Brooks primitives cleanup (namespace + registry + swing ages, 2026-05-10)** — `strategy_helper_namespace_audit.md`, `pa_brooks_feature_registry_audit.md`, `pa_brooks_numba_fastpath_audit.md`, `pa_common_adoption_policy.md`, `pa_brooks_primitives_cleanup_summary.md`; code `src/strategies/common/pa.py`, shims `strategy/pa_batch_a_utils.py`, `strategy/pa_common.py`; `pa_swings` side-specific ages; tests `test_strategy_helper_namespace.py`, `test_pa_swing_side_specific_primitives.py`, `test_pa_brooks_feature_registry.py`
+  - **status:** engineering-only; loader **35** unchanged; **no** Layer 1/2/WFO
+  - **keep:** yes
+
 - **`layer1_pa_batch_bc_qqq_2023_2024/`**
   - **status:** formal **PA Batch B + C** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_qqq_2023_2024`
   - **purpose:** six `*_focused.yaml` sweeps → manifest → strict selection (**5** YAMLs, **`pa_buy_sell_close_trend` only**); `signal_rate_diagnosis.*`, optional `diagnostic_relaxed_selection/` (DIAGNOSTIC ONLY); `candidate_fast_context_check.*`

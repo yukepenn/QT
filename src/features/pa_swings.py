@@ -80,6 +80,8 @@ def pa_swing_column_names(spec: PaFeatureConfig) -> list[str]:
                 f"pa_two_leg_pullback_up_{nn}",
                 f"pa_second_entry_buy_proxy_{nn}",
                 f"pa_second_entry_sell_proxy_{nn}",
+                f"pa_failed_breakout_down_age_{nn}",
+                f"pa_failed_breakout_up_age_{nn}",
                 f"pa_failed_breakout_age_{nn}",
                 f"pa_breakout_attempt_count_up_{nn}",
                 f"pa_breakout_attempt_count_down_{nn}",
@@ -203,11 +205,18 @@ def add_pa_swing_features(
         mid_np = mid_s.to_numpy(dtype=float)
         c_np = c.to_numpy(dtype=float)
 
-        new_cols[f"pa_failed_breakout_age_{nn}"] = pd.Series(
-            _bars_since_last_in_session(fbd_i, sid, n_b, nn),
-            index=out.index,
-            dtype=np.int32,
+        down_age = _bars_since_last_in_session(fbd_i, sid, n_b, nn)
+        up_age = _bars_since_last_in_session(fbu_i, sid, n_b, nn)
+        new_cols[f"pa_failed_breakout_down_age_{nn}"] = pd.Series(
+            down_age, index=out.index, dtype=np.int32
         )
+        new_cols[f"pa_failed_breakout_up_age_{nn}"] = pd.Series(
+            up_age, index=out.index, dtype=np.int32
+        )
+        # Legacy name: historically matched failed-breakout-down (long trap) only.
+        new_cols[f"pa_failed_breakout_age_{nn}"] = new_cols[
+            f"pa_failed_breakout_down_age_{nn}"
+        ].copy()
         pull_streak = np.zeros(n_b, dtype=np.int32)
         cur_sid_pb = -9_999_999_999
         st_pull = 0

@@ -16,6 +16,9 @@
 | Strategy config validation | `test_strategy_config_validation.py` |
 | Context key | `test_strategy_context_keys.py` |
 | PA context cache scope | `test_pa_context_key_scope.py` |
+| Strategy helper namespace (`common.pa` + shims) | `test_strategy_helper_namespace.py` |
+| PA swing side-specific ages | `test_pa_swing_side_specific_primitives.py` |
+| PA Brooks feature registry / feature_key | `test_pa_brooks_feature_registry.py` |
 | PA Brooks bar primitives | `test_pa_bar_primitives.py` |
 | PA Brooks swing primitives | `test_pa_swing_primitives.py` |
 | PA regime / router features | `test_pa_regime_router_features.py` |
