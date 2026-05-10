@@ -1,0 +1,46 @@
+name: layer2_sweep_qqq_v2_completion_tuned_v2_high_trade_2023_2024
+base_config: src/combiner/configs/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml
+
+grid:
+  candidate_set:
+    - stoch_macd_pair
+    - stoch_macd_pair_top_candidates
+    - oscillator_momentum_trend
+    - completion_no_reclaim
+    - completion_no_prior_close
+    - trend_only_pair
+    - macd_core
+    - atr_core
+    - stochastic_only
+    - cci_only_diagnostic
+
+  top_per_strategy:
+    - 1
+    - 2
+
+  system.max_trades_per_day:
+    - 1
+    - 2
+    - 3
+
+  system.daily_max_loss_r:
+    - -1.5
+    - -2.0
+
+  system.cooldown_after_loss_minutes:
+    - 0
+    - 15
+
+  conflict.priority_policy:
+    - metadata_priority
+    - score_adjusted_priority
+
+fixed:
+  execution.commission_per_trade: 0.0
+  execution.slippage_per_share: 0.01
+  execution.eod_exit_minute: 389
+  execution.no_new_after_minute: 360
+  execution.recompute_target_from_entry: true
+  execution.min_risk_per_share: 0.03
+  system.max_open_positions: 1
+  system.cooldown_scope: session

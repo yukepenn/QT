@@ -1,0 +1,101 @@
+name: layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024
+
+candidate_root: src/research/results/layer1_v2_completion_qqq_2023_2024/selected_candidates
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -1.5
+  cooldown_after_loss_minutes: 0
+  cooldown_scope: session
+
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+  opposite_direction_policy: ""
+
+candidate_sets:
+  stoch_macd_pair:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - stochastic_oversold_cross
+      - macd_momentum_turn
+
+  stoch_macd_pair_top_candidates:
+    include_warnings: false
+    max_per_strategy: 2
+    strategies:
+      - stochastic_oversold_cross
+      - macd_momentum_turn
+
+  oscillator_momentum_trend:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - stochastic_oversold_cross
+      - cci_extreme_snapback
+      - macd_momentum_turn
+      - supertrend_atr_flip
+
+  completion_no_reclaim:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - stochastic_oversold_cross
+      - cci_extreme_snapback
+      - macd_momentum_turn
+      - supertrend_atr_flip
+
+  completion_no_prior_close:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - stochastic_oversold_cross
+      - cci_extreme_snapback
+      - macd_momentum_turn
+      - supertrend_atr_flip
+      - multi_day_level_trap
+
+  trend_only_pair:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - macd_momentum_turn
+      - supertrend_atr_flip
+
+  macd_core:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - macd_momentum_turn
+
+  atr_core:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - supertrend_atr_flip
+
+  stochastic_only:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - stochastic_oversold_cross
+
+  cci_only_diagnostic:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - cci_extreme_snapback

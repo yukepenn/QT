@@ -1,0 +1,33 @@
+system_tag,candidate_set,top_per_strategy,trades,total_r_0_01,pf_0_01,maxdd_0_01,total_r_0_02,pf_0_02,maxdd_0_02,total_r_0_03,pf_0_03,maxdd_0_03,notes
+uq49_combo9_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq50_combo10_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq51_combo13_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq52_combo14_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq53_combo17_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq54_combo18_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq55_combo21_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq56_combo22_stoch_macd_pair_tp1,stoch_macd_pair,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq57_combo57_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq58_combo58_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq59_combo61_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq60_combo62_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,62.17062504680539,1.1818694813460138,-15.863398199152227,-24.05541858143947,1.016860411872815,-45.825906294974175,-82.0996572660748,0.9116187141539444,-97.09762665161558,
+uq61_combo65_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,,,,,,,,,,missing slip 0.01 for combo_id 65; missing slip 0.02 for combo_id 65; missing slip 0.03 for combo_id 65
+uq62_combo66_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,,,,,,,,,,missing slip 0.01 for combo_id 66; missing slip 0.02 for combo_id 66; missing slip 0.03 for combo_id 66
+uq63_combo69_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,,,,,,,,,,missing slip 0.01 for combo_id 69; missing slip 0.02 for combo_id 69; missing slip 0.03 for combo_id 69
+uq64_combo70_stoch_macd_pair_top_candidates_tp1,stoch_macd_pair_top_candidates,1,906,,,,,,,,,,missing slip 0.01 for combo_id 70; missing slip 0.02 for combo_id 70; missing slip 0.03 for combo_id 70
+uq65_combo33_stoch_macd_pair_tp2,stoch_macd_pair,2,963,,,,,,,,,,missing slip 0.01 for combo_id 33; missing slip 0.02 for combo_id 33; missing slip 0.03 for combo_id 33
+uq66_combo34_stoch_macd_pair_tp2,stoch_macd_pair,2,963,,,,,,,,,,missing slip 0.01 for combo_id 34; missing slip 0.02 for combo_id 34; missing slip 0.03 for combo_id 34
+uq67_combo37_stoch_macd_pair_tp2,stoch_macd_pair,2,963,,,,,,,,,,missing slip 0.01 for combo_id 37; missing slip 0.02 for combo_id 37; missing slip 0.03 for combo_id 37
+uq68_combo38_stoch_macd_pair_tp2,stoch_macd_pair,2,963,,,,,,,,,,missing slip 0.01 for combo_id 38; missing slip 0.02 for combo_id 38; missing slip 0.03 for combo_id 38
+uq69_combo81_stoch_macd_pair_top_candidates_tp2,stoch_macd_pair_top_candidates,2,963,,,,,,,,,,missing slip 0.01 for combo_id 81; missing slip 0.02 for combo_id 81; missing slip 0.03 for combo_id 81
+uq70_combo82_stoch_macd_pair_top_candidates_tp2,stoch_macd_pair_top_candidates,2,963,,,,,,,,,,missing slip 0.01 for combo_id 82; missing slip 0.02 for combo_id 82; missing slip 0.03 for combo_id 82
+uq71_combo85_stoch_macd_pair_top_candidates_tp2,stoch_macd_pair_top_candidates,2,963,,,,,,,,,,missing slip 0.01 for combo_id 85; missing slip 0.02 for combo_id 85; missing slip 0.03 for combo_id 85
+uq72_combo86_stoch_macd_pair_top_candidates_tp2,stoch_macd_pair_top_candidates,2,963,,,,,,,,,,missing slip 0.01 for combo_id 86; missing slip 0.02 for combo_id 86; missing slip 0.03 for combo_id 86
+uq73_combo1_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 1; missing slip 0.02 for combo_id 1; missing slip 0.03 for combo_id 1
+uq74_combo2_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 2; missing slip 0.02 for combo_id 2; missing slip 0.03 for combo_id 2
+uq75_combo3_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 3; missing slip 0.02 for combo_id 3; missing slip 0.03 for combo_id 3
+uq76_combo4_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 4; missing slip 0.02 for combo_id 4; missing slip 0.03 for combo_id 4
+uq77_combo5_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 5; missing slip 0.02 for combo_id 5; missing slip 0.03 for combo_id 5
+uq78_combo6_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 6; missing slip 0.02 for combo_id 6; missing slip 0.03 for combo_id 6
+uq79_combo7_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 7; missing slip 0.02 for combo_id 7; missing slip 0.03 for combo_id 7
+uq80_combo8_stoch_macd_pair_tp1,stoch_macd_pair,1,502,,,,,,,,,,missing slip 0.01 for combo_id 8; missing slip 0.02 for combo_id 8; missing slip 0.03 for combo_id 8

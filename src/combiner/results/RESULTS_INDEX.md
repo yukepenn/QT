@@ -50,6 +50,12 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **key summaries**: `layer2_v2_completion_tuned_v1_summary.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `cost_stress/cost_stress_summary.md`, `diagnostics/diagnostics_summary.md`, `diagnostics_completion_no_prior_close/`, `diagnostics_oscillator_momentum_trend/`, `candidate_precompute_profile_summary.{csv,md}` (root)
   - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
 
+- **`layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/`**
+  - **status**: active **v2 completion tuned v2 high-trade** (QQQ 2023–2024)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **key summaries**: `layer2_v2_completion_tuned_v2_high_trade_summary.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `rank_high_trade_systems.md`, `high_trade_cost_review.md`, `cost_stress/cost_stress_summary.md`, `candidate_precompute_profile_summary.{csv,md}` (root)
+  - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
+
 ## B. Reference / historical
 
 - **`layer2_qqq_2023_20260430_posthardening_strict_v1/`**, **`layer2_qqq_2023_20260430_posthardening_relaxed_v1/`**

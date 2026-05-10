@@ -63,7 +63,11 @@ This index classifies **result roots** without moving or deleting them.
   - **status**: Layer 1 **completion** QQQ 2023–2024 (nine strategies; full focused grids; manifest + **30** selected YAMLs)
   - **window**: 2023‑01‑01 → 2024‑12‑31
   - **purpose**: economics + candidate library for v2 completion track; summary `layer1_v2_completion_summary.md`
-  - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md` (run plan `reduced_layer2_v2_completion_run_plan.md`; design `reduced_layer2_v2_completion_design.md`); **tuned v1** `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/layer2_v2_completion_tuned_v1_summary.md` (plan `layer2_v2_completion_tuning_plan.md`; toxic-path diagnosis `layer2_v2_completion_toxic_path_diagnosis.md`)
+  - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md` (run plan `reduced_layer2_v2_completion_run_plan.md`; design `reduced_layer2_v2_completion_design.md`); **tuned v1** `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/layer2_v2_completion_tuned_v1_summary.md` (plan `layer2_v2_completion_tuning_plan.md`; toxic-path diagnosis `layer2_v2_completion_toxic_path_diagnosis.md`); **tuned v2 high-trade** `src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/layer2_v2_completion_tuned_v2_high_trade_summary.md` (plan `layer2_v2_completion_tuned_v2_high_trade_plan.md`)
+  - **keep**: yes
+
+- **`layer2_v2_completion_tuned_v2_high_trade_plan.md`**
+  - **status**: tuned v2 high-trade rerank plan + gates
   - **keep**: yes
 
 ## B. Reference / engineering docs

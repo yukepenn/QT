@@ -1,5 +1,12 @@
 ### [Unreleased] – 2026-05-09
 
+- Feat(combiner): **Layer 2 v2 completion tuned v2 high-trade (QQQ 2023–2024)** — `layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml`, `layer2_sweep_qqq_v2_completion_tuned_v2_high_trade_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/` (16 fixed runs, **480-combo** sweep postprocess, `rank_high_trade_systems.*`, `high_trade_cost_review.*`). Summary `layer2_v2_completion_tuned_v2_high_trade_summary.md` (**`TUNE_COMPLETION_GRIDS_AGAIN`**). **mini-WFO v4/v5 + full WFO not run.**
+- Feat(combiner): `postprocess.py` — `--min-trades-rank` / `--rank-high-trade-top` for generic **`rank_high_trade_systems`** leaderboard from `top_unique_systems.csv`.
+- Feat(research): `high_trade_layer2_cost_review.py` — pivot `cost_stress_results.csv` onto high-trade `top_unique` rows.
+- Test(combiner): `test_combiner_postprocess_high_trade_rank.py`.
+- Docs(research): `layer2_v2_completion_tuned_v2_high_trade_plan.md`.
+- Chore(gitignore): force-include tuned v2 high-trade curated Layer 2 paths.
+- Docs: `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `CONFIG_INDEX.md`, both `RESULTS_INDEX.md`, `curated_artifact_sanity.py` (+ regenerated `curated_artifact_sanity_check.md`).
 - Feat(combiner): **Layer 2 v2 completion tuned v1 (QQQ 2023–2024)** — `layer2_qqq_v2_completion_tuned_v1_2023_2024.yaml`, `layer2_sweep_qqq_v2_completion_tuned_v1_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024/` (diagnostics + snapshots, fixed rollup, **416-combo** sweep postprocess). Summary `layer2_v2_completion_tuned_v1_summary.md` (**`TUNE_COMPLETION_GRIDS_AGAIN`**). **mini-WFO v4/v5 + full WFO not run.**
 - Docs(research): `layer2_v2_completion_tuning_plan.md`, `layer2_v2_completion_toxic_path_diagnosis.{md,csv}`.
 - Chore(gitignore): force-include tuned v1 completion Layer 2 curated paths under `layer2_qqq_v2_completion_tuned_v1_2023_2024/`.

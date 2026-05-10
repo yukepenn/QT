@@ -908,6 +908,69 @@ def _add_total_r_over_dd(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def write_rank_high_trade_systems(
+    systems_df: pd.DataFrame,
+    output_root: Path,
+    *,
+    min_trades_rank: int,
+    rank_high_trade_top: int,
+) -> pd.DataFrame:
+    """Filter config-unique systems by trade count and rank for high-activity research views."""
+    output_root.mkdir(parents=True, exist_ok=True)
+    if "trades" not in systems_df.columns or len(systems_df) == 0:
+        systems_df.iloc[0:0].to_csv(output_root / "rank_high_trade_systems.csv", index=False)
+        (output_root / "rank_high_trade_systems.md").write_text(
+            "# High-trade systems rank\n\n*No rows or missing `trades` column.*\n", encoding="utf-8"
+        )
+        return pd.DataFrame()
+
+    sub = systems_df[systems_df["trades"].fillna(0).astype(float) >= float(min_trades_rank)].copy()
+    if len(sub) == 0:
+        sub.to_csv(output_root / "rank_high_trade_systems.csv", index=False)
+        (output_root / "rank_high_trade_systems.md").write_text(
+            f"# High-trade systems rank\n\n*No systems with trades >= {min_trades_rank}.*\n",
+            encoding="utf-8",
+        )
+        return sub
+
+    sort_cols: list[str] = ["total_r"]
+    ascending: list[bool] = [False]
+    if "profit_factor_r" in sub.columns and sub["profit_factor_r"].notna().any():
+        sort_cols.append("profit_factor_r")
+        ascending.append(False)
+    elif "profit_factor" in sub.columns:
+        sort_cols.append("profit_factor")
+        ascending.append(False)
+    if "max_drawdown_r" in sub.columns:
+        sort_cols.append("max_drawdown_r")
+        ascending.append(False)
+
+    n_after_min_trades = len(sub)
+    sub = sub.sort_values(by=sort_cols, ascending=ascending, na_position="last").reset_index(drop=True)
+    sub = sub.head(int(rank_high_trade_top)).copy()
+    sub.insert(0, "high_trade_rank", range(1, len(sub) + 1))
+
+    out_root = output_root
+    out_root.mkdir(parents=True, exist_ok=True)
+    sub.to_csv(out_root / "rank_high_trade_systems.csv", index=False)
+    md = [
+        "# High-trade systems rank",
+        "",
+        f"- Source rows: **{len(systems_df)}**",
+        f"- After trades >= **{min_trades_rank}**: **{n_after_min_trades}** (showing top **{len(sub)}**, cap **{rank_high_trade_top}**)",
+        f"- Sort: `{', '.join(sort_cols)}` (descending)",
+        "",
+    ]
+    disp_cols = [c for c in ["high_trade_rank", "combo_id", "candidate_set", "top_per_strategy", "max_trades_per_day", "trades", "total_r", "profit_factor", "profit_factor_r", "max_drawdown_r", "combiner_score"] if c in sub.columns]
+    try:
+        md.append(sub[disp_cols].to_markdown(index=False))
+    except Exception:
+        md.append(sub[disp_cols].to_string(index=False))
+    md.append("")
+    (out_root / "rank_high_trade_systems.md").write_text("\n".join(md), encoding="utf-8")
+    return sub
+
+
 def write_rank_leaderboards(sweep_results: pd.DataFrame, output_root: Path, *, min_trades_cost_rank: int) -> None:
     df = _add_total_r_over_dd(sweep_results)
     root = output_root
@@ -1136,6 +1199,18 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--cost-robust-max-dd-r", type=float, default=-100.0)
     p.add_argument("--cost-robust-max-median-cost-r", type=float, default=0.50)
     p.add_argument("--compare-fixed-runs", type=Path, default=None, help="Path to fixed_run_summary.csv for sweep comparison.")
+    p.add_argument(
+        "--min-trades-rank",
+        type=int,
+        default=0,
+        help="With --rank-high-trade-top > 0, write rank_high_trade_systems.* from top_unique (trades >= this).",
+    )
+    p.add_argument(
+        "--rank-high-trade-top",
+        type=int,
+        default=0,
+        help="Max rows for rank_high_trade_systems.* (0 = skip).",
+    )
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -1241,6 +1316,21 @@ def main(argv: list[str] | None = None) -> int:
         max_dd_r=float(args.cost_robust_max_dd_r),
         max_median_cost_r=float(args.cost_robust_max_median_cost_r),
     )
+
+    if int(args.min_trades_rank) > 0 and int(args.rank_high_trade_top) > 0:
+        df_ht: pd.DataFrame | None = unique_df
+        if df_ht is None or len(df_ht) == 0:
+            tu_path = out_root / "top_unique_systems.csv"
+            if tu_path.exists():
+                df_ht = pd.read_csv(tu_path)
+        if df_ht is not None and len(df_ht):
+            write_rank_high_trade_systems(
+                df_ht,
+                out_root,
+                min_trades_rank=int(args.min_trades_rank),
+                rank_high_trade_top=int(args.rank_high_trade_top),
+            )
+            print(f"[postprocess] rank_high_trade -> {out_root}", flush=True)
 
     if args.compare_fixed_runs and sweep_dir is not None and sweep_results is not None:
         cfixed = _abs(args.compare_fixed_runs)

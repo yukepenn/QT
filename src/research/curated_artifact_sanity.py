@@ -34,6 +34,9 @@ def build_checks() -> list[Check]:
         Path("src/combiner/results/layer2_qqq_v2_completion_tuned_v1_2023_2024"),
     ]
 
+    layer2_minimal_roots = [
+        Path("src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024"),
+    ]
     checks: list[Check] = []
 
     for r in layer1_roots:
@@ -59,6 +62,13 @@ def build_checks() -> list[Check]:
         checks.append(Check(r, "diagnostics/candidate_signal_summary.csv", _exists(d / "candidate_signal_summary.csv")))
         checks.append(Check(r, "diagnostics/candidate_overlap_matrix.csv", _exists(d / "candidate_overlap_matrix.csv")))
         checks.append(Check(r, "diagnostics/candidate_conflict_summary.csv", _exists(d / "candidate_conflict_summary.csv")))
+
+    for r in layer2_minimal_roots:
+        checks.append(Check(r, "dir", r.is_dir()))
+        checks.append(Check(r, "top_unique_systems.csv", _exists(r / "top_unique_systems.csv")))
+        checks.append(Check(r, "fixed_run_summary.csv", _exists(r / "fixed_run_summary.csv")))
+        checks.append(Check(r, "cost_stress/cost_stress_summary.md", _exists(r / "cost_stress" / "cost_stress_summary.md")))
+        checks.append(Check(r, "layer2_v2_completion_tuned_v2_high_trade_summary.md", _exists(r / "layer2_v2_completion_tuned_v2_high_trade_summary.md")))
 
     return checks
 
