@@ -6,9 +6,9 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before work | `3f88882` — Feat(research): PA Batch B/C diversity v3 |
-| New commit hash | `pending-before-commit` (replace after push if mirroring from GitHub) |
+| New commit hash | `56aed10` |
 | Commit message | `Repair PA Batch B/C candidate diversity` |
-| Push status | Run `git push` after commit; confirm on remote `main` |
+| Push status | **Pushed** to `origin/main` (`3f88882..56aed10`) |
 | Working tree status | Curated PA B/C repair + Layer 2 repaired v3 summaries staged; heavy sweep dirs (`sweep_*`, `top_runs/`, raw `candidate_precompute_profile.csv`, `feature_store_stats.json` under repaired root) remain **local / untracked** |
 | Known untracked local-only artifacts | `src/strategies/testing_parameters_results/**`; various `**/cost_stress/candidate_precompute_profile.csv`, `**/feature_store_stats.json`; `pa_gate_rows.jsonl`; other Layer 2 precompute dumps from prior runs |
 
