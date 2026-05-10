@@ -46,7 +46,12 @@ def long_stop_target(
     range_high: float,
     upper_third: float,
 ) -> tuple[float, float, int, float] | None:
-    """Return (stop, target, target_mode_code, target_r_multiple) or None if invalid long geometry."""
+    """Return (stop, target, target_mode_code, target_r_multiple) or None if invalid long geometry.
+
+    Structural modes such as ``range_mid``, ``range_high``, ``vwap``, ``prior_high``, etc. are
+    converted at **signal-bar close** into an **effective fixed-R multiple** (see ``TM_FIXED_R`` /
+    ``fast.py``). They do **not** emit ``TM_FIXED_PX`` today; see ``pa_structural_target_semantics.md``.
+    """
     if stop_mode == "range_low":
         sl = float(range_low)
     elif stop_mode == "channel_low":

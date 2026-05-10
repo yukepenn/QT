@@ -5,10 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+import math
+
 import numpy as np
 import pandas as pd
 from numba import njit
 
+from src.backtest.execution import validate_trade_setup
 from src.combiner.candidate import Candidate
 
 # Rejection reason codes (signal evaluation)
@@ -881,49 +884,53 @@ def simulate_combiner_legacy_logs(
                     ent_price = ent_raw + slip
                 else:
                     ent_price = ent_raw - slip
-                act_risk = abs(ent_price - stop_px)
                 tm = int(tmc_m[best, i])
                 tr = float(tr_m[best, i])
                 tprev = float(tp_m[best, i])
-                tgt_px = 0.0
-                bad = act_risk <= 0.0 or tm not in (1, 2)
-                if not bad:
-                    if tm == 1:
-                        if int(recompute_target[best]) != 0:
-                            tgt_px = (
-                                ent_price + tr * act_risk
-                                if sd == 1
-                                else ent_price - tr * act_risk
-                            )
-                        else:
-                            tgt_px = tprev
-                    else:
-                        tgt_px = tprev
+                rc = int(recompute_target[best])
 
                 mr = (
                     float(min_risk_per_candidate[best])
                     if best < len(min_risk_per_candidate)
                     else 0.0
                 )
-                risk_too_small = (not bad) and mr > 0.0 and act_risk < mr
-                if bad or risk_too_small:
-                    if risk_too_small:
-                        best_id0 = spb.candidate_id
-                        log_sig(i, best, False, "risk_too_small", "", open_cid)
-                        for cj in eligible:
-                            if cj != best:
-                                log_sig(
-                                    i,
-                                    cj,
-                                    False,
-                                    "lower_priority_conflict",
-                                    best_id0,
-                                    open_cid,
-                                )
-                    else:
-                        log_sig(i, best, False, "invalid_target_or_risk", "", open_cid)
+
+                if tm == 1:
+                    tmode = "fixed_r"
+                elif tm == 2:
+                    tmode = "fixed_price"
+                else:
+                    log_sig(i, best, False, "invalid_target_mode", "", open_cid)
                     i += 1
                     continue
+
+                ok_v, reason_v, act_risk, resolved_tgt = validate_trade_setup(
+                    side=sd,
+                    entry=ent_price,
+                    stop=stop_px,
+                    target_mode=tmode,
+                    target_preview=tprev,
+                    target_r=tr if tm == 1 else None,
+                    min_risk_per_share=mr,
+                )
+
+                tgt_px = 0.0
+                if not ok_v:
+                    log_sig(i, best, False, reason_v, "", open_cid)
+                    i += 1
+                    continue
+
+                if tm == 1:
+                    if rc != 0:
+                        tgt_px = float(resolved_tgt)
+                    else:
+                        tgt_px = tprev
+                        if not math.isfinite(tgt_px):
+                            log_sig(i, best, False, "invalid_price_nan", "", open_cid)
+                            i += 1
+                            continue
+                else:
+                    tgt_px = float(resolved_tgt)
 
                 best_id = spb.candidate_id
                 for cj in eligible:

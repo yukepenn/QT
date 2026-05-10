@@ -93,7 +93,13 @@ def add_pa_swing_features(
         new_cols[f"pa_breakout_up_{nn}"] = ((c > rh) | (h > rh)).astype(np.int8)
         new_cols[f"pa_breakout_down_{nn}"] = ((c < rl) | (lo < rl)).astype(np.int8)
 
-        outside_prev = (h.shift(1) > rh.shift(1)) | (lo.shift(1) < rl.shift(1))
+        # Session-scoped prior bar vs prior-bar range anchor (no cross-session leak).
+        prev_h = g["high"].shift(1)
+        prev_lo = g["low"].shift(1)
+        sd_series = out["session_date"]
+        prev_rh = rh.groupby(sd_series, sort=False).shift(1)
+        prev_rl = rl.groupby(sd_series, sort=False).shift(1)
+        outside_prev = (prev_h > prev_rh) | (prev_lo < prev_rl)
         inside_now = (c >= rl) & (c <= rh)
         new_cols[f"pa_close_back_inside_{nn}"] = (
             inside_now & outside_prev.fillna(False)

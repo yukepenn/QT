@@ -264,5 +264,10 @@ class PaBroadChannelZoneStrategy(BaseStrategy):
             str(risk.get("stop_mode", "range_low")),
             str(risk.get("target_mode", "fixed_r")),
             float(risk.get("target_r", 1.5)),
+            int(sig.get("entry_start_minute", 60)),
+            int(sig.get("entry_end_minute", 270)),
+            float(risk.get("atr_buffer_mult", 0.35)),
+            int(risk.get("max_trades_per_day", 1)),
+            nz(risk.get("min_risk_per_share")),
             nz((config.get("backtest") or {}).get("max_hold_minutes")),
         )
