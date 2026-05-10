@@ -1,0 +1,59 @@
+name: layer2_qqq_pa_batch_a_tuned_2023_2024_v1
+
+candidate_root: src/research/results/layer1_pa_batch_a_tuned_qqq_2023_2024_v1/selected_candidates
+
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+
+system:
+  max_open_positions: 1
+  max_trades_per_day: 1
+  daily_max_loss_r: -1.5
+  cooldown_after_loss_minutes: 0
+  cooldown_scope: session
+
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+    - candidate_score
+    - candidate_rank
+    - candidate_index
+  opposite_direction_policy: ""
+
+candidate_sets:
+  pa_failed_range_trap:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_failed_range_breakout_trap
+
+  pa_trading_range:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_trading_range_bls_hs
+
+  pa_batch_a_core:
+    include_warnings: false
+    max_per_strategy: 5
+    strategies:
+      - pa_failed_range_breakout_trap
+      - pa_trading_range_bls_hs
+
+  pa_failed_top1_diagnostic:
+    include_warnings: false
+    max_per_strategy: 1
+    strategies:
+      - pa_failed_range_breakout_trap
+
+  pa_trading_top1_diagnostic:
+    include_warnings: false
+    max_per_strategy: 1
+    strategies:
+      - pa_trading_range_bls_hs

@@ -99,6 +99,17 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **grid**: **480** combos
   - **results**: `src/combiner/results/layer2_qqq_v2_completion_tuned_v2_high_trade_2023_2024/layer2_v2_completion_tuned_v2_high_trade_summary.md`
 
+### PA Batch A — tuned v1 reduced Layer 2 (QQQ 2023–2024)
+
+- **`layer2_qqq_pa_batch_a_tuned_2023_2024_v1.yaml`**
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **candidate_root**: `src/research/results/layer1_pa_batch_a_tuned_qqq_2023_2024_v1/selected_candidates`
+  - **purpose**: PA-only combiner evaluation (trading-range + failed-trap), research gates (cost/behavior/daily trade #)
+- **`layer2_sweep_qqq_pa_batch_a_tuned_2023_2024_v1.yaml`**
+  - **base_config**: YAML above
+  - **grid**: **48** combos
+  - **results**: `src/combiner/results/layer2_qqq_pa_batch_a_tuned_2023_2024_v1/layer2_pa_batch_a_tuned_summary.md`
+
 **Batch 1 tuned v2 squeeze note:** `bollinger_squeeze_breakout_tuned_v2.yaml` exists for a stricter squeeze grid; **no** Layer 2 YAMLs were added in that phase because Layer 1 candidate export was **empty** (see `strategy_library_v2_batch1_tuning_v2_summary.md`).
 
 ## C. Frozen configs (Layer 3 smoke / fixed-system evaluation only)

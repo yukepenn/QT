@@ -2,7 +2,7 @@
 
 This index classifies committed Layer 2 result roots without deleting them.
 
-**Note:** PA Batch A (`pa_*` plugins) has **no** Layer 2 combiner root yet — see `src/research/results/pa_batch_a_implementation_summary.md`.
+**Note:** PA Batch A (`pa_*` plugins) now has a PA-only reduced Layer 2 root: `layer2_qqq_pa_batch_a_tuned_2023_2024_v1/` (QQQ 2023–2024). See `src/research/results/pa_batch_a_implementation_summary.md` and the Layer 1 tuned root `layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`.
 
 ## A. Active / current
 
@@ -56,6 +56,12 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **status**: active **v2 completion tuned v2 high-trade** (QQQ 2023–2024)
   - **window**: 2023‑01‑01 → 2024‑12‑31
   - **key summaries**: `layer2_v2_completion_tuned_v2_high_trade_summary.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `rank_high_trade_systems.md`, `high_trade_cost_review.md`, `cost_stress/cost_stress_summary.md`, `candidate_precompute_profile_summary.{csv,md}` (root)
+  - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
+
+- **`layer2_qqq_pa_batch_a_tuned_2023_2024_v1/`**
+  - **status**: active PA-only reduced Layer 2 (tuned v1; research evaluation)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **key summaries**: `layer2_pa_batch_a_tuned_summary.md`, `fixed_run_summary.md`, `top_unique_systems.md`, `behavior_unique_systems.md`, `cost_stress/cost_stress_summary.md`, `diagnostics/*`
   - **keep**: yes (heavy `sweep_*`, `run_*`, `fixed_runs/`, `top_runs/` remain gitignored)
 
 ## B. Reference / historical

@@ -1,0 +1,11 @@
+# Candidate precompute profile summary
+
+Source: `candidate_precompute_profile.csv`
+
+```
+                     strategy feature_key_short strategy_context_key_short  candidate_count  n_feature_cache_hits  n_feature_cache_misses  n_context_cache_hits  n_context_cache_misses  sum_total_sec  mean_total_sec  max_total_sec  sum_feature_sec  sum_context_sec  sum_signal_sec  n_signal_cache_hits  n_signal_cache_misses  sum_signal_cache_load_sec  sum_signal_cache_write_sec  total_signals  total_long_signals  total_short_signals
+pa_failed_range_breakout_trap      1b8746fac1c3               4faa59f0d634                2                     1                       1                     1                       1        10.0980        5.049000         9.9019           8.9345           0.1263          0.3760                    0                      2                        0.0                         0.0            440                 440                    0
+pa_failed_range_breakout_trap      1b8746fac1c3               e5cd32447f39                3                     3                       0                     2                       1         0.6806        0.226867         0.3041           0.0000           0.1144          0.5454                    0                      3                        0.0                         0.0            660                 660                    0
+      pa_trading_range_bls_hs      1b8746fac1c3               c79699535d01                1                     1                       0                     0                       1         0.1803        0.180300         0.1803           0.0000           0.1277          0.0453                    0                      1                        0.0                         0.0            101                 101                    0
+      pa_trading_range_bls_hs      1b8746fac1c3               f54af80f2d57                4                     4                       0                     3                       1         0.3221        0.080525         0.1743           0.0000           0.1232          0.1678                    0                      4                        0.0                         0.0            252                 252                    0
+```
