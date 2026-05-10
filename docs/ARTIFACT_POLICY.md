@@ -42,6 +42,7 @@ Commit curated, small artifacts that summarize experiments:
   - summary MDs (e.g. `layer1_*_summary.md`)
   - Strategy Library v2 **completion** research pack (nine plugins; wiring smokes only): `strategy_library_v2_completion_summary.md`, `strategy_library_v2_completion_{health,audit,feature_audit,repo_inventory,implementation_plan}.{md,csv}` (CSV companions where listed)
   - Strategy Library v2 **completion Layer 1** (QQQ 2023–2024): `layer1_v2_completion_qqq_2023_2024/` — `sweep_manifest.*`, `selected_candidates/`, `layer1_v2_completion_summary.md`, `candidate_fast_context_check.*` (sweep folders under `testing_parameters_results/` stay gitignored)
+  - **PA Batch A** (four PA plugins; Jan smokes only): curated summaries under `src/research/results/pa_batch_a_*.{md,csv}` — formal Layer 1 root `layer1_pa_batch_a_qqq_2023_2024/` pending user approval; `src/strategies/testing_parameters_results/**` remains **uncommitted**
   - Strategy Library v2 Batch 1 research pack:
     - `strategy_library_v2_batch1_plan.md`, `strategy_library_v2_batch1_audit.{md,csv}`, `strategy_library_v2_batch1_grid_review.{md,csv}`, `strategy_library_v2_batch1_health.{md,csv}`, `strategy_library_v2_batch1_summary.md`
     - `reduced_layer2_v2_batch1_design.md` (Batch 1 Layer 2 rationale + links to configs)

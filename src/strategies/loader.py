@@ -35,6 +35,10 @@ from src.strategies.strategy.orb_continuation import ORBContinuationStrategy
 from src.strategies.strategy.orb_retest_continuation import OrbRetestContinuationStrategy
 from src.strategies.strategy.prior_close_reclaim import PriorCloseReclaimStrategy
 from src.strategies.strategy.prior_day_level_trap import PriorDayLevelTrapStrategy
+from src.strategies.strategy.pa_failed_range_breakout_trap import PaFailedRangeBreakoutTrapStrategy
+from src.strategies.strategy.pa_mtr_reversal import PaMtrReversalStrategy
+from src.strategies.strategy.pa_tight_channel_pullback import PaTightChannelPullbackStrategy
+from src.strategies.strategy.pa_trading_range_bls_hs import PaTradingRangeBlsHsStrategy
 from src.strategies.strategy.rsi_failure_swing import RsiFailureSwingStrategy
 from src.strategies.strategy.sma20_reclaim_reject import Sma20ReclaimRejectStrategy
 from src.strategies.strategy.stochastic_oversold_cross import StochasticOversoldCrossStrategy
@@ -78,6 +82,10 @@ _STRATEGY_BY_NAME: dict[str, type[BaseStrategy]] = {
     "large_candle_failure": LargeCandleFailureStrategy,
     "multi_day_level_trap": MultiDayLevelTrapStrategy,
     "prior_close_reclaim": PriorCloseReclaimStrategy,
+    "pa_trading_range_bls_hs": PaTradingRangeBlsHsStrategy,
+    "pa_failed_range_breakout_trap": PaFailedRangeBreakoutTrapStrategy,
+    "pa_tight_channel_pullback": PaTightChannelPullbackStrategy,
+    "pa_mtr_reversal": PaMtrReversalStrategy,
 }
 
 

@@ -1,0 +1,50 @@
+strategy: pa_failed_range_breakout_trap
+
+features:
+  orb_open_minutes: 15
+  vwap_bands: [1.0, 2.0]
+  vol_windows: [5, 15, 20, 30]
+  price_action_windows: [3, 5, 10, 20, 30, 60]
+  volume_windows: [20, 30]
+  indicators:
+    ema_windows: []
+    sma_windows: []
+    rsi_windows: []
+    macd_tuples: []
+    stochastic_tuples: []
+    cci_windows: []
+    adx_windows: []
+    supertrend_tuples: []
+  channels: {}
+  regime:
+    windows: [20, 30, 60]
+  pa:
+    swing_windows: [10, 20, 30, 60]
+    regime_windows: [20, 30, 60]
+    atr_window: 20
+  pa_range_window: 60
+
+signal:
+  side: long_only
+  atr_column: atr_like_20
+  entry_start_minute: 60
+  entry_end_minute: 270
+  fail_window_bars: 4
+  require_tr_regime: false
+  tr_regime_max: 0.45
+
+risk:
+  stop_mode: failed_extreme
+  target_mode: fixed_r
+  target_r: 1.5
+  atr_buffer_mult: 0.35
+  min_risk_per_share: 0.03
+  max_trades_per_day: 1
+
+backtest:
+  eod_exit_minute: 389
+  quantity: 1.0
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  recompute_target_from_entry: true
+  max_hold_minutes: 60

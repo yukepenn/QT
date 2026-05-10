@@ -187,3 +187,39 @@ cci_extreme_snapback:
   default_active_start_minute: 45
   default_active_end_minute: 330
   notes: "v2_completion long-only MVP; CCI extreme snapback."
+
+pa_trading_range_bls_hs:
+  family: pa_trading_range
+  conflict_group: QQQ_directional
+  default_priority: 48
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: high
+  notes: "PA Batch A — trading-range buy-low / sell-high; prior-exclusive range + regime scores."
+
+pa_failed_range_breakout_trap:
+  family: pa_range_breakout_failure
+  conflict_group: QQQ_directional
+  default_priority: 47
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: medium_high
+  notes: "PA Batch A — failed rolling-range breakdown spring; not ORB."
+
+pa_tight_channel_pullback:
+  family: pa_channel_pullback
+  conflict_group: QQQ_directional
+  default_priority: 49
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: medium
+  notes: "PA Batch A — tight bull channel pullback; not VWAP-only."
+
+pa_mtr_reversal:
+  family: pa_major_trend_reversal
+  conflict_group: QQQ_directional
+  default_priority: 46
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+  cost_sensitivity: medium
+  notes: "PA Batch A — coarse bear-to-bull reversal proxy; higher target_r default."

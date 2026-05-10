@@ -159,6 +159,28 @@ FEATURE_COLUMNS = {
         "rolling_low_60_prior",
         "rolling_range_60_prior",
         "range_width_60",
+        "body_pct",
+        "upper_wick_pct",
+        "lower_wick_pct",
+        "bull_bar",
+        "bear_bar",
+        "doji_bar",
+        "inside_bar",
+        "outside_bar",
+        "close_near_high",
+        "close_near_low",
+        "bull_reversal_bar",
+        "bear_reversal_bar",
+        "consecutive_green_bars",
+        "consecutive_red_bars",
+        "consecutive_bull_closes_2",
+        "consecutive_bull_closes_3",
+        "consecutive_bull_closes_4",
+        "consecutive_bear_closes_2",
+        "consecutive_bear_closes_3",
+        "consecutive_bear_closes_4",
+        "overlap_bar",
+        "tail_bar",
     ],
     "volume": [
         "volume_ma_20_prior",
@@ -186,9 +208,10 @@ FEATURE_COLUMNS = {
     ],
 }
 
-from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, RegimeFeatureConfig
+from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, PaFeatureConfig, RegimeFeatureConfig
 from src.features.channels import channel_column_names
 from src.features.indicators import indicator_column_names
+from src.features.pa_swings import pa_swing_column_names
 from src.features.regime import regime_column_names
 
 _REGISTRY_INDICATORS = IndicatorsFeatureConfig(
@@ -208,10 +231,21 @@ _REGISTRY_CHANNELS = ChannelsFeatureConfig(
     donchian_windows=(20, 30, 60),
 )
 _REGISTRY_REGIME = RegimeFeatureConfig(windows=(30, 60))
+_REGISTRY_PA = PaFeatureConfig()
 
 FEATURE_COLUMNS["indicators"] = indicator_column_names(_REGISTRY_INDICATORS)
 FEATURE_COLUMNS["channels"] = channel_column_names(_REGISTRY_CHANNELS)
-FEATURE_COLUMNS["regime"] = regime_column_names(_REGISTRY_REGIME)
+FEATURE_COLUMNS["pa_swings"] = pa_swing_column_names(_REGISTRY_PA)
+FEATURE_COLUMNS["pa_proximity"] = [
+    "near_prior_day_high_atr",
+    "near_prior_day_low_atr",
+    "near_prior_close_atr",
+    "near_session_open_atr",
+    "near_vwap_atr",
+    "near_rolling_high_20_atr",
+    "near_rolling_low_20_atr",
+]
+FEATURE_COLUMNS["regime"] = regime_column_names(_REGISTRY_REGIME, _REGISTRY_PA)
 
 FEATURE_DEPENDENCIES = {
     "time_features": ["ts_utc", "ts_ny"],
@@ -223,7 +257,32 @@ FEATURE_DEPENDENCIES = {
     "volatility": ["session_date", "high", "low", "close"],
     "indicators": ["session_date", "open", "high", "low", "close"],
     "channels": ["session_date", "open", "high", "low", "close", "atr_like_20"],
-    "regime": ["session_date", "close", "vwap", "atr_like_20"],
+    "pa_swings": ["session_date", "open", "high", "low", "close", "atr_like_20"],
+    "pa_proximity": [
+        "session_date",
+        "close",
+        "vwap",
+        "prior_day_high",
+        "prior_day_low",
+        "prior_day_close",
+        "session_open",
+        "atr_like_20",
+        "rolling_high_20_prior",
+        "rolling_low_20_prior",
+    ],
+    "regime": [
+        "session_date",
+        "close",
+        "vwap",
+        "atr_like_20",
+        "close_location",
+        "body_pct",
+        "overlap_bar",
+        "bull_bar",
+        "bear_bar",
+        "is_green",
+        "is_red",
+    ],
 }
 
 FEATURE_COLUMN_DESCRIPTIONS = {

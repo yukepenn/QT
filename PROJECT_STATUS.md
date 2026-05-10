@@ -16,6 +16,7 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 - **Features:** built from raw bars via `src/features/build_features.py`; **FeatureStore v1** provides in-memory reuse.
 - **Strategies:** plugins under `src/strategies/strategy/` implementing fast context path:
   `prepare_signal_context` → `generate_signal_arrays_from_context`.
+- **PA Batch A (Brooks-style branch):** deterministic **`pa_*`** features (`price_action`, `pa_swings`, extended `regime`, optional `levels` proximity) plus four long-only MVP plugins; **loader = 29** strategies. Wiring validated with Jan 2025 parity + capped sweeps; **formal Layer 1 2023–2024 not run** unless approved — see `src/research/results/pa_batch_a_implementation_summary.md`.
 - **Layer 1 sweep:** `src/backtest/sweep.py` (fast Numba path).
 - **Candidate selection:** `src/research/select_candidates.py` exports `selected_candidates/*.yaml`.
 - **Layer 2:** `src/combiner/run.py`, `src/combiner/sweep.py`, `src/combiner/postprocess.py`.

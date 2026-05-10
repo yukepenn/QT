@@ -9,6 +9,45 @@ from src.features.feature_config import FEATURE_COLUMNS
 from src.features.utils import add_or_overwrite_columns, ensure_columns, safe_copy
 
 
+def add_pa_proximity_features(
+    df: pd.DataFrame,
+    *,
+    atr_col: str = "atr_like_20",
+    copy: bool = True,
+    allow_overwrite: bool = False,
+) -> pd.DataFrame:
+    """Distance-to-level in ATR units (lower = closer); requires prior-day + VWAP + ATR."""
+    cols = FEATURE_COLUMNS["pa_proximity"]
+    add_or_overwrite_columns(df, cols, module_name="pa_proximity", allow_overwrite=allow_overwrite)
+    need = ["session_date", "close", "vwap", "prior_day_high", "prior_day_low", "prior_day_close", "session_open", atr_col]
+    for c in need:
+        if c not in df.columns:
+            raise ValueError(f"add_pa_proximity_features missing {c!r}")
+    ensure_columns(df, need, context="pa_proximity")
+    rh20 = "rolling_high_20_prior"
+    rl20 = "rolling_low_20_prior"
+    if rh20 not in df.columns or rl20 not in df.columns:
+        raise ValueError("add_pa_proximity_features requires rolling_high_20_prior / rolling_low_20_prior")
+
+    out = safe_copy(df, copy)
+    c = out["close"].astype(float)
+    atr = out[atr_col].astype(float).replace(0.0, np.nan) + 1e-12
+
+    def dist(x: pd.Series) -> pd.Series:
+        return (c - x.astype(float)).abs() / atr
+
+    newc = {
+        "near_prior_day_high_atr": dist(out["prior_day_high"]),
+        "near_prior_day_low_atr": dist(out["prior_day_low"]),
+        "near_prior_close_atr": dist(out["prior_day_close"]),
+        "near_session_open_atr": dist(out["session_open"]),
+        "near_vwap_atr": dist(out["vwap"]),
+        "near_rolling_high_20_atr": dist(out[rh20]),
+        "near_rolling_low_20_atr": dist(out[rl20]),
+    }
+    return pd.concat([out, pd.DataFrame(newc)], axis=1)
+
+
 def add_prior_day_levels(
     df: pd.DataFrame,
     *,

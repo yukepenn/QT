@@ -1,0 +1,5 @@
+strategy,exit_code,total_mismatch_fields,notes
+pa_trading_range_bls_hs,0,0,TOTAL_MISMATCH_FIELDS approx=0 (QQQ 2025-01-01..2025-01-31 max_combos=2)
+pa_failed_range_breakout_trap,0,0,same
+pa_tight_channel_pullback,0,0,same
+pa_mtr_reversal,0,0,same

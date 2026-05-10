@@ -4,6 +4,12 @@ This index classifies **result roots** without moving or deleting them.
 
 ## A. Active / current
 
+- **PA Batch A (price-action branch — planning + smokes)** — curated docs only (no formal Layer 1 root yet):
+  - `pa_batch_a_plan.md`, `pa_repo_formatting_check.md`, `pa_feature_foundation_summary.md`
+  - `pa_batch_a_parity_smoke.{md,csv}`, `pa_batch_a_jan2025_smoke.{md,csv}`, `pa_batch_a_implementation_summary.md`
+  - **status:** feature foundation + four strategies in `loader` (**29** total); Jan 2025 wiring/parity smokes only; **Layer 1 2023–2024 not run** unless user approves (`RUN_PA_BATCH_A_LAYER1_2023_2024` recommended in summary).
+  - **keep:** yes
+
 - **`layer1_all10_qqq_2020_20260430_posthardening_v1/`**
   - **status**: active baseline
   - **window**: 2020‑01‑01 → 2026‑04‑30

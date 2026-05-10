@@ -12,12 +12,13 @@ if str(_ROOT) not in sys.path:
 
 import pandas as pd
 
-from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, RegimeFeatureConfig
+from src.features.build_types import ChannelsFeatureConfig, IndicatorsFeatureConfig, PaFeatureConfig, RegimeFeatureConfig
 from src.features.channels import add_channel_features
 from src.features.feature_config import FEATURE_COLUMNS, RAW_COLUMNS, validate_no_registry_duplicates
 from src.features.indicators import add_indicator_features
-from src.features.levels import add_prior_day_levels
+from src.features.levels import add_pa_proximity_features, add_prior_day_levels
 from src.features.orb import add_orb
+from src.features.pa_swings import add_pa_swing_features
 from src.features.price_action import add_price_action_features
 from src.features.regime import add_regime_features
 from src.features.time_features import add_time_features
@@ -37,6 +38,7 @@ def build_basic_features(
     indicators: IndicatorsFeatureConfig | None = None,
     channels: ChannelsFeatureConfig | None = None,
     regime: RegimeFeatureConfig | None = None,
+    pa: PaFeatureConfig | None = None,
     copy: bool = True,
     allow_overwrite: bool = False,
 ) -> pd.DataFrame:
@@ -44,17 +46,23 @@ def build_basic_features(
     ind = indicators or IndicatorsFeatureConfig()
     ch = channels or ChannelsFeatureConfig()
     reg = regime or RegimeFeatureConfig()
+    pa_spec = pa or PaFeatureConfig()
+    vol_merged = tuple(sorted(set(int(x) for x in vol_windows) | {int(pa_spec.atr_window), 20}))
+    price_action_merged = tuple(sorted(set(int(x) for x in price_action_windows) | {20}))
+    atr_col = f"atr_like_{int(pa_spec.atr_window)}"
 
     out = add_time_features(df, copy=copy, allow_overwrite=allow_overwrite)
     out = add_vwap(out, bands=vwap_bands, copy=False, allow_overwrite=allow_overwrite)
     out = add_orb(out, open_minutes=orb_open_minutes, copy=False, allow_overwrite=allow_overwrite)
     out = add_prior_day_levels(out, copy=False, allow_overwrite=allow_overwrite)
-    out = add_intraday_volatility(out, windows=vol_windows, copy=False, allow_overwrite=allow_overwrite)
-    out = add_price_action_features(out, windows=price_action_windows, copy=False, allow_overwrite=allow_overwrite)
+    out = add_intraday_volatility(out, windows=vol_merged, copy=False, allow_overwrite=allow_overwrite)
+    out = add_price_action_features(out, windows=price_action_merged, pa=pa_spec, copy=False, allow_overwrite=allow_overwrite)
     out = add_volume_features(out, windows=volume_windows, copy=False, allow_overwrite=allow_overwrite)
     out = add_indicator_features(out, ind, copy=False, allow_overwrite=allow_overwrite)
     out = add_channel_features(out, ch, copy=False, allow_overwrite=allow_overwrite)
-    out = add_regime_features(out, reg, copy=False, allow_overwrite=allow_overwrite)
+    out = add_pa_swing_features(out, pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
+    out = add_pa_proximity_features(out, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
+    out = add_regime_features(out, reg, pa=pa_spec, atr_col=atr_col, copy=False, allow_overwrite=allow_overwrite)
     return out
 
 

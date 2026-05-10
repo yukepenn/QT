@@ -27,5 +27,18 @@ class ChannelsFeatureConfig:
 
 
 @dataclass(frozen=True)
+class PaFeatureConfig:
+    """PA feature knobs (swing windows, regime windows, bar-shape thresholds)."""
+
+    swing_windows: tuple[int, ...] = (10, 20, 30, 60)
+    regime_windows: tuple[int, ...] = (20, 30, 60)
+    atr_window: int = 20
+    strong_bar_body_pct: float = 0.55
+    close_near_high_threshold: float = 0.70
+    close_near_low_threshold: float = 0.30
+    doji_body_pct: float = 0.08
+
+
+@dataclass(frozen=True)
 class RegimeFeatureConfig:
     windows: tuple[int, ...] = ()

@@ -1,0 +1,5 @@
+strategy,exit_code,result_rows,best_trades,best_total_r,best_profit_factor,notes
+pa_trading_range_bls_hs,0,18,18,-4.813478,0.895522,Jan smoke tag pa_batch_a_jan2025_smoke max_combos=50 min_trades=1; 18 unique combos executed (grid dedupe)
+pa_failed_range_breakout_trap,0,18,14,5.146019,1.405172,same sweep settings
+pa_tight_channel_pullback,0,18,0,n/a,n/a,All evaluated combos: 0 trades (strict entry/regime gates on Jan window)
+pa_mtr_reversal,0,18,0,n/a,n/a,same
