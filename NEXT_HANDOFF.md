@@ -6,7 +6,7 @@
 |--------|--------|
 | Branch | `main` |
 | Pre-task HEAD | `e73316d` (after prior diversity-repair handoff) |
-| New commit hash | `2829f72` |
+| New commit hash | `25faa94` |
 | Push status | **Pushed** to `origin/main` (update if push fails) |
 | Working tree | Curated Layer 2 repaired v3 **behavior + cost** CSV/MD only; **`sweep_20260510_221442/`**, **`top_runs/`**, raw `trades.csv` / `feature_store_stats.json` / heavy precompute CSVs **local / untracked** |
 
