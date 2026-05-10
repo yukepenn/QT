@@ -1,0 +1,10 @@
+tag=
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\research\results\layer1_pa_batch_bc_qqq_2023_2024\diagnostic_relaxed_selection
+candidates_written=5
+
+candidates:
+  PA_BUY_SELL_CLOSE_TREND_001 pa_buy_sell_close_trend score=1.2064 trades=413
+  PA_BUY_SELL_CLOSE_TREND_002 pa_buy_sell_close_trend score=1.1934 trades=381
+  PA_BUY_SELL_CLOSE_TREND_003 pa_buy_sell_close_trend score=1.1759 trades=381
+  PA_BUY_SELL_CLOSE_TREND_004 pa_buy_sell_close_trend score=1.1391 trades=413
+  PA_BUY_SELL_CLOSE_TREND_005 pa_buy_sell_close_trend score=1.1217 trades=413

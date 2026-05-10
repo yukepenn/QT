@@ -1,0 +1,7 @@
+strategy,raw_grid_size,max_allowed,policy,capped,max_combos_used,notes
+pa_broad_channel_zone,288,1500,full_grid,false,,dedup via sweep normalized_param_key
+pa_climax_reversal,288,1500,full_grid,false,,dedup via sweep normalized_param_key
+pa_second_entry_pullback,288,1500,full_grid,false,,dedup via sweep normalized_param_key
+pa_wedge_reversal,288,1500,full_grid,false,,dedup via sweep normalized_param_key
+pa_buy_sell_close_trend,432,1500,full_grid,false,,dedup via sweep normalized_param_key
+pa_generic_breakout_pullback,432,1500,full_grid,false,,dedup via sweep normalized_param_key

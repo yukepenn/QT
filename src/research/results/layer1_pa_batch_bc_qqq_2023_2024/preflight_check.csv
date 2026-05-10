@@ -1,0 +1,7 @@
+strategy,supports_fast,default_validate,focused_validate,raw_grid_size,metadata_family,focused_exists,feature_key_ok,jan_smoke_features,notes
+pa_broad_channel_zone,True,ok,ok,288,pa_broad_channel,True,ok,ok,
+pa_climax_reversal,True,ok,ok,288,pa_climax_reversal,True,ok,,
+pa_second_entry_pullback,True,ok,ok,288,pa_second_entry,True,ok,,
+pa_wedge_reversal,True,ok,ok,288,pa_wedge_reversal,True,ok,,
+pa_buy_sell_close_trend,True,ok,ok,432,pa_close_trend_continuation,True,ok,,
+pa_generic_breakout_pullback,True,ok,ok,432,pa_breakout_pullback,True,ok,,

@@ -10,12 +10,18 @@ This index classifies **result roots** without moving or deleting them.
   - **status:** feature foundation + four strategies in `loader`; formal economics in **`layer1_pa_batch_a_qqq_2023_2024/`** (see below).
   - **keep:** yes
 
-- **PA Batch B (implementation + smokes only)** — `pa_batch_b_c_implementation_plan.md`, `pa_batch_b_implementation_summary.md`, `pa_batch_b_parity_smoke.{md,csv}`, `pa_batch_b_jan2025_smoke.{md,csv}`
-  - **status:** four new plugins registered; **no** formal Layer 1/2 for Batch B in this phase
+- **PA Batch B (implementation + smokes)** — `pa_batch_b_c_implementation_plan.md`, `pa_batch_b_implementation_summary.md`, `pa_batch_b_parity_smoke.{md,csv}`, `pa_batch_b_jan2025_smoke.{md,csv}`
+  - **status:** four plugins; formal Layer 1 economics in **`layer1_pa_batch_bc_qqq_2023_2024/`** (with Batch C)
   - **keep:** yes
 
 - **PA Batch C (+ library handoff)** — `pa_batch_c_implementation_summary.md`, `pa_batch_c_parity_smoke.{md,csv}`, `pa_batch_c_jan2025_smoke.{md,csv}`, `pa_overlap_refinements_backlog.md`, `pa_strategy_library_completion_summary.md`
-  - **status:** two new plugins; overlap refinements **backlog only**
+  - **status:** two plugins; formal Layer 1 economics in **`layer1_pa_batch_bc_qqq_2023_2024/`**
+  - **keep:** yes
+
+- **`layer1_pa_batch_bc_qqq_2023_2024/`**
+  - **status:** formal **PA Batch B + C** Layer 1 (QQQ 2023–01–01 → 2024–12–31), tag `layer1_pa_batch_bc_qqq_2023_2024`
+  - **purpose:** six `*_focused.yaml` sweeps → manifest → strict selection (**5** YAMLs, **`pa_buy_sell_close_trend` only**); `signal_rate_diagnosis.*`, optional `diagnostic_relaxed_selection/` (DIAGNOSTIC ONLY); `candidate_fast_context_check.*`
+  - **decision:** **`TUNE_PA_BATCH_BC_GRIDS_FIRST`** (`layer1_pa_batch_bc_summary.md`). **PA Batch B/C Layer 2 / mini-WFO / full WFO / live not run.**
   - **keep:** yes
 
 - **`layer1_pa_batch_a_tuned_qqq_2023_2024_v1/`**

@@ -54,19 +54,19 @@ Legend: **status** = how the grid is used in current research; **result root** =
 
 ### PA Batch B — implementation grids (`*_focused.yaml`)
 
-| Strategy | File | Purpose | Status | Notes |
-|----------|------|---------|--------|-------|
-| pa_broad_channel_zone | `pa_broad_channel_zone_focused.yaml` | Broad channel buy-zone | Smoke / future Layer 1 | ~288 combos |
-| pa_climax_reversal | `pa_climax_reversal_focused.yaml` | Climax fade | Smoke / future Layer 1 | ~288 combos |
-| pa_second_entry_pullback | `pa_second_entry_pullback_focused.yaml` | Second-entry pullback | Smoke / future Layer 1 | ~288 combos |
-| pa_wedge_reversal | `pa_wedge_reversal_focused.yaml` | Wedge reversal proxy | Smoke / future Layer 1 | ~288 combos |
+| Strategy | File | Purpose | Status | Last known result root | Notes |
+|----------|------|---------|--------|------------------------|-------|
+| pa_broad_channel_zone | `pa_broad_channel_zone_focused.yaml` | Broad channel buy-zone | Active | `layer1_pa_batch_bc_qqq_2023_2024/` | ~288 raw; zero-trade QQQ 2023–2024 |
+| pa_climax_reversal | `pa_climax_reversal_focused.yaml` | Climax fade | Active | same | ~288 raw; weak PF at high trade count |
+| pa_second_entry_pullback | `pa_second_entry_pullback_focused.yaml` | Second-entry pullback | Active | same | ~288 raw; max ~8 trades |
+| pa_wedge_reversal | `pa_wedge_reversal_focused.yaml` | Wedge reversal proxy | Active | same | ~288 raw; weak PF |
 
 ### PA Batch C — implementation grids (`*_focused.yaml`)
 
-| Strategy | File | Purpose | Status | Notes |
-|----------|------|---------|--------|-------|
-| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_focused.yaml` | Strong-close continuation | Smoke / future Layer 1 | ~216 combos |
-| pa_generic_breakout_pullback | `pa_generic_breakout_pullback_focused.yaml` | Breakout pullback | Smoke / future Layer 1 | ~432 combos |
+| Strategy | File | Purpose | Status | Last known result root | Notes |
+|----------|------|---------|--------|------------------------|-------|
+| pa_buy_sell_close_trend | `pa_buy_sell_close_trend_focused.yaml` | Strong-close continuation | Active | `layer1_pa_batch_bc_qqq_2023_2024/` | ~432 raw; **5** strict Layer 1 YAMLs |
+| pa_generic_breakout_pullback | `pa_generic_breakout_pullback_focused.yaml` | Breakout pullback | Active | same | ~432 raw; zero-trade 2023–2024 |
 
 ---
 

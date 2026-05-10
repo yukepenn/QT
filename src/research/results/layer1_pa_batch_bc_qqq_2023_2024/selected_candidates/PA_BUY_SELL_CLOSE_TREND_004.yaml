@@ -1,0 +1,111 @@
+candidate_id: PA_BUY_SELL_CLOSE_TREND_004
+strategy: pa_buy_sell_close_trend
+asset: equity
+symbol: QQQ
+strategy_family: pa_close_trend_continuation
+conflict_group: QQQ_directional
+default_priority: 44
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: pa_close_trend_continuation
+  conflict_group: QQQ_directional
+  default_priority: 44
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 1.139147626773857
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_buy_sell_close_trend\sweep_20260510_163415_layer1_pa_batch_bc_qqq_2023_2024\results.csv
+  row_index: 23
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_buy_sell_close_trend\sweep_20260510_163415_layer1_pa_batch_bc_qqq_2023_2024
+metrics:
+  trades: 413
+  profit_factor: 1.2014490233583035
+  total_r: 20.56041456342572
+  win_rate: 0.513317191283293
+  total_net_pnl: 34.75600000000742
+  avg_r: 0.0497830861099896
+  avg_net_pnl: 0.0841549636804053
+  max_drawdown_pnl: -13.707999999999116
+  max_drawdown_r: -10.33117393138005
+  avg_bars_held: 60.77239709443099
+  stop_count: 86
+  target_count: 22
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 305
+config:
+  strategy: pa_buy_sell_close_trend
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_regime_window: 30
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 210
+    body_pct_min: 0.48
+    trend_score_min: 0.28
+    require_vwap_side: false
+    block_climax: true
+    climax_score_max: 0.75
+  risk:
+    stop_mode: last_pullback_low
+    target_mode: fixed_r
+    target_r: 1.7
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 70

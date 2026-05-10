@@ -1,0 +1,7 @@
+strategy,raw_grid_size,result_rows,combos_with_trades,combos_zero_trades,max_trades,median_trades_nonzero,p75_trades_nonzero,best_total_r,best_profit_factor,best_max_drawdown_r,best_avg_bars_held,avg_bars_held_distribution,all_zero_trade,strict_filter_pass_rows,likely_diagnosis
+pa_broad_channel_zone,288,72,0,72,0,,,0.0,0.0,0.0,0.0,"all 0",yes,0,too_sparse
+pa_climax_reversal,288,72,72,0,93,93.0,93.0,-13.706667839647256,0.8792860497886942,-17.898635792447887,7.365591397849462,"min=1.39 med=6.40 p75=11.35 max=17.73",no,0,high_activity_weak_edge
+pa_second_entry_pullback,288,72,36,36,8,8.0,8.0,6.577244510204195,2.386666666666799,-1.0666666666666162,4.5,"min=0 med=0.56 p75=1.19 max=4.50",no,0,too_sparse
+pa_wedge_reversal,288,72,72,0,126,123.0,126.0,-10.094984470015396,0.9642173615858364,-24.769887682443137,10.055555555555555,"min=1.37 med=6.47 p75=11.55 max=16.68",no,0,high_activity_weak_edge
+pa_buy_sell_close_trend,432,108,108,0,413,393.5,407.75,24.07002188641713,1.2303537624231415,-10.855764095314534,59.34140435835351,"min=1.14 med=3.96 p75=36.82 max=61.19",no,36,viable_signal_rate;cost_sensitive_candidate
+pa_generic_breakout_pullback,432,108,0,108,0,,,0.0,0.0,0.0,0.0,"all 0",yes,0,too_sparse
