@@ -1,0 +1,72 @@
+candidate_id: MINIWFO_ORB_RETEST_CONTINUATION_003
+strategy: orb_retest_continuation
+asset: equity
+symbol: QQQ
+strategy_family: opening_momentum
+conflict_group: QQQ_directional
+default_priority: 82
+default_active_start_minute: 10
+default_active_end_minute: 120
+metadata:
+  family: opening_momentum
+  conflict_group: QQQ_directional
+  default_priority: 82
+  default_active_start_minute: 10
+  default_active_end_minute: 120
+selection:
+  score: 0.666935636640782
+  filters_used: relaxed
+  warning: relaxed_filter
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_retest_continuation\sweep_20260508_145800_mini_wfo_v2a_train_2023_2024\results.csv
+  row_index: 127
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_retest_continuation\sweep_20260508_145800_mini_wfo_v2a_train_2023_2024
+metrics:
+  trades: 341
+  profit_factor: 1.0061158482799413
+  total_r: 12.804319742735206
+  win_rate: 0.3870967741935484
+  total_net_pnl: 1.0400000000039995
+  avg_r: 0.0375493247587542
+  avg_net_pnl: 0.0030498533724457
+  max_drawdown_pnl: -30.319999999998856
+  max_drawdown_r: -16.745214824344465
+  avg_bars_held: 28.88856304985337
+  stop_count: 202
+  target_count: 97
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 42
+config:
+  strategy: orb_retest_continuation
+  features:
+    orb_open_minutes: 5
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 10
+    entry_end_minute: 90
+    retest_tolerance_atr: 0.5
+    max_retest_bars: 5
+    require_vwap_side: true
+    require_vwap_slope: true
+    require_pullback_volume_dryup: false
+  risk:
+    stop_mode: retest_low
+    target_mode: fixed_r
+    target_r: 2.0
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 90

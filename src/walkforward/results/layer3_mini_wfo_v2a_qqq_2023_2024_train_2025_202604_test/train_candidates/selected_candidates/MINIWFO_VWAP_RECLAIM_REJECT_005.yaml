@@ -1,0 +1,72 @@
+candidate_id: MINIWFO_VWAP_RECLAIM_REJECT_005
+strategy: vwap_reclaim_reject
+asset: equity
+symbol: QQQ
+strategy_family: vwap_reclaim
+conflict_group: QQQ_directional
+default_priority: 70
+default_active_start_minute: 30
+default_active_end_minute: 240
+metadata:
+  family: vwap_reclaim
+  conflict_group: QQQ_directional
+  default_priority: 70
+  default_active_start_minute: 30
+  default_active_end_minute: 240
+selection:
+  score: 1.2777183488359074
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_reclaim_reject\sweep_20260508_145846_mini_wfo_v2a_train_2023_2024\results.csv
+  row_index: 329
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\vwap_reclaim_reject\sweep_20260508_145846_mini_wfo_v2a_train_2023_2024
+metrics:
+  trades: 202
+  profit_factor: 1.1068363844394022
+  total_r: 27.00494498370465
+  win_rate: 0.4405940594059406
+  total_net_pnl: 3.735000000001321
+  avg_r: 0.1336878464539834
+  avg_net_pnl: 0.0184900990099075
+  max_drawdown_pnl: -2.947499999999536
+  max_drawdown_r: -7.557727143982017
+  avg_bars_held: 7.46039603960396
+  stop_count: 109
+  target_count: 80
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 13
+config:
+  strategy: vwap_reclaim_reject
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 60
+    entry_end_minute: 120
+    min_bars_wrong_side: 10
+    confirm_mode: close_reclaim
+    require_volume_surge: false
+    min_volume_mult: 1.5
+  risk:
+    stop_mode: reclaim_candle
+    vwap_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.75
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

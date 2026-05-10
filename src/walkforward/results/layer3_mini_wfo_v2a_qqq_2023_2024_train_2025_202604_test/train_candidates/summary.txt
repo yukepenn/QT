@@ -1,0 +1,36 @@
+tag=mini_wfo_v2a
+out_dir=D:\OneDrive - Washington University in St. Louis\QT\src\walkforward\results\layer3_mini_wfo_v2a_qqq_2023_2024_train_2025_202604_test\train_candidates
+candidates_written=31
+
+candidates:
+  FAILED_ORB_001 failed_orb score=1.0401 trades=221
+  FAILED_ORB_002 failed_orb score=1.0401 trades=221
+  FAILED_ORB_003 failed_orb score=1.0217 trades=223
+  FAILED_ORB_004 failed_orb score=1.0217 trades=223
+  FAILED_ORB_005 failed_orb score=1.0077 trades=202
+  GAP_ACCEPTANCE_FAILURE_001 gap_acceptance_failure score=1.6687 trades=129
+  GAP_ACCEPTANCE_FAILURE_002 gap_acceptance_failure score=1.6687 trades=129
+  GAP_ACCEPTANCE_FAILURE_003 gap_acceptance_failure score=1.6687 trades=129
+  GAP_ACCEPTANCE_FAILURE_004 gap_acceptance_failure score=1.6687 trades=129
+  GAP_ACCEPTANCE_FAILURE_005 gap_acceptance_failure score=1.5974 trades=129
+  PRIOR_DAY_LEVEL_TRAP_001 prior_day_level_trap score=0.7725 trades=134
+  ORB_RETEST_CONTINUATION_001 orb_retest_continuation score=0.7834 trades=341
+  ORB_RETEST_CONTINUATION_002 orb_retest_continuation score=0.6683 trades=321
+  ORB_RETEST_CONTINUATION_003 orb_retest_continuation score=0.6669 trades=341
+  ORB_RETEST_CONTINUATION_004 orb_retest_continuation score=0.1268 trades=309
+  ORB_RETEST_CONTINUATION_005 orb_retest_continuation score=0.1268 trades=309
+  ORB_CONTINUATION_001 orb_continuation score=0.4388 trades=353
+  ORB_CONTINUATION_002 orb_continuation score=0.4297 trades=353
+  ORB_CONTINUATION_003 orb_continuation score=0.4201 trades=353
+  ORB_CONTINUATION_004 orb_continuation score=0.3609 trades=333
+  ORB_CONTINUATION_005 orb_continuation score=0.3290 trades=364
+  VWAP_RECLAIM_REJECT_001 vwap_reclaim_reject score=1.4212 trades=202
+  VWAP_RECLAIM_REJECT_002 vwap_reclaim_reject score=1.3949 trades=202
+  VWAP_RECLAIM_REJECT_003 vwap_reclaim_reject score=1.3334 trades=202
+  VWAP_RECLAIM_REJECT_004 vwap_reclaim_reject score=1.2948 trades=198
+  VWAP_RECLAIM_REJECT_005 vwap_reclaim_reject score=1.2777 trades=202
+  VWAP_TREND_PULLBACK_001 vwap_trend_pullback score=1.0833 trades=150
+  VWAP_TREND_PULLBACK_002 vwap_trend_pullback score=1.0522 trades=150
+  VWAP_TREND_PULLBACK_003 vwap_trend_pullback score=1.0345 trades=150
+  VWAP_TREND_PULLBACK_004 vwap_trend_pullback score=1.0276 trades=150
+  VWAP_TREND_PULLBACK_005 vwap_trend_pullback score=0.8869 trades=164
