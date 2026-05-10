@@ -270,3 +270,35 @@ src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1_diagnostics_local/
 
 # Layer 2 tuned v2 (skipped — summary only)
 !src/combiner/results/layer2_qqq_v2_batch1_tuned_v2_2023_2024/layer2_v2_batch1_tuned_v2_summary.md
+
+# Strategy Library v2 completion — Layer 1 QQQ 2023–2024 (curated)
+!src/research/results/layer1_v2_completion_qqq_2023_2024/selected_candidates/*.yaml
+!src/research/results/layer1_v2_completion_qqq_2023_2024/selected_candidates.csv
+!src/research/results/layer1_v2_completion_qqq_2023_2024/candidate_summary.md
+!src/research/results/layer1_v2_completion_qqq_2023_2024/layer1_v2_completion_summary.md
+!src/research/results/layer1_v2_completion_qqq_2023_2024/sweep_manifest.csv
+!src/research/results/layer1_v2_completion_qqq_2023_2024/sweep_manifest.md
+!src/research/results/layer1_v2_completion_qqq_2023_2024/candidate_selection_config.md
+!src/research/results/layer1_v2_completion_qqq_2023_2024/no_candidate_strategies.txt
+!src/research/results/layer1_v2_completion_qqq_2023_2024/candidate_fast_context_check.md
+!src/research/results/layer1_v2_completion_qqq_2023_2024/candidate_fast_context_check.csv
+!src/research/results/reduced_layer2_v2_completion_design.md
+!src/research/results/reduced_layer2_v2_completion_run_plan.md
+
+# Layer 2 v2 completion QQQ 2023–2024 (curated only; run_*/sweep_* remain ignored)
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/fixed_run_summary.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/fixed_run_summary.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/top_unique_systems.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/top_unique_systems.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/top_unique_run_map.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/behavior_unique_systems.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/behavior_unique_systems.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/cost_stress/cost_stress_results.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/cost_stress/cost_stress_summary.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/cost_robust_systems.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/cost_robust_systems.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/candidate_precompute_profile_summary.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/candidate_precompute_profile_summary.md
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/diagnostics/*.csv
+!src/combiner/results/layer2_qqq_v2_completion_2023_2024/diagnostics/diagnostics_summary.md

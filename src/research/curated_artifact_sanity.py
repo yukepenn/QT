@@ -24,11 +24,13 @@ def build_checks() -> list[Check]:
     layer1_roots = [
         Path("src/research/results/layer1_all10_qqq_2020_20260430_posthardening_v1"),
         Path("src/research/results/layer1_all10_qqq_2025_20260430_posthardening_v1"),
+        Path("src/research/results/layer1_v2_completion_qqq_2023_2024"),
     ]
     layer2_roots = [
         Path("src/combiner/results/layer2_qqq_2020_20260430_posthardening_strict_v1"),
         Path("src/combiner/results/layer2_qqq_2020_20260430_posthardening_relaxed_v1"),
         Path("src/combiner/results/layer2_qqq_2025_20260430_recent_check_v1"),
+        Path("src/combiner/results/layer2_qqq_v2_completion_2023_2024"),
     ]
 
     checks: list[Check] = []
@@ -41,6 +43,10 @@ def build_checks() -> list[Check]:
         # optional but nice-to-have
         if (r / "candidate_summary.md").exists():
             checks.append(Check(r, "candidate_summary.md", _exists(r / "candidate_summary.md")))
+        if (r / "layer1_v2_completion_summary.md").exists():
+            checks.append(Check(r, "layer1_v2_completion_summary.md", _exists(r / "layer1_v2_completion_summary.md")))
+        if (r / "candidate_fast_context_check.md").exists():
+            checks.append(Check(r, "candidate_fast_context_check.md", _exists(r / "candidate_fast_context_check.md")))
 
     for r in layer2_roots:
         d = r / "diagnostics"

@@ -59,11 +59,14 @@ This index classifies **result roots** without moving or deleting them.
   - **status**: Layer 1 **completion** QQQ 2023–2024 (nine strategies; full focused grids; manifest + **30** selected YAMLs)
   - **window**: 2023‑01‑01 → 2024‑12‑31
   - **purpose**: economics + candidate library for v2 completion track; summary `layer1_v2_completion_summary.md`
-  - **Layer 2 follow-up (design only):** `reduced_layer2_v2_completion_design.md`
+  - **Layer 2 follow-up:** `src/combiner/results/layer2_qqq_v2_completion_2023_2024/layer2_v2_completion_summary.md` (run plan `reduced_layer2_v2_completion_run_plan.md`; design `reduced_layer2_v2_completion_design.md`)
   - **keep**: yes
 
 ## B. Reference / engineering docs
 
+- **Repo maintenance (2026-05-09):** `repo_maintenance_formatting_summary.md` (formatting-only pass; no source edits)
+- **Research script audit:** `research_script_organization_audit.md` / `research_script_organization_audit.csv`
+- **Testing grid index:** `src/strategies/testing_parameters/GRID_INDEX.md`
 - **Hardening docs**: `hardening_*`, `rerun_plan_after_hardening.md`, `PRE_HARDENING_STALE.md` markers
 - **Engineering summaries (Layer 2):**
   - `layer2_precompute_cleanup_plan.md`, `layer2_precompute_cleanup_summary.md`

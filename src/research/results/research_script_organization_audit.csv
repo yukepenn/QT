@@ -1,0 +1,12 @@
+file_path,purpose,imported_by_other_code,reproduces_committed_summaries,safe_to_move,proposed_destination,recommendation
+src/research/gen_batch1_audit.py,Generate strategy_library_v2_batch1_audit CSV/MD from sweep manifests,No,Yes (strategy_library_v2_batch1_audit.*),No,src/research/,Keep; docs reference path
+src/research/gen_batch1_cost_fragility_diagnostics.py,Generate batch1 cost fragility diagnostic tables,No,Yes (batch1_cost_fragility_diagnostics_v1/),No,src/research/,Keep
+src/research/gen_batch1_tuned_v1_cost_diagnostics.py,Generate tuned v1 winner cost diagnostics pack,No,Yes (batch1_tuned_v1_cost_diagnostics/),No,src/research/,Keep
+src/research/gap_failed_diagnostics.py,Gap/failed family trade diagnostics and summaries,Yes (tests/test_gap_failed_diagnostics.py),Yes (gap_failed_family_diagnostics_*),No,src/research/,Keep; tests import
+src/research/run_layer1_v2_completion.py,Orchestrate nine completion Layer 1 sweeps + selection,Yes (tests/test_run_layer1_v2_completion.py),Yes (layer1_v2_completion_qqq_2023_2024),No,src/research/,Keep
+src/research/run_batch1_layer1_sweeps.py,Orchestrate batch1 Layer 1 sweeps,No,Yes (documented in PROGRESS),Maybe,src/research/scripts/,Optional future move; update docs first
+src/research/run_batch1_jan_smokes.py,January smoke sweeps for batch1,No,Partial (smoke artifacts),Maybe,src/research/scripts/,Keep unless CI references path
+src/research/run_layer1_focused.py,Generic focused Layer 1 runner,No,Various,No,src/research/,Keep
+src/research/curated_artifact_sanity.py,Write curated_artifact_sanity_check.md,No,Yes (sanity MD),No,src/research/,Keep
+src/research/check_selected_candidates_fast_context.py,Fast-context parity on candidate YAMLs,No,Yes (candidate_fast_context_check),No,src/research/,Keep
+src/research/check_strategy_fast_parity.py,Strategy fast vs reference parity,No,Validation only,No,src/research/,Keep

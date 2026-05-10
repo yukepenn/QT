@@ -1,10 +1,14 @@
 ### [Unreleased] – 2026-05-10
 
+- Feat(combiner): **reduced Layer 2 v2 completion (QQQ 2023–2024)** — `layer2_qqq_v2_completion_2023_2024.yaml`, `layer2_sweep_qqq_v2_completion_2023_2024.yaml`; curated `src/combiner/results/layer2_qqq_v2_completion_2023_2024/` (diagnostics, 15 fixed runs, **756-combo** sweep `sweep_20260510_025424`, postprocess). Summary `layer2_v2_completion_summary.md` (**`TUNE_COMPLETION_GRIDS_FIRST`**). **mini-WFO v4/v5 + full WFO not run.**
+- Chore(gitignore): force-include completion Layer 1 + Layer 2 curated paths (`layer1_v2_completion_qqq_2023_2024/*`, `layer2_qqq_v2_completion_2023_2024/*` summaries).
+- Docs: `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CONFIG_INDEX.md`, both `RESULTS_INDEX.md`, `ARTIFACT_POLICY.md`, `curated_artifact_sanity.py` (+ regenerated `curated_artifact_sanity_check.md`).
+- Docs(research): `repo_maintenance_formatting_summary.md`, `research_script_organization_audit.{md,csv}`, `reduced_layer2_v2_completion_run_plan.md`, `src/strategies/testing_parameters/GRID_INDEX.md`.
 - Feat(research): **Layer 1 v2 completion QQQ 2023–2024** — `run_layer1_v2_completion.py`, curated root `layer1_v2_completion_qqq_2023_2024/` (manifest, **30** YAMLs, fast-context check); `check_selected_candidates_fast_context.py`.
 - Fix(research): **`unflatten_config_from_row`** uses `set_nested` for nested `features.indicators.*` / `risk.*` paths so candidate YAMLs round-trip through `build_features_from_config`.
 - Feat(research): manifest **`--relaxed-max-avg-bars-held`** for relaxed fallback (completion used **150** vs strict **120**).
 - Test(research): `test_unflatten_config_nested_features_indicators` in `test_select_candidates_manifest.py`; `tests/test_run_layer1_v2_completion.py`.
-- Docs(research): `layer1_v2_completion_summary.md`, `reduced_layer2_v2_completion_design.md` (design only). Decision **`PROCEED_TO_REDUCED_LAYER2_V2_COMPLETION_DESIGN`**. **Layer 2 / mini-WFO / full WFO not run.**
+- Docs(research): `layer1_v2_completion_summary.md`, `reduced_layer2_v2_completion_design.md` (design). Layer 2 completion economics: see **`layer2_v2_completion_summary.md`** (this release).
 
 ### [Unreleased] – 2026-05-09
 
