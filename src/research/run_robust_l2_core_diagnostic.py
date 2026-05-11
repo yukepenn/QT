@@ -437,7 +437,13 @@ def cmd_dry_run(argv: list[str] | None) -> int:
         priorities=pp,
         data_dir=args.data_dir,
     )
+    # Write a sanitized plan without absolute-path command strings.
+    plan_s = plan.copy()
+    drop_cols = [c for c in ["command", "argv_json"] if c in plan_s.columns]
+    if drop_cols:
+        plan_s = plan_s.drop(columns=drop_cols)
     _write_csv(plan, output_root / "run_plan.csv")
+    _write_csv(plan_s, output_root / "run_plan_sanitized.csv")
 
     (output_root / "dry_run_validation.md").write_text(
         "\n".join(
@@ -519,7 +525,12 @@ def cmd_run(argv: list[str] | None) -> int:
         priorities=pp,
         data_dir=args.data_dir,
     )
+    plan_s = plan.copy()
+    drop_cols = [c for c in ["command", "argv_json"] if c in plan_s.columns]
+    if drop_cols:
+        plan_s = plan_s.drop(columns=drop_cols)
     _write_csv(plan, output_root / "run_plan.csv")
+    _write_csv(plan_s, output_root / "run_plan_sanitized.csv")
 
     exec_rows: list[dict[str, Any]] = []
     started_at = datetime.now(timezone.utc).isoformat()
@@ -572,6 +583,11 @@ def cmd_run(argv: list[str] | None) -> int:
 
     rdf = pd.DataFrame(exec_rows)
     _write_csv(rdf, output_root / "run_execution_manifest.csv")
+    rdf_s = rdf.copy()
+    drop_cols = [c for c in ["command", "argv_json"] if c in rdf_s.columns]
+    if drop_cols:
+        rdf_s = rdf_s.drop(columns=drop_cols)
+    _write_csv(rdf_s, output_root / "run_execution_manifest_sanitized.csv")
     (output_root / "run_execution_manifest_meta.json").write_text(
         json.dumps({"started_at_utc": started_at, "finished_at_utc": datetime.now(timezone.utc).isoformat()}, indent=2),
         encoding="utf-8",

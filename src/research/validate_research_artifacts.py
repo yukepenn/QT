@@ -76,10 +76,29 @@ def _missing_required_columns(filename: str, cols: list[str]) -> list[str]:
 
 
 def validate_root(root: Path, *, csv_only: bool = True) -> list[ValidationResult]:
+    return validate_root_with_excludes(root, csv_only=csv_only, exclude_subdirs=())
+
+
+def validate_root_with_excludes(
+    root: Path,
+    *,
+    csv_only: bool = True,
+    exclude_subdirs: tuple[str, ...] = (),
+    exclude_filenames: tuple[str, ...] = (),
+) -> list[ValidationResult]:
     patterns = ["*.csv"] if csv_only else ["*.csv", "*.tsv"]
     files: list[Path] = []
+    excl = {str(x).strip().strip("/").strip("\\") for x in exclude_subdirs if str(x).strip()}
+    excl_files = {str(x).strip() for x in exclude_filenames if str(x).strip()}
     for pat in patterns:
-        files.extend(sorted(root.rglob(pat)))
+        for p in root.rglob(pat):
+            rel_parts = p.relative_to(root).parts
+            if any(part in excl for part in rel_parts):
+                continue
+            if p.name in excl_files:
+                continue
+            files.append(p)
+    files = sorted(files)
 
     out: list[ValidationResult] = []
     for p in files:
@@ -152,6 +171,16 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Validate curated research artifact CSVs.")
     ap.add_argument("--root", required=True, help="Root directory to scan (e.g. src/research/results/robust_l2_core_v2_design)")
     ap.add_argument("--csv-only", action="store_true", help="Only validate *.csv files")
+    ap.add_argument(
+        "--exclude-subdirs",
+        default="",
+        help="Comma-separated subdir names to ignore (e.g. local_runs,local_configs)",
+    )
+    ap.add_argument(
+        "--include-local-runs",
+        action="store_true",
+        help="Include local_runs/local_configs in scanning (default: excluded).",
+    )
     ap.add_argument("--output", required=True, help="Output CSV path for results (under repo)")
     args = ap.parse_args(argv)
 
@@ -159,7 +188,18 @@ def main(argv: list[str] | None = None) -> int:
     out_csv = Path(args.output)
     out_md = out_csv.with_suffix(".md")
 
-    results = validate_root(root, csv_only=bool(args.csv_only))
+    exclude = tuple([x.strip() for x in str(args.exclude_subdirs).split(",") if x.strip()])
+    if not args.include_local_runs:
+        # Safety: local_runs/local_configs can be huge and include local-only CSVs.
+        # By default we validate curated root-level CSVs only.
+        exclude = tuple(sorted(set(exclude) | {"local_runs", "local_configs"}))
+    # Avoid the validation output file self-triggering absolute-path hits.
+    results = validate_root_with_excludes(
+        root,
+        csv_only=bool(args.csv_only),
+        exclude_subdirs=exclude,
+        exclude_filenames=(out_csv.name,),
+    )
     df = pd.DataFrame([r.__dict__ for r in results]).sort_values(["ok", "rel_path"], ascending=[True, True])
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_csv, index=False, lineterminator="\n")

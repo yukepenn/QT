@@ -1,0 +1,9 @@
+topic,profile_id,window_or_period,result,evidence_strength,implication,next_action
+late_oow_best,pa_only_mtp1_meta,late_oow,PA-only remains strong late OOW (~21.49 R),high,PA-only is the cleanest baseline,Use PA-only as baseline for Layer3 smoke design
+pa_gap_adds,pa_gap_mtp2_meta,late_oow,PA+GAP mtp2 late OOW positive (~18.77 R),high,GAP adds complementarity without breaking late OOW,Keep PA+GAP as primary combined candidate
+cci_dilutes,primary_mtp2_meta,late_oow,Primary core late OOW weaker (~11.86 R) than PA-only/PA+GAP,high,CCI inclusion may dilute late OOW,Keep CCI profile as interpretability baseline not default
+mtp_needed_combo,pa_gap_mtp2_meta,axis_mtp,mtp2 improves total vs mtp1 for PA+GAP,high,Trade #2 capacity matters for combos,Default mtp2 for combined profiles
+mtp_not_binding_pa_only,pa_only_mtp2_meta,axis_mtp,PA-only mtp1 and mtp2 are identical in this envelope,medium,max_trades_per_day not binding for single-candidate profile,Use mtp1 baseline for simplicity
+stability,pa_gap_mtp2_meta,monthly,Monthly totals include negative months but overall positive,medium,Need to watch concentration in worst months/quarters,Use monthly/quarterly tables as gate
+cost_overlay,primary_mtp2_meta,exit_slip,Target-limit-aware stress reduces totals but preserves sign,medium,Conclusions not purely slippage artifacts,Carry cost overlay into next stage
+

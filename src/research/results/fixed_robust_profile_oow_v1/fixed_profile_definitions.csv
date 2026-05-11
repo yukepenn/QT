@@ -1,0 +1,7 @@
+profile_id,candidate_set,candidate_ids,max_trades_per_day,daily_max_loss_r,priority_policy,design_only,source_evidence,reason
+pa_only_mtp1_meta,pa_only_core,PA_BUY_SELL_CLOSE_TREND_003,1,-1.5,metadata_priority,yes,robust_l2_core_v2_diagnostic_v1,candidate-set winner for late_oow; cleanest baseline
+pa_only_mtp2_meta,pa_only_core,PA_BUY_SELL_CLOSE_TREND_003,2,-1.5,metadata_priority,yes,robust_l2_core_v2_diagnostic_v1,test whether mtp=2 improves/harms PA-only stability
+pa_gap_mtp2_meta,pa_gap_core,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",2,-1.5,metadata_priority,yes,robust_l2_core_v2_diagnostic_v1,combined leading candidate (PA driver + GAP complement)
+primary_mtp2_meta,primary_representative_core,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001,CCI_EXTREME_SNAPBACK_003",2,-1.5,metadata_priority,yes,robust_l2_core_v2_diagnostic_v1,interpretability/breadth baseline with CCI included (may dilute late_oow)
+pa_gap_mtp1_meta,pa_gap_core,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",1,-1.5,metadata_priority,yes,robust_l2_core_v2_diagnostic_v1,optional: test if mtp=1 is sufficient for PA+GAP
+
