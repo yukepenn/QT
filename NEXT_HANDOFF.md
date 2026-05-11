@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before this work | `4de1248` — Docs(handoff): record push for global L1 |
-| New commit | After pull: **`git log -1 --oneline`** (message **Research(global-l2): document full sweep results** or similar) |
-| Push status | Run **`git push`** after commit |
+| New commit | `e077abb` — **Research(global-l2): document full sweep results** |
+| Push status | **Pushed** `main` → `origin` (`4de1248..e077abb`) |
 | Working tree | Clean except **untracked**: `src/strategies/testing_parameters_results/**`; `src/combiner/results/layer2_qqq_global_2023_2024_v2/sweep_20260511_005622/` (full sweep dir); `src/combiner/results/layer2_qqq_global_2023_2024_v2/sweep_full_console*.log`; `src/combiner/results/layer2_qqq_global_2023_2024_v2/cost_stress/feature_store_stats.json`; `src/combiner/results/layer2_qqq_global_2023_2024_v2/cost_stress/candidate_precompute_profile.csv`; heavy diagnostics JSON; `src/research/results/layer1_global_qqq_2023_2024_v2/run_console.log` |
 
 ## B. Task scope

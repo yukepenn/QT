@@ -1,7 +1,3 @@
-### [Unreleased] – 2026-05-10
-
-- Docs(handoff): **NEXT_HANDOFF** — `main` pushed **`1ab2da1..2ad74fe`** (commit message **Run global Layer 1 after feature hardening**).
-
 ### [Unreleased] – 2026-05-11
 
 - Research(global-l2): **Global Layer 2 v2 full-window sweep** (QQQ 2023–2024, l2_core, `layer2_sweep_qqq_global_2023_2024_v2.yaml`) — curated `src/combiner/results/layer2_qqq_global_2023_2024_v2/` (`layer2_global_full_summary.md`, `layer2_global_*` CSV pack, `top_unique_systems.*`, `behavior_unique_systems.*`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.*`); decision **`TUNE_LAYER2_COST_TURNOVER`**. **No** `sweep_*` / `top_runs` / console logs committed; signal-cache sweep retry without `--use-signal-cache` (OneDrive rename issue).
@@ -9,6 +5,10 @@
 - Feat(research): **Global Layer 1 v2 + l2_core + Layer 2 design (QQQ 2023–2024)** — `global_strategy_audit_v2/`; `layer1_global_qqq_2023_2024_v2/` (manifest, 81 strict YAMLs, diversity `global_candidate_signal_diversity_qqq_2023_2024_v2/`, fast-context); `create_layer2_candidate_core.py`; `selected_candidates_l2_core/` (66); `global_candidate_signal_diversity_l2_core_qqq_2023_2024_v2/`; `build_global_branch_leaderboard_v2.py`; `global_branch_leaderboard_v2.{csv,md}`; `global_research_summary_v2.md`, `global_layer2_qqq_2023_2024_v2_design.md`, `global_layer2_gate_decision_v2.md`, `layer2_global_diagnostics_smoke_q1_2023.md`; `feature_build_performance_v2/verify_after/` + `feature_warning_verify.md`; `emit_global_layer2_v2_configs.py`; `layer2_qqq_global_2023_2024_v2.yaml`, `layer2_sweep_qqq_global_2023_2024_v2.yaml`; `run_global_layer1.py` / `global_strategy_audit.py` / `check_selected_candidates_fast_context.py` options. **`testing_parameters_results/**` uncommitted.** Curated Global Layer 2 full sweep documented in bullet above.
 
 ### [Unreleased] – 2026-05-10
+
+- Docs(handoff): **NEXT_HANDOFF** — post Global L2 push **`4de1248..e077abb`** (`Research(global-l2): document full sweep results`).
+
+- Docs(handoff): **NEXT_HANDOFF** — `main` pushed **`1ab2da1..2ad74fe`** (commit message **Run global Layer 1 after feature hardening**).
 
 - Perf(features): **feature construction batch-concat** — `volume.py`, `volatility.py`, `vwap.py`, `price_action.py`, `orb.py`, `levels.py` (no formula / column-name / `feature_key` changes); `feature_build_benchmark.py`, `feature_output_snapshot.py`; curated `feature_build_performance_v1/` + `feature_output_snapshot_{before,after}/` + `feature_numba_fastpath_design.md`; `test_feature_performance_equivalence.py`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, **`NEXT_HANDOFF`**, `tests/README`. **No** Global Layer 1/2 / mini-WFO / full WFO / live.
 
