@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Docs(handoff): **NEXT_HANDOFF** — mark trade-quality diagnostics push complete (`c0540d0` follows `fe10406`).
+
 - Research(trade-quality): **trade-level enrichment + attribution + offline score prototype** — `src/research/enrich_combiner_trades.py`, `analyze_trade_quality.py`, `score_trade_quality_offline.py`, `trade_quality_helpers.py`; tests `tests/test_enrich_combiner_trades.py`, `tests/test_analyze_trade_quality.py`, `tests/test_score_trade_quality_offline.py`; curated `src/research/results/trade_quality_router_v1/` (analysis bucket CSV/MD, `quality_score/threshold_simulation_*.csv`, `pnl_by_quality_decile_*.csv`, `score_rules_resolved_*.json`, taxonomy, design **`NEED_MORE_TRADE_ENRICHMENT`**); diag YAMLs `layer2_diag_vwap_lower_turnover.yaml`, `layer2_diag_indicator_mtp1.yaml`; indexes `RESULTS_INDEX` ×2, `PROJECT_STATUS`, `PROGRESS`, **`NEXT_HANDOFF`**. **Validation:** `compileall`, **390** `pytest`, loader **35** strategies. **Not run / not committed:** mini-WFO, full WFO, live, SPY, strategy/feature/signal changes, `local_runs/`, raw `trades.csv`, `enriched_trades/*_enriched.csv`, `quality_score/scored_trades_*.csv`.
 
 - Docs(handoff): **NEXT_HANDOFF** — record push `d359306..ea2e77a` + follow-up `8258117` (cost/turnover diagnostic handoff).
