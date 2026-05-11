@@ -1,0 +1,7 @@
+topic,module,symbol,notes
+combiner_trades_cli,src/combiner/run.py,trades.csv,"Contains signal_ts_utc/signal_idx and entry_ts_utc/entry_idx; writes detailed trades for local-only use."
+simulator_indices,src/combiner/simulator.py,signal_idx/entry_idx,"Entry is next-bar open; decision-time context uses signal bar."
+bars_reader,src/data/read_bars.py,read_bars,"Loads local parquet QQQ bars by month; outputs ts_utc sorted."
+feature_builder,src/features/build_features.py,build_basic_features,"Computes VWAP/ORB/PA regime features; provides ts_utc for merge_asof."
+asof_join,src/research/trade_quality_helpers.py,merge_features_asof_backward,"Uses pd.merge_asof direction=backward; no lookahead."
+prior_trade_context,src/research/trade_quality_helpers.py,add_prior_trade_columns,"Adds trade_number_of_day and prior trade PnL flags per session."

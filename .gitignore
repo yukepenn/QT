@@ -81,6 +81,9 @@ src/research/results/**/_runs/
 src/research/results/**/_windows/
 src/research/results/**/compact_trades.csv
 src/research/results/**/trades.csv
+src/research/results/**/trade_context_panel.csv
+src/research/results/**/local_rows/
+src/research/results/**/local_configs/
 src/research/results/**/equity.csv
 src/research/results/**/candidate_signal_log.csv
 src/research/results/**/rejected_signals.csv

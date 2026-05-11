@@ -1,0 +1,5 @@
+finding_id,area,finding,evidence_path
+F001,coverage,"Local panel built with 10,628 rows; decision context join succeeded for all rows.",aggregates/trade_context_coverage.csv
+F002,market_context,"Monthly context labels show dispersion in total_r across uptrend/downtrend/range_chop buckets.",aggregates/panel_market_context_summary.csv
+F003,router,"Router filters show risk/retention tradeoffs; see router_filter_results for deltas vs baseline.",router_diagnostics_v1/router_filter_results.csv
+F004,quality,"Quality score v2 proxy yields very sparse A-only bucket and modest A+B retention; separation inconclusive in proxy form.",quality_score_v2/quality_group_results.csv

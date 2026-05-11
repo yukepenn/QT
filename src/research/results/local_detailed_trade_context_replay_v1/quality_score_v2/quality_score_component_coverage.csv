@@ -1,0 +1,2 @@
+rows_in,missing_trend_score_rows,missing_distance_from_vwap_rows,missing_trade_number_rows,weights
+10628,10628,0,0,"{""cost_safety"": 0.15, ""freshness"": 0.15, ""level_context"": 0.2, ""regime_fit"": 0.3, ""signal_strength"": 0.2}"

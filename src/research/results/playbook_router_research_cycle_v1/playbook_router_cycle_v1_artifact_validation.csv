@@ -1,5 +1,5 @@
 rel_path,ok,rows,cols,error,abs_path_hit,missing_required_columns
-SOURCE_MAP.csv,True,53,6,,,
+SOURCE_MAP.csv,True,56,6,,,
 champion_v0_freeze.csv,True,3,5,,,
 chatgpt_key_tables.csv,True,4,5,,,
 context_diagnostics_v1/cci_increment_by_context.csv,True,4,5,,,

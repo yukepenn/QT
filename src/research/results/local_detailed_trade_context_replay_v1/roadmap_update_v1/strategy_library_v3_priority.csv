@@ -1,0 +1,5 @@
+priority,item,reason
+1,router/quality integration,offline diagnostics exist
+2,exit overlay diagnostics,mode preview available
+3,scalp long design,requires isolated Layer1
+4,short branch design,requires short-only Layer1/OOW

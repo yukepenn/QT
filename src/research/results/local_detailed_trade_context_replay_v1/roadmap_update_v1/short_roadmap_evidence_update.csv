@@ -1,0 +1,6 @@
+context_bucket,trades,total_r,evidence_strength,notes
+late_climax,6646,295.86333580916676,STRONG,Evidence is from Champion v0 only; does not imply new strategy implementation.
+trading_range,338,57.23307967532891,MODERATE,Evidence is from Champion v0 only; does not imply new strategy implementation.
+trend_long,1650,162.2534566748465,STRONG,Evidence is from Champion v0 only; does not imply new strategy implementation.
+trend_short_diagnostic,12,7.823105569805961,WEAK,Evidence is from Champion v0 only; does not imply new strategy implementation.
+unknown_mixed,1982,221.77702816763292,STRONG,Evidence is from Champion v0 only; does not imply new strategy implementation.

@@ -1,0 +1,7 @@
+section,item,metric,value,interpretation
+Coverage,local_panel,total_trades,10628,Row-level panel exists locally; aggregates are safe to commit
+Coverage,decision_context_join,rows_with_decision_regime_20,10628,Decision-time PA regime fields available for all trades
+Router,baseline_all_trades,total_r,744.95,Baseline summed R across all profiles/windows in local panel
+Router,preferred_or_neutral_only,trade_retention,0.187,Large retention loss; may be too aggressive
+Quality,bucket_distribution,A_share,0.0032,A-only is too sparse under current proxy scoring
+Quality,group_results,A+B_retention,0.284,A+B retains ~28% of trades under proxy scoring

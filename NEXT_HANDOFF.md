@@ -5,12 +5,12 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Parent before this cycle (Layer3 expanded stability review) | **`e1dc075a29418b5166c0b4306456b0d4e4103711`** — `Research(layer3): run expanded stability review` |
-| **Main research commit (this cycle)** | Message **`Research(router): design playbook router cycle`** — resolve full SHA with **`git log -1 --format=%H`** on synced `main` (a commit cannot embed its own hash without changing the hash). |
+| Parent before this cycle | **`92ba1fab0002929a9e6805ba896ef7c1a79a6567`** — `Research(router): design playbook router cycle` |
+| **Main research commit (this cycle)** | Message **`Research(router): run local trade context replay`** — resolve full SHA with **`git log -1 --format=%H`** on synced `main` (do not embed commit hash into itself). |
 | Repo tip (after push) | Same as **Main research commit** when `main` is clean and matches **`git ls-remote origin refs/heads/main`** |
 | Push status | After staging, run **`git push origin main`**; verify **`git ls-remote origin refs/heads/main`** equals local **`git rev-parse HEAD`**. |
-| Working tree | Curated **`src/research/results/playbook_router_research_cycle_v1/**`** tracked; expect **untracked** combiner scratch, `local_runs/**`, enriched/scored row CSVs under `trade_quality_router_v1/`, `layer3_*/*/local_configs/**`. **Do not** `git add .`. |
-| Expected untracked local-only | `local_runs/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/`, heavy `src/combiner/results/**`, `**/enriched_trades/*.csv`, `**/scored_trades*.csv` |
+| Working tree | Curated **`src/research/results/local_detailed_trade_context_replay_v1/**`** tracked (aggregates only). Row-level artifacts remain local-only and gitignored. **Do not** `git add .`. |
+| Expected untracked local-only | `src/research/results/local_detailed_trade_context_replay_v1/local_runs/**`, `src/research/results/local_detailed_trade_context_replay_v1/local_rows/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/` |
 
 ## B. Validation
 
@@ -24,15 +24,16 @@
 | Artifact validation — `playbook_router_research_cycle_v1` | **`playbook_router_cycle_v1_artifact_validation.*`** — **32** CSVs, **0** parse failures, **0** absolute-path hits, **0** missing required columns |
 | Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|compact_trades\|enriched.csv\|scored_trades\|\.parquet\|\.npy\|\.npz\|\.memmap"` → **no matches** |
 | ChatGPT bundle (this cycle) | `src/research/results/playbook_router_research_cycle_v1/CHATGPT_REVIEW_BUNDLE.md` |
-| Source map (this cycle) | `src/research/results/playbook_router_research_cycle_v1/SOURCE_MAP.csv` |
+| ChatGPT bundle (this cycle) | `src/research/results/local_detailed_trade_context_replay_v1/CHATGPT_REVIEW_BUNDLE.md` |
+| Source map (this cycle) | `src/research/results/local_detailed_trade_context_replay_v1/SOURCE_MAP.csv` |
 
 ## C. Task scope
 
 | | |
 |--|--|
-| **Requested** | **Playbook Router Research Cycle v1:** freeze **Champion v0**; trade-context **panel schema** + aggregated panel outputs; **context diagnostics** from curated Layer3; offline **router / trade-quality v2 / exit overlay** designs; scalp + short **roadmaps** (design-only); next **7-cycle** sweep roadmap; ChatGPT bundle + source map; **no** WFO/live/SPY/broad L2/new strategies/production router. |
-| **Completed** | `src/research/build_trade_context_panel.py`, `src/research/analyze_playbook_context.py`, `src/research/results/playbook_router_research_cycle_v1/**` (freeze, schema, `trade_context_panel_v1/`, `context_diagnostics_v1/`, `router_metadata_v1/`, `router_design_v1/router_v1_config_draft.yaml`, `trade_quality_score_v2/`, `exit_overlay_design_v1/`, roadmaps, decision, bundle, `chatgpt_key_tables.csv`); **`tests/test_playbook_router_cycle_v1.py`**; refreshed layer3 artifact validation CSVs; **`RESULTS_INDEX.md`**, **`PROJECT_STATUS.md`**, **`PROGRESS.md`**, **`CHANGES.md`**, **`NEXT_HANDOFF.md`**. |
-| **Intentionally not done** | No combiner / Layer3 **re-execution**; no WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1 rerun; no strategy / feature / selected-candidate YAML / signal / production **regime_router** changes; no short or scalp **implementation**; no committed row-level trades / enriched / scored trade CSVs; quarter-sliced **true** regime/context attribution remains **`REQUIRES_LOCAL_DETAILED_REPLAY`**. |
+| **Requested** | **Local-only** detailed trade-context replay for Champion v0; backward-asof decision-time context join; commit only aggregates; run offline router + quality v2 diagnostics; attribution/freshness/exit readiness/roadmap evidence; bundle + source map + decision; **no** WFO/live/SPY/broad L2/strategy or YAML edits/production router wiring. |
+| **Completed** | Local-only detailed replays for **3** Champion v0 profiles × **4** windows; local-only row panel (not committed); committed aggregates under `local_detailed_trade_context_replay_v1/` including router diagnostics, quality v2 diagnostics, attribution, freshness, exit readiness, roadmap update, bundle/source map/decision. |
+| **Intentionally not done** | No WFO / mini-WFO / live / paper; no SPY / broad Layer2 / Global Layer1 rerun; no strategy/feature/YAML semantics changes; no production router wiring; no row-level artifacts committed. |
 
 ## D. Champion v0 freeze
 
@@ -50,9 +51,10 @@
 |--------|-------------------|
 | Schema (row-level contract) | `trade_context_panel_schema.csv` + `.md` |
 | Available from curated smoke | `trade_context_available_fields.csv` — window **total_r**, candidate shares, exit-reason shares, trade#, monthly/quarterly rows (see `trade_context_panel_v1/`) |
-| Missing row-level columns | `trade_context_missing_inputs.csv` — `trade_id`, timestamps, **PA regime** features, trade-level **market_context_label**, etc. |
-| Aggregates committed | `trade_context_panel_aggregated_by_{profile,window,period,exit_reason,trade_number,market_context}.csv`, `trade_context_panel_summary.md` |
-| **Local detailed replay required?** | **Yes** for trade-level regime/context attribution and GAP/CCI isolation beyond window aggregates — see decision **`RUN_LOCAL_DETAILED_TRADE_CONTEXT_REPLAY`**. |
+| Local row-level panel | `src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv` (**local-only; not committed**) |
+| Local row count | **10,628** trades |
+| Decision timestamp logic | Prefer `signal_ts_utc`; fallback `entry_ts_utc - 1min` (if needed). Join is backward `merge_asof` only. |
+| Coverage | `aggregates/trade_context_coverage.csv` (100% join coverage on regime window 20 in this run) |
 
 ## F. Router / quality / exit design
 
@@ -87,7 +89,7 @@
 
 ## I. Decision
 
-**Label (exactly one):** **`RUN_LOCAL_DETAILED_TRADE_CONTEXT_REPLAY`**
+**Label (exactly one):** **`REFINE_ROUTER_QUALITY_SCORE`**
 
 - Champion v0 **freeze + roles** are documented and asserted in tests; strategic work shifts to **context** rather than new strategies.
 - **Curated `complete_*` summaries** support window-level PA vs PA+GAP vs primary and weak-period **proxies** only.
@@ -113,7 +115,7 @@
 
 ## L. Recommended next step (exactly one)
 
-**Run a local-only Layer3 Champion v0 trade regeneration + backward-asof enrichment to materialize a row-level trade-context panel on disk (not committed), then feed aggregates from that panel into offline router / quality diagnostics.**
+**Refine the offline router filters and quality score v2 component definitions using the now-available decision-time panel fields, then rerun aggregate-only diagnostics (still no production wiring).**
 
 ---
 

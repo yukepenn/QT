@@ -1,0 +1,23 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/research/run_local_trade_context_replay.py,Replay runner (local-only rows + committed aggregates),yes,,no,no,Does not commit local_rows/**
+src/research/run_offline_router_diagnostics.py,Offline router filter diagnostics (aggregate-only),yes,,no,yes,Reads local panel
+src/research/run_trade_quality_score_v2.py,Trade-quality v2 diagnostics (aggregate-only),yes,,no,yes,Reads local panel
+src/research/analyze_local_trade_context_panel.py,Attribution/freshness/exit/roadmap aggregates,yes,,no,yes,Reads local panel
+src/research/results/local_detailed_trade_context_replay_v1/baseline_inventory.md,Run baseline and policy inventory,yes,,yes,no,
+src/research/results/local_detailed_trade_context_replay_v1/api_inventory.md,API inventory for replay/enrichment,yes,,yes,no,
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/trade_context_coverage.csv,Coverage counts for local panel join,yes,1,no,yes,Local panel not committed
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/panel_profile_summary.csv,Per-profile aggregate results,yes,3,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/panel_window_summary.csv,Per-profile-window aggregate results,yes,12,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/panel_regime_summary.csv,Decision-time PA regime breakdown,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/panel_context_bucket_summary.csv,Context bucket breakdown,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/panel_market_context_summary.csv,Monthly market context label breakdown,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/router_diagnostics_v1/router_filter_results.csv,Router filter table with deltas,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/quality_score_v2/quality_group_results.csv,Quality group results (all vs A+B vs A),yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/attribution_v1/candidate_contribution_overall.csv,Candidate-level attribution totals,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/freshness_v1/trade_number_by_profile.csv,Trade # diagnostics by profile,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/exit_overlay_readiness_v1/exit_mode_assignment_preview.csv,Exit mode preview counts,yes,,no,yes,
+src/research/results/local_detailed_trade_context_replay_v1/roadmap_update_v1/strategy_library_v3_priority.csv,Next priorities table,yes,4,no,no,
+src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_replay_decision.md,Decision and next step,yes,,yes,no,
+src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_replay_summary.md,Short summary,yes,,yes,no,
+src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_replay_key_findings.csv,Key findings index,yes,4,no,no,
+src/research/results/local_detailed_trade_context_replay_v1/chatgpt_key_tables.csv,Bundle key metrics table,yes,6,no,no,
