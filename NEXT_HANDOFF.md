@@ -1,4 +1,4 @@
-# NEXT_HANDOFF
+﻿# NEXT_HANDOFF
 
 ## A. Git
 
@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Parent before this cycle | **`fefb268`** — `Research(router): refine offline quality diagnostics` |
-| **Main research commit (this cycle)** | **`0101ed19a593973abfeef08975be5b7da5ca2dc5`** — `Research(exit): run overlay diagnostics` |
-| Repo tip (after push) | Should equal **`0101ed19a593973abfeef08975be5b7da5ca2dc5`** and match **`git ls-remote origin refs/heads/main`** when clean |
+| **Main research commit (this cycle)** | **`26e95cf4b37f7aec1976db4f320e2b0e2c9ed4a0`** — `Research(exit): run overlay diagnostics` |
+| Repo tip (after push) | Should equal **`26e95cf4b37f7aec1976db4f320e2b0e2c9ed4a0`** and match **`git ls-remote origin refs/heads/main`** when clean |
 | Push status | Run `git push origin main` after explicit staging; verify remote `main` equals local `HEAD` |
 | Working tree | Expect **untracked** heavy/local artifacts under `src/combiner/results/**`, enriched/scored CSVs, logs — **do not** `git add .` |
 | Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/` |
