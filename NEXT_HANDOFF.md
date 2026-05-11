@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Main research commit (fixed-profile OOW anchor) | `dbd2817` — `Research: run fixed profile out-of-window validation` |
-| Repo tip (this pack) | **`0d0cb50c955a61e3cf808f0cea2f3e949aee02f3`** — `Research: audit layer2 candidate robustness` |
-| Push status | Run `git push` after amend; then **Pushed** or paste error here |
+| Repo tip (this pack) | **`7e5da17b89c91e01f7eb3a8f5743eda015ed0da3`** — `Research: audit layer2 candidate robustness` |
+| Push status | **Pushed** `main` → `origin` |
 | Working tree | Expect **clean** tracked tree after explicit `git add`; **untracked:** `layer2_candidate_robustness_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, `fixed_profile_oow_v1/local_runs/**` |
 | Expected untracked local-only artifacts | Raw `trades.csv`, `config_resolved.yaml`, logs under `layer2_candidate_robustness_v1/local_runs/**` — **do not** `git add` |
 
