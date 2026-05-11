@@ -1,0 +1,10 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,notes
+src/research/results/layer3_fixed_profile_smoke_optional_v1/CHATGPT_REVIEW_BUNDLE.md,single review entry,YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_optional_v1/profile_window_summary.csv,headline metrics per window,YES,12,NO,
+src/research/results/layer3_fixed_profile_smoke_optional_v1/profile_full_available_summary.csv,full-span slice only,YES,3,NO,
+src/research/results/layer3_fixed_profile_smoke_optional_v1/fixed_oow_comparison.csv,Layer3 vs fixed OOW reference,YES,,NO,
+src/research/results/layer3_fixed_profile_smoke_optional_v1/gate_results.csv,gate evaluation,YES,33,YES,gate_results.md
+src/research/results/layer3_fixed_profile_smoke_optional_v1/risk_flags.csv,risk register flags,YES,13,YES,risk_flags.md
+src/research/results/layer3_fixed_profile_smoke_optional_v1/exit_slip/layer3_optional_exit_slip_scenarios.csv,cost overlay scenarios,YES,,YES,layer3_optional_exit_slip_summary.md
+src/research/results/layer3_fixed_profile_smoke_optional_v1/run_execution_manifest_sanitized.csv,execution audit without abs paths,YES,,NO,
+src/research/results/layer3_fixed_profile_smoke_optional_v1/layer3_optional_smoke_decision.md,decision label,YES,,YES,

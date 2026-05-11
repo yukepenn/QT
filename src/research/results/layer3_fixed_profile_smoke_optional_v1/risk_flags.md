@@ -1,0 +1,15 @@
+# Risk flags (Layer3 optional)
+
+- **R_GAP_DEPENDENCE** (pa_gap_mtp1_meta): MEDIUM — combined profile; inspect GAP share
+- **R_NO_SPY_WFO_LIVE** (pa_gap_mtp1_meta): LOW — research-only; no cross-symbol or live evidence
+- **R_PA_CONCENTRATION** (pa_only_mtp2_meta): MEDIUM — single PA candidate
+- **R_NO_SPY_WFO_LIVE** (pa_only_mtp2_meta): LOW — research-only; no cross-symbol or live evidence
+- **R_CCI_BREADTH** (primary_mtp2_meta): MEDIUM — CCI breadth baseline; inspect CCI share vs PA/GAP
+- **R_NO_SPY_WFO_LIVE** (primary_mtp2_meta): LOW — research-only; no cross-symbol or live evidence
+- **R_2025Q1** (pa_gap_mtp1_meta): WARNING — 2025Q1 total_r=-6.902
+- **R_2022Q4** (pa_gap_mtp1_meta): WARNING — 2022Q4 total_r=-7.951
+- **R_2025Q1** (pa_only_mtp2_meta): WARNING — 2025Q1 total_r=-11.68
+- **R_2022Q4** (pa_only_mtp2_meta): WARNING — 2022Q4 total_r=-5.074
+- **R_2025Q1** (primary_mtp2_meta): WARNING — 2025Q1 total_r=-7.076
+- **R_2022Q4** (primary_mtp2_meta): WARNING — 2022Q4 total_r=-6.275
+- **R_FULL_WINDOW_OVERLAP** (ALL): INFO — Do not sum overlapping windows; use per-window and full_available for full-span economics.

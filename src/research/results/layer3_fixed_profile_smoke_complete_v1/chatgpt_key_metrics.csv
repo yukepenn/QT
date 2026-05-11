@@ -1,0 +1,21 @@
+section,profile_id,window,metric,value,interpretation
+per_window,pa_gap_mtp2_meta,early_oow,total_r,60.95349922123789,merged replay
+per_window,pa_gap_mtp2_meta,full_available,total_r,131.9922040279967,merged replay
+per_window,pa_gap_mtp2_meta,insample_ref,total_r,52.27158324385432,merged replay
+per_window,pa_gap_mtp2_meta,late_oow,total_r,18.767121562904507,merged replay
+per_window,pa_only_mtp1_meta,early_oow,total_r,45.14041230536661,merged replay
+per_window,pa_only_mtp1_meta,full_available,total_r,104.59469676655732,merged replay
+per_window,pa_only_mtp1_meta,insample_ref,total_r,37.96783399907462,merged replay
+per_window,pa_only_mtp1_meta,late_oow,total_r,21.486450462116103,merged replay
+per_window,pa_gap_mtp1_meta,early_oow,total_r,54.0047308112141,merged replay
+per_window,pa_gap_mtp1_meta,full_available,total_r,117.40405934587945,merged replay
+per_window,pa_gap_mtp1_meta,insample_ref,total_r,45.281921468863,merged replay
+per_window,pa_gap_mtp1_meta,late_oow,total_r,18.117407065802333,merged replay
+per_window,pa_only_mtp2_meta,early_oow,total_r,45.14041230536661,merged replay
+per_window,pa_only_mtp2_meta,full_available,total_r,104.59469676655732,merged replay
+per_window,pa_only_mtp2_meta,insample_ref,total_r,37.96783399907462,merged replay
+per_window,pa_only_mtp2_meta,late_oow,total_r,21.486450462116103,merged replay
+per_window,primary_mtp2_meta,early_oow,total_r,61.32923112052876,merged replay
+per_window,primary_mtp2_meta,full_available,total_r,135.88810215383648,merged replay
+per_window,primary_mtp2_meta,insample_ref,total_r,62.69586720508018,merged replay
+per_window,primary_mtp2_meta,late_oow,total_r,11.86300382822754,merged replay

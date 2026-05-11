@@ -101,14 +101,60 @@ def test_sanitized_manifest_no_abs_tokens():
 def test_decision_labels_allowed():
     allowed = {
         "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION",
+        "OPTIONAL_SMOKE_BATCH_COMPLETE",
+        "NEED_MORE_LAYER3_OPTIONAL_RUNS",
         "PROCEED_TO_LAYER3_EXPANDED_STABILITY_DESIGN",
+        "KEEP_CORE_ONLY_AND_PROCEED_TO_STABILITY_DESIGN",
         "REFINE_ROBUST_CORE_COMBINATION_RULES",
         "NEED_MORE_LAYER3_CORE_SMOKE",
         "HOLD_BEFORE_WFO",
         "DEFER_GLOBAL_SYSTEM",
     }
-    # Smoke test: runner decision must be one of these strings when produced by postprocess helpers.
     assert "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION" in allowed
+
+
+def test_all_smoke_profile_ids_five():
+    from src.research.run_layer3_fixed_profile_smoke import ALL_SMOKE_PROFILE_IDS
+
+    assert len(ALL_SMOKE_PROFILE_IDS) == 5
+
+
+def test_optional_run_plan_twelve_rows_excludes_core(tmp_path: Path):
+    from src.research.run_layer3_fixed_profile_smoke import (
+        OPTIONAL_PROFILE_IDS,
+        _build_run_plan,
+        _load_fixed_profile_definitions,
+        _resolve_profile_ids,
+    )
+
+    df = _load_fixed_profile_definitions(_ROOT / "src/research/results/fixed_robust_profile_oow_v1")
+    pids = _resolve_profile_ids(
+        fixed_df=df,
+        profiles_arg="primary_mtp2_meta,pa_gap_mtp1_meta,pa_only_mtp2_meta",
+        core_only=False,
+        include_optional_baseline=True,
+        include_ablations=True,
+    )
+    assert set(pids) == OPTIONAL_PROFILE_IDS
+    assert "pa_only_mtp1_meta" not in pids
+    plan = _build_run_plan(
+        output_root=tmp_path / "opt",
+        fixed_df=df,
+        profile_ids=pids,
+        windows=["early_oow", "insample_ref", "late_oow", "full_available"],
+    )
+    assert len(plan) == 12
+    assert set(plan["profile_id"]) == OPTIONAL_PROFILE_IDS
+
+
+def test_repo_rel_path_no_drive_prefix():
+    from src.research.run_layer3_fixed_profile_smoke import _ROOT, _repo_rel_path
+
+    p = _ROOT / "src" / "research" / "run_layer3_fixed_profile_smoke.py"
+    rel = _repo_rel_path(p)
+    assert not rel.startswith("D:/")
+    assert "OneDrive" not in rel
+    assert rel.startswith("src/research/")
 
 
 def test_markdown_pivot():

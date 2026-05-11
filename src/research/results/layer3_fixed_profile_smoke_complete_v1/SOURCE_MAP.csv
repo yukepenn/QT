@@ -1,0 +1,5 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,notes
+src/research/results/layer3_fixed_profile_smoke_complete_v1/CHATGPT_REVIEW_BUNDLE.md,review,YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_complete_v1/complete_profile_window_summary.csv,all profiles,YES,20,NO,
+src/research/results/layer3_fixed_profile_smoke_complete_v1/complete_gate_results.csv,gates,YES,55,YES,complete_gate_results.md
+src/research/results/layer3_fixed_profile_smoke_complete_v1/layer3_complete_smoke_decision.md,decision,YES,,YES,

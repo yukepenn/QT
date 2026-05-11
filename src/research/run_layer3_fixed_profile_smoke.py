@@ -29,6 +29,14 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+
+def _repo_rel_path(path: Path) -> str:
+    """Repo-relative posix path for curated SOURCE_MAP rows (no absolute drive paths)."""
+    try:
+        return path.resolve().relative_to(_ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
 from src.combiner.run import run_combiner_fixed_config  # noqa: E402
 from src.research.analyze_exit_slip_attribution import aggregate as exit_slip_row_aggregate  # noqa: E402
 from src.research.fixed_profile_oow_lib import (  # noqa: E402
@@ -48,6 +56,9 @@ WINDOW_BOUNDS = {
 }
 
 CORE_PROFILE_IDS = frozenset({"pa_only_mtp1_meta", "pa_gap_mtp2_meta"})
+OPTIONAL_PROFILE_IDS = frozenset({"primary_mtp2_meta", "pa_gap_mtp1_meta", "pa_only_mtp2_meta"})
+ALL_SMOKE_PROFILE_IDS = frozenset(CORE_PROFILE_IDS | OPTIONAL_PROFILE_IDS)
+MULTI_CANDIDATE_PROFILES = frozenset({"pa_gap_mtp2_meta", "pa_gap_mtp1_meta", "primary_mtp2_meta"})
 
 
 def _git_tip(repo_root: Path) -> str:
@@ -212,6 +223,17 @@ def _resolve_profile_ids(
     if not include_ablations:
         ids = [x for x in ids if x not in {"pa_gap_mtp1_meta", "pa_only_mtp2_meta"}]
     return ids
+
+
+def _infer_smoke_kind(*, core_only: bool, profile_ids: list[str]) -> str:
+    if core_only:
+        return "core"
+    s = set(profile_ids)
+    if s == OPTIONAL_PROFILE_IDS and len(profile_ids) == len(OPTIONAL_PROFILE_IDS):
+        return "optional"
+    if s == ALL_SMOKE_PROFILE_IDS:
+        return "full"
+    return "custom"
 
 
 def _build_run_plan(
@@ -419,21 +441,34 @@ def cmd_dry_run(argv: list[str] | None) -> int:
     output_root.mkdir(parents=True, exist_ok=True)
     _write_csv(plan, output_root / "run_plan.csv")
 
-    checks = []
+    kind = _infer_smoke_kind(core_only=bool(args.core_only), profile_ids=pids)
+    checks: list[tuple[str, bool, str]] = []
     n = len(plan)
-    checks.append(("row_count_8", n == 8, f"rows={n}"))
     prof_set = set(plan["profile_id"].astype(str))
-    checks.append(("only_core_profiles", prof_set <= CORE_PROFILE_IDS, f"profiles={sorted(prof_set)}"))
-    checks.append(("no_primary", "primary_mtp2_meta" not in prof_set, ""))
-    checks.append(("no_ablations", not prof_set.intersection({"pa_gap_mtp1_meta", "pa_only_mtp2_meta"}), ""))
     rp = plan["run_dir_rel"].astype(str).str.contains(r"^[a-zA-Z0-9_/.\-]+$", regex=True)
     checks.append(("run_dir_rel_safe", bool(rp.all()), "run_dir_rel pattern"))
+
+    if kind == "core":
+        checks.append(("row_count_8", n == 8, f"rows={n}"))
+        checks.append(("only_core_profiles", prof_set <= CORE_PROFILE_IDS, f"profiles={sorted(prof_set)}"))
+        checks.append(("no_primary", "primary_mtp2_meta" not in prof_set, ""))
+        checks.append(("no_ablations", not prof_set.intersection({"pa_gap_mtp1_meta", "pa_only_mtp2_meta"}), ""))
+    elif kind == "optional":
+        checks.append(("row_count_12", n == 12, f"rows={n}"))
+        checks.append(("only_optional_profiles", prof_set == OPTIONAL_PROFILE_IDS, f"profiles={sorted(prof_set)}"))
+        checks.append(("no_core_profiles", not prof_set.intersection(CORE_PROFILE_IDS), ""))
+    else:
+        checks.append(("row_count_expected", n == len(pids) * len(wins), f"rows={n} expected={len(pids)*len(wins)}"))
+        checks.append(("profiles_subset_fixed", prof_set <= set(fixed_df["profile_id"].astype(str)), str(sorted(prof_set))))
+
     chk_df = pd.DataFrame([{"check": a, "passed": b, "detail": c} for a, b, c in checks])
     _write_csv(chk_df, output_root / "dry_run_validation.csv")
     all_pass = bool(chk_df["passed"].all())
+    title = "Layer3 CORE smoke" if kind == "core" else "Layer3 optional smoke" if kind == "optional" else "Layer3 smoke (custom)"
     lines = [
-        "# Layer3 CORE smoke — dry-run validation",
+        f"# {title} — dry-run validation",
         "",
+        f"- smoke_kind: **{kind}**",
         f"- all_checks_pass: **{all_pass}**",
         f"- planned_rows: **{n}**",
         f"- profiles: **{sorted(prof_set)}**",
@@ -785,14 +820,33 @@ def _evaluate_gates(
         sub = pws[pws["profile_id"].astype(str) == pid]
         late = sub[sub["window"].astype(str) == "late_oow"]
         late_r = float(late.iloc[0]["total_r"]) if not late.empty else float("nan")
-        risk_rows.append(
-            {
-                "risk_id": "R_PA_CONCENTRATION" if pid == "pa_only_mtp1_meta" else "R_GAP_DEPENDENCE",
-                "profile_id": pid,
-                "severity": "MEDIUM",
-                "notes": "single PA candidate" if pid == "pa_only_mtp1_meta" else "combined profile; inspect GAP share",
-            }
-        )
+        if pid == "pa_only_mtp1_meta" or pid == "pa_only_mtp2_meta":
+            risk_rows.append(
+                {
+                    "risk_id": "R_PA_CONCENTRATION",
+                    "profile_id": pid,
+                    "severity": "MEDIUM",
+                    "notes": "single PA candidate",
+                }
+            )
+        elif pid == "primary_mtp2_meta":
+            risk_rows.append(
+                {
+                    "risk_id": "R_CCI_BREADTH",
+                    "profile_id": pid,
+                    "severity": "MEDIUM",
+                    "notes": "CCI breadth baseline; inspect CCI share vs PA/GAP",
+                }
+            )
+        else:
+            risk_rows.append(
+                {
+                    "risk_id": "R_GAP_DEPENDENCE",
+                    "profile_id": pid,
+                    "severity": "MEDIUM",
+                    "notes": "combined profile; inspect GAP share",
+                }
+            )
         risk_rows.append(
             {
                 "risk_id": "R_NO_SPY_WFO_LIVE",
@@ -801,7 +855,7 @@ def _evaluate_gates(
                 "notes": "research-only; no cross-symbol or live evidence",
             }
         )
-        if pid == "pa_gap_mtp2_meta" and not math.isnan(late_r):
+        if pid in ("pa_gap_mtp2_meta", "pa_gap_mtp1_meta") and not math.isnan(late_r):
             pa_only_late = pws[
                 (pws["profile_id"].astype(str) == "pa_only_mtp1_meta") & (pws["window"].astype(str) == "late_oow")
             ]
@@ -850,6 +904,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
     p.add_argument("--design-root", required=True)
     p.add_argument("--fixed-profile-root", required=True)
     p.add_argument("--output-root", required=True)
+    p.add_argument("--smoke-kind", choices=("auto", "core", "optional"), default="auto")
     args = p.parse_args(argv)
 
     design_root = Path(args.design_root)
@@ -861,6 +916,11 @@ def cmd_postprocess(argv: list[str] | None) -> int:
         fixed_root = Path.cwd() / fixed_root
     if not output_root.is_absolute():
         output_root = Path.cwd() / output_root
+
+    smoke_kind = str(args.smoke_kind)
+    if smoke_kind == "auto":
+        stem = output_root.name.lower()
+        smoke_kind = "optional" if "optional" in stem else "core"
 
     roles = _load_profile_roles(design_root)
     ref_path = fixed_root / "profile_window_summary.csv"
@@ -935,7 +995,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
 
         slip_parts.append(layer3_exit_slip_extended(trades, pid, wid))
         erc_parts.append(_exit_reason_cost_table(trades, pid, wid))
-        if pid == "pa_gap_mtp2_meta":
+        if pid in MULTI_CANDIDATE_PROFILES:
             comp_parts.append(_complementarity(trades, pid, wid))
 
         t = _period_cols(trades)
@@ -992,7 +1052,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
                     }
                 )
 
-        if pid == "pa_gap_mtp2_meta" and "candidate_id" in t.columns:
+        if pid in MULTI_CANDIDATE_PROFILES and "candidate_id" in t.columns:
             t2 = t.copy()
             cm = t2.groupby(["_month", t2["candidate_id"].astype(str)])["r_multiple"].sum().reset_index()
             cm.columns = ["month", "candidate_id", "total_r"]
@@ -1073,11 +1133,13 @@ def cmd_postprocess(argv: list[str] | None) -> int:
 
     slip_dir = output_root / "exit_slip"
     slip_dir.mkdir(parents=True, exist_ok=True)
+    slip_base = "layer3_optional" if smoke_kind == "optional" else "layer3"
     if slip_parts:
         slip = pd.concat(slip_parts, ignore_index=True)
-        _write_csv(slip, slip_dir / "layer3_exit_slip_scenarios.csv")
+        _write_csv(slip, slip_dir / f"{slip_base}_exit_slip_scenarios.csv")
         # summary md
-        lines = ["# Layer3 exit/slip overlay (CORE)", ""]
+        title = "Layer3 optional exit/slip overlay" if smoke_kind == "optional" else "Layer3 exit/slip overlay (CORE)"
+        lines = [f"# {title}", ""]
         for pid in sorted(slip["profile_id"].unique()):
             for wid in sorted(slip.loc[slip["profile_id"] == pid, "window"].unique()):
                 sub = slip[(slip["profile_id"] == pid) & (slip["window"] == wid)]
@@ -1085,9 +1147,9 @@ def cmd_postprocess(argv: list[str] | None) -> int:
                 for _, sr in sub.iterrows():
                     lines.append(f"- **{sr['scenario']}**: total_r={sr['total_r']:.4f}")
                 lines.append("")
-        (slip_dir / "layer3_exit_slip_summary.md").write_text("\n".join(lines), encoding="utf-8")
+        (slip_dir / f"{slip_base}_exit_slip_summary.md").write_text("\n".join(lines), encoding="utf-8")
     if erc_parts:
-        _write_csv(pd.concat(erc_parts, ignore_index=True), slip_dir / "layer3_exit_reason_cost_table.csv")
+        _write_csv(pd.concat(erc_parts, ignore_index=True), slip_dir / f"{slip_base}_exit_reason_cost_table.csv")
 
     comp_dir = output_root / "complementarity"
     comp_dir.mkdir(parents=True, exist_ok=True)
@@ -1095,7 +1157,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
         cdf = pd.concat(comp_parts, ignore_index=True)
         _write_csv(cdf, comp_dir / "profile_candidate_contribution.csv")
         md_lines = [
-            "# PA+GAP candidate contribution (CORE)",
+            "# Multi-candidate contribution (Layer3 smoke)",
             "",
             "| candidate_id | total_r | trades | share_of_total_r |",
             "|---|---:|---:|---:|",
@@ -1127,7 +1189,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
     _write_csv(risk_df, output_root / "risk_flags.csv")
 
     # gate_results.md
-    glines = ["# Gate results (Layer3 CORE)", ""]
+    glines = [f"# Gate results (Layer3 {'optional' if smoke_kind == 'optional' else 'CORE'})", ""]
     for gid in sorted(gates_df["gate_id"].unique()):
         sub = gates_df[gates_df["gate_id"] == gid]
         fail = int((~sub["pass"].astype(bool)).sum())
@@ -1136,7 +1198,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
         glines.append("")
     (output_root / "gate_results.md").write_text("\n".join(glines), encoding="utf-8")
 
-    rlines = ["# Risk flags (Layer3 CORE)", ""]
+    rlines = [f"# Risk flags (Layer3 {'optional' if smoke_kind == 'optional' else 'CORE'})", ""]
     for _, rr in risk_df.iterrows():
         rlines.append(f"- **{rr['risk_id']}** ({rr['profile_id']}): {rr['severity']} — {rr['notes']}")
     (output_root / "risk_flags.md").write_text("\n".join(rlines), encoding="utf-8")
@@ -1145,52 +1207,60 @@ def cmd_postprocess(argv: list[str] | None) -> int:
     prof_labels: dict[str, str] = {}
     for pid in sorted(res["profile_id"].unique()):
         gsub = gates_df[gates_df["profile_id"].astype(str) == str(pid)]
-        if gsub.empty:
-            prof_labels[str(pid)] = "NOT_EVALUATED"
-            continue
-        if any(~gsub["pass"].astype(bool)):
-            prof_labels[str(pid)] = "FAIL_LAYER3_CORE_SMOKE"
-        elif any(gsub["level"].astype(str) == "WARNING"):
-            prof_labels[str(pid)] = "LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS"
+        if smoke_kind == "optional":
+            prof_labels[str(pid)] = _profile_gate_label_layer3_extended(str(pid), gsub)
         else:
-            prof_labels[str(pid)] = "LAYER3_CORE_SMOKE_PASS"
+            prof_labels[str(pid)] = _profile_gate_label_core(gsub)
 
-    # Decision between RUN_OPTIONAL..., REFINE..., etc.
-    pa_lbl = prof_labels.get("pa_only_mtp1_meta", "NOT_EVALUATED")
-    gap_lbl = prof_labels.get("pa_gap_mtp2_meta", "NOT_EVALUATED")
-    decision = "NEED_MORE_LAYER3_CORE_SMOKE"
-    rationale: list[str] = []
-    good = {"LAYER3_CORE_SMOKE_PASS", "LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS"}
-    if pa_lbl == "FAIL_LAYER3_CORE_SMOKE" or gap_lbl == "FAIL_LAYER3_CORE_SMOKE":
-        if gap_lbl == "FAIL_LAYER3_CORE_SMOKE" and pa_lbl != "FAIL_LAYER3_CORE_SMOKE":
-            decision = "REFINE_ROBUST_CORE_COMBINATION_RULES"
-            rationale.append("PA+GAP CORE profile failed a gate while PA-only passed.")
+    # Decision (CORE vs optional batch)
+    if smoke_kind == "optional":
+        decision = "OPTIONAL_SMOKE_BATCH_COMPLETE"
+        rationale = [
+            "Optional baseline/ablation profiles executed (12 runs).",
+            "Merged review is produced under `layer3_fixed_profile_smoke_complete_v1/` via `merge-complete`.",
+        ]
+        bad = {"OPTIONAL_ABLATION_FAIL", "FAIL_LAYER3_SMOKE"}
+        if any(prof_labels.get(p) in bad for p in prof_labels):
+            decision = "NEED_MORE_LAYER3_OPTIONAL_RUNS"
+            rationale.insert(0, "At least one optional profile failed smoke gates.")
+    else:
+        pa_lbl = prof_labels.get("pa_only_mtp1_meta", "NOT_EVALUATED")
+        gap_lbl = prof_labels.get("pa_gap_mtp2_meta", "NOT_EVALUATED")
+        decision = "NEED_MORE_LAYER3_CORE_SMOKE"
+        rationale = []
+        good = {"LAYER3_CORE_SMOKE_PASS", "LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS"}
+        if pa_lbl == "FAIL_LAYER3_CORE_SMOKE" or gap_lbl == "FAIL_LAYER3_CORE_SMOKE":
+            if gap_lbl == "FAIL_LAYER3_CORE_SMOKE" and pa_lbl != "FAIL_LAYER3_CORE_SMOKE":
+                decision = "REFINE_ROBUST_CORE_COMBINATION_RULES"
+                rationale.append("PA+GAP CORE profile failed a gate while PA-only passed.")
+            else:
+                decision = "NEED_MORE_LAYER3_CORE_SMOKE"
+                rationale.append("At least one CORE profile failed gates or execution.")
+        elif pa_lbl in good and gap_lbl in good:
+            decision = "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION"
+            rationale.append("Both CORE profiles passed smoke gates (warnings acceptable).")
+            rationale.append("Next step: add optional baseline/ablation profiles for breadth and mtp checks.")
         else:
             decision = "NEED_MORE_LAYER3_CORE_SMOKE"
-            rationale.append("At least one CORE profile failed gates or execution.")
-    elif pa_lbl in good and gap_lbl in good:
-        decision = "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION"
-        rationale.append("Both CORE profiles passed smoke gates (warnings acceptable).")
-        rationale.append("Next step: add optional baseline/ablation profiles for breadth and mtp checks.")
-    else:
-        decision = "NEED_MORE_LAYER3_CORE_SMOKE"
-        rationale.append("Unexpected gate label combination; review gate_results.csv.")
+            rationale.append("Unexpected gate label combination; review gate_results.csv.")
 
-    # layer3_smoke_summary.md (short; full narrative in layer3_fixed_profile_smoke_summary.md)
-    (output_root / "layer3_smoke_summary.md").write_text(
-        "\n".join(
-            [
-                "# Layer3 CORE smoke — summary",
-                "",
-                f"- discovered runs: **{len(disc)}**",
-                f"- decision (draft): **{decision}**",
-                "",
-                "See `profile_window_summary.csv`, `gate_results.csv`, `fixed_oow_comparison.csv`.",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    sum_name = "layer3_optional_smoke_summary.md" if smoke_kind == "optional" else "layer3_smoke_summary.md"
+    sum_title = "Layer3 optional smoke" if smoke_kind == "optional" else "Layer3 CORE smoke"
+    if smoke_kind != "optional":
+        (output_root / sum_name).write_text(
+            "\n".join(
+                [
+                    f"# {sum_title} — summary",
+                    "",
+                    f"- discovered runs: **{len(disc)}**",
+                    f"- decision (draft): **{decision}**",
+                    "",
+                    "See `profile_window_summary.csv`, `gate_results.csv`, `fixed_oow_comparison.csv`.",
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
 
     # Write decision + summary CSV key_findings via _write_decision_docs helper inline
     _write_decision_artifacts(
@@ -1202,6 +1272,7 @@ def cmd_postprocess(argv: list[str] | None) -> int:
         prof_labels=prof_labels,
         decision=decision,
         rationale=rationale,
+        smoke_kind=smoke_kind,
     )
 
     design_decision_path = design_root / "layer3_fixed_profile_smoke_design_decision.md"
@@ -1211,31 +1282,84 @@ def cmd_postprocess(argv: list[str] | None) -> int:
         if "RUN_LAYER3_FIXED_PROFILE_SMOKE" not in txt:
             design_decision_note = "(design decision file present; label not found)"
 
-    inv_lines = [
-        "# Layer3 fixed-profile smoke v1 — baseline inventory",
-        "",
-        f"- **git_tip (at postprocess):** `{_git_tip(_ROOT)}`",
-        f"- **git_branch:** `{_git_branch(_ROOT)}`",
-        f"- **sync vs origin (at postprocess):** {_git_ahead_behind_upstream(_ROOT)}",
-        f"- **design decision (from `layer3_fixed_profile_smoke_design_decision.md`):** {design_decision_note}",
-        "- **NEXT_HANDOFF:** prior tip still described fixed-profile OOW only; updated in this task to Layer3 CORE smoke execution + A–L handoff.",
-        "- **CORE profiles executed:** `pa_only_mtp1_meta`, `pa_gap_mtp2_meta`",
-        "- **Optional profiles excluded:** `primary_mtp2_meta`, `pa_gap_mtp1_meta`, `pa_only_mtp2_meta`",
-        "- **windows:** `early_oow`, `insample_ref`, `late_oow`, `full_available`",
-        "- **expected run count:** 8 (2 × 4)",
-        f"- **discovered runs (metrics.json):** {len(discovered)}",
-        "- **local raw run root (do not commit):** `src/research/results/layer3_fixed_profile_smoke_v1/local_runs/**`",
-        "- **local configs (do not commit):** `src/research/results/layer3_fixed_profile_smoke_v1/local_configs/**`",
-        "- **missing curated files:** none required by postprocess (if postprocess completed)",
-        "",
-        "## Smoke outcome",
-        "",
-        f"- **decision:** `{decision}`",
-        "",
-    ]
+    if smoke_kind == "optional":
+        inv_lines = [
+            "# Layer3 fixed-profile smoke optional v1 — baseline inventory",
+            "",
+            f"- **git_tip (at postprocess):** `{_git_tip(_ROOT)}`",
+            f"- **git_branch:** `{_git_branch(_ROOT)}`",
+            f"- **sync vs origin (at postprocess):** {_git_ahead_behind_upstream(_ROOT)}",
+            f"- **design decision (from `layer3_fixed_profile_smoke_design_decision.md`):** {design_decision_note}",
+            "- **CORE smoke recap:** `pa_only_mtp1_meta` / `pa_gap_mtp2_meta` completed under `layer3_fixed_profile_smoke_v1/` (decision was `RUN_OPTIONAL_LAYER3_BASELINE_ABLATION`).",
+            "- **Optional profiles executed:** `primary_mtp2_meta`, `pa_gap_mtp1_meta`, `pa_only_mtp2_meta`",
+            "- **Not expanded beyond these three** (no VWAP, no PA_004/CCI_002 balanced profiles, no side-flip).",
+            "- **windows:** `early_oow`, `insample_ref`, `late_oow`, `full_available`",
+            "- **expected run count:** 12 (3 × 4)",
+            f"- **discovered runs (metrics.json):** {len(discovered)}",
+            "- **local raw run root (do not commit):** `src/research/results/layer3_fixed_profile_smoke_optional_v1/local_runs/**`",
+            "- **local configs (do not commit):** `src/research/results/layer3_fixed_profile_smoke_optional_v1/local_configs/**`",
+            "- **CORE artifacts present:** read from `layer3_fixed_profile_smoke_v1/profile_window_summary.csv` (parseable).",
+            "- **missing curated files:** none required by postprocess (if postprocess completed)",
+            "",
+            "## Smoke outcome",
+            "",
+            f"- **decision:** `{decision}`",
+            "",
+        ]
+    else:
+        inv_lines = [
+            "# Layer3 fixed-profile smoke v1 — baseline inventory",
+            "",
+            f"- **git_tip (at postprocess):** `{_git_tip(_ROOT)}`",
+            f"- **git_branch:** `{_git_branch(_ROOT)}`",
+            f"- **sync vs origin (at postprocess):** {_git_ahead_behind_upstream(_ROOT)}",
+            f"- **design decision (from `layer3_fixed_profile_smoke_design_decision.md`):** {design_decision_note}",
+            "- **NEXT_HANDOFF:** prior tip still described fixed-profile OOW only; updated in this task to Layer3 CORE smoke execution + A–L handoff.",
+            "- **CORE profiles executed:** `pa_only_mtp1_meta`, `pa_gap_mtp2_meta`",
+            "- **Optional profiles excluded:** `primary_mtp2_meta`, `pa_gap_mtp1_meta`, `pa_only_mtp2_meta`",
+            "- **windows:** `early_oow`, `insample_ref`, `late_oow`, `full_available`",
+            "- **expected run count:** 8 (2 × 4)",
+            f"- **discovered runs (metrics.json):** {len(discovered)}",
+            "- **local raw run root (do not commit):** `src/research/results/layer3_fixed_profile_smoke_v1/local_runs/**`",
+            "- **local configs (do not commit):** `src/research/results/layer3_fixed_profile_smoke_v1/local_configs/**`",
+            "- **missing curated files:** none required by postprocess (if postprocess completed)",
+            "",
+            "## Smoke outcome",
+            "",
+            f"- **decision:** `{decision}`",
+            "",
+        ]
     (output_root / "baseline_inventory.md").write_text("\n".join(inv_lines), encoding="utf-8")
 
     return 0
+
+
+def _profile_gate_label_core(gsub: pd.DataFrame) -> str:
+    if gsub.empty:
+        return "NOT_EVALUATED"
+    if bool((~gsub["pass"].astype(bool)).any()):
+        return "FAIL_LAYER3_CORE_SMOKE"
+    if bool((gsub["level"].astype(str) == "WARNING").any()):
+        return "LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS"
+    return "LAYER3_CORE_SMOKE_PASS"
+
+
+def _profile_gate_label_layer3_extended(pid: str, gsub: pd.DataFrame) -> str:
+    if gsub.empty:
+        return "NOT_EVALUATED"
+    failed = bool((~gsub["pass"].astype(bool)).any())
+    warned = bool((gsub["level"].astype(str) == "WARNING").any())
+    if failed:
+        if pid in {"pa_gap_mtp1_meta", "pa_only_mtp2_meta"}:
+            return "OPTIONAL_ABLATION_FAIL"
+        return "FAIL_LAYER3_SMOKE"
+    if pid == "primary_mtp2_meta":
+        return "OPTIONAL_BASELINE_PASS_WITH_WARNINGS" if warned else "LAYER3_SMOKE_PASS"
+    if pid == "pa_gap_mtp1_meta":
+        return "LAYER3_SMOKE_PASS_WITH_WARNINGS" if warned else "OPTIONAL_ABLATION_CONFIRMED"
+    if pid == "pa_only_mtp2_meta":
+        return "LAYER3_SMOKE_PASS_WITH_WARNINGS" if warned else "OPTIONAL_ABLATION_CONFIRMED"
+    return "LAYER3_SMOKE_PASS_WITH_WARNINGS" if warned else "LAYER3_SMOKE_PASS"
 
 
 def _write_decision_artifacts(
@@ -1248,10 +1372,19 @@ def _write_decision_artifacts(
     prof_labels: dict[str, str],
     decision: str,
     rationale: list[str],
+    smoke_kind: str = "core",
 ) -> None:
     git_tip = _git_tip(_ROOT)
+    rootp = _repo_rel_path(output_root)
+    is_opt = smoke_kind == "optional"
+    decision_title = "Layer3 optional smoke v1 — decision" if is_opt else "Layer3 fixed-profile smoke v1 — decision (CORE only)"
+    decision_fn = "layer3_optional_smoke_decision.md" if is_opt else "layer3_fixed_profile_smoke_decision.md"
+    kf_fn = "layer3_optional_smoke_key_findings.csv" if is_opt else "layer3_fixed_profile_smoke_key_findings.csv"
+    long_sm_fn = "layer3_optional_smoke_summary.md" if is_opt else "layer3_fixed_profile_smoke_summary.md"
+    bundle_title = "CHATGPT_REVIEW_BUNDLE — layer3_fixed_profile_smoke_optional_v1" if is_opt else "CHATGPT_REVIEW_BUNDLE — layer3_fixed_profile_smoke_v1 (CORE)"
+
     lines = [
-        "# Layer3 fixed-profile smoke v1 — decision (CORE only)",
+        f"# {decision_title}",
         "",
         f"**Decision (exactly one):** **`{decision}`**",
         "",
@@ -1276,7 +1409,12 @@ def _write_decision_artifacts(
             "",
         ]
     )
-    if decision == "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION":
+    if is_opt:
+        if decision == "NEED_MORE_LAYER3_OPTIONAL_RUNS":
+            lines.append("Repair optional execution or gates; re-run optional smoke.")
+        else:
+            lines.append("Run `python -m src.research.run_layer3_fixed_profile_smoke merge-complete ...` to build `layer3_fixed_profile_smoke_complete_v1/`.")
+    elif decision == "RUN_OPTIONAL_LAYER3_BASELINE_ABLATION":
         lines.append("Run optional Layer3 baseline/ablation (`primary_mtp2_meta`, `pa_gap_mtp1_meta`, `pa_only_mtp2_meta`) in a follow-on task.")
     elif decision == "REFINE_ROBUST_CORE_COMBINATION_RULES":
         lines.append("Refine PA+GAP combination rules or candidate weighting before expanding smoke.")
@@ -1288,14 +1426,28 @@ def _write_decision_artifacts(
             "",
             "## Explicit non-runs",
             "",
-            "- No optional profiles in this CORE task",
-            "- No broad Layer2, WFO, live/paper, SPY, router",
-            "- No strategy/feature/YAML edits",
-            "",
-            f"- git_tip: {git_tip}",
         ]
     )
-    (output_root / "layer3_fixed_profile_smoke_decision.md").write_text("\n".join(lines), encoding="utf-8")
+    if is_opt:
+        lines.extend(
+            [
+                "- No CORE re-runs in this optional batch (use existing `layer3_fixed_profile_smoke_v1/`).",
+                "- No broad Layer2, WFO, live/paper, SPY, router",
+                "- No strategy/feature/YAML edits",
+                "",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "- No optional profiles in this CORE task",
+                "- No broad Layer2, WFO, live/paper, SPY, router",
+                "- No strategy/feature/YAML edits",
+                "",
+            ]
+        )
+    lines.append(f"- git_tip: {git_tip}")
+    (output_root / decision_fn).write_text("\n".join(lines), encoding="utf-8")
 
     # key_findings.csv
     kf: list[dict[str, Any]] = []
@@ -1307,7 +1459,7 @@ def _write_decision_artifacts(
                 "window_or_period": r["window"],
                 "result": f"total_r={float(r['total_r']):.4f}",
                 "evidence_strength": "high",
-                "implication": "headline economics for CORE window",
+                "implication": "headline economics for window",
                 "next_action": "compare to fixed OOW reference",
             }
         )
@@ -1323,64 +1475,67 @@ def _write_decision_artifacts(
                 "next_action": decision,
             }
         )
-    _write_csv(pd.DataFrame(kf), output_root / "layer3_fixed_profile_smoke_key_findings.csv")
+    _write_csv(pd.DataFrame(kf), output_root / kf_fn)
 
-    # layer3_fixed_profile_smoke_summary.md
+    # Long summary md
     sm = [
-        "# Layer3 fixed-profile smoke v1 — summary (CORE)",
+        f"# {'Layer3 optional smoke v1 — summary' if is_opt else 'Layer3 fixed-profile smoke v1 — summary (CORE)'}",
         "",
         "## 1. Purpose",
         "",
-        "Execute CORE Layer3 smoke (2 profiles × 4 windows) against fixed design gates.",
+        "Execute optional Layer3 smoke (3 profiles × 4 windows)." if is_opt else "Execute CORE Layer3 smoke (2 profiles × 4 windows) against fixed design gates.",
         "",
         "## 2. Input design",
         "",
         f"- Design root: `{design_root.as_posix()}`",
         "",
-        "## 3. CORE profiles",
-        "",
-        "- `pa_only_mtp1_meta`",
-        "- `pa_gap_mtp2_meta`",
-        "",
-        "## 4. Results",
-        "",
-        "See `profile_window_summary.csv` and `fixed_oow_comparison.csv`.",
-        "",
-        "## 5. Gates / risks / cost overlay",
-        "",
-        "- `gate_results.csv`, `risk_flags.csv`",
-        "- `exit_slip/layer3_exit_slip_scenarios.csv`",
-        "",
-        "## 6. Decision",
-        "",
-        f"**{decision}**",
-        "",
-        "## 7. Explicit non-runs",
-        "",
-        "Optional profiles not run; no WFO/live/SPY/router/YAML edits.",
+        "## 3. Profiles",
         "",
     ]
-    (output_root / "layer3_fixed_profile_smoke_summary.md").write_text("\n".join(sm), encoding="utf-8")
+    if is_opt:
+        sm.extend(["- `primary_mtp2_meta`", "- `pa_gap_mtp1_meta`", "- `pa_only_mtp2_meta`", ""])
+    else:
+        sm.extend(["- `pa_only_mtp1_meta`", "- `pa_gap_mtp2_meta`", ""])
+    sm.extend(
+        [
+            "## 4. Results",
+            "",
+            "See `profile_window_summary.csv` and `fixed_oow_comparison.csv`.",
+            "",
+            "## 5. Gates / risks / cost overlay",
+            "",
+            "- `gate_results.csv`, `risk_flags.csv`",
+            f"- `exit_slip/{'layer3_optional_' if is_opt else 'layer3_'}exit_slip_scenarios.csv`",
+            "",
+            "## 6. Decision",
+            "",
+            f"**{decision}**",
+            "",
+            "## 7. Explicit non-runs",
+            "",
+            "No WFO/live/SPY/router/YAML edits." if is_opt else "Optional profiles not run in CORE task; no WFO/live/SPY/router/YAML edits.",
+            "",
+        ]
+    )
+    (output_root / long_sm_fn).write_text("\n".join(sm), encoding="utf-8")
 
     # CHATGPT_REVIEW_BUNDLE.md
     bundle = [
-        "# CHATGPT_REVIEW_BUNDLE — layer3_fixed_profile_smoke_v1 (CORE)",
+        f"# {bundle_title}",
         "",
         f"## 1. Git tip\n\n- `{git_tip}`",
         "",
-        "## 2. CORE execution",
+        "## 2. Execution",
         "",
-        "- Profiles: `pa_only_mtp1_meta`, `pa_gap_mtp2_meta`",
-        "- Windows: `early_oow`, `insample_ref`, `late_oow`, `full_available`",
-        f"- Runs discovered: **{len(res)}**",
+        f"- Runs (profile×window rows): **{len(res)}**",
         "",
-        "## 3. Per-window total_r (Layer3)",
+        "## 3. Per-window total_r",
         "",
         _markdown_total_r_pivot(res),
         "",
         "## 4. Fixed OOW comparison",
         "",
-        "See `fixed_oow_comparison.csv` (should match within float noise if same data/code).",
+        "See `fixed_oow_comparison.csv`.",
         "",
         "## 5. Gates",
         "",
@@ -1388,19 +1543,15 @@ def _write_decision_artifacts(
         "",
         "## 6. Cost overlay",
         "",
-        "See `exit_slip/layer3_exit_slip_scenarios.csv` — target_limit_stress must stay positive for full_available (gate).",
+        f"See `exit_slip/{'layer3_optional_' if is_opt else 'layer3_'}exit_slip_scenarios.csv`.",
         "",
-        "## 7. Complementarity",
-        "",
-        "See `complementarity/profile_candidate_contribution.csv` for PA+GAP.",
-        "",
-        "## 8. Decision",
+        "## 7. Decision",
         "",
         f"**{decision}**",
         "",
-        "## 9. Non-runs",
+        "## 8. Non-runs",
         "",
-        "No optional profiles; no broad L2/WFO/live/SPY.",
+        "No broad L2/WFO/live/SPY.",
         "",
     ]
     (output_root / "CHATGPT_REVIEW_BUNDLE.md").write_text("\n".join(bundle), encoding="utf-8")
@@ -1415,14 +1566,14 @@ def _write_decision_artifacts(
                 "window": r["window"],
                 "metric": "total_r",
                 "value": float(r["total_r"]),
-                "interpretation": "Layer3 CORE replay",
+                "interpretation": "Layer3 optional replay" if is_opt else "Layer3 CORE replay",
             }
         )
     _write_csv(pd.DataFrame(km), output_root / "chatgpt_key_metrics.csv")
 
     sm_rows: list[dict[str, Any]] = [
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/CHATGPT_REVIEW_BUNDLE.md",
+            "file_path": f"{rootp}/CHATGPT_REVIEW_BUNDLE.md",
             "purpose": "single review entry",
             "required_for_review": "YES",
             "row_count_if_csv": "",
@@ -1430,7 +1581,7 @@ def _write_decision_artifacts(
             "notes": "",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/profile_window_summary.csv",
+            "file_path": f"{rootp}/profile_window_summary.csv",
             "purpose": "headline metrics per window",
             "required_for_review": "YES",
             "row_count_if_csv": str(len(res)),
@@ -1438,7 +1589,7 @@ def _write_decision_artifacts(
             "notes": "",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/profile_full_available_summary.csv",
+            "file_path": f"{rootp}/profile_full_available_summary.csv",
             "purpose": "full-span slice only",
             "required_for_review": "YES",
             "row_count_if_csv": str(len(res[res["window"].astype(str) == "full_available"])),
@@ -1446,7 +1597,7 @@ def _write_decision_artifacts(
             "notes": "",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/fixed_oow_comparison.csv",
+            "file_path": f"{rootp}/fixed_oow_comparison.csv",
             "purpose": "Layer3 vs fixed OOW reference",
             "required_for_review": "YES",
             "row_count_if_csv": "",
@@ -1454,7 +1605,7 @@ def _write_decision_artifacts(
             "notes": "",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/gate_results.csv",
+            "file_path": f"{rootp}/gate_results.csv",
             "purpose": "gate evaluation",
             "required_for_review": "YES",
             "row_count_if_csv": str(len(gates_df)),
@@ -1462,7 +1613,7 @@ def _write_decision_artifacts(
             "notes": "gate_results.md",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/risk_flags.csv",
+            "file_path": f"{rootp}/risk_flags.csv",
             "purpose": "risk register flags",
             "required_for_review": "YES",
             "row_count_if_csv": str(len(risk_df)),
@@ -1470,15 +1621,15 @@ def _write_decision_artifacts(
             "notes": "risk_flags.md",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/exit_slip/layer3_exit_slip_scenarios.csv",
+            "file_path": f"{rootp}/exit_slip/{'layer3_optional_' if is_opt else 'layer3_'}exit_slip_scenarios.csv",
             "purpose": "cost overlay scenarios",
             "required_for_review": "YES",
             "row_count_if_csv": "",
             "markdown_mirror_available": "YES",
-            "notes": "layer3_exit_slip_summary.md",
+            "notes": f"{'layer3_optional_' if is_opt else 'layer3_'}exit_slip_summary.md",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/run_execution_manifest_sanitized.csv",
+            "file_path": f"{rootp}/run_execution_manifest_sanitized.csv",
             "purpose": "execution audit without abs paths",
             "required_for_review": "YES",
             "row_count_if_csv": "",
@@ -1486,8 +1637,8 @@ def _write_decision_artifacts(
             "notes": "",
         },
         {
-            "file_path": "src/research/results/layer3_fixed_profile_smoke_v1/layer3_fixed_profile_smoke_decision.md",
-            "purpose": "final decision label",
+            "file_path": f"{rootp}/{decision_fn}",
+            "purpose": "decision label",
             "required_for_review": "YES",
             "row_count_if_csv": "",
             "markdown_mirror_available": "YES",
@@ -1497,10 +1648,383 @@ def _write_decision_artifacts(
     _write_csv(pd.DataFrame(sm_rows), output_root / "SOURCE_MAP.csv")
 
 
+def _label_for_complete_merge(pid: str, gsub: pd.DataFrame) -> str:
+    if pid in CORE_PROFILE_IDS:
+        return _profile_gate_label_core(gsub).replace("LAYER3_CORE_SMOKE_", "LAYER3_SMOKE_")
+    return _profile_gate_label_layer3_extended(pid, gsub)
+
+
+def cmd_merge_complete(argv: list[str] | None) -> int:
+    p = argparse.ArgumentParser(description="Merge CORE + optional Layer3 smoke into complete_v1 review.")
+    p.add_argument("--design-root", required=True)
+    p.add_argument("--fixed-profile-root", required=True)
+    p.add_argument("--core-root", required=True)
+    p.add_argument("--optional-root", required=True)
+    p.add_argument("--output-root", required=True)
+    args = p.parse_args(argv)
+
+    design_root = Path(args.design_root)
+    fixed_root = Path(args.fixed_profile_root)
+    core_root = Path(args.core_root)
+    opt_root = Path(args.optional_root)
+    out = Path(args.output_root)
+    if not design_root.is_absolute():
+        design_root = Path.cwd() / design_root
+    if not fixed_root.is_absolute():
+        fixed_root = Path.cwd() / fixed_root
+    if not core_root.is_absolute():
+        core_root = Path.cwd() / core_root
+    if not opt_root.is_absolute():
+        opt_root = Path.cwd() / opt_root
+    if not out.is_absolute():
+        out = Path.cwd() / out
+    out.mkdir(parents=True, exist_ok=True)
+
+    roles = _load_profile_roles(design_root)
+    cr = pd.read_csv(core_root / "profile_window_summary.csv")
+    op = pd.read_csv(opt_root / "profile_window_summary.csv")
+    expected_profiles = {"pa_only_mtp1_meta", "pa_gap_mtp2_meta", "primary_mtp2_meta", "pa_gap_mtp1_meta", "pa_only_mtp2_meta"}
+    got = set(cr["profile_id"].astype(str).unique()) | set(op["profile_id"].astype(str).unique())
+    if got != expected_profiles:
+        raise ValueError(f"merge-complete: expected profiles {sorted(expected_profiles)}, got {sorted(got)}")
+
+    merged = pd.concat([cr, op], ignore_index=True)
+    _write_csv(merged, out / "complete_profile_window_summary.csv")
+    fa = merged[merged["window"].astype(str) == "full_available"].copy()
+    _write_csv(fa, out / "complete_profile_full_available_summary.csv")
+
+    # Monthly / quarterly / yearly / drawdown / exit / trade_number — concat when present
+    for name in ("monthly_summary.csv", "quarterly_summary.csv", "yearly_summary.csv", "drawdown_summary.csv", "exit_reason_summary.csv", "trade_number_summary.csv"):
+        c1 = core_root / name
+        o1 = opt_root / name
+        parts = []
+        if c1.is_file():
+            parts.append(pd.read_csv(c1))
+        if o1.is_file():
+            parts.append(pd.read_csv(o1))
+        if parts:
+            _write_csv(pd.concat(parts, ignore_index=True), out / f"complete_{name}")
+
+    # Fixed OOW comparison concat
+    fc = pd.read_csv(core_root / "fixed_oow_comparison.csv")
+    fo = pd.read_csv(opt_root / "fixed_oow_comparison.csv")
+    _write_csv(pd.concat([fc, fo], ignore_index=True), out / "complete_fixed_oow_comparison.csv")
+
+    # Exit slip concat
+    slip_c = core_root / "exit_slip/layer3_exit_slip_scenarios.csv"
+    slip_o = opt_root / "exit_slip/layer3_optional_exit_slip_scenarios.csv"
+    slip_parts: list[pd.DataFrame] = []
+    if slip_c.is_file():
+        slip_parts.append(pd.read_csv(slip_c))
+    if slip_o.is_file():
+        slip_parts.append(pd.read_csv(slip_o))
+    slip_all = pd.concat(slip_parts, ignore_index=True) if slip_parts else pd.DataFrame()
+    if not slip_all.empty:
+        _write_csv(slip_all, out / "complete_exit_slip_comparison.csv")
+        lines = ["# Complete Layer3 exit/slip (CORE + optional)", ""]
+        for pid in sorted(slip_all["profile_id"].astype(str).unique()):
+            for wid in ["early_oow", "insample_ref", "late_oow", "full_available"]:
+                sub = slip_all[(slip_all["profile_id"].astype(str) == pid) & (slip_all["window"].astype(str) == wid)]
+                if sub.empty:
+                    continue
+                lines.append(f"## {pid} / {wid}")
+                for _, sr in sub.iterrows():
+                    lines.append(f"- **{sr['scenario']}**: total_r={float(sr['total_r']):.4f}")
+                lines.append("")
+        (out / "complete_exit_slip_summary.md").write_text("\n".join(lines), encoding="utf-8")
+
+    monthly = pd.read_csv(out / "complete_monthly_summary.csv") if (out / "complete_monthly_summary.csv").is_file() else pd.DataFrame()
+    quarterly = pd.read_csv(out / "complete_quarterly_summary.csv") if (out / "complete_quarterly_summary.csv").is_file() else pd.DataFrame()
+    gates_df, risk_df = _evaluate_gates(pws=merged, monthly=monthly, quarterly=quarterly, slip=slip_all, design_root=design_root)
+    _write_csv(gates_df, out / "complete_gate_results.csv")
+    _write_csv(risk_df, out / "complete_risk_flags.csv")
+
+    glines = ["# Gate results (Layer3 complete)", ""]
+    for gid in sorted(gates_df["gate_id"].unique()):
+        sub = gates_df[gates_df["gate_id"] == gid]
+        fail = int((~sub["pass"].astype(bool)).sum())
+        glines.append(f"## {gid}")
+        glines.append(f"- non-pass rows: **{fail}** / {len(sub)}")
+        glines.append("")
+    (out / "complete_gate_results.md").write_text("\n".join(glines), encoding="utf-8")
+    rlines = ["# Risk flags (Layer3 complete)", ""]
+    for _, rr in risk_df.iterrows():
+        rlines.append(f"- **{rr['risk_id']}** ({rr['profile_id']}): {rr['severity']} — {rr['notes']}")
+    (out / "complete_risk_flags.md").write_text("\n".join(rlines), encoding="utf-8")
+
+    # Profile labels + ranking
+    prof_labels: dict[str, str] = {}
+    for pid in sorted(merged["profile_id"].astype(str).unique()):
+        gsub = gates_df[gates_df["profile_id"].astype(str) == str(pid)]
+        prof_labels[pid] = _label_for_complete_merge(pid, gsub)
+
+    fa_rows = fa.copy()
+    fa_rows["label"] = fa_rows["profile_id"].astype(str).map(prof_labels)
+    rank_rows = []
+    for _, r in fa_rows.sort_values("total_r", ascending=False).iterrows():
+        rank_rows.append(
+            {
+                "rank": len(rank_rows) + 1,
+                "profile_id": r["profile_id"],
+                "role": roles.get(str(r["profile_id"]), ""),
+                "total_r": float(r["total_r"]),
+                "max_dd_r": float(r.get("max_dd_r", r.get("max_drawdown_r", 0)) or 0),
+                "label": r["label"],
+            }
+        )
+    _write_csv(pd.DataFrame(rank_rows), out / "complete_ranking.csv")
+
+    # core_vs_optional_comparison
+    cmp_list: list[dict[str, Any]] = []
+    by_prof = {p: merged[merged["profile_id"].astype(str) == p] for p in expected_profiles}
+
+    def tot(pid: str, w: str) -> float:
+        sub = by_prof[pid][by_prof[pid]["window"].astype(str) == w]
+        return float(sub.iloc[0]["total_r"]) if not sub.empty else float("nan")
+
+    for w in ["early_oow", "insample_ref", "late_oow", "full_available"]:
+        a, b = tot("pa_only_mtp1_meta", w), tot("pa_only_mtp2_meta", w)
+        cmp_list.append(
+            {
+                "comparison": "pa_only_mtp1_vs_mtp2",
+                "window": w,
+                "delta_total_r": a - b if not math.isnan(a) and not math.isnan(b) else float("nan"),
+                "notes": "near-zero delta => mtp does not bind" if abs(a - b) < 0.05 else "material delta",
+            }
+        )
+        g2, g1 = tot("pa_gap_mtp2_meta", w), tot("pa_gap_mtp1_meta", w)
+        cmp_list.append(
+            {
+                "comparison": "pa_gap_mtp2_vs_mtp1",
+                "window": w,
+                "delta_total_r": g2 - g1 if not math.isnan(g2) and not math.isnan(g1) else float("nan"),
+                "notes": "positive favors mtp2 cap",
+            }
+        )
+    _write_csv(pd.DataFrame(cmp_list), out / "core_vs_optional_comparison.csv")
+
+    # Complementarity merge
+    comp_parts: list[pd.DataFrame] = []
+    for root, name in (
+        (core_root, "complementarity/profile_candidate_contribution.csv"),
+        (opt_root, "complementarity/profile_candidate_contribution.csv"),
+    ):
+        pth = root / name
+        if pth.is_file():
+            comp_parts.append(pd.read_csv(pth))
+    if comp_parts:
+        cdf = pd.concat(comp_parts, ignore_index=True)
+        _write_csv(cdf, out / "complete_candidate_contribution.csv")
+        md = ["# Candidate contribution (complete)", "", "| profile_id | window | candidate_id | total_r | trades | share |", "|---|---|---|---:|---:|---:|"]
+        for _, rr in cdf.iterrows():
+            md.append(
+                f"| `{rr['profile_id']}` | `{rr['window']}` | `{rr['candidate_id']}` | {float(rr['total_r']):.4f} | {int(rr['trades'])} | {float(rr.get('share_of_total_r', 0)):.4f} |"
+            )
+        (out / "complete_candidate_contribution.md").write_text("\n".join(md), encoding="utf-8")
+    else:
+        (out / "complete_candidate_contribution.md").write_text("# Candidate contribution\n\nNo complementarity CSVs found.\n")
+
+    # Decision
+    decision, rationale = _decision_layer3_complete(merged, gates_df, prof_labels, cmp_list)
+    _write_complete_decision_bundle(out=out, design_root=design_root, merged=merged, gates_df=gates_df, risk_df=risk_df, prof_labels=prof_labels, decision=decision, rationale=rationale, slip_all=slip_all, rank_rows=rank_rows)
+
+    return 0
+
+
+def _decision_layer3_complete(
+    merged: pd.DataFrame,
+    gates_df: pd.DataFrame,
+    prof_labels: dict[str, str],
+    cmp: list[dict[str, Any]],
+) -> tuple[str, list[str]]:
+    rationale: list[str] = []
+    if bool((~gates_df["pass"].astype(bool)).any()):
+        return "REFINE_ROBUST_CORE_COMBINATION_RULES", ["At least one gate FAIL on merged profile×window rows."]
+    bad_lbl = {"FAIL_LAYER3_SMOKE", "OPTIONAL_ABLATION_FAIL"}
+    if any(prof_labels.get(p) in bad_lbl for p in prof_labels):
+        return "REFINE_ROBUST_CORE_COMBINATION_RULES", ["A profile-level label indicates failure or failed ablation."]
+
+    # mtp equivalence: pa_only deltas small on full_available
+    cmp_df = pd.DataFrame(cmp) if cmp else pd.DataFrame()
+    sub_mtp = cmp_df[(cmp_df["comparison"] == "pa_only_mtp1_vs_mtp2") & (cmp_df["window"].astype(str) == "full_available")]
+    if not sub_mtp.empty and abs(float(sub_mtp.iloc[0]["delta_total_r"])) > 0.25:
+        rationale.append("pa_only mtp1 vs mtp2 shows material divergence on full_available; investigate max_trades binding.")
+    sub_gap = cmp_df[(cmp_df["comparison"] == "pa_gap_mtp2_vs_mtp1") & (cmp_df["window"].astype(str) == "full_available")]
+    if not sub_gap.empty and float(sub_gap.iloc[0]["delta_total_r"]) < 0:
+        rationale.append("pa_gap mtp2 does not dominate mtp1 on full_available; conflicts with prior expectation.")
+    else:
+        rationale.append("pa_gap mtp2 ≥ mtp1 on full_available (typical expectation).")
+
+    prim = prof_labels.get("primary_mtp2_meta", "")
+    if prim == "FAIL_LAYER3_SMOKE":
+        return "REFINE_ROBUST_CORE_COMBINATION_RULES", ["Primary CCI profile failed rollup gates."]
+
+    rationale.append("CORE profiles remain the recommended defaults; CCI breadth stays optional.")
+    rationale.append("No optional profile invalidates locked PA+GAP mtp2 economics on merged gates.")
+    if prof_labels.get("primary_mtp2_meta") == "OPTIONAL_BASELINE_PASS_WITH_WARNINGS":
+        rationale.append(
+            "`primary_mtp2_meta` passes as optional breadth baseline with warnings; late_oow is structurally weaker than PA-only / PA+GAP despite strong full_available R."
+        )
+    rationale.append(
+        "`pa_only_mtp1_meta` vs `pa_only_mtp2_meta` shows ~0 delta across windows in this stack (mtp does not bind for PA-only)."
+    )
+    return "PROCEED_TO_LAYER3_EXPANDED_STABILITY_DESIGN", rationale
+
+
+def _write_complete_decision_bundle(
+    *,
+    out: Path,
+    design_root: Path,
+    merged: pd.DataFrame,
+    gates_df: pd.DataFrame,
+    risk_df: pd.DataFrame,
+    prof_labels: dict[str, str],
+    decision: str,
+    rationale: list[str],
+    slip_all: pd.DataFrame,
+    rank_rows: list[dict[str, Any]],
+) -> None:
+    git_tip = _git_tip(_ROOT)
+    rootp = _repo_rel_path(out)
+    lines = [
+        "# Layer3 complete fixed-profile smoke v1 — decision",
+        "",
+        f"**Decision (exactly one):** **`{decision}`**",
+        "",
+        "## Rationale",
+        "",
+    ]
+    for b in rationale:
+        lines.append(f"- {b}")
+    lines.extend(["", "## Profile-level labels", ""])
+    for k, v in sorted(prof_labels.items()):
+        lines.append(f"- `{k}`: **{v}**")
+    lines.extend(
+        [
+            "",
+            "## Recommended next step (exactly one)",
+            "",
+            "Design Layer3 expanded stability review (no WFO/live/SPY until design).",
+            "",
+            "## Explicit non-runs",
+            "",
+            "- No broad Layer2 sweep; no mini/full WFO; no live/paper; no SPY; no router",
+            "- No strategy/feature/selected-candidate YAML edits",
+            "",
+            f"- git_tip: {git_tip}",
+        ]
+    )
+    (out / "layer3_complete_smoke_decision.md").write_text("\n".join(lines), encoding="utf-8")
+
+    kf: list[dict[str, Any]] = []
+    for _, r in merged.iterrows():
+        kf.append(
+            {
+                "topic": "window_total_r",
+                "profile_id": r["profile_id"],
+                "window_or_period": r["window"],
+                "result": f"total_r={float(r['total_r']):.4f}",
+                "evidence_strength": "high",
+                "implication": "merged CORE+optional replay",
+                "next_action": decision,
+            }
+        )
+    for pid, lbl in prof_labels.items():
+        kf.append(
+            {
+                "topic": "profile_label",
+                "profile_id": pid,
+                "window_or_period": "ALL",
+                "result": lbl,
+                "evidence_strength": "high",
+                "implication": "complete gate rollup",
+                "next_action": decision,
+            }
+        )
+    _write_csv(pd.DataFrame(kf), out / "layer3_complete_smoke_key_findings.csv")
+
+    sm = [
+        "# Layer3 complete smoke v1 — summary",
+        "",
+        "## 1. Purpose",
+        "",
+        "Merge CORE (`layer3_fixed_profile_smoke_v1`) + optional (`layer3_fixed_profile_smoke_optional_v1`) into one five-profile review.",
+        "",
+        "## 2. Ranking (full_available)",
+        "",
+        "| rank | profile_id | total_r | label |",
+        "|---:|---|---:|---|",
+    ]
+    for rr in rank_rows[:10]:
+        sm.append(f"| {rr['rank']} | `{rr['profile_id']}` | {float(rr['total_r']):.2f} | `{rr['label']}` |")
+    sm.extend(["", "## 3. Decision", "", f"**{decision}**", ""])
+    (out / "layer3_complete_smoke_summary.md").write_text("\n".join(sm), encoding="utf-8")
+
+    bundle = [
+        "# CHATGPT_REVIEW_BUNDLE — layer3_fixed_profile_smoke_complete_v1",
+        "",
+        f"## 1. Git tip\n\n- `{git_tip}`",
+        "",
+        "## 2. Complete profile table (total_r)",
+        "",
+        _markdown_total_r_pivot(merged),
+        "",
+        "## 3. Ranking",
+        "",
+        "See `complete_ranking.csv`.",
+        "",
+        "## 4. CORE vs optional",
+        "",
+        "See `core_vs_optional_comparison.csv`.",
+        "",
+        "## 5. Gates / risks",
+        "",
+        "`complete_gate_results.csv`, `complete_risk_flags.csv`",
+        "",
+        "## 6. Cost overlay",
+        "",
+        "`complete_exit_slip_comparison.csv`",
+        "",
+        "## 7. Contribution",
+        "",
+        "`complete_candidate_contribution.csv`",
+        "",
+        "## 8. Decision",
+        "",
+        f"**{decision}**",
+        "",
+    ]
+    (out / "CHATGPT_REVIEW_BUNDLE.md").write_text("\n".join(bundle), encoding="utf-8")
+
+    km: list[dict[str, Any]] = []
+    for _, r in merged.iterrows():
+        km.append(
+            {
+                "section": "per_window",
+                "profile_id": r["profile_id"],
+                "window": r["window"],
+                "metric": "total_r",
+                "value": float(r["total_r"]),
+                "interpretation": "merged replay",
+            }
+        )
+    _write_csv(pd.DataFrame(km), out / "chatgpt_key_metrics.csv")
+
+    sm_rows = [
+        {"file_path": f"{rootp}/CHATGPT_REVIEW_BUNDLE.md", "purpose": "review", "required_for_review": "YES", "row_count_if_csv": "", "markdown_mirror_available": "YES", "notes": ""},
+        {"file_path": f"{rootp}/complete_profile_window_summary.csv", "purpose": "all profiles", "required_for_review": "YES", "row_count_if_csv": str(len(merged)), "markdown_mirror_available": "NO", "notes": ""},
+        {"file_path": f"{rootp}/complete_gate_results.csv", "purpose": "gates", "required_for_review": "YES", "row_count_if_csv": str(len(gates_df)), "markdown_mirror_available": "YES", "notes": "complete_gate_results.md"},
+        {"file_path": f"{rootp}/layer3_complete_smoke_decision.md", "purpose": "decision", "required_for_review": "YES", "row_count_if_csv": "", "markdown_mirror_available": "YES", "notes": ""},
+    ]
+    _write_csv(pd.DataFrame(sm_rows), out / "SOURCE_MAP.csv")
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv and argv[0] == "postprocess":
         return cmd_postprocess(argv[1:])
+    if argv and argv[0] == "merge-complete":
+        return cmd_merge_complete(argv[1:])
     p = argparse.ArgumentParser(description="Layer3 fixed-profile smoke v1.")
     p.add_argument("--design-root", required=True)
     p.add_argument("--fixed-profile-root", required=True)

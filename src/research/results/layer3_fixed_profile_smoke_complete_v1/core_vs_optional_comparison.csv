@@ -1,0 +1,9 @@
+comparison,window,delta_total_r,notes
+pa_only_mtp1_vs_mtp2,early_oow,0.0,near-zero delta => mtp does not bind
+pa_gap_mtp2_vs_mtp1,early_oow,6.9487684100237885,positive favors mtp2 cap
+pa_only_mtp1_vs_mtp2,insample_ref,0.0,near-zero delta => mtp does not bind
+pa_gap_mtp2_vs_mtp1,insample_ref,6.989661774991326,positive favors mtp2 cap
+pa_only_mtp1_vs_mtp2,late_oow,0.0,near-zero delta => mtp does not bind
+pa_gap_mtp2_vs_mtp1,late_oow,0.649714497102174,positive favors mtp2 cap
+pa_only_mtp1_vs_mtp2,full_available,0.0,near-zero delta => mtp does not bind
+pa_gap_mtp2_vs_mtp1,full_available,14.58814468211726,positive favors mtp2 cap

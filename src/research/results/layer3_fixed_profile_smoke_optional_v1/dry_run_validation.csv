@@ -1,0 +1,5 @@
+check,passed,detail
+run_dir_rel_safe,True,run_dir_rel pattern
+row_count_12,True,rows=12
+only_optional_profiles,True,"profiles=['pa_gap_mtp1_meta', 'pa_only_mtp2_meta', 'primary_mtp2_meta']"
+no_core_profiles,True,

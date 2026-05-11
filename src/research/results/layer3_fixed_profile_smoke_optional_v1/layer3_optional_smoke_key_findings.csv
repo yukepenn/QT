@@ -1,0 +1,16 @@
+topic,profile_id,window_or_period,result,evidence_strength,implication,next_action
+window_total_r,pa_gap_mtp1_meta,early_oow,total_r=54.0047,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp1_meta,full_available,total_r=117.4041,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp1_meta,insample_ref,total_r=45.2819,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp1_meta,late_oow,total_r=18.1174,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_only_mtp2_meta,early_oow,total_r=45.1404,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_only_mtp2_meta,full_available,total_r=104.5947,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_only_mtp2_meta,insample_ref,total_r=37.9678,high,headline economics for window,compare to fixed OOW reference
+window_total_r,pa_only_mtp2_meta,late_oow,total_r=21.4865,high,headline economics for window,compare to fixed OOW reference
+window_total_r,primary_mtp2_meta,early_oow,total_r=61.3292,high,headline economics for window,compare to fixed OOW reference
+window_total_r,primary_mtp2_meta,full_available,total_r=135.8881,high,headline economics for window,compare to fixed OOW reference
+window_total_r,primary_mtp2_meta,insample_ref,total_r=62.6959,high,headline economics for window,compare to fixed OOW reference
+window_total_r,primary_mtp2_meta,late_oow,total_r=11.8630,high,headline economics for window,compare to fixed OOW reference
+profile_smoke_label,pa_gap_mtp1_meta,ALL,LAYER3_SMOKE_PASS_WITH_WARNINGS,high,gate rollup,OPTIONAL_SMOKE_BATCH_COMPLETE
+profile_smoke_label,pa_only_mtp2_meta,ALL,LAYER3_SMOKE_PASS_WITH_WARNINGS,high,gate rollup,OPTIONAL_SMOKE_BATCH_COMPLETE
+profile_smoke_label,primary_mtp2_meta,ALL,OPTIONAL_BASELINE_PASS_WITH_WARNINGS,high,gate rollup,OPTIONAL_SMOKE_BATCH_COMPLETE
