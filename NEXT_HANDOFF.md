@@ -8,7 +8,7 @@
 | Main research commit (full **66×3** audit + tooling + curated outputs) | **`3fd30b71409f9c23e289f503790b5c993d418cf7`** (`3fd30b7`) — `Research: complete layer2 candidate robustness audit` |
 | Prior milestone (vwap+indicator slice only) | `7e5da17b89c91e01f7eb3a8f5743eda015ed0da3` — `Research: audit layer2 candidate robustness` |
 | Repo tip | **Docs-only follow-up** — `Docs(handoff): sync NEXT_HANDOFF audit SHA` (run `git log -1 --oneline` after pull for exact SHA above **`3fd30b7`**) |
-| Push status | **Pushed** `main` → `origin` (includes **`3fd30b7`** research + docs tip **`33a6380`**) |
+| Push status | **Pushed** `main` → `origin` (research **`3fd30b7`**, then small docs commits through tip **`f80ab6c`**) |
 | Working tree | Expect modified tracked research/docs; **do not** stage `local_runs/**`, `.cache/**`, raw `trades.csv`, combiner `sweep_*` / `top_runs/` |
 | Expected untracked local-only artifacts | `src/research/results/layer2_candidate_robustness_v1/local_runs/**`, `src/research/results/fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**` |
 
