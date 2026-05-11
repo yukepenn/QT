@@ -7,7 +7,7 @@
 | Branch | `main` |
 | Latest commit before this work | `1ab2da1` — Docs(handoff): record feature perf commit |
 | New commit | **Run global Layer 1 after feature hardening** — authoritative SHA: `git rev-parse HEAD` on `main` after pull |
-| Push status | *(run `git push` from your network)* |
+| Push status | **Pushed** `main` → `origin` (`1ab2da1..2ad74fe`) |
 | Working tree | Expected clean except **untracked** `src/strategies/testing_parameters_results/**` (Layer 1 v2 sweeps), `src/combiner/results/layer2_qqq_global_2023_2024_v2/diagnostics/` (Q1 smoke), `run_console.log` under `layer1_global_qqq_2023_2024_v2/` (do not stage) |
 
 ## B. Task scope
