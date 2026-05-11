@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Prior tip (pre–feature-perf work) | `6555ee8` — `Design global Layer 1 and Layer 2` |
-| New commit | *(after `git commit`)* — message **`Optimize feature construction performance`** |
-| Push status | *(after `git push`)* |
+| New commit | `51bfe17` — **Optimize feature construction performance** |
+| Push status | **Pushed** to `origin/main` |
 | Working tree | Clean post-commit; **`src/strategies/testing_parameters_results/**`** `sweep_*_feature_perf_smoke` remains **local-only** (do not stage) |
 
 ## B. Task scope
