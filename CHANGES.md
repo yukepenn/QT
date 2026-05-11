@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- Docs(handoff): **NEXT_HANDOFF remote tip** — document final `origin/main` SHA after handoff follow-up commits.
+
 - Docs(handoff): **NEXT_HANDOFF SHA correction** — align documented main/tip SHA with amended `Research(exit): run overlay diagnostics` commit after `git commit --amend`.
 
 - Research(exit): **offline exit-overlay diagnostics v1** — `src/research/exit_overlay_sim.py`, `src/research/run_exit_overlay_diagnostics.py`, `tests/test_exit_overlay_sim.py`, `tests/test_run_exit_overlay_diagnostics.py`; curated `src/research/results/exit_overlay_diagnostics_v1/**` (overlay aggregate CSVs/MDs, harness design, decision **`RUN_EXIT_OVERLAY_DIAGNOSTICS_V2`**, ChatGPT bundle, `SOURCE_MAP.csv`, `chatgpt_key_tables.csv`, `exit_overlay_diagnostics_artifact_validation.*`, inventories); `src/research/validate_research_artifacts.py` excludes `local_rows/` by default from artifact scans. **No** WFO/live/SPY/broad L2/Global L1; **no** production exit-management/router wiring; **no** strategy/feature/selected-candidate YAML edits; **no** row-level `overlay_trade_results.csv` / panel commits.
