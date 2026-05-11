@@ -5,9 +5,9 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| **Main research commit (this cycle)** | **`a03af17`** — `Research(exit): align overlay replay diagnostics` |
-| Repo tip (after push) | **`a03af17`** on `origin/main` (unless you add follow-up commits) |
-| Push status | **Pushed** — `origin/main` at **`a03af17`** |
+| **Main research commit (this cycle)** | **`85b8306`** — `Research(exit): align overlay replay diagnostics` |
+| Repo tip (after push) | **`85b8306`** on `origin/main` (unless you add follow-up commits) |
+| Push status | **Pushed** — `origin/main` at **`85b8306`** |
 | Working tree | Expect untracked heavy artifacts under `src/combiner/results/**`, logs, sweep folders — **do not** `git add .` |
 | Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `exit_overlay_diagnostics_v2/local_rows/**`, `.cache/**`, `sweep_*`, `top_runs/` |
 
