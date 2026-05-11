@@ -1,0 +1,4 @@
+topic,profile_id,result,evidence_strength,implication,next_action
+monthly_stability,pa_only_mtp1_meta,POSITIVE_WITH_DRAWDOWN_WARNING,medium,baseline monthly dispersion,monitor weak quarters
+monthly_stability,pa_gap_mtp2_meta,POSITIVE_WITH_DRAWDOWN_WARNING,medium,combined profile monthly dispersion,compare vs PA-only in weak quarters
+weak_period,ALL,2025Q1:MARKET_CONTEXT_ALIGNED;2022Q4:MARKET_CONTEXT_ALIGNED;2023Q3:MARKET_CONTEXT_ALIGNED,medium,quarterly PnL + QQQ return sign heuristic,optional local replay for exit mix

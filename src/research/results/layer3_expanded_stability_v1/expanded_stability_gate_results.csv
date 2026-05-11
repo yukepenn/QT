@@ -1,0 +1,79 @@
+gate_group,gate_name,profile_id,threshold,hard_or_warning,status,detail,failure_action_design
+window,early_oow_total_r_gt_0,pa_only_mtp1_meta,total_r > 0,hard,PASS,total_r=45.14041230536661,FAIL_EXPANDED_STABILITY
+window,early_oow_total_r_gt_0,pa_gap_mtp2_meta,total_r > 0,hard,PASS,total_r=60.95349922123789,FAIL_EXPANDED_STABILITY
+window,early_oow_total_r_gt_0,primary_mtp2_meta,total_r > 0,hard,PASS,total_r=61.32923112052876,FAIL_EXPANDED_STABILITY
+window,insample_ref_total_r_gt_0,pa_only_mtp1_meta,total_r > 0,hard,PASS,total_r=37.96783399907462,FAIL_EXPANDED_STABILITY
+window,insample_ref_total_r_gt_0,pa_gap_mtp2_meta,total_r > 0,hard,PASS,total_r=52.27158324385432,FAIL_EXPANDED_STABILITY
+window,insample_ref_total_r_gt_0,primary_mtp2_meta,total_r > 0,hard,PASS,total_r=62.69586720508018,FAIL_EXPANDED_STABILITY
+window,late_oow_total_r_gt_0,pa_only_mtp1_meta,total_r > 0,hard,PASS,total_r=21.486450462116103,FAIL_EXPANDED_STABILITY
+window,late_oow_total_r_gt_0,pa_gap_mtp2_meta,total_r > 0,hard,PASS,total_r=18.767121562904507,FAIL_EXPANDED_STABILITY
+window,late_oow_total_r_gt_0,primary_mtp2_meta,total_r > 0,hard,PASS,total_r=11.86300382822754,FAIL_EXPANDED_STABILITY
+window,full_available_total_r_gt_0,pa_only_mtp1_meta,total_r > 0,hard,PASS,total_r=104.59469676655732,FAIL_EXPANDED_STABILITY
+window,full_available_total_r_gt_0,pa_gap_mtp2_meta,total_r > 0,hard,PASS,total_r=131.9922040279967,FAIL_EXPANDED_STABILITY
+window,full_available_total_r_gt_0,primary_mtp2_meta,total_r > 0,hard,PASS,total_r=135.88810215383648,FAIL_EXPANDED_STABILITY
+monthly,pos_month_ratio,pa_only_mtp1_meta,pos_month_count / total_months >= 0.45,warning,PASS,ratio=0.645,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,pos_month_ratio,pa_gap_mtp2_meta,pos_month_count / total_months >= 0.45,warning,PASS,ratio=0.671,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,max_single_neg_month,pa_only_mtp1_meta,max(neg month R) <= -12 R,warning,PASS,worst_month_r=-8.438034864905076,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,max_single_neg_month,pa_gap_mtp2_meta,max(neg month R) <= -12 R,warning,PASS,worst_month_r=-9.130224675052595,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,rolling_3m_min,pa_only_mtp1_meta,rolling 3-mo sum >= -8 R,warning,WARNING,rolling_3m_min=-11.68332236140594,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,rolling_3m_min,pa_gap_mtp2_meta,rolling 3-mo sum >= -8 R,warning,WARNING,rolling_3m_min=-9.756278094947884,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,consecutive_neg_max,pa_only_mtp1_meta,max consecutive neg months <= 3,warning,WARNING,consec=4,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,consecutive_neg_max,pa_gap_mtp2_meta,max consecutive neg months <= 3,warning,WARNING,consec=4,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,worst_quarter_floor,pa_only_mtp1_meta,worst quarter R >= -12 R,warning,PASS,worst_quarter_r=-11.68332236140594,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,worst_quarter_floor,pa_gap_mtp2_meta,worst quarter R >= -12 R,warning,PASS,worst_quarter_r=-8.796504545553935,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,weak_quarter_repeat,pa_only_mtp1_meta,count quarters with R < -5 <= 4 in full span,warning,PASS,weak_q=3,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,weak_quarter_repeat,pa_gap_mtp2_meta,count quarters with R < -5 <= 4 in full span,warning,PASS,weak_q=2,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,pa_only_mtp1_meta,Any quarter in risk register gets weak_period_interpretation entry,warning,PASS,"entries=2022Q4,2023Q3,2025Q1",NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,pa_gap_mtp2_meta,Any quarter in risk register gets weak_period_interpretation entry,warning,PASS,"entries=2022Q4,2023Q3,2025Q1",NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,primary_mtp2_meta,Any quarter in risk register gets weak_period_interpretation entry,warning,PASS,"entries=2022Q4,2023Q3,2025Q1",NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,pa_gap_mtp1_meta,Any quarter in risk register gets weak_period_interpretation entry,warning,PASS,"entries=2022Q4,2023Q3,2025Q1",NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,pa_only_mtp2_meta,Any quarter in risk register gets weak_period_interpretation entry,warning,PASS,"entries=2022Q4,2023Q3,2025Q1",NEED_WEAK_PERIOD_DIAGNOSTICS
+drawdown,full_max_dd_warning,pa_only_mtp1_meta,max_dd_r >= -30,warning,PASS,max_dd_r=-17.7148014135999,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,full_max_dd_warning,pa_gap_mtp2_meta,max_dd_r >= -30,warning,PASS,max_dd_r=-21.271931403165937,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,full_max_dd_warning,primary_mtp2_meta,max_dd_r >= -30,warning,PASS,max_dd_r=-25.08605921153801,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,full_max_dd_warning,pa_gap_mtp1_meta,max_dd_r >= -30,warning,PASS,max_dd_r=-22.343987097216072,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,full_max_dd_warning,pa_only_mtp2_meta,max_dd_r >= -30,warning,PASS,max_dd_r=-17.7148014135999,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,late_oow_max_dd,pa_only_mtp1_meta,max_dd_r >= -20,warning,PASS,max_dd_r=-12.69312628297456,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,late_oow_max_dd,pa_gap_mtp2_meta,max_dd_r >= -20,warning,PASS,max_dd_r=-11.958484585198438,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,dd_duration,pa_only_mtp1_meta,if available from equity curve,warning,NOT_EVALUATED,no_equity_curve_in_smoke_csv,future_optional
+drawdown,dd_duration,pa_gap_mtp2_meta,if available from equity curve,warning,NOT_EVALUATED,no_equity_curve_in_smoke_csv,future_optional
+drawdown,dd_duration,primary_mtp2_meta,if available from equity curve,warning,NOT_EVALUATED,no_equity_curve_in_smoke_csv,future_optional
+drawdown,dd_duration,pa_gap_mtp1_meta,if available from equity curve,warning,NOT_EVALUATED,no_equity_curve_in_smoke_csv,future_optional
+drawdown,dd_duration,pa_only_mtp2_meta,if available from equity curve,warning,NOT_EVALUATED,no_equity_curve_in_smoke_csv,future_optional
+cost,target_limit_stress_full,pa_only_mtp1_meta,total_r > 0 under target_limit_stress,hard,PASS,target_limit_stress_total_r=84.21667980383039,FAIL_EXPANDED_STABILITY
+cost,target_limit_stress_full,pa_gap_mtp2_meta,total_r > 0 under target_limit_stress,hard,PASS,target_limit_stress_total_r=105.60253215067092,FAIL_EXPANDED_STABILITY
+cost,symmetric_stress,pa_only_mtp1_meta,flag only if negative,warning,PASS,symmetric_stress_total_r=82.47523766048393,EXPANDED_STABILITY_READY_WITH_WARNINGS
+cost,symmetric_stress,pa_gap_mtp2_meta,flag only if negative,warning,PASS,symmetric_stress_total_r=102.03512422181804,EXPANDED_STABILITY_READY_WITH_WARNINGS
+cost,symmetric_stress,primary_mtp2_meta,flag only if negative,warning,PASS,symmetric_stress_total_r=90.5606262378422,EXPANDED_STABILITY_READY_WITH_WARNINGS
+cost,symmetric_stress,pa_gap_mtp1_meta,flag only if negative,warning,PASS,symmetric_stress_total_r=92.14967106778133,EXPANDED_STABILITY_READY_WITH_WARNINGS
+cost,symmetric_stress,pa_only_mtp2_meta,flag only if negative,warning,PASS,symmetric_stress_total_r=82.47523766048393,EXPANDED_STABILITY_READY_WITH_WARNINGS
+exit,max_hold_share,pa_only_mtp1_meta,< 0.60,warning,PASS,max_hold_share=0.574329224075417,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,max_hold_share,pa_gap_mtp2_meta,< 0.60,warning,PASS,max_hold_share=0.4653692043503148,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,max_hold_share,primary_mtp2_meta,< 0.60,warning,PASS,max_hold_share=0.4520109689213894,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,max_hold_share,pa_gap_mtp1_meta,< 0.60,warning,PASS,max_hold_share=0.443205574912892,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,max_hold_share,pa_only_mtp2_meta,< 0.60,warning,PASS,max_hold_share=0.574329224075417,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,stop_share,pa_gap_mtp2_meta,profile-specific baseline delta,warning,NOT_EVALUATED,needs_period_or_baseline_delta_replay,NEED_WEAK_PERIOD_DIAGNOSTICS
+contribution,pa_positive_full,pa_gap_mtp2_meta,trade_1_total_r > 0 on full_available,hard,PASS,trade_1_total_r=117.40405934587945,REFINE_COMBINATION_RULES
+contribution,pa_positive_full,primary_mtp2_meta,trade_1_total_r > 0 on full_available,hard,PASS,trade_1_total_r=101.0194304256593,REFINE_COMBINATION_RULES
+contribution,gap_late_oow_non_material_neg,pa_gap_mtp2_meta,GAP slice R in late_oow >= -2 R or share explained,warning,PASS,gap_late_oow_r=1.306923882982661,NEED_WEAK_PERIOD_DIAGNOSTICS
+contribution,cci_justifies_dd_if_primary,primary_mtp2_meta,CCI share vs incremental R vs DD penalty,warning,WARNING,manual_tradeoff_gate_reference_profile,EXPANDED_STABILITY_READY_WITH_WARNINGS
+market_context,no_catastrophic_single_label,pa_only_mtp1_meta,profile min slice R > -15 in any single context bucket unless documented,warning,PASS,bucket_wipeout_check_deferred_to_weak_period_table,NEED_WEAK_PERIOD_DIAGNOSTICS
+market_context,no_catastrophic_single_label,pa_gap_mtp2_meta,profile min slice R > -15 in any single context bucket unless documented,warning,PASS,bucket_wipeout_check_deferred_to_weak_period_table,NEED_WEAK_PERIOD_DIAGNOSTICS
+market_context,no_catastrophic_single_label,primary_mtp2_meta,profile min slice R > -15 in any single context bucket unless documented,warning,PASS,bucket_wipeout_check_deferred_to_weak_period_table,NEED_WEAK_PERIOD_DIAGNOSTICS
+market_context,no_catastrophic_single_label,pa_gap_mtp1_meta,profile min slice R > -15 in any single context bucket unless documented,warning,PASS,bucket_wipeout_check_deferred_to_weak_period_table,NEED_WEAK_PERIOD_DIAGNOSTICS
+market_context,no_catastrophic_single_label,pa_only_mtp2_meta,profile min slice R > -15 in any single context bucket unless documented,warning,PASS,bucket_wipeout_check_deferred_to_weak_period_table,NEED_WEAK_PERIOD_DIAGNOSTICS
+artifact,source_map_present,pa_only_mtp1_meta,file exists,hard,PASS,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,source_map_present,pa_gap_mtp2_meta,file exists,hard,PASS,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,source_map_present,primary_mtp2_meta,file exists,hard,PASS,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,source_map_present,pa_gap_mtp1_meta,file exists,hard,PASS,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,source_map_present,pa_only_mtp2_meta,file exists,hard,PASS,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,pa_only_mtp1_meta,file exists,hard,PASS,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,pa_gap_mtp2_meta,file exists,hard,PASS,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,primary_mtp2_meta,file exists,hard,PASS,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,pa_gap_mtp1_meta,file exists,hard,PASS,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,pa_only_mtp2_meta,file exists,hard,PASS,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,pa_only_mtp1_meta,validator pass,hard,NOT_EVALUATED,validated_by_validate_research_artifacts,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,pa_gap_mtp2_meta,validator pass,hard,NOT_EVALUATED,validated_by_validate_research_artifacts,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,primary_mtp2_meta,validator pass,hard,NOT_EVALUATED,validated_by_validate_research_artifacts,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,pa_gap_mtp1_meta,validator pass,hard,NOT_EVALUATED,validated_by_validate_research_artifacts,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,pa_only_mtp2_meta,validator pass,hard,NOT_EVALUATED,validated_by_validate_research_artifacts,HOLD_BEFORE_STABILITY

@@ -1,0 +1,13 @@
+section,profile_id,period,metric,value,interpretation
+window_summary,pa_gap_mtp2_meta,early_oow,total_r,60.95349922123789,smoke window total
+window_summary,pa_gap_mtp2_meta,full_available,total_r,131.9922040279967,smoke window total
+window_summary,pa_gap_mtp2_meta,insample_ref,total_r,52.27158324385432,smoke window total
+window_summary,pa_gap_mtp2_meta,late_oow,total_r,18.767121562904507,smoke window total
+window_summary,pa_only_mtp1_meta,early_oow,total_r,45.14041230536661,smoke window total
+window_summary,pa_only_mtp1_meta,full_available,total_r,104.59469676655732,smoke window total
+window_summary,pa_only_mtp1_meta,insample_ref,total_r,37.96783399907462,smoke window total
+window_summary,pa_only_mtp1_meta,late_oow,total_r,21.486450462116103,smoke window total
+window_summary,primary_mtp2_meta,early_oow,total_r,61.32923112052876,smoke window total
+window_summary,primary_mtp2_meta,full_available,total_r,135.88810215383648,smoke window total
+window_summary,primary_mtp2_meta,insample_ref,total_r,62.69586720508018,smoke window total
+window_summary,primary_mtp2_meta,late_oow,total_r,11.86300382822754,smoke window total

@@ -1,0 +1,44 @@
+# cost_stress_by_period
+
+       profile_id                       period            scenario    total_r  adjusted_total_r  sign_preserved stress_label requires_detail_replay
+pa_only_mtp1_meta      early_oow_window_anchor           published  45.140412         45.140412            True  OK_POSITIVE                   true
+pa_only_mtp1_meta      early_oow_window_anchor target_limit_stress  34.650373         34.650373            True  OK_POSITIVE                   true
+pa_only_mtp1_meta      early_oow_window_anchor    symmetric_stress  33.714851         33.714851            True  OK_POSITIVE                   true
+pa_only_mtp1_meta      early_oow_window_anchor     extreme_warning  24.160333         24.160333            True  OK_POSITIVE                   true
+pa_only_mtp1_meta   insample_ref_window_anchor           published  37.967834         37.967834            True  OK_POSITIVE                   true
+pa_only_mtp1_meta   insample_ref_window_anchor target_limit_stress  31.335042         31.335042            True  OK_POSITIVE                   true
+pa_only_mtp1_meta   insample_ref_window_anchor    symmetric_stress  30.751813         30.751813            True  OK_POSITIVE                   true
+pa_only_mtp1_meta   insample_ref_window_anchor     extreme_warning  24.702251         24.702251            True  OK_POSITIVE                   true
+pa_only_mtp1_meta       late_oow_window_anchor           published  21.486450         21.486450            True  OK_POSITIVE                   true
+pa_only_mtp1_meta       late_oow_window_anchor target_limit_stress  18.231265         18.231265            True  OK_POSITIVE                   true
+pa_only_mtp1_meta       late_oow_window_anchor    symmetric_stress  18.008573         18.008573            True  OK_POSITIVE                   true
+pa_only_mtp1_meta       late_oow_window_anchor     extreme_warning  14.976079         14.976079            True  OK_POSITIVE                   true
+pa_only_mtp1_meta full_available_window_anchor           published 104.594697        104.594697            True  OK_POSITIVE                   true
+pa_only_mtp1_meta full_available_window_anchor target_limit_stress  84.216680         84.216680            True  OK_POSITIVE                   true
+pa_only_mtp1_meta full_available_window_anchor    symmetric_stress  82.475238         82.475238            True  OK_POSITIVE                   true
+pa_only_mtp1_meta full_available_window_anchor     extreme_warning  63.838663         63.838663            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta      early_oow_window_anchor           published  60.953499         60.953499            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta      early_oow_window_anchor target_limit_stress  47.555935         47.555935            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta      early_oow_window_anchor    symmetric_stress  45.707184         45.707184            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta      early_oow_window_anchor     extreme_warning  34.158371         34.158371            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta   insample_ref_window_anchor           published  52.271583         52.271583            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta   insample_ref_window_anchor target_limit_stress  43.501347         43.501347            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta   insample_ref_window_anchor    symmetric_stress  42.226206         42.226206            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta   insample_ref_window_anchor     extreme_warning  34.731111         34.731111            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta       late_oow_window_anchor           published  18.767122         18.767122            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta       late_oow_window_anchor target_limit_stress  14.545250         14.545250            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta       late_oow_window_anchor    symmetric_stress  14.101734         14.101734            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta       late_oow_window_anchor     extreme_warning  10.323378         10.323378            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta full_available_window_anchor           published 131.992204        131.992204            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta full_available_window_anchor target_limit_stress 105.602532        105.602532            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta full_available_window_anchor    symmetric_stress 102.035124        102.035124            True  OK_POSITIVE                   true
+ pa_gap_mtp2_meta full_available_window_anchor     extreme_warning  79.212860         79.212860            True  OK_POSITIVE                   true
+primary_mtp2_meta      early_oow_window_anchor           published  61.329231         61.329231            True  OK_POSITIVE                   true
+primary_mtp2_meta      early_oow_window_anchor target_limit_stress  41.181816         41.181816            True  OK_POSITIVE                   true
+primary_mtp2_meta      early_oow_window_anchor    symmetric_stress  38.142870         38.142870            True  OK_POSITIVE                   true
+primary_mtp2_meta      early_oow_window_anchor     extreme_warning  21.034400         21.034400            True  OK_POSITIVE                   true
+primary_mtp2_meta   insample_ref_window_anchor           published  62.695867         62.695867            True  OK_POSITIVE                   true
+primary_mtp2_meta   insample_ref_window_anchor target_limit_stress  50.044261         50.044261            True  OK_POSITIVE                   true
+primary_mtp2_meta   insample_ref_window_anchor    symmetric_stress  48.202347         48.202347            True  OK_POSITIVE                   true
+primary_mtp2_meta   insample_ref_window_anchor     extreme_warning  37.392655         37.392655            True  OK_POSITIVE                   true
+

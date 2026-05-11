@@ -1,0 +1,6 @@
+profile_id,window,positive_quarter_ratio,worst_quarter,worst_quarter_r,weak_quarter_count_lt_neg5,stability_label
+pa_gap_mtp1_meta,full_available,0.8076923076923077,2022Q4,-7.951128412168371,3,STABLE_POSITIVE
+pa_gap_mtp2_meta,full_available,0.7692307692307693,2022Q4,-8.796504545553935,2,STABLE_POSITIVE
+pa_only_mtp1_meta,full_available,0.8076923076923077,2025Q1,-11.68332236140594,3,STABLE_POSITIVE
+pa_only_mtp2_meta,full_available,0.8076923076923077,2025Q1,-11.68332236140594,3,STABLE_POSITIVE
+primary_mtp2_meta,full_available,0.6923076923076923,2023Q3,-8.576287482379714,6,WEAK_PERIOD_WARNING

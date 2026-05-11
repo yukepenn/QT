@@ -1,0 +1,16 @@
+weak_period,profile_id,availability,late_oow_gap_r,notes
+2025Q1,pa_only_mtp1_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
+2025Q1,pa_gap_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2025Q1,primary_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2025Q1,pa_gap_mtp1_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2025Q1,pa_only_mtp2_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
+2022Q4,pa_only_mtp1_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
+2022Q4,pa_gap_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2022Q4,primary_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2022Q4,pa_gap_mtp1_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2022Q4,pa_only_mtp2_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
+2023Q3,pa_only_mtp1_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
+2023Q3,pa_gap_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2023Q3,primary_mtp2_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2023Q3,pa_gap_mtp1_meta,WINDOW_LEVEL_FALLBACK,1.306923882982661,quarter-sliced candidate PnL not in curated smoke CSVs
+2023Q3,pa_only_mtp2_meta,WINDOW_LEVEL_FALLBACK,,quarter-sliced candidate PnL not in curated smoke CSVs
