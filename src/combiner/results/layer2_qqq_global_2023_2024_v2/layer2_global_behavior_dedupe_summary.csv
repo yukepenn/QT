@@ -1,0 +1,4 @@
+behavior_rank,source_rank,behavior_hash_quality,candidate_set,top_per_strategy,max_trades_per_day,cooldown_after_loss_minutes,priority_policy,trades,total_r,profit_factor,max_drawdown_r,avg_bars_held,behavior_note
+1,1,strong,vwap_core,1,2,15,metadata_priority,337,42.203127,1.210320,-10.498071,7.451039,two_candidate_vwap_reclaim_plus_trend_pullback
+2,13,strong,vwap_core,1,2,0,metadata_priority,346,40.423770,1.188357,-9.363475,7.476879,same_pair_cooldown_disabled
+3,25,strong,vwap_core,1,1,0,metadata_priority,294,36.706513,1.231361,-15.518719,7.309524,same_pair_max_trades_per_day_1_only

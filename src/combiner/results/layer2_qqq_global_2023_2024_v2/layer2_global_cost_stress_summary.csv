@@ -1,0 +1,4 @@
+unique_rank,source_combo_id,note,slippage_0_005_total_r,slippage_0_005_pf,slippage_0_005_max_dd_r,slippage_0_01_total_r,slippage_0_01_pf,slippage_0_01_max_dd_r,slippage_0_02_total_r,slippage_0_02_pf,slippage_0_02_max_dd_r,slippage_0_03_total_r,slippage_0_03_pf,slippage_0_03_max_dd_r,cost_robustness_label
+1,303,baseline_vwap_pair_top_rank,49.043912,1.242733,-9.413280,42.203127,1.210320,-10.498071,10.558805,1.085086,-20.180968,-23.661208,0.969771,-39.280587,robust_positive_at_0_02
+13,301,cooldown_0_variant_same_candidates,47.509097,1.220392,-8.831558,40.423770,1.188357,-9.363474,8.367447,1.066267,-19.010968,-26.198827,0.953897,-39.979709,robust_positive_at_0_02
+25,289,max_1_trade_per_day_variant,42.580121,1.263750,-14.305681,36.706513,1.231361,-15.518719,11.853404,1.116754,-20.746903,-20.740576,0.991452,-41.268655,robust_positive_at_0_02

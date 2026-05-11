@@ -6,6 +6,13 @@ This index classifies committed Layer 2 result roots without deleting them.
 
 ## A. Active / current
 
+- **`layer2_qqq_global_2023_2024_v2/`**
+  - **status**: active **global** Layer 2 (l2_core candidate root; QQQ 2023–2024 full-window sweep)
+  - **window**: 2023‑01‑01 → 2024‑12‑31
+  - **decision**: **`TUNE_LAYER2_COST_TURNOVER`** (`layer2_global_full_summary.md`)
+  - **key summaries**: `layer2_global_full_summary.md`, `layer2_global_full_top_systems.csv`, `layer2_global_cost_stress_summary.csv`, `layer2_global_behavior_dedupe_summary.csv`, `top_unique_systems.{csv,md}`, `behavior_unique_systems.{csv,md}`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.{csv,md}`
+  - **keep**: yes (heavy `sweep_*`, `top_runs/`, `sweep_full_console*.log`, `cost_stress/feature_store_stats.json`, `cost_stress/candidate_precompute_profile.csv` remain local / untracked)
+
 - **`layer2_qqq_2020_20260430_posthardening_strict_v1/`**
   - **status**: active baseline (strict)
   - **window**: 2020‑01‑01 → 2026‑04‑30

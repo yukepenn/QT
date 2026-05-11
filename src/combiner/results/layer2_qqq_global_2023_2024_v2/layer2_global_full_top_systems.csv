@@ -1,0 +1,8 @@
+unique_rank,combo_id,candidate_set,top_per_strategy,max_trades_per_day,daily_max_loss_r,cooldown_after_loss_minutes,priority_policy,n_candidates,trades,total_r,profit_factor,max_drawdown_r,combiner_score,dominant_families_or_strategies
+1,303,vwap_core,1,2,-1.5,15,metadata_priority,2,337,42.203127,1.210320,-10.498071,1.320974,vwap_reclaim + vwap_trend (188+149 trades by strategy)
+2,304,vwap_core,1,2,-1.5,15,score_adjusted_priority,2,337,42.203127,1.210320,-10.498071,1.320974,same_as_rank1_priority_policy_only
+12,336,vwap_core,2,2,-3.0,15,score_adjusted_priority,4,337,42.203127,1.210320,-10.498071,1.320974,four_candidate_vwap_bucket_same_equity_curve
+13,301,vwap_core,1,2,-1.5,0,metadata_priority,2,346,40.423770,1.188357,-9.363475,1.286333,cooldown_off_vs_rank1
+25,289,vwap_core,1,1,-1.5,0,metadata_priority,2,294,36.706513,1.231361,-15.518719,1.169087,max_trades_per_day_1
+49,145,indicator_completion_core,1,1,-1.5,0,metadata_priority,5,502,43.545647,1.257425,-11.750381,0.349221,multi_family_cci_macd_rsi_stoch_supertrend
+50,146,indicator_completion_core,1,1,-1.5,0,score_adjusted_priority,5,502,43.545647,1.257425,-11.750381,0.349221,same_as_49_priority_only
