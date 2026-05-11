@@ -1,0 +1,6 @@
+test_name,input_trades,filter_rule,expected_output,pass_condition,risk
+all_trades,row_panel,none,full distribution,baseline,reference
+ab_only,row_panel,"bucket in {A,B}",truncated hist,compare to baseline,selection bias risk
+a_only,row_panel,bucket==A,strict,max quality,sample size risk
+avoid_removed,row_panel,context not in avoid list,filtered,improved tail?,overfit
+prefer_only,row_panel,context in prefer list,filtered,concentrated edge?,regime leak

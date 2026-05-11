@@ -1,0 +1,3 @@
+test_name,input_trades,parameter_change,metric,pass_condition,risk
+scalp_target_sweep,offline replay,target 0.8/1.0/1.2R,PnL vs baseline,not worse on cost stress,overfit
+max_hold_shorten,offline replay,max_hold -20%,drawdown,DD reduction,trade count drop

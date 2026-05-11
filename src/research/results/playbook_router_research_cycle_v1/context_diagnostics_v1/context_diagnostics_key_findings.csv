@@ -1,0 +1,4 @@
+topic,detail,evidence,limitation
+PA_only_best,"Window-level: `pa_only_mtp1_meta` total_r exceeds `pa_gap_mtp2_meta` on **late_oow** in complete smoke; `pa_gap_mtp2_meta` leads on **early_oow**, **insample_ref**, and **full_available**.",complete_profile_window_summary.csv; gap_increment_by_context.csv,REQUIRES_LOCAL_DETAILED_REPLAY for PA regime / true context buckets at trade entry
+GAP_late_oow,Candidate table shows small GAP total_r in late_oow vs early — consistent with expanded stability.,complete_candidate_contribution.csv,cannot separate context without trade-level join
+CCI_reference,primary adds full-span R but weaker late_oow vs PA-only in smoke recap.,complete_profile_window_summary.csv,trade-level CCI attribution REQUIRES_LOCAL_DETAILED_REPLAY

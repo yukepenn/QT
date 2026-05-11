@@ -1,0 +1,9 @@
+family_id,direction,status,setup_definition,preferred_market_context,required_features,implementation_risk,layer1_test_plan
+pa_range_scalp_long,long,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: tight range fade / VWAP scalp long,trading_range;gap_failure,pa_range; vwap; volume,medium,QQQ strict YAML small grid only
+vwap_reclaim_scalp_long,long,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: tight range fade / VWAP scalp long,trading_range;gap_failure,pa_range; vwap; volume,medium,QQQ strict YAML small grid only
+failed_breakdown_scalp_long,long,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: tight range fade / VWAP scalp long,trading_range;gap_failure,pa_range; vwap; volume,medium,QQQ strict YAML small grid only
+gap_failure_scalp_long,long,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: tight range fade / VWAP scalp long,trading_range;gap_failure,pa_range; vwap; volume,medium,QQQ strict YAML small grid only
+pa_range_scalp_short,short,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: mirror long scalp with short triggers,TBD,symmetric short primitives (future),high,isolated short branch only — not mixed with Champion v0
+vwap_rejection_scalp_short,short,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: mirror long scalp with short triggers,TBD,symmetric short primitives (future),high,isolated short branch only — not mixed with Champion v0
+failed_breakout_scalp_short,short,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: mirror long scalp with short triggers,TBD,symmetric short primitives (future),high,isolated short branch only — not mixed with Champion v0
+gap_up_failure_scalp_short,short,DESIGN_ONLY_NOT_IMPLEMENTED,TBD: mirror long scalp with short triggers,TBD,symmetric short primitives (future),high,isolated short branch only — not mixed with Champion v0

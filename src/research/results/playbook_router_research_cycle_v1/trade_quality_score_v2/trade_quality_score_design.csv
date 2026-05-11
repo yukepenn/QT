@@ -1,0 +1,6 @@
+component,definition,input_columns,fallback_if_missing,score_range,no_lookahead_notes,risk_of_overfit
+regime_fit_score,alignment of trade setup to regime labels,pa_regime_*; context_bucket,uniform if missing,0-1 then ×30%,entry-time labels only,overfit if too many bins
+level_context_score,distance to VWAP / ORB / prior levels,level features @ entry,0.5 neutral,0-1 ×20%,backward merge,medium
+signal_strength_score,normalized signal strength proxy,indicator/PA strength cols,0.5 neutral,0-1 ×20%,,high
+cost_safety_score,spread/slip vs risk_per_share,risk_per_share; slip model,from cost stress tables,0-1 ×15%,,medium
+freshness_score,time since signal / bar age,entry bar index,0.5 if missing,0-1 ×15%,,medium

@@ -1,0 +1,2 @@
+phase,git_tip,complete_smoke_root,expanded_stability_root,output_root,aggregate_only,allow_local_detailed_inputs,row_level_panel_committed,notes
+build_trade_context_panel,e1dc075a29418b5166c0b4306456b0d4e4103711,src/research/results/layer3_fixed_profile_smoke_complete_v1,src/research/results/layer3_expanded_stability_v1,src/research/results/playbook_router_research_cycle_v1/trade_context_panel_v1,True,false,no,Aggregates only; row-level trade_context_panel.csv intentionally not produced for git

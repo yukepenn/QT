@@ -1,0 +1,16 @@
+# Router v1 config draft — DESIGN ONLY
+enabled: false
+mode: offline_diagnostic
+version: 0.1.0
+notes:
+  - Do not import from combiner production paths.
+  - Context buckets are diagnostic labels only.
+context_buckets:
+  - trend_long
+  - trend_short_diagnostic
+  - trading_range
+  - gap_failure
+  - late_climax
+  - high_chop
+  - unknown_mixed
+default_action: neutral

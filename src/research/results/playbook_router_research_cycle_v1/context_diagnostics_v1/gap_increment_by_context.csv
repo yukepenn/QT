@@ -1,0 +1,5 @@
+context_proxy,pa_only_total_r,pa_gap_total_r,gap_increment_total_r,interpretation
+early_oow,45.14041230536661,60.95349922123789,15.813086915871281,window-level proxy; REQUIRES_LOCAL_DETAILED_REPLAY for true gap slice
+insample_ref,37.96783399907462,52.27158324385432,14.303749244779702,window-level proxy; REQUIRES_LOCAL_DETAILED_REPLAY for true gap slice
+late_oow,21.486450462116103,18.767121562904507,-2.7193288992115967,window-level proxy; REQUIRES_LOCAL_DETAILED_REPLAY for true gap slice
+full_available,104.59469676655732,131.9922040279967,27.397507261439387,window-level proxy; REQUIRES_LOCAL_DETAILED_REPLAY for true gap slice

@@ -1,0 +1,9 @@
+rule_id,context_bucket,playbook,action,candidate_or_family,reason,evidence_source,expected_effect,risk_of_overfit,implementation_phase
+R001,trend_long,trend_swing_long,prefer,PA_BUY_SELL_CLOSE_TREND_003,PA trend-close fits trend_long,complete smoke,higher hit-rate hypothesis,medium,offline_diagnostic_v1
+R002,gap_failure,gap_mean_reversion_long,prefer,GAP_ACCEPTANCE_FAILURE_001,gap playbook in gap context,candidate metadata,targeted exposure,medium,offline_diagnostic_v1
+R003,unknown_mixed,gap_mean_reversion_long,downweight,GAP_ACCEPTANCE_FAILURE_001,late_oow GAP small; avoid overweight,expanded stability,reduce noise,high,offline_diagnostic_v1
+R004,high_chop,trend_swing_long,downweight,PA_BUY_SELL_CLOSE_TREND_003,trend-chase risk in chop,market_context_labels,fewer false trends,medium,offline_diagnostic_v1
+R005,trading_range,scalp_long_future,neutral,pa_range_scalp_long,future strategy only,roadmap,no live trades,low,future_layer1_only
+R006,late_climax,trend_swing_long,block_for_diagnostic,PA_BUY_SELL_CLOSE_TREND_003,avoid new trend chase,exit overlay design,protect tail,medium,offline_diagnostic_v1
+R007,unknown_mixed,ALL,neutral,ALL,default neutral not block,router policy,baseline,low,offline_diagnostic_v1
+R008,trend_short_diagnostic,ALL,block_for_diagnostic,ALL,short not in Champion v0,Champion freeze,isolation,low,short_branch_future

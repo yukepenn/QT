@@ -1,0 +1,56 @@
+name,source,required_or_optional,data_type,fallback_if_missing,no_lookahead_notes,intended_analysis_use
+trade_id,local trades.csv / metrics,required,string,REQUIRES_LOCAL_DETAILED_REPLAY,must align to session,join key
+profile_id,run metadata,required,string,UNKNOWN,from combiner run,slice
+candidate_id,trades.csv,required,string,UNKNOWN,from combiner,slice
+strategy,candidate yaml,required,string,UNKNOWN,static map,router family
+strategy_family,taxonomy / yaml,required,string,UNKNOWN,trade_quality_router taxonomy,router
+setup_type,taxonomy,optional,string,UNKNOWN,enrichment,quality
+playbook,metadata design,optional,string,UNKNOWN,router_metadata_v1,router
+side,trades,required,string,long,Champion v0 long-only,risk
+entry_ts_utc,trades,required,datetime,REQUIRES_LOCAL_DETAILED_REPLAY,no future timestamps,sorting
+exit_ts_utc,trades,required,datetime,REQUIRES_LOCAL_DETAILED_REPLAY,,
+entry_minute_from_open,bars,optional,int,REQUIRES_LOCAL_DETAILED_REPLAY,RTH calendar,context
+session_date,trades,required,date,REQUIRES_LOCAL_DETAILED_REPLAY,,join QQQ context
+window,run metadata,required,string,UNKNOWN,from run folder,slice
+period_month,derived,required,string,from session_date,,stability
+period_quarter,derived,required,string,from session_date,,stability
+r_multiple,trades,required,float,REQUIRES_LOCAL_DETAILED_REPLAY,,PnL
+exit_reason,trades,required,string,REQUIRES_LOCAL_DETAILED_REPLAY,,mechanics
+bars_held,trades,required,int,REQUIRES_LOCAL_DETAILED_REPLAY,,management
+risk_per_share,trades,required,float,REQUIRES_LOCAL_DETAILED_REPLAY,,cost
+trade_number_of_day,trades / derived,required,int,REQUIRES_LOCAL_DETAILED_REPLAY,,priority
+prior_trade_r,derived,optional,float,REQUIRES_LOCAL_DETAILED_REPLAY,same session sort,quality
+prior_trade_same_family,derived,optional,bool,REQUIRES_LOCAL_DETAILED_REPLAY,,repeat
+same_family_repeat_flag,derived,optional,bool,REQUIRES_LOCAL_DETAILED_REPLAY,,repeat
+pa_regime_label_20,FeatureStore @ entry,optional,string,UNKNOWN,merge_asof backward,regime
+pa_regime_label_30,FeatureStore @ entry,optional,string,UNKNOWN,,
+pa_regime_label_60,FeatureStore @ entry,optional,string,UNKNOWN,,
+pa_trade_mode_20,features,optional,string,UNKNOWN,,
+pa_trade_mode_30,features,optional,string,UNKNOWN,,
+pa_always_in_side_20,features,optional,string,UNKNOWN,,
+pa_always_in_side_30,features,optional,string,UNKNOWN,,
+trend_score_20,features,optional,float,UNKNOWN,,context
+trend_score_30,features,optional,float,UNKNOWN,,
+range_efficiency_20,features,optional,float,UNKNOWN,,
+range_efficiency_30,features,optional,float,UNKNOWN,,
+vwap_cross_count_20,features,optional,int,UNKNOWN,,
+vwap_cross_count_30,features,optional,int,UNKNOWN,,
+pa_trading_range_score_20,features,optional,float,UNKNOWN,,
+pa_climax_score_20,features,optional,float,UNKNOWN,,
+pa_late_trend_score_20,features,optional,float,UNKNOWN,,
+pa_distance_from_vwap_atr,features,optional,float,UNKNOWN,,
+close_above_vwap,features,optional,bool,UNKNOWN,,
+close_below_vwap,features,optional,bool,UNKNOWN,,
+vwap_slope_20,features,optional,float,UNKNOWN,,
+gap_atr,features,optional,float,UNKNOWN,,
+orb_context,features,optional,string,UNKNOWN,,
+above_orb_high,features,optional,bool,UNKNOWN,,
+below_orb_low,features,optional,bool,UNKNOWN,,
+near_prior_close_atr,features,optional,float,UNKNOWN,,
+market_context_label,QQQ panel join,optional,string,unknown_mixed,session→month label,router
+context_bucket,derived,optional,string,UNKNOWN,map router buckets,router
+playbook_fit,derived,optional,string,UNKNOWN,metadata rules,router
+trade_quality_bucket,score v2,optional,string,UNKNOWN,offline score,filter
+cost_as_R,derived,optional,float,UNKNOWN,slip model,stress
+weak_period_flag,expanded stability,optional,bool,from quarter list,2025Q1/2022Q4/2023Q3,diag
+management_mode_hypothesis,exit overlay design,optional,string,UNKNOWN,map setup+context,overlay

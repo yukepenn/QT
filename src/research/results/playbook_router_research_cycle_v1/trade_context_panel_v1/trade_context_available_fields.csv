@@ -1,0 +1,8 @@
+field_group,field_name,source_csv,aggregation,status
+window_metrics,total_r,complete_profile_window_summary.csv,profile x window,AVAILABLE
+window_metrics,trade_1_total_r / trade_2_total_r,complete_profile_window_summary.csv,profile x window,AVAILABLE
+candidate,candidate_id total_r share,complete_candidate_contribution.csv,profile x window x candidate,AVAILABLE
+exit,exit_reason share,complete_exit_reason_summary.csv,profile x window x exit_reason,AVAILABLE
+trade_number,trade_number_of_day total_r,complete_trade_number_summary.csv,profile x window x trade_number,AVAILABLE
+temporal,monthly total_r,complete_monthly_summary.csv,profile x window x month,AVAILABLE
+temporal,quarterly total_r,complete_quarterly_summary.csv,profile x window x quarter,AVAILABLE

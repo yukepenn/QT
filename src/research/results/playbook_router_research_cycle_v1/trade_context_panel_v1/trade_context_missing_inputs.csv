@@ -1,0 +1,5 @@
+column_name,required_or_optional,reason,remediation
+trade_id,required,row-level trades not in curated smoke CSVs,REQUIRES_LOCAL_DETAILED_REPLAY: load local Layer3 run trades.csv per profile/window
+entry_ts_utc / exit_ts_utc / bars_held / risk_per_share,required,not in complete_* summaries,REQUIRES_LOCAL_DETAILED_REPLAY
+pa_regime_label_* / pa_trade_mode_* / trend_score_* / vwap_cross_count_*,optional,need bar-level merge at entry from FeatureStore / enriched trades,REQUIRES_LOCAL_DETAILED_REPLAY or offline enrich step (not committed)
+market_context_label (trade-level),optional,expanded stability has quarterly/monthly QQQ labels; trade-level needs session join,join session_date to market_context_monthly.csv in local pipeline

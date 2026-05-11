@@ -1,0 +1,7 @@
+family_id,status,why_not_inverse_long,preferred_context,stop_logic,target_logic,expected_trade_frequency,expected_failure_mode,layer1_short_only_plan,oow_before_mixing
+gap_up_failure_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required
+vwap_rejection_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required
+orb_failed_breakout_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required
+pa_sell_close_trend_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required
+range_high_failure_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required
+late_climax_reversal_short,DESIGN_ONLY_NOT_IMPLEMENTED,short liquidity / borrow / symmetry breaks; different failure modes,TBD,TBD,TBD,lower than long sleeve,squeeze / macro gap,SPY/QQQ short-only harness (future),required

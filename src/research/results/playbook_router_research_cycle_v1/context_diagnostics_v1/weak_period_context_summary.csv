@@ -1,0 +1,16 @@
+weak_period,profile_id,window,total_r,rank_in_period
+2025Q1,pa_gap_mtp1_meta,full_available,-6.901584691085398,1
+2025Q1,primary_mtp2_meta,full_available,-7.076293982593362,2
+2025Q1,pa_gap_mtp2_meta,full_available,-8.113005550678961,3
+2025Q1,pa_only_mtp1_meta,full_available,-11.68332236140594,4
+2025Q1,pa_only_mtp2_meta,full_available,-11.68332236140594,5
+2022Q4,pa_only_mtp1_meta,full_available,-5.073776738017027,1
+2022Q4,pa_only_mtp2_meta,full_available,-5.073776738017027,2
+2022Q4,primary_mtp2_meta,full_available,-6.275293320214425,3
+2022Q4,pa_gap_mtp1_meta,full_available,-7.951128412168371,4
+2022Q4,pa_gap_mtp2_meta,full_available,-8.796504545553935,5
+2023Q3,pa_only_mtp1_meta,full_available,1.6143790109908789,1
+2023Q3,pa_only_mtp2_meta,full_available,1.6143790109908789,2
+2023Q3,pa_gap_mtp1_meta,full_available,0.055209198977256,3
+2023Q3,pa_gap_mtp2_meta,full_available,-2.641913785511026,4
+2023Q3,primary_mtp2_meta,full_available,-8.576287482379714,5

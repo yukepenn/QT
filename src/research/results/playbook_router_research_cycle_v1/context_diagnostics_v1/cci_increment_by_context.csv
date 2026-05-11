@@ -1,0 +1,5 @@
+context_proxy,pa_gap_total_r,primary_total_r,primary_increment_vs_pa_gap,note
+early_oow,60.95349922123789,61.32923112052876,0.37573189929086936,CCI bundled; not isolated at trade level without replay
+insample_ref,52.27158324385432,62.69586720508018,10.424283961225854,CCI bundled; not isolated at trade level without replay
+late_oow,18.767121562904507,11.86300382822754,-6.904117734676966,CCI bundled; not isolated at trade level without replay
+full_available,131.9922040279967,135.88810215383648,3.8958981258397785,CCI bundled; not isolated at trade level without replay

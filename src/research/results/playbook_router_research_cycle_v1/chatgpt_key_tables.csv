@@ -1,0 +1,5 @@
+section,item,metric,value,interpretation
+Champion,pa_only_mtp1_meta,role,CLEAN_BASELINE,anchor
+Champion,pa_gap_mtp2_meta,role,DEFAULT_COMBINED,default
+Champion,primary_mtp2_meta,role,BREADTH_REFERENCE_ONLY,not promoted
+Decision,cycle_v1,label,RUN_LOCAL_DETAILED_TRADE_CONTEXT_REPLAY,row-level panel blocking

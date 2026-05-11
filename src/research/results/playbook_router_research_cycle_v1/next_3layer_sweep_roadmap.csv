@@ -1,0 +1,8 @@
+cycle_id,purpose,inputs,actions,outputs,pass_condition,explicit_non_goals,expected_decision
+Cycle_1,Router diagnostics against Champion v0,existing trades (local) + curated summaries,offline router / quality / exit overlay diagnostics,diag CSV/MD; no combiner wiring,clear attribution + permissioning story,no new strategies; no broad Layer2,CONTINUE_OR_HOLD
+Cycle_2,Router-integrated controlled Layer2,Champion v0 candidates only,router off/on; quality all / A+B / A; permission neutral/downweight/block-diagnostic,small controlled L2 outputs,improved vs baseline under same cost model,no broad Layer2 grid,GATE_FOR_LAYER2_INTEGRATION
+Cycle_3,Scalp long-side additions,roadmap long scalp families,Layer1 only for 2–4 families; strict candidate YAMLs,Layer1 shortlist,OOW / smoke gates on new families only,no short; no mix into default combined yet,SELECT_SCALP_LONG
+Cycle_4,Short-side branch,short roadmap families,short-only Layer1 + OOW,standalone short metrics,pass short-only gates before any mix,no Champion v0 contamination,ISOLATE_SHORT
+Cycle_5,Integrated Layer2,Champion v0 + router-approved scalp + validated short (if any),controlled combinations; trade-quality score,smoke + cost stress,gates vs frozen v0,no broad exploration,MERGE_CANDIDATE
+Cycle_6,Layer3 fixed profiles,frozen profile set post-Cycle_5,smoke; OOW; stability,Layer3 artifacts pack,stability labels acceptable,no production promotion,BETA_READINESS
+Cycle_7,Reduced WFO,QQQ only; frozen candidates; small grid,train-only selection; test-only evaluation,WFO-lite metrics,no leakage; stable test,not full WFO,WFO_LITE_DECISION

@@ -1,0 +1,5 @@
+management_mode,preferred_contexts,behavior_summary,future_test_axes,conservative_intrabar_note
+scalp,trading_range;gap_failure;vwap_reclaim_reject,shorter target; shorter max_hold; NFT exit; no trail,0.8R/1.0R/1.2R sweep,same-bar target+stop → mark ambiguous; conservative fill worse of fill pair
+trend_swing,trend_long;always_in_long;bull_channel,wider target; longer max_hold; optional trail after +1R,trail only after +1R,regime degradation exit
+runner,strong_trend_day;always_in_long;no_late_climax,partial + trail VWAP/swing/ATR,EOD flatten,flip always-in → exit
+reversal,late_climax;failed_breakout;trap,tight invalidation; NFT 2–3 bars,smaller target,ambiguous bar → skip trail
