@@ -6,9 +6,10 @@
 |--------|--------|
 | Branch | `main` |
 | Main research commit (audit baseline) | **`3fd30b7`** — `Research: complete layer2 candidate robustness audit` |
-| Repo tip | Run `git log -1 --oneline` (this handoff will be updated after the v2 design commit/push) |
-| Push status | Pending for this v2 design task until `git push` |
-| Working tree status | Expect design-only tracked changes; keep untracked heavy artifacts uncommitted |
+| Main research commit (robust v2 design cleanup) | **`530c293`** — `Chore(research): harden robust v2 design` |
+| Repo tip | (this handoff update commit) run `git log -1 --oneline` |
+| Push status | Pending until `git push` |
+| Working tree status | Expect docs + curated design-only changes; keep untracked heavy artifacts uncommitted |
 | Expected untracked local-only artifacts | `src/research/results/layer2_candidate_robustness_v1/local_runs/**`, `src/research/results/fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, combiner `sweep_*` / `top_runs/` |
 
 ## B. Validation
@@ -16,14 +17,15 @@
 | Check | Expected |
 |--------|----------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | Pass |
+| `python -m pytest -q` | Pass (428 tests) |
 | `python -m src.strategies.loader --list` | 35 strategies |
 | Tracked-heavy check | No matches for `top_runs|trades.csv|...` patterns |
+| Artifact CSV validation | `design_artifact_validation.csv` shows 0 failures / 0 abs paths |
 
 ## C. Task scope
 
-- **Requested:** design-only robust l2_core v2 plan from 10 nominal robust-positive candidates.
-- **Completed:** effective-signal clustering via metric identity + **trade-overlap** (compact Jaccard only), representative candidate sets, core/watchlist/drop buckets, and design-only config skeletons (**NOT RUN**).
+- **Requested:** clean/harden `robust_l2_core_v2_design/` artifacts and create design-only runnable skeletons + runbook.
+- **Completed:** CSV hygiene (pandas-readable, multi-line, repo-relative paths), expanded candidate-set schema, full 66-row core/watchlist/drop actions, clarified raw vs design representatives, added deterministic artifact validator + tests, and added future diagnostic runbook/command draft (**NOT RUN**).
 - **Intentionally not done:** no Layer2 sweep, no WFO, no live/SPY, no router, no strategy/feature/YAML edits, no OOW tuning, no heavy artifact commits.
 
 ## D. Input evidence (from full 66/66 audit)
@@ -87,7 +89,9 @@ No Layer2 sweep; no mini/full WFO; no live/paper; no SPY; no Global L1 rerun; no
 ## K. Files changed (this v2 design task)
 
 - Script: `src/research/design_robust_l2_core_v2.py`
-- New curated root: `src/research/results/robust_l2_core_v2_design/` (manifests, summaries, compact overlap, config skeletons **NOT RUN**)
+- Validator: `src/research/validate_research_artifacts.py`
+- Test: `tests/test_design_robust_l2_core_v2.py`
+- Curated root: `src/research/results/robust_l2_core_v2_design/` (clean CSVs, `design_artifact_validation.*`, `design_cleanup_inventory.md`, expanded config skeletons, runbook + command draft; all **DESIGN ONLY — NOT RUN**)
 - Docs/indexes: `RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`
 
 ## L. Recommended next step
