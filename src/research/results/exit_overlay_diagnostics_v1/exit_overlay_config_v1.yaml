@@ -1,0 +1,45 @@
+# Exit overlay diagnostics v1 — metadata (research-only; no combiner wiring)
+version: 1
+ambiguity_default: stop_first
+eod_exit_minute_from_rth_open: 389
+data:
+  asset: equity
+  symbol: QQQ
+  bar_frequency: 1m
+  reader: src.data.read_bars.read_bars
+panel:
+  path_relative: src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv
+  local_only: true
+profiles:
+  - pa_only_mtp1_meta
+  - pa_gap_mtp2_meta
+  - primary_mtp2_meta
+windows:
+  - early_oow
+  - insample_ref
+  - late_oow
+  - full_available
+overlays:
+  - baseline_original
+  - fixed_target_replay
+  - trend_swing_1p5R
+  - trend_swing_2R
+  - runner_after_1R_trail_vwap
+  - runner_after_1R_trail_atr
+  - no_followthrough_exit_3bars
+  - no_followthrough_exit_5bars
+  - max_hold_tighten_30
+  - max_hold_tighten_60
+trend_swing_eligibility:
+  context_bucket: trend_long
+  decision_label_field: decision_pa_always_in_side_20_label
+  decision_label_value: always_in_long
+no_followthrough:
+  mfe_threshold_r: 0.15
+runner:
+  activation_r: 1.0
+  vwap_trail_atr_fraction: 0.25
+  atr_trail_multiple: 1.0
+max_hold_caps:
+  max_hold_tighten_30: 30
+  max_hold_tighten_60: 60

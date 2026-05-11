@@ -1,0 +1,14 @@
+# Context-specific overlay analysis
+
+See `trend_swing_context_results.csv`, `runner_context_results.csv`, `no_followthrough_context_results.csv`, `max_hold_tighten_results.csv`.
+
+| overlay_id | trades | delta_total_r | delta_pf | note |
+| --- | --- | --- | --- | --- |
+| trend_swing_1p5R | 10628 | 250.26152890181675 | 0.01872656150651042 | pooled all contexts — see per-context CSVs |
+| trend_swing_2R | 10628 | 267.6030101156525 | 0.021636057133672004 | pooled all contexts — see per-context CSVs |
+| runner_after_1R_trail_vwap | 10628 | 550.5810940112003 | 0.10000447420783454 | pooled all contexts — see per-context CSVs |
+| runner_after_1R_trail_atr | 10628 | 21.662256723935457 | -0.008824094515577752 | pooled all contexts — see per-context CSVs |
+| no_followthrough_exit_3bars | 10628 | -295.9272503679831 | -0.018585223473262413 | pooled all contexts — see per-context CSVs |
+| no_followthrough_exit_5bars | 10628 | -32.20108340345598 | 0.03454270714339147 | pooled all contexts — see per-context CSVs |
+| max_hold_tighten_30 | 10628 | -326.68776436067407 | -0.029963200521216926 | pooled all contexts — see per-context CSVs |
+| max_hold_tighten_60 | 10628 | -4.639395550856875 | 0.03300320325330808 | pooled all contexts — see per-context CSVs |

@@ -1,0 +1,11 @@
+overlay_id,management_mode,eligible_contexts,applies_to_candidates,target_rule,stop_rule,trail_rule,max_hold_rule,context_required,no_lookahead_notes,expected_benefit,risk
+baseline_original,panel_as_recorded,all,all,panel,panel,none,panel,no,Uses stored r_multiple; no bar replay.,Sanity reference,None
+fixed_target_replay,replay_stop_target_bar_path,all,all,panel stop/target intrabar,panel stop intrabar,none,implicit EOD/session_end,no,Conservative intrabar policy; may diverge from combiner fills.,Validate simulator vs panel,Replay mismatch vs panel R
+trend_swing_1p5R,wider_target_eligible_only,trend_long OR always_in_long label,all,1.5R from entry,panel stop,none,implicit EOD,no,Eligibility from row fields known at decision time.,Let winners run in trend contexts,Give-back / late_oow sensitivity
+trend_swing_2R,wider_target_eligible_only,trend_long OR always_in_long,all,2.0R,panel stop,none,implicit EOD,no,Same as 1.5R with larger target.,More upside in strong trend tails, Larger open risk into reversals
+runner_after_1R_trail_vwap,trail_after_mfe,all,all,panel until active then trail only,trail after +1R,VWAP−0.25×ATR vs stop floor,implicit EOD,no,Trail uses causal VWAP/ATR to same bar.,Protect profits after +1R,Whipsaw; ATR/VWAP calibration
+runner_after_1R_trail_atr,trail_after_mfe,all,all,panel then trail,trail after +1R,peak−1×ATR floored at stop,implicit EOD,no,ATR is causal to bar.,Trend tail capture,Deep trail can cut winners in chop
+no_followthrough_exit_3bars,time_stop_weak_mfe,all,all,panel until N then close,panel,none,3 bars check,no,MFE computed on highs since entry.,Reduce slow bleed / no-go trades,Exits some slow winners
+no_followthrough_exit_5bars,time_stop_weak_mfe,all,all,panel until N then close,panel,none,5 bars check,no,Same with longer patience.,Less aggressive than 3-bar,Still may clip runners
+max_hold_tighten_30,cap_hold,all,all,panel,panel,none,30 bars + EOD,no,Exit at close of cap bar if no prior exit.,Reduce max-hold tail dependency,Can slash total R if cap binds winners
+max_hold_tighten_60,cap_hold,all,all,panel,panel,none,60 bars + EOD,no,Softer cap than 30.,Moderate hold reduction,Still may cut strong days

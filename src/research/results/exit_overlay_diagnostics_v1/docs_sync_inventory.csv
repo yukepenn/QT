@@ -1,0 +1,7 @@
+file,stale_issue_found,action_taken,behavior_change,notes
+NEXT_HANDOFF.md,Still framed as router/quality v2 end-state without exit harness SHAs/results,Updated full A–L for exit_overlay_diagnostics_v1 + new decision,Handoff now points to overlay root + validation; REPLACE_SHA_MAIN filled at commit time,
+PROJECT_STATUS.md,Missing exit_overlay_diagnostics_v1 entry,Added bullet for v1 harness + explicit non-integration,No production exit-management,
+PROGRESS.md,No exit overlay line for 2026-05-11,Added chronological entry,,
+CHANGES.md,No Unreleased entry for exit harness,Added [Unreleased] bullets,,
+RESULTS_INDEX.md,No index row for exit_overlay_diagnostics_v1,Added active-root paragraph,,
+README.md,No stale issue requiring rewrite,No change,Front page already referenced research layers,

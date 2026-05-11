@@ -192,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.include_local_runs:
         # Safety: local_runs/local_configs can be huge and include local-only CSVs.
         # By default we validate curated root-level CSVs only.
-        exclude = tuple(sorted(set(exclude) | {"local_runs", "local_configs"}))
+        exclude = tuple(sorted(set(exclude) | {"local_runs", "local_configs", "local_rows"}))
     # Avoid the validation output file self-triggering absolute-path hits.
     results = validate_root_with_excludes(
         root,

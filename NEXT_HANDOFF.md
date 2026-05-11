@@ -1,107 +1,112 @@
-﻿# NEXT_HANDOFF
+# NEXT_HANDOFF
 
 ## A. Git
 
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Parent before this cycle | **`d81a1791bcf7d254b4754988816ea8969dce4c2c`** — `Research(router): run local trade context replay` |
-| **Main research commit (this cycle)** | Message **`Research(router): refine offline quality diagnostics`** — resolve SHA with **`git log -1 --format=%H`** on synced `main` (do not treat docs as authoritative if they disagree with git). |
-| Repo tip (after push) | Should equal **`git rev-parse HEAD`** and match **`git ls-remote origin refs/heads/main`** when clean |
-| Push status | Run `git push origin main` after explicit staging; verify `git ls-remote origin refs/heads/main` equals `git rev-parse HEAD` |
-| Working tree | Expect **untracked** heavy/local artifacts under `src/combiner/results/**`, `src/research/results/**/local_runs/**`, enriched/scored CSVs, logs — **do not** stage. |
-| Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/` |
+| Parent before this cycle | **`fefb268`** — `Research(router): refine offline quality diagnostics` |
+| **Main research commit (this cycle)** | **`0101ed19a593973abfeef08975be5b7da5ca2dc5`** — `Research(exit): run overlay diagnostics` |
+| Repo tip (after push) | Should equal **`0101ed19a593973abfeef08975be5b7da5ca2dc5`** and match **`git ls-remote origin refs/heads/main`** when clean |
+| Push status | Run `git push origin main` after explicit staging; verify remote `main` equals local `HEAD` |
+| Working tree | Expect **untracked** heavy/local artifacts under `src/combiner/results/**`, enriched/scored CSVs, logs — **do not** `git add .` |
+| Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/` |
 
 ## B. Validation
 
 | Check | Result |
 |--------|--------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **474 passed** |
+| `python -m pytest -q` | **487 passed** |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| Artifact validation — `router_quality_refinement_v2` | `router_quality_refinement_v2_artifact_validation.csv` — **0** parse failures, **0** abs-path hits |
-| Artifact validation — `local_detailed_trade_context_replay_v1` | `local_trade_context_replay_artifact_validation.csv` refreshed |
-| Artifact validation — `playbook_router_research_cycle_v1` | `playbook_router_cycle_v1_artifact_validation.csv` (unchanged unless regenerated) |
-| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|compact_trades\|enriched.csv\|scored_trades\|trade_context_panel.csv\|\\.parquet\|\\.npy\|\\.npz\|\\.memmap"` → **no matches** |
-| ChatGPT bundle (v2 cycle) | `src/research/results/router_quality_refinement_v2/CHATGPT_REVIEW_BUNDLE.md` |
-| Source map (v2 cycle) | `src/research/results/router_quality_refinement_v2/SOURCE_MAP.csv` |
+| Artifact validation — `exit_overlay_diagnostics_v1` | `exit_overlay_diagnostics_artifact_validation.csv` — **0** parse failures, **0** abs-path hits (with `local_rows/` excluded from scans) |
+| Artifact validation — `router_quality_refinement_v2` | `router_quality_refinement_v2_artifact_validation.csv` (refreshed) |
+| Artifact validation — `local_detailed_trade_context_replay_v1` | `local_trade_context_replay_artifact_validation.csv` (refreshed) |
+| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|compact_trades\|enriched.csv\|scored_trades\|trade_context_panel.csv\|overlay_trades.csv\|\\.parquet\|\\.npy\|\\.npz\|\\.memmap"` → **no matches** |
+| ChatGPT bundle (exit cycle) | `src/research/results/exit_overlay_diagnostics_v1/CHATGPT_REVIEW_BUNDLE.md` |
+| Source map (exit cycle) | `src/research/results/exit_overlay_diagnostics_v1/SOURCE_MAP.csv` |
 
 ## C. Task scope
 
 | | |
 |--|--|
-| **Requested** | README/docs consistency + offline router/quality refinement v2 on local panel; bundles; tests; explicit non-heavy staging |
-| **Completed** | Concise `README.md`; v2 runner + lib + tests; `router_quality_refinement_v2/**` aggregates + designs + decision; combined guards; `import json` fix; expanded local replay bundle; indexes + handoff |
-| **Intentionally not done** | WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1; production router wiring; strategy/YAML/signal edits; short/scalp implementations; committing `local_rows/**` |
+| **Requested** | Offline exit-overlay diagnostic harness for Champion v0 (`trend_swing`, `runner`, no-followthrough, max-hold); inventories; dry-run + execute; aggregates only; tests; docs/indexes; `NEXT_HANDOFF` A–L; explicit `git add` (no row-level commits); commit + push |
+| **Completed** | `exit_overlay_sim.py` + `run_exit_overlay_diagnostics.py`; full `exit_overlay_diagnostics_v1/` curated outputs; `validate_research_artifacts.py` excludes `local_rows/` by default; tests; refreshed artifact validations; `README` unchanged; `PROJECT_STATUS` / `PROGRESS` / `CHANGES` / `RESULTS_INDEX` / this handoff |
+| **Intentionally not done** | WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1; production exit-management or router in combiner; strategy / feature / selected YAML edits; short/scalp implementations; committing `trade_context_panel.csv` or `overlay_trade_results.csv` |
 
-## D. Champion v0 / local panel
-
-| Topic | Answer |
-|--------|--------|
-| Frozen profiles | `pa_only_mtp1_meta` (baseline), `pa_gap_mtp2_meta` (default combined), `primary_mtp2_meta` (breadth reference) |
-| Local panel | `src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv` — **local-only** |
-| Row count | **10,628** (see `aggregates/trade_context_coverage.csv`) |
-
-## E. README / code consistency refresh
-
-- `README.md` rewritten as a short seven-section front page aligned to Layer1/Layer2/Layer3 + playbook + local replay.
-- Scripts: mostly already readable; **bugfix** only in `run_trade_quality_score_v2.py` (`json` import).
-- Local replay `CHATGPT_REVIEW_BUNDLE.md` expanded into a real review entry.
-
-## F. Router v2 diagnostics
+## D. Input data / local panel
 
 | Topic | Answer |
 |--------|--------|
-| Variants tested | `baseline_all`, `soft_avoid_removed`, `soft_downweight_proxy`, `gap_context_guard`, `late_climax_guard`, `high_chop_guard`, `repeat_after_loss_guard`, `combined_light_guard` |
-| Best “promising” examples | `late_climax_guard` (PF uplift, **~0.82–0.90** retention on profiles); `gap_context_guard` / `combined_light_guard` smaller improvements |
-| Retention | See `router_v2/router_v2_trade_retention.csv` |
-| PF / maxDD / weak-period | See `router_v2/router_v2_results.csv` + `router_v2_weak_period_effect.csv` |
-| Layer2 integration? | **Not yet** — tradeoffs + lack of held-out threshold discipline → **no combiner wiring** |
+| Local panel | `src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv` — **local-only** (gitignored) |
+| Row / column count | **10,628** rows × **170** columns (filtered to Champion v0 profiles × windows in runner) |
+| QQQ bars | `data/raw/ibkr` — **617,160** rows over panel span; **0** sessions missing bars (`overlay_input_coverage.csv`) |
+| Overlay row output | `exit_overlay_diagnostics_v1/local_rows/overlay_trade_results.csv` — **local-only** (~106k rows × overlays); **not** committed |
 
-## G. Quality refinement v2
-
-| Topic | Answer |
-|--------|--------|
-| Score variants | `original_v2_score`, `no_signal_strength_fallback`, `regime_level_cost_only`, `freshness_penalty_light`, `repeat_after_loss_penalty_only`, `context_fit_plus_cost`, `profile_percentile_score` |
-| Threshold schemes | `fixed_AB`, `relaxed_AB`, percentile-by-profile/window, `bottom_cut_{10,20,30}` |
-| Best-behaved “promising” patterns | `percentile_profile_top80`, `bottom_cut_20` on `original_v2_score` often land near **~80% retention** with PF / maxDD proxy improvements — flagged **`in_sample_diagnostic=True`** |
-| Fixed A/B | Still **over-filters** vs 60–85% goal |
-| Useful? | **Yes as ranking evidence**, **no** as immediate production filter without OOS discipline |
-
-## H. Combined guards / exit implications
+## E. Overlay harness
 
 | Topic | Answer |
 |--------|--------|
-| Combined light guards | Ran (`combined_light_guards/*`) because both router and quality passes had `PROMISING` rows |
-| Exit overlay implications | **`RUN_EXIT_OVERLAY_DIAGNOSTICS`** — see `exit_overlay_implications.*` |
-| Scalp / short | Roadmap-only; scalp de-prioritized vs `trend_swing` / `runner` preview |
+| Overlays tested | `baseline_original`, `fixed_target_replay`, `trend_swing_1p5R`, `trend_swing_2R`, `runner_after_1R_trail_vwap`, `runner_after_1R_trail_atr`, `no_followthrough_exit_3bars`, `no_followthrough_exit_5bars`, `max_hold_tighten_30`, `max_hold_tighten_60` |
+| Ambiguity policy | `stop_first` (default CLI) |
+| No-lookahead | Post-entry bar walk only; trend-swing eligibility uses decision-time row fields |
+| Baseline sanity | `overlay_sanity_vs_original.csv` — **`fixed_target_replay` vs panel `r_multiple` mean abs diff ~0.28–0.38 R** by profile×window → headline overlay deltas are **diagnostic until replay aligns** with combiner fills |
+
+## F. Overlay results (headlines)
+
+| Topic | Answer |
+|--------|--------|
+| Best trend_swing (illustrative) | `trend_swing_2R` on **`primary_mtp2_meta` / `full_available`** shows large **positive** `delta_total_r` vs baseline in detail grid — still subject to replay drift caveat |
+| Best runner | `runner_after_1R_trail_vwap` on **`primary_mtp2_meta` / `full_available`** shows the largest **positive** `delta_total_r` in the profile×window grid — often labeled **`EXIT_OVERLAY_CONTEXT_SPECIFIC`** (late_oow PF can disagree) |
+| No-followthrough | Generally **cuts total R** materially on pooled profiles — useful for loss-shape experiments, not a free PnL lift |
+| Max-hold tighten | `max_hold_tighten_60` shows **PF / drawdown proxy improvements** on some profiles with moderate **total R** tradeoffs vs baseline — see `overlay_results_by_profile.csv` |
+| Profile / window / context | See `overlay_results_detail_by_profile_window.csv`, `overlay_results_by_*`, `trend_swing_context_results.csv`, `runner_context_results.csv` |
+| Weak periods | `overlay_weak_period_results.csv` — mixed by overlay; review before any integration |
+
+## G. Exit vs router/quality comparison
+
+| Topic | Answer |
+|--------|--------|
+| Comparison tables | `exit_vs_router_quality_comparison.{csv,md}` — programmatic picks vs best overlay PF delta (non-`full_available` slice) |
+| Path preference | **Exit remains diagnostic** until replay matches panel; **router/quality v2** still documents narrower but complementary **trade-selection** effects |
+| Integration | **No** production exit-management or router wiring from this cycle |
+
+## H. Scalp / short roadmap
+
+| Topic | Answer |
+|--------|--------|
+| After exit diagnostics | `scalp_short_after_exit_overlay.{md,csv}` — **defer** long-side scalp and short branch; evidence strength **STRONG** for deferral, **MODERATE** that max-hold / no-followthrough partially substitute time-stop discipline |
 
 ## I. Decision
 
-**Label (exactly one):** **`RUN_EXIT_OVERLAY_DIAGNOSTICS`**
+**Label (exactly one):** **`RUN_EXIT_OVERLAY_DIAGNOSTICS_V2`**
 
-- Offline router v2 finds **real PF / maxDD proxy improvements** under **soft** masks, but **total R** tradeoffs on **`primary_mtp2_meta`** remain sensitive.
-- Quality v2 shows **percentile/bottom-cut** can hit retention targets, but thresholds are **in-sample** on the same panel.
-- Exit readiness preview already points to **`trend_swing` / `runner`** as higher next ROI than more score tinkering.
-- Champion v0 stays frozen; next increment should be **simulation harnessing**, not combiner integration.
+- **`fixed_target_replay` ≠ panel `r_multiple`** at material scale — must **reconcile entry bar / intrabar / fill model** before trusting overlay-level deltas.
+- Several overlays show **interesting PF / drawdown-proxy moves** on subsets (e.g. `max_hold_tighten_60`, VWAP runner on `full_available`) but **labels split** across windows (`EXIT_OVERLAY_CONTEXT_SPECIFIC` counts are non-zero).
+- **No** production exit-management integration — design-only follow-on after simulator v2.
+- Champion v0 **entries** remain frozen; this cycle only adds **offline** simulation + aggregates.
+- Router/quality v2 remains the parallel track for **masking / retention** experiments (different control than exits).
 
 ## J. Explicit non-runs and risks
 
 - **No** WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1 reruns.
-- **No** production router / hard regime filters / short implementation / strategy signal changes / selected YAML edits.
-- Row-level artifacts **local-only**; research-only aggregate commits.
-- **Risk:** in-sample percentile thresholds can look good without out-of-sample guardrails.
+- **No** production router / **no** production exit-management in combiner.
+- **No** strategy / feature / selected-candidate YAML / signal edits.
+- **No** short or scalp strategy code.
+- Row-level **`trade_context_panel.csv`** and **`local_rows/**`** remain **local-only**.
+- **Risk:** optimistic overlay rankings while replay drift persists → **treat PF / maxDD deltas as directional only**.
 
 ## K. Files changed
 
-- `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`, `src/research/results/RESULTS_INDEX.md`
-- `src/research/run_trade_quality_score_v2.py` (json import)
-- `src/research/run_router_quality_refinement_v2.py`, `src/research/router_quality_refinement_v2_lib.py`
-- `tests/test_router_quality_refinement_v2.py`
-- `src/research/results/router_quality_refinement_v2/**`
-- `src/research/results/local_detailed_trade_context_replay_v1/CHATGPT_REVIEW_BUNDLE.md`, `SOURCE_MAP.csv`, `local_trade_context_replay_artifact_validation.csv`
+- `src/research/exit_overlay_sim.py`, `src/research/run_exit_overlay_diagnostics.py`
+- `src/research/validate_research_artifacts.py` (default exclude `local_rows/`)
+- `tests/test_exit_overlay_sim.py`, `tests/test_run_exit_overlay_diagnostics.py`
+- `src/research/results/exit_overlay_diagnostics_v1/**` (curated only; no `local_rows/**`)
+- Refreshed `router_quality_refinement_v2_artifact_validation.csv`, `local_trade_context_replay_artifact_validation.csv`
+- `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `src/research/results/RESULTS_INDEX.md`, `NEXT_HANDOFF.md`
 
 ## L. Recommended next step (exactly one)
 
-**Run offline exit-overlay diagnostics** (start with **`trend_swing`**, then **`runner`**) using a bar-path-capable harness while keeping outputs **aggregate-only** and leaving Champion v0 frozen.
+**Refine the exit-overlay bar simulator (replay alignment vs combiner `r_multiple`, intrabar policy, entry index) and rerun `exit_overlay_diagnostics_v1` — then decide between exit-management integration design vs returning to router integration design.**
+
 

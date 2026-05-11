@@ -1,0 +1,4 @@
+artifact,present,row_count,column_count,notes
+trade_context_panel.csv,yes,10628,170,gitignored under local_detailed_trade_context_replay_v1/local_rows/
+qqq_1m_bars,yes,617160,OHLCV+ts,see overlay_data_quality.csv for span
+overlay_trade_results.csv,yes,106280,19,10 overlays × 10628 rows; gitignored local_rows/

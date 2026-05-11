@@ -1,0 +1,9 @@
+# Scalp / short after exit-overlay diagnostics
+
+| question | answer | evidence_strength |
+| --- | --- | --- |
+| Does exit overlay reduce need for new scalp entries? | Partially — max-hold / no-followthrough can mimic some time-stop scalp discipline without new entries. | MODERATE |
+| Defer long-side scalp? | Yes — exit-management evidence should land before new scalp families. | STRONG |
+| Defer short branch? | Yes — no exit-overlay signal suggests immediate short priority. | STRONG |
+
+No strategy implementation in this cycle.

@@ -1,0 +1,11 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/research/exit_overlay_sim.py,Bar-path simulator for overlays,yes,,no,no,Research-only
+src/research/run_exit_overlay_diagnostics.py,CLI runner + aggregates,yes,,no,no,
+src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv,Champion v0 row panel,yes,10628,local_input_inventory.md,yes,gitignored
+src/research/results/exit_overlay_diagnostics_v1/baseline_inventory.md,Cycle baseline + dependency inventory,yes,,no,no,
+src/research/results/exit_overlay_diagnostics_v1/exit_overlay_harness_design.md,Harness design narrative,yes,,exit_overlay_harness_design.csv,no,
+src/research/results/exit_overlay_diagnostics_v1/overlay_results_by_profile.csv,Pooled-by-profile aggregates,yes,30,CHATGPT_REVIEW_BUNDLE.md,no,
+src/research/results/exit_overlay_diagnostics_v1/overlay_results_detail_by_profile_window.csv,Full profile×window×overlay grid,yes,120,overlay_summary.md,no,
+src/research/results/exit_overlay_diagnostics_v1/overlay_sanity_vs_original.csv,fixed_target_replay vs panel r_multiple,yes,12,exit_overlay_harness_design.md,no,
+src/research/results/exit_overlay_diagnostics_v1/local_rows/overlay_trade_results.csv,Per-trade per-overlay rows,optional,106280,no,yes,gitignored
+src/research/results/exit_overlay_diagnostics_v1/exit_overlay_diagnostics_decision.md,Single-label decision,yes,,CHATGPT_REVIEW_BUNDLE.md,no,

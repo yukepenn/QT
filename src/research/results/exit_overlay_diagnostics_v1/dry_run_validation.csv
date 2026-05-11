@@ -1,0 +1,5 @@
+check,ok,notes
+panel_exists,True,src\research\results\local_detailed_trade_context_replay_v1\local_rows\trade_context_panel.csv
+output_root,True,src\research\results\exit_overlay_diagnostics_v1
+production_wiring,True,none — research runner only
+row_level_gitignore,True,local_rows/** ignored
