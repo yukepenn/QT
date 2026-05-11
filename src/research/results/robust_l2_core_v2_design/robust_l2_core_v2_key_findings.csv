@@ -1,0 +1,5 @@
+topic,candidate_or_cluster,result,evidence_strength,implication,next_action
+GAP dedupe,GAP_ACCEPTANCE_FAILURE_001–004,metric-identical; treat as one effective signal,high,only one GAP rep in primary/balanced core,use GAP_001 as representative; keep others as deduped equivalents
+PA redundancy,PA_BUY_SELL_CLOSE_TREND_001–004,robust pocket; cap representatives,medium,pick 1 primary + 1 secondary; avoid all four by default,use PA_003 primary; PA_002 secondary (design-only; revise if overlap extreme)
+CCI selection,CCI_EXTREME_SNAPBACK_002/003,CCI_003 positive in both OOW; CCI_002 weaker early OOW,high,keep CCI_003 primary; CCI_002 optional,include CCI_002 only in balanced core
+Exclude buckets,DROP_FROM_CORE + REQUIRES_SIDE_FLIP_RESEARCH,excluded from robust core v2 design,high,prevents VWAP reclaim cluster / anti-predictive names from contaminating diagnostic core,use exclude_from_core set for diagnostics comparisons only

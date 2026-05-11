@@ -1,0 +1,45 @@
+# DESIGN ONLY — NOT RUN — DO NOT TREAT AS PROMOTED CONFIG
+#
+# Robust l2_core v2 (balanced representative core)
+# Source evidence: src/research/results/layer2_candidate_robustness_v1/ (66/66 singleton OOW audit)
+#
+# NOTE:
+# - This file is a design skeleton only.
+# - It is intentionally NOT placed under src/combiner/configs/.
+# - Do not run in this design task.
+#
+# Candidate set:
+# - GAP_ACCEPTANCE_FAILURE_001 (GAP 001–004 are trade-identical; dedupe to one)
+# - PA_BUY_SELL_CLOSE_TREND_003 (PA 001–003 are trade-identical; choose one)
+# - PA_BUY_SELL_CLOSE_TREND_004 (secondary PA representative; partial overlap)
+# - CCI_EXTREME_SNAPBACK_003 (primary CCI; positive both OOW)
+# - CCI_EXTREME_SNAPBACK_002 (secondary CCI; weaker early OOW)
+
+run:
+  # Placeholder only; do not run
+  start: "YYYY-MM-DD"
+  end: "YYYY-MM-DD"
+
+candidate_root:
+  path: "src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates"
+
+candidate_ids:
+  - "GAP_ACCEPTANCE_FAILURE_001"
+  - "PA_BUY_SELL_CLOSE_TREND_003"
+  - "PA_BUY_SELL_CLOSE_TREND_004"
+  - "CCI_EXTREME_SNAPBACK_003"
+  - "CCI_EXTREME_SNAPBACK_002"
+
+system:
+  asset: "equity"
+  symbol: "QQQ"
+  max_open_positions: 1
+  no_new_after_minute: 360
+  commission: 0.0
+  slippage: 0.01
+
+selection:
+  priority_policy: "metadata_priority"
+  max_trades_per_day: 2
+  daily_max_loss_r: -2.0
+

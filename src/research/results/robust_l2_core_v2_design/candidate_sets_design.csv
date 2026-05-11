@@ -1,0 +1,32 @@
+candidate_set,candidate_id,purpose
+primary_representative_core,GAP_ACCEPTANCE_FAILURE_001,minimum redundancy; maximum interpretability
+primary_representative_core,PA_BUY_SELL_CLOSE_TREND_003,minimum redundancy; maximum interpretability
+primary_representative_core,CCI_EXTREME_SNAPBACK_003,minimum redundancy; maximum interpretability
+balanced_representative_core,GAP_ACCEPTANCE_FAILURE_001,slightly broader core; still deduped
+balanced_representative_core,PA_BUY_SELL_CLOSE_TREND_003,slightly broader core; still deduped
+balanced_representative_core,PA_BUY_SELL_CLOSE_TREND_004,slightly broader core; still deduped
+balanced_representative_core,CCI_EXTREME_SNAPBACK_003,slightly broader core; still deduped
+balanced_representative_core,CCI_EXTREME_SNAPBACK_002,slightly broader core; still deduped
+extended_robust_watchlist,CCI_EXTREME_SNAPBACK_002,all nominal robust-positive (doc-only)
+extended_robust_watchlist,CCI_EXTREME_SNAPBACK_003,all nominal robust-positive (doc-only)
+extended_robust_watchlist,GAP_ACCEPTANCE_FAILURE_001,all nominal robust-positive (doc-only)
+extended_robust_watchlist,GAP_ACCEPTANCE_FAILURE_002,all nominal robust-positive (doc-only)
+extended_robust_watchlist,GAP_ACCEPTANCE_FAILURE_003,all nominal robust-positive (doc-only)
+extended_robust_watchlist,GAP_ACCEPTANCE_FAILURE_004,all nominal robust-positive (doc-only)
+extended_robust_watchlist,PA_BUY_SELL_CLOSE_TREND_001,all nominal robust-positive (doc-only)
+extended_robust_watchlist,PA_BUY_SELL_CLOSE_TREND_002,all nominal robust-positive (doc-only)
+extended_robust_watchlist,PA_BUY_SELL_CLOSE_TREND_003,all nominal robust-positive (doc-only)
+extended_robust_watchlist,PA_BUY_SELL_CLOSE_TREND_004,all nominal robust-positive (doc-only)
+exclude_from_core,MACD_MOMENTUM_TURN_001,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MACD_MOMENTUM_TURN_002,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MACD_MOMENTUM_TURN_003,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MULTI_DAY_LEVEL_TRAP_001,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MULTI_DAY_LEVEL_TRAP_002,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MULTI_DAY_LEVEL_TRAP_003,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,MULTI_DAY_LEVEL_TRAP_004,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,PA_TRADING_RANGE_BLS_HS_005,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,RSI_FAILURE_SWING_002,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,SUPERTREND_ATR_FLIP_004,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,VWAP_RECLAIM_REJECT_001,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,VWAP_RECLAIM_REJECT_002,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets
+exclude_from_core,VWAP_RECLAIM_REJECT_003,DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets

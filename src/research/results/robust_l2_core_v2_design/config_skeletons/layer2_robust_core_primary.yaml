@@ -1,0 +1,43 @@
+# DESIGN ONLY — NOT RUN — DO NOT TREAT AS PROMOTED CONFIG
+#
+# Robust l2_core v2 (primary representative core)
+# Source evidence: src/research/results/layer2_candidate_robustness_v1/ (66/66 singleton OOW audit)
+#
+# NOTE:
+# - This file is a design skeleton only.
+# - It is intentionally NOT placed under src/combiner/configs/.
+# - Do not run in this design task.
+#
+# Candidate set:
+# - GAP_ACCEPTANCE_FAILURE_001
+# - PA_BUY_SELL_CLOSE_TREND_003
+# - CCI_EXTREME_SNAPBACK_003
+
+run:
+  # Placeholder only; do not run
+  start: "YYYY-MM-DD"
+  end: "YYYY-MM-DD"
+
+candidate_root:
+  # Design reference only; do not copy YAMLs into a new production root
+  path: "src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates"
+
+candidate_ids:
+  - "GAP_ACCEPTANCE_FAILURE_001"
+  - "PA_BUY_SELL_CLOSE_TREND_003"
+  - "CCI_EXTREME_SNAPBACK_003"
+
+system:
+  asset: "equity"
+  symbol: "QQQ"
+  max_open_positions: 1
+  no_new_after_minute: 360
+  commission: 0.0
+  slippage: 0.01
+
+selection:
+  # Design axis for future diagnostic only
+  priority_policy: "metadata_priority"  # {metadata_priority, score_adjusted_priority}
+  max_trades_per_day: 1
+  daily_max_loss_r: -1.5
+

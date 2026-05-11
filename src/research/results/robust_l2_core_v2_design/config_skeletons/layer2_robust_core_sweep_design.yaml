@@ -1,0 +1,63 @@
+# DESIGN ONLY — NOT RUN — DO NOT TREAT AS PROMOTED CONFIG
+#
+# Small diagnostic sweep design (skeleton)
+#
+# Intent:
+# - Evaluate a few deduped candidate sets under a very small grid of risk-control axes.
+# - This is NOT a broad Global Layer 2 grid.
+# - This design file is not executable without additional runner glue; it is a planning artifact.
+#
+# Candidate set axis (design buckets):
+# - primary_representative_core
+# - balanced_representative_core
+# - pa_only_core
+# - gap_only_core
+# - cci_only_core
+# - pa_gap_core
+# - pa_cci_core
+# - gap_cci_core
+#
+# Risk-control axes (design only):
+# - max_trades_per_day: [1, 2]
+# - daily_max_loss_r: [-1.5, -2.0]
+# - priority_policy: [metadata_priority, score_adjusted_priority]
+#
+# Constraints:
+# - max_open_positions = 1
+# - no router / regime filters
+# - no OOW tuning
+
+candidate_sets:
+  primary_representative_core:
+    - "GAP_ACCEPTANCE_FAILURE_001"
+    - "PA_BUY_SELL_CLOSE_TREND_003"
+    - "CCI_EXTREME_SNAPBACK_003"
+  balanced_representative_core:
+    - "GAP_ACCEPTANCE_FAILURE_001"
+    - "PA_BUY_SELL_CLOSE_TREND_003"
+    - "PA_BUY_SELL_CLOSE_TREND_004"
+    - "CCI_EXTREME_SNAPBACK_003"
+    - "CCI_EXTREME_SNAPBACK_002"
+  pa_only_core:
+    - "PA_BUY_SELL_CLOSE_TREND_003"
+    - "PA_BUY_SELL_CLOSE_TREND_004"
+  gap_only_core:
+    - "GAP_ACCEPTANCE_FAILURE_001"
+  cci_only_core:
+    - "CCI_EXTREME_SNAPBACK_003"
+    - "CCI_EXTREME_SNAPBACK_002"
+  pa_gap_core:
+    - "PA_BUY_SELL_CLOSE_TREND_003"
+    - "GAP_ACCEPTANCE_FAILURE_001"
+  pa_cci_core:
+    - "PA_BUY_SELL_CLOSE_TREND_003"
+    - "CCI_EXTREME_SNAPBACK_003"
+  gap_cci_core:
+    - "GAP_ACCEPTANCE_FAILURE_001"
+    - "CCI_EXTREME_SNAPBACK_003"
+
+risk_axes:
+  max_trades_per_day: [1, 2]
+  daily_max_loss_r: [-1.5, -2.0]
+  priority_policy: ["metadata_priority", "score_adjusted_priority"]
+
