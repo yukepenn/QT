@@ -1,0 +1,13 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+README.md,Project front page,yes,,yes,no,Concise architecture + non-goals
+NEXT_HANDOFF.md,Operating handoff A–L,yes,,yes,no,Updated after this cycle
+src/research/router_quality_refinement_v2_lib.py,Pure metrics/masks for v2,yes,,no,no,Imported by runner + tests
+src/research/run_router_quality_refinement_v2.py,Offline v2 aggregate runner,yes,,no,yes,Reads local-only panel path provided by user
+tests/test_router_quality_refinement_v2.py,Unit tests for lib,yes,,no,no,No heavy data dependency
+src/research/results/router_quality_refinement_v2/router_v2/router_v2_results.csv,Router v2 per profile metrics,yes,24,yes,yes,Uses local panel for generation
+src/research/results/router_quality_refinement_v2/quality_v2_refined/quality_variant_results.csv,Quality v2 grid results,yes,205,yes,yes,Uses local panel for generation
+src/research/results/router_quality_refinement_v2/combined_light_guards/combined_guard_results.csv,Combined masks results,yes,15,yes,yes,Conditional on promising rows
+src/research/results/router_quality_refinement_v2/router_quality_refinement_v2_decision.md,Formal decision label,yes,,yes,no,RUN_EXIT_OVERLAY_DIAGNOSTICS
+src/research/results/router_quality_refinement_v2/CHATGPT_REVIEW_BUNDLE.md,Human-readable evidence rollup,yes,,yes,no,Do not parse raw CSV for main story
+src/research/results/router_quality_refinement_v2/router_quality_refinement_v2_artifact_validation.csv,CSV parse/abs-path audit,yes,17,yes,no,Produced by validate_research_artifacts
+src/research/results/local_detailed_trade_context_replay_v1/aggregates/trade_context_coverage.csv,Join coverage headline,yes,1,yes,yes,Row panel itself is local-only

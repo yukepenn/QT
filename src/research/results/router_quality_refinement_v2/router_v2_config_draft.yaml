@@ -1,0 +1,19 @@
+# Draft offline router v2 config — DESIGN ONLY / NOT WIRED
+name: router_v2_offline_diagnostic_draft
+enabled: false
+mode: offline_diagnostic
+notes:
+  - Do not enable in combiner production paths.
+  - Masks are evaluated in src/research/run_router_quality_refinement_v2.py for aggregate CSVs only.
+variants:
+  - baseline_all
+  - soft_avoid_removed
+  - soft_downweight_proxy
+  - gap_context_guard
+  - late_climax_guard
+  - high_chop_guard
+  - repeat_after_loss_guard
+  - combined_light_guard
+non_goals:
+  - unknown_mixed is not a default hard-block bucket in v2 masks.
+  - late_climax / high_chop are diagnostic contexts; any “guard” here is research filtering only.

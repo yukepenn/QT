@@ -1,0 +1,16 @@
+combo_name,profile_id,weak_period_delta_r
+best_router_v2 + bottom_20_quality_cut,pa_gap_mtp2_meta,15.620983792518214
+best_router_v2 + bottom_20_quality_cut,pa_only_mtp1_meta,23.52280275006344
+best_router_v2 + bottom_20_quality_cut,primary_mtp2_meta,23.928819864969277
+best_router_v2 + relaxed_A_B,pa_gap_mtp2_meta,31.138522477140953
+best_router_v2 + relaxed_A_B,pa_only_mtp1_meta,30.282416119795318
+best_router_v2 + relaxed_A_B,primary_mtp2_meta,29.359166548489565
+repeat_after_loss_guard + bottom_20_quality_cut,pa_gap_mtp2_meta,16.897143163269327
+repeat_after_loss_guard + bottom_20_quality_cut,pa_only_mtp1_meta,16.657586367526232
+repeat_after_loss_guard + bottom_20_quality_cut,primary_mtp2_meta,25.510185797067457
+gap_context_guard + repeat_after_loss_guard,pa_gap_mtp2_meta,24.795073512862626
+gap_context_guard + repeat_after_loss_guard,pa_only_mtp1_meta,29.30297246595869
+gap_context_guard + repeat_after_loss_guard,primary_mtp2_meta,23.015717584211224
+late_climax_guard + relaxed_A_B,pa_gap_mtp2_meta,31.138522477140953
+late_climax_guard + relaxed_A_B,pa_only_mtp1_meta,30.282416119795318
+late_climax_guard + relaxed_A_B,primary_mtp2_meta,29.359166548489565

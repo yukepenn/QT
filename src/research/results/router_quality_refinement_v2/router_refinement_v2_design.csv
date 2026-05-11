@@ -1,0 +1,9 @@
+rule_name,intended_trade_retention,context_columns_used,candidate_families_affected,expected_benefit,risk_of_overfit,pass_condition
+baseline_all,1.0,none,none,control baseline,none,baseline reference
+soft_avoid_removed,0.995+,context_bucket,all,remove rare mis-bucketed avoid tail,low,retention>=0.99 with neutral deltas
+soft_downweight_proxy,0.65-0.75,"context_bucket, quality_score_v2",PA-heavy in late_climax,PF / DD proxy uplift possible,medium-high,must not destroy pa_only baseline total R beyond guardrails
+gap_context_guard,0.95-0.99,"candidate_id, window, context_bucket",GAP,reduce late_oow unknown_mixed GAP drag,medium,weak-period deltas not sharply worse
+late_climax_guard,0.80-0.90,"candidate_id, context_bucket, decision_pa_late_trend_score_20",PA,reduce trend-chase tail; PF uplift observed in aggregates,medium,monitor total R tradeoff on primary profile
+high_chop_guard,1.0 (no rows),context_bucket,PA (intended),diagnostic placeholder if high_chop appears later,low,n/a until bucket populated
+repeat_after_loss_guard,~1.0 (sparse flags),"entry_prior_trade_was_loss, entry_prior_trade_same_family",all,small hygiene; may be inactive if flags sparse,low,mostly neutral expected
+combined_light_guard,0.97-0.99,combination of above,PA+GAP,stack least-destructive cuts,medium,watch stacked weak-period deltas

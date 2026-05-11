@@ -1,0 +1,8 @@
+file,issue_found,action_taken,behavior_changed,tests_affected
+src/research/run_trade_quality_score_v2.py,json import only under __main__,import json at module level,yes,none
+src/research/run_local_trade_context_replay.py,none (readable),none,no,none
+src/research/run_offline_router_diagnostics.py,none (readable),none,no,none
+src/research/build_trade_context_panel.py,none (readable),none,no,none
+src/research/analyze_playbook_context.py,none (readable),none,no,none
+src/research/run_router_quality_refinement_v2.py,new file,added aggregate runner,no,tests/test_router_quality_refinement_v2.py
+src/research/router_quality_refinement_v2_lib.py,new file,added pure helpers,no,tests/test_router_quality_refinement_v2.py

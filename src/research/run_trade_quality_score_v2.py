@@ -14,7 +14,7 @@ This is intentionally conservative and will report missingness rather than over-
 from __future__ import annotations
 
 import argparse
-import math
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -269,7 +269,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    import json
-
     raise SystemExit(main())
 

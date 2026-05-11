@@ -21,3 +21,5 @@ src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_
 src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_replay_summary.md,Short summary,yes,,yes,no,
 src/research/results/local_detailed_trade_context_replay_v1/local_trade_context_replay_key_findings.csv,Key findings index,yes,4,no,no,
 src/research/results/local_detailed_trade_context_replay_v1/chatgpt_key_tables.csv,Bundle key metrics table,yes,6,no,no,
+src/research/results/router_quality_refinement_v2/CHATGPT_REVIEW_BUNDLE.md,Follow-on v2 evidence rollup (router/quality refinement),yes,,yes,no,Depends on local panel for regeneration
+src/research/results/router_quality_refinement_v2/router_quality_refinement_v2_decision.md,Superseding formal recommendation (exit next),yes,,yes,no,Label RUN_EXIT_OVERLAY_DIAGNOSTICS

@@ -1,0 +1,8 @@
+score_variant,threshold_schemes,goal,risk_notes
+original_v2_score,"fixed_AB, relaxed_AB, percentile_profile_top80, percentile_profile_top70, percentile_profile_top50, percentile_profile_window_top80, percentile_profile_window_top70, bottom_cut_10, bottom_cut_20, bottom_cut_30",separate rank vs cutoff behavior,percentile/bottom-cut flagged in-sample diagnostic
+no_signal_strength_fallback,same as above,reduce dependence on trend_score proxy,still proxy-heavy
+regime_level_cost_only,same as above,simpler interpretable composite,may lose separation
+freshness_penalty_light,same as above,less harsh repeat-after-loss penalty,correlated with trade#
+repeat_after_loss_penalty_only,same as above,isolate repeat/freshness channel,not a full score
+context_fit_plus_cost,same as above,emphasize regime+cost,coarse
+profile_percentile_score,same as above,profile-calibrated ranking,circular with profile slicing — diagnostic

@@ -4,6 +4,9 @@ This index classifies **result roots** without moving or deleting them.
 
 ## A. Active / current
 
+- **Router + quality refinement v2 (2026-05-11)** — `router_quality_refinement_v2/` (`router_v2/*`, `quality_v2_refined/*`, `combined_light_guards/*`, design CSV/MD/YAML, `router_quality_refinement_v2_decision.md` **`RUN_EXIT_OVERLAY_DIAGNOSTICS`**, `CHATGPT_REVIEW_BUNDLE.md`, `SOURCE_MAP.csv`, `chatgpt_key_tables.csv`, `router_quality_refinement_v2_artifact_validation.*`); scripts `src/research/run_router_quality_refinement_v2.py`, `src/research/router_quality_refinement_v2_lib.py`; tests `tests/test_router_quality_refinement_v2.py`; README + indexes refreshed. **Uses local-only panel** to generate aggregates; **does not** commit `local_rows/**`. **No** WFO/live/SPY/broad L2/Global L1; **no** production router wiring; **no** strategy/YAML/signal edits.
+  - **keep:** yes
+
 - **Global strategy audit v1 (2026-05-10)** — `global_strategy_audit_v1/` (`strategy_eligibility_matrix.*`, `strategy_side_support_matrix.*`, `global_strategy_audit_summary.md`); script `src/research/global_strategy_audit.py`.
   - **keep:** yes
 

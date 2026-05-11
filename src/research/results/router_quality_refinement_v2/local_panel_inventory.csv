@@ -1,0 +1,8 @@
+key,value
+local_panel_exists,yes
+row_count,10628
+column_count,170
+profiles,"pa_only_mtp1_meta,pa_gap_mtp2_meta,primary_mtp2_meta"
+windows,"early_oow,insample_ref,late_oow,full_available"
+local_only_path,src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv
+commit_status,untracked_or_ignored

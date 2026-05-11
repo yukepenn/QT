@@ -1,0 +1,10 @@
+section,item,metric,value,interpretation
+Router v2,late_climax_guard pa_gap,retention_pct,0.862,High retention PF uplift variant (offline)
+Router v2,late_climax_guard pa_gap,delta_pf_vs_baseline,0.0456,PF_R improves vs profile baseline on same panel
+Quality v2,percentile top80 pa_gap,retention_pct,0.800,Meets retention goal but thresholds are in-sample diagnostic
+Quality v2,fixed AB pa_gap,retention_pct,0.326,Too sparse vs 60-85% goal
+Exit preview,trend_swing,avg_r,0.1325,Stronger heuristic avg R than scalp bucket
+Exit preview,scalp,avg_r,-0.1057,Negative heuristic avg R — de-prioritize scalp implementation
+Attribution v1,PA,total_r,510.81,PA remains dominant cumulative R contributor (observed attribution)
+Attribution v1,GAP,total_r,166.25,GAP additive but context dependent (see context slices)
+Decision,this_cycle,label,RUN_EXIT_OVERLAY_DIAGNOSTICS,Prefer exit simulation next vs combiner integration

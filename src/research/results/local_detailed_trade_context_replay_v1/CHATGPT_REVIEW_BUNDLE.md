@@ -1,78 +1,61 @@
 # CHATGPT_REVIEW_BUNDLE — local_detailed_trade_context_replay_v1
 
-## 1) Git / validation
+## 1. Purpose
 
-- Baseline validations: `compileall` OK, `pytest` OK, loader **35** strategies (see repo `NEXT_HANDOFF.md` for the baseline snapshot).
+Produce a **local-only, decision-time enriched trade panel** for Champion v0 so offline diagnostics can join **backward `merge_asof`** context (no lookahead) and compute **router / quality / attribution / freshness / exit-readiness** aggregates that are safe to commit.
 
-## 2) Why this task was needed
+## 2. Champion v0 recap
 
-- Prior cycle aggregates lacked row-level trade timestamps/IDs and decision-time market context fields, preventing no-lookahead router/quality attribution.
+- `pa_only_mtp1_meta` — **CLEAN_BASELINE** (PA only)
+- `pa_gap_mtp2_meta` — **DEFAULT_COMBINED** (PA + GAP)
+- `primary_mtp2_meta` — **BREADTH_REFERENCE_ONLY** (PA + GAP + CCI)
 
-## 3) Champion v0 freeze recap
+## 3. Local row-level coverage
 
-- `pa_only_mtp1_meta` (PA only) — CLEAN_BASELINE
-- `pa_gap_mtp2_meta` (PA + GAP) — DEFAULT_COMBINED
-- `primary_mtp2_meta` (PA + GAP + CCI) — BREADTH_REFERENCE_ONLY
+- **10,628** enriched trades in the local-only panel (see `aggregates/trade_context_coverage.csv` for join coverage counts).
+- Profiles × windows replayed locally; **row-level outputs are not committed** (`local_rows/**`, `local_runs/**`).
 
-## 4) Local row-level replay coverage
+## 4. Context join coverage
 
-- Local-only row panel built: **10,628** trades
-- Window coverage: early/insample/late/full for all 3 profiles
-- Local-only paths (not committed): `local_runs/**`, `local_rows/**`
+- `aggregates/trade_context_coverage.csv` reports **10,628 / 10,628** rows with `signal_ts_utc`, decision regime window 20 labels, and `market_context_label`.
+- Join uses **decision bar** timestamps and **backward** as-of merges only.
 
-## 5) Context join coverage (no lookahead)
+## 5. PA / GAP / CCI contribution headline
 
-- Decision timestamp source: `signal_ts_utc` (signal bar; entry occurs next-bar open)
-- Join method: backward `merge_asof` from `decision_context_ts_utc` to feature `ts_utc`
-- Coverage: see `aggregates/trade_context_coverage.csv`
+From `attribution_v1/candidate_contribution_overall.csv` (observed realized attribution, not counterfactual conflict outcomes):
 
-## 6) PA-only / PA+GAP / primary context findings (aggregate slices)
+- **PA (`PA_BUY_SELL_CLOSE_TREND_003`):** **7,782** trades, **~510.81** total R — dominant driver.
+- **GAP (`GAP_ACCEPTANCE_FAILURE_001`):** **1,612** trades, **~166.25** total R — additive but context-sensitive.
+- **CCI (`CCI_EXTREME_SNAPBACK_003`):** **1,234** trades, **~67.89** total R — positive but **breadth/reference** scale.
 
-- Regime/context buckets and market-context label slices are available under `aggregates/`.
-- Key takeaway: monthly `market_context_label` breakdown shows dispersion in total_r across uptrend/downtrend/range_chop.
+## 6. Router v1 headline
 
-## 7) Router diagnostic results (offline only)
+- `router_diagnostics_v1/router_filter_results.csv` shows v1 includes **very aggressive** masks (e.g. `preferred_or_neutral_only` ~**0.187** trade retention) alongside smaller-impact cuts.
+- **Interpretation:** v1 demonstrates “filters can move PF / drawdown proxies” but **default combined** needs **softer** v2-style guards.
 
-- Results: `router_diagnostics_v1/router_filter_results.csv`
-- Summary: `router_diagnostics_v1/router_diagnostics_summary.md`
-- Note: `max_dd_r_proxy` is a cumulative-R proxy, not a capital-constrained equity reconstruction.
+## 7. Quality v2 headline
 
-## 8) Trade-quality score v2 results (offline only; proxy components)
+- `quality_score_v2/quality_group_results.csv`: **A-only** remains **sparse**; **A+B** improves some risk proxies but with **large total-R reductions** vs “all trades”.
+- **Interpretation:** fixed buckets are not sufficient without **recalibration** (percentile / profile-aware schemes) — executed further in `router_quality_refinement_v2/`.
 
-- Bucket distribution: `quality_score_v2/quality_bucket_distribution.csv`
-- Group results: `quality_score_v2/quality_group_results.csv`
-- Current proxy scoring yields **very sparse A-only**; A+B retains ~28% of trades with reduced worst-quarter drawdown vs baseline, but with large total-R reduction.
+## 8. Freshness / trade #2 headline
 
-## 9) PA/GAP/CCI attribution (observed, non-counterfactual)
+- `freshness_v1/trade_number_by_profile.csv`: trade **#1** is higher quality than trade **#2** for `pa_gap_mtp2_meta` (lower avg R on #2).
 
-- Overall and sliced attribution under `attribution_v1/`.
-- Attribution is **observed** realized PnL by candidate; it does not infer counterfactual “would-have-traded” outcomes under conflicts.
+## 9. Exit overlay readiness headline
 
-## 10) Trade number / freshness results
+- `exit_overlay_readiness_v1/exit_mode_assignment_preview.csv` (heuristic preview only): **`trend_swing`** and **`runner`** show materially higher **avg R** than **`reversal`** / **`scalp`** buckets in this run.
 
-- Tables under `freshness_v1/` for trade # and prior-loss / repeat flags.
+## 10. Decision (v1 formal label)
 
-## 11) Exit overlay readiness (feasibility only)
+- `local_trade_context_replay_decision.md` — formal decision was **`REFINE_ROUTER_QUALITY_SCORE`** (superseded by the v2 cycle decision in `router_quality_refinement_v2/router_quality_refinement_v2_decision.md`).
 
-- Heuristic exit-mode preview under `exit_overlay_readiness_v1/` (no exit simulation).
+## 11. Explicit non-runs
 
-## 12) Scalp / short roadmap update
+- No WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1 reruns.
+- No production router wiring; no strategy signal semantics changes; no selected-candidate YAML edits.
+- No committing raw trades or row-level `trade_context_panel.csv`.
 
-- Lightweight evidence summaries under `roadmap_update_v1/` (no new strategy implementation).
+## 12. Recommended next step (historical v1 text)
 
-## 13) Decision
-
-- See `local_trade_context_replay_decision.md`
-
-## 14) Explicit non-runs
-
-- No WFO / mini-WFO / live / paper
-- No SPY / broad Layer2 / Global Layer1 rerun
-- No strategy/feature/YAML/combiner semantics changes
-- No production router wiring
-- No row-level artifacts committed
-
-## 15) Recommended next step
-
-- Refine offline router filters + quality score component definitions using the available decision-time features, then rerun aggregate-only diagnostics.
-
+- Original v1 bundle recommended refining offline router + quality using the panel fields — **done** in `router_quality_refinement_v2/`; the updated formal recommendation is **`RUN_EXIT_OVERLAY_DIAGNOSTICS`**.
