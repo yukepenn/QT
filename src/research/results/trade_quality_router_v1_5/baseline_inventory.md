@@ -5,7 +5,7 @@
 ## Git tip (fill at commit time)
 
 - **Branch:** `main`
-- **Tip:** `9cfe2f6` — `Research: extend trade quality enrichment diagnostics`
+- **Tip:** `ccdd0bb` — `Research: extend trade quality enrichment diagnostics`
 
 ## Handoff decision (pre–v1.5 commit)
 
