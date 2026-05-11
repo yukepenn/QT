@@ -5,76 +5,116 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before this work | `fda3deb` |
-| New commit | **`dbd2817`** — `Research: run fixed profile out-of-window validation`; **repo tip:** verify with `git log -1 --oneline` (may include small handoff-only commits after) |
-| Push status | **Pushed** `main` → `origin` |
-| Working tree | Tracked files clean after commit; **expected untracked:** `fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, other heavy diagnostics |
-| Expected untracked local-only artifacts | Raw `trades.csv`, `trades_enriched.csv`, `config_resolved.yaml`, large logs under `fixed_profile_oow_v1/local_runs/**` — **do not** `git add` |
+| Main research commit (fixed-profile OOW anchor) | `dbd2817` — `Research: run fixed profile out-of-window validation` |
+| Repo tip (this pack) | **`0d0cb50c955a61e3cf808f0cea2f3e949aee02f3`** — `Research: audit layer2 candidate robustness` |
+| Push status | Run `git push` after amend; then **Pushed** or paste error here |
+| Working tree | Expect **clean** tracked tree after explicit `git add`; **untracked:** `layer2_candidate_robustness_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, `fixed_profile_oow_v1/local_runs/**` |
+| Expected untracked local-only artifacts | Raw `trades.csv`, `config_resolved.yaml`, logs under `layer2_candidate_robustness_v1/local_runs/**` — **do not** `git add` |
 
-## B. Task scope
-
-| | |
-|--|--|
-| Requested | Execute fixed-profile **out-of-window** combiner replays (QQQ), postprocess, selective enrichment, commit **curated** metrics only |
-| Completed | `run` / `enrich` subcommands; `run_discovery_manifest.csv`; merged `run_execution_manifest.csv`; populated `oow/`, `insample_sanity/`, `exit_slip/`, `trade_number/`, `quality_score_transfer/`, `regime_stability/`; `execution_runbook.md`, multiline run docs; indicator insample reference rows anchored to **this** replay; decision **`REVISIT_LAYER2_CANDIDATE_SELECTION`** |
-| Intentionally not done | mini/full WFO; live/paper; SPY; Global L1 rerun; broad Global L2 grid; strategy/feature/selected-candidate YAML edits; online `regime_router`; enrich **full_available** + **indicator_mtp3** (optional follow-up); committing `local_runs/` |
-
-## C. Files changed
-
-| Area | Paths |
-|------|-------|
-| Scripts | `src/research/fixed_profile_oow.py`, `src/research/fixed_profile_oow_lib.py` |
-| Tests | `tests/test_fixed_profile_oow_lib.py` |
-| Curated research results | `src/research/results/fixed_profile_oow_v1/**` except `local_runs/` |
-| Docs / indexes | `src/research/results/RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
-| Local-only raw outputs | `fixed_profile_oow_v1/local_runs/**` |
-
-## D. Validation
+## B. Validation
 
 | Check | Result |
 |--------|--------|
-| `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **412** passed |
+| `python -m compileall -q src` | OK (re-run after edits) |
+| `python -m pytest -q` | **421** passed |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| New tests | `test_combiner_argv_has_no_signal_cache_flag`, `test_load_window_bounds_from_csv` |
-| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs|trades.csv|..."` — **no** matches |
+| New tests | `test_audit_l2_candidates_oow.py`, `test_side_flip_diagnostic.py`, `test_l2_core_policy_v2.py` |
+| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs|trades.csv|compact_trades|enriched.csv|scored_trades|\.parquet|\.npy|\.npz|\.memmap"` — **no** matches |
 
-## E. Execution inventory
+## C. Execution
 
 | Item | Value |
-|------|--------|
-| Profiles run | `vwap_mtp2`, `vwap_mtp1`, `indicator_mtp1`, `indicator_mtp2`, `indicator_mtp3` |
-| Windows run | `insample_ref`, `early_oow`, `late_oow`, `full_available` |
-| Local combiner runs | **20** (5×4) under `local_runs/<profile>/<window>/run_*` |
-| Run manifest | `run_execution_manifest.csv` (execution log) + **`run_discovery_manifest.csv`** (filesystem truth from `postprocess`) |
-| Raw local run root | `src/research/results/fixed_profile_oow_v1/local_runs/` |
-| Sanity replay | **All five** `sanity_pass=True` on 2023–2024 (VWAP vs L2 refs; indicator vs **replay-anchored** refs — see `insample_sanity/insample_sanity_failure.md`) |
-| Enrichment | `trades_enriched.csv` for VWAP + indicator mtp1/2 on **insample_ref**, **early_oow**, **late_oow** only |
-| Missing / incomplete | No enrichment for **full_available** or **indicator_mtp3** windows (runtime); regime/score tables lean on enriched rows |
+|------|-------|
+| Audit command style | `python -m src.research.audit_l2_candidates_oow run --candidate-root src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates --output-root src/research/results/layer2_candidate_robustness_v1 --windows-root src/research/results/fixed_profile_oow_v1 --families vwap,indicator --skip-existing` |
+| Postprocess | `python -m src.research.audit_l2_candidates_oow postprocess --candidate-root …/selected_candidates --output-root …/layer2_candidate_robustness_v1` |
+| Families audited | **vwap** (8), **indicator** (19) |
+| Windows audited | **early_oow**, **insample_ref**, **late_oow** |
+| Local combiner runs | **81** (27×3) under `layer2_candidate_robustness_v1/local_runs/<candidate>/<window>/run_*` |
+| Raw local run root | `src/research/results/layer2_candidate_robustness_v1/local_runs/` |
+| Manifests | `candidate_audit_run_manifest.csv`, `run_execution_manifest.csv`, `run_discovery_manifest.csv` |
+| Side-flip diagnostic | **`side_flip_diagnostic.py`** → `side_flip/side_flip_metrics.csv` (**`non_executable_sign_proxy`**, not a simulator flip) |
 
-## F. Research results (headlines)
+## D. Candidate-level OOW audit
 
-| Topic | Result |
-|--------|--------|
-| VWAP mtp=2 OOW | **Negative** early_oow (~−43R) and late_oow (~−14R); insample OK |
-| VWAP mtp=1 OOW | **Negative** both OOW windows; slightly fewer trades than mtp2 |
-| Indicator mtp=1 OOW | **Negative** early; **small negative** late (~−3.3R); insample **+18.8R** (not legacy ~43.5R doc) |
-| Indicator mtp=2 OOW | **Worse** than mtp=1 on early_oow; late still negative |
-| Indicator mtp=3 | Diagnostic — **large negative** OOW + very high turnover |
-| Trade-number | VWAP #2 **not** reliably + OOW; indicator #2 **negative** OOW for mtp2/3 |
-| Target-limit slip overlay | Softens vs symmetric stress; **does not** flip go/no-go |
-| Quality score transfer | **Not** router-ready (threshold collapse / empty test cohorts on insample file) |
-| Regime / unknown | CSVs populated where **enriched** trades exist |
-| Decision | **`REVISIT_LAYER2_CANDIDATE_SELECTION`** |
+| Metric | Count (audited slice **n=27**) |
+|--------|--------------------------------:|
+| total candidates audited | 27 |
+| ROBUST_POSITIVE | 2 |
+| INSAMPLE_ONLY | 7 |
+| OOW_NEGATIVE (label) | 0 |
+| OOW_MIXED | 17 |
+| TOO_SPARSE | 0 |
+| HIGH_TURNOVER_FRAGILE | 0 |
+| ANTI_PREDICTIVE_CANDIDATE | 1 |
 
-## G. Explicit non-runs
+**ROBUST_POSITIVE:** `CCI_EXTREME_SNAPBACK_002`, `CCI_EXTREME_SNAPBACK_003`  
+**ANTI_PREDICTIVE:** `MACD_MOMENTUM_TURN_003`  
+**Worst cluster (insample-only VWAP):** `VWAP_RECLAIM_REJECT_001`–`003`
 
-mini-WFO; full rolling WFO; live/paper; SPY; Global L1 rerun; broad Global L2 grid; strategy changes; feature primitive changes; selected candidate YAML edits; hard regime filter; combiner `regime_router`; parameter optimization on OOW; OOW-driven YAML selection; `--use-signal-cache` on unsafe OneDrive roots; `git add .`; heavy artifact commits
+## E. Family-level summary
 
-## H. Risks / caveats
+| audit_family | candidates_audited | robust_positive | insample_only | oow_mixed | oow_negative | too_sparse | high_turnover_fragile | anti_predictive | comment |
+|----------------|-------------------:|----------------:|--------------:|----------:|---------------:|-------------:|----------------------:|----------------:|---------|
+| indicator | 19 | 2 | 4 | 12 | 0 | 0 | 0 | 1 | CCI pocket only “robust” under heuristic |
+| vwap | 8 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | no robust-positive singletons |
 
-Fixed-profile only; no parameter tuning; QQQ long-only evidence; raw trades local-only; slip overlay research-only; indicator legacy headline R **not** reproduced — anchor to this replay for sanity checks; indicator mtp=3 turnover risk; partial enrichment coverage
+## F. VWAP / indicator failure analysis
 
-## I. Recommended next step
+- **VWAP:** fixed-profile OOW negatives align with **candidate-level** weakness (zero robust-positive; reclaim-reject insample-only cluster).
+- **Indicator:** fixed-profile failure is **broad** among audited names; **two** CCI variants pass heuristic robust-positive; **MACD_003** anti-predictive.
+- **Combination vs single:** combinations still risky (overlap, mtp caps), but **single-name** evidence is already weak for most VWAP/indicator YAMLs audited here.
+- **Turnover:** mtp3 profile stress remains **profile-level**; singleton slice did not populate `HIGH_TURNOVER_FRAGILE` under current thresholds.
 
-**Exactly one:** **`REVISIT_LAYER2_CANDIDATE_SELECTION`**
+## G. Side-flip / inverse diagnostic
+
+| Question | Answer |
+|----------|--------|
+| Executable replay run? | **No** — combiner has no inversion flag |
+| Artifact | `side_flip/side_flip_metrics.csv` with `diagnostic_kind=non_executable_sign_proxy` |
+| Indicator mtp1/2/3 proxy (total_r → −total_r) | See compact table |
+
+| profile_id | window_id | total_r (long profile) | side_flip_proxy_total_r |
+|------------|------------|------------------------:|-------------------------:|
+| indicator_mtp1 | early_oow | −29.81 | 29.81 |
+| indicator_mtp1 | insample_ref | 18.76 | −18.76 |
+| indicator_mtp1 | late_oow | −3.29 | 3.29 |
+| indicator_mtp2 | early_oow | −104.17 | 104.17 |
+| indicator_mtp2 | insample_ref | 46.51 | −46.51 |
+| indicator_mtp2 | late_oow | −14.74 | 14.74 |
+| indicator_mtp3 | early_oow | −163.73 | 163.73 |
+| indicator_mtp3 | insample_ref | 58.01 | −58.01 |
+| indicator_mtp3 | late_oow | −33.49 | 33.49 |
+
+**Inverse hypothesis supported?** **No** for production or research promotion — proxy flips insample positives to negative; not an executable contrarian path (`side_flip_interpretation.md`).
+
+## H. Robust l2_core policy v2
+
+| Item | Value |
+|------|-------|
+| Policy doc | `l2_core_policy_v2.md` |
+| Candidate actions CSV | `l2_core_policy_v2_candidate_actions.csv` |
+| policy_action counts | KEEP_CORE **2**, DROP_FROM_CORE **7**, WATCHLIST_DIAGNOSTIC **17**, REQUIRES_SIDE_FLIP_RESEARCH **1** |
+| Robust core dry-run | **Not created** — see `robust_core_not_enough_candidates.md` |
+| Enough candidates survive? | **No** (only **2** robust-positive; single strategy family among them) |
+
+## I. Decision
+
+**Exactly one:** **`RUN_MORE_CANDIDATE_OOW_AUDIT`**
+
+- **Rationale:** **39 / 66** l2_core YAMLs (**opening_trap**, **pa**, **afternoon**, **other**) not yet replayed; cannot conclude “all core fails” vs “VWAP/indicator only.”
+- **Rationale:** audited slice shows **broad** VWAP weakness and **narrow** CCI strength only.
+- **Rationale:** side-flip is **non-executable** proxy — does **not** unlock short/contrarian track.
+- **Rationale:** robust-core dry-run thresholds **not met**.
+- **Rationale:** defer **`REVISIT_LAYER1_SELECTION_CRITERIA`** until extended audit still shows pervasive failure.
+
+## J. Explicit non-runs
+
+mini-WFO; full WFO; live/paper; SPY; Global L1 rerun; broad Global L2 grid; strategy changes; feature primitive changes; selected candidate YAML edits; `regime_router`; hard regime filter; production short support; OOW parameter optimization; heavy artifact commits; `git add .`
+
+## K. Risks / caveats
+
+QQQ only; long-only candidate root; singleton audit envelope (`layer2_fixed_vwap_mtp2.yaml`) for execution fields; **partial** l2_core coverage in v1 pack; side-flip **research-only** proxy; raw trades **local-only**; no WFO; OOW not used for parameter tuning.
+
+## L. Recommended next step
+
+**Exactly one:** run singleton audit for **`opening_trap,pa,afternoon,other`** on **early_oow,insample_ref,late_oow**, then re-postprocess into the same result root (still **no** OOW tuning).

@@ -1,0 +1,8 @@
+strategy,candidates_audited,robust_positive,insample_only,oow_negative,too_sparse
+cci_extreme_snapback,4,2,0,0,0
+macd_momentum_turn,3,0,2,0,0
+rsi_failure_swing,4,0,1,0,0
+stochastic_oversold_cross,4,0,0,0,0
+supertrend_atr_flip,4,0,1,0,0
+vwap_reclaim_reject,4,0,3,0,0
+vwap_trend_pullback,4,0,0,0,0

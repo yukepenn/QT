@@ -1,0 +1,8 @@
+topic,family,candidate_or_profile,result,evidence_strength,implication,next_action
+fixed_profile_oow,vwap,vwap_mtp1/2,Both OOW windows negative under replay,high (20-profile matrix prior),Combination failure confirmed at profile level,Keep VWAP on watchlist
+singleton_audit,vwap,8 YAMLs,0 ROBUST_POSITIVE; 3 INSAMPLE_ONLY reclaim-reject,medium (singleton envelope),VWAP weakness is candidate-level not only weighting,Extend audit optional windows only after core families complete
+singleton_audit,indicator,19 YAMLs,2 ROBUST_POSITIVE (CCI_002/003); rest mixed/insample-only,medium,Small CCI pocket less bad; most indicators still fragile,Re-audit after remaining families
+singleton_audit,indicator,MACD_MOMENTUM_TURN_003,ANTI_PREDICTIVE_CANDIDATE,medium,Demote from core consideration,REQUIRES_SIDE_FLIP_RESEARCH tag = research queue not production
+side_flip_proxy,indicator,mtp1/2/3,-R proxy only; insample becomes negative under proxy,high (definition),Negating R breaks insample edge — not a strategy,Do not pursue production short from proxy
+coverage_gap,pa/opening_trap/afternoon,39 YAMLs,Not run in v1 pack,high,Cannot claim all-core failure yet,RUN_MORE_CANDIDATE_OOW_AUDIT
+robust_core,n/a,dry-run,Insufficient (<6 candidates; single family for robust positives),high,No robust_core_dry_run manifest,Complete family coverage first
