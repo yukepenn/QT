@@ -7,7 +7,7 @@
 | Branch | `main` |
 | Latest commit before this work | `4c77f4c` — Docs(handoff): avoid stale tip SHA in table |
 | New commit | **Research: add trade quality router diagnostics** — verify tip with `git log -1 --oneline` |
-| Push status | Run `git push`; then confirm **Pushed** `main` → `origin` |
+| Push status | **Pushed** `main` → `origin` (verify tip matches `git log -1`) |
 | Working tree | Tracked files clean after commit; **expected untracked:** `src/research/results/trade_quality_router_v1/local_runs/**`, `src/research/results/trade_quality_router_v1/enriched_trades/*_enriched.csv`, `src/research/results/trade_quality_router_v1/quality_score/scored_trades_*.csv`, `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**`, other pre-existing heavy diagnostics |
 | Expected untracked local-only artifacts | Regenerated combiner `trades.csv` under `trade_quality_router_v1/local_runs/`; do **not** `git add` these |
 
