@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Docs(handoff): **NEXT_HANDOFF** — record push `d359306..ea2e77a` + follow-up `8258117` (cost/turnover diagnostic handoff).
+
 - Research(global-l2): **cost / turnover diagnostics after Global L2 v2** — `analyze_layer2_cost_turnover.py` (preflight + decomposition + post-hoc cost-adjusted rank), `build_layer2_tuned_comparison.py`, tests `test_analyze_layer2_cost_turnover.py`; configs `layer2_qqq_global_2023_2024_v2_cost_turnover.yaml`, `layer2_sweep_qqq_global_2023_2024_v2_{lower_turnover_vwap,family_diverse,non_vwap}.yaml`; curated `layer2_qqq_global_2023_2024_v2/layer2_cost_turnover_*`, `layer2_tuned_preflight.md`, `layer2_cost_turnover_gate_decision.md` (**`TUNE_LAYER2_COST_TURNOVER_AGAIN`**); `CONFIG_INDEX` / `RESULTS_INDEX` ×2 / `PROJECT_STATUS` / `PROGRESS` / `NEXT_HANDOFF`. **Ran** **216** tuned combiner combos + postprocess **local-only** under `layer2_qqq_global_2023_2024_v2_cost_turnover/` (not committed). **Validation:** `compileall`, **379** `pytest`, loader **35** strategies. **Not run:** mini-WFO, full WFO, live, SPY, strategy/feature additions, signal-cache on OneDrive.
 
 ### [Unreleased] – 2026-05-11
