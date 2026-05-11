@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before this work | `39c3056` — (verify with `git log -2 --oneline`) |
-| New commit | **`ccdd0bb`** — `Research: extend trade quality enrichment diagnostics` (**repo tip** `ed19377` — handoff follow-ups after v1.5 bundle) |
-| Push status | **Pushed** `main` → `origin` (`39c3056..ed19377`) |
+| New commit | **`ccdd0bb`** — `Research: extend trade quality enrichment diagnostics` (**repo tip** `818d83e`) |
+| Push status | **Pushed** `main` → `origin` (`39c3056..818d83e`) |
 | Working tree | Tracked files clean after commit; **expected untracked:** `src/research/results/trade_quality_router_v1/local_runs/**`, `trade_quality_router_v1/enriched_trades/*`, `trade_quality_router_v1_5/local_runs/**`, `trade_quality_router_v1_5/enriched_staging/**`, scored row CSVs under v1, other pre-existing heavy diagnostics |
 | Expected untracked local-only artifacts | Raw combiner `trades.csv`, row-level enriched/scored CSVs, `local_runs/`, `enriched_staging/` — **do not** `git add` |
 
