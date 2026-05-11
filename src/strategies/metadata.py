@@ -14,6 +14,12 @@ _FALLBACK = {
     "default_priority": 50,
     "default_active_start_minute": 0,
     "default_active_end_minute": 389,
+    "setup_type": "unknown",
+    "playbook": "default",
+    "allowed_sides": "long_only",
+    "default_management_mode": "fixed_r",
+    "required_features": [],
+    "output_contract": {},
 }
 
 
@@ -34,3 +40,9 @@ def get_strategy_metadata(strategy_name: str) -> dict[str, Any]:
     out = dict(_FALLBACK)
     out.update(meta)
     return out
+
+
+def get_strategy_output_contract(strategy_name: str) -> dict[str, Any]:
+    meta = get_strategy_metadata(strategy_name)
+    oc = meta.get("output_contract")
+    return oc if isinstance(oc, dict) else {}

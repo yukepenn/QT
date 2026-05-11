@@ -7,18 +7,30 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 - **Research-only:** offline backtests, sweeps, and diagnostics — not live trading, not broker execution, and not a profitability claim.
 - **Symbol focus:** QQQ is the primary complete dataset in this repo; treat other symbols as experimental unless coverage is explicitly verified.
 
-## 2. Current architecture
+## 2. Target architecture (reset in progress)
+
+The codebase is moving to a **single canonical execution accounting layer** under `src/execution/`. Backtest and combiner become **adapters** that build `TradeIntent` rows and call `execution.path.simulate_trade_path`; legacy Numba paths that duplicate fills/exits/R live under `**/legacy/` with import shims until parity migration finishes.
 
 | Layer | Role |
 |-------|------|
-| **Data / features / strategies** | Parquet ingest, feature builders, `BaseStrategy` plugins, YAML parameters + sweep grids |
-| **Layer 1** | Per-strategy candidate sweeps; curated YAMLs under `src/research/results/layer1_*` |
-| **Layer 2** | Combiner research (multi-candidate systems, cost-aware summaries) — **no production “smart router”** in the combiner |
-| **Layer 3** | Fixed-profile smoke / stability / OOW-style checks under `src/walkforward/` + `src/research/results/layer3_*` |
-| **Playbook Router Research Cycle** | Metadata-driven router / quality / exit-overlay **design** artifacts under `src/research/results/playbook_router_research_cycle_v1/` |
-| **Local-only row diagnostics** | Detailed trade-context replay builds a **local-only** `trade_context_panel.csv` (gitignored); committed outputs are **aggregate CSV/MD only** |
+| **data** | Load, normalize, validate bars (`src/data/`) |
+| **features** | No-lookahead columns (`src/features/`) |
+| **strategies** | Raw candidate signals (`src/strategies/`) |
+| **execution** | Canonical fills, exits, PnL (`src/execution/`) |
+| **management** | Exit-plan templates (`src/management/`) |
+| **backtest** | Single-strategy adapter (`src/backtest/`) |
+| **combiner** | Candidate arbitration; must call execution (`src/combiner/`) |
+| **router** | Permission / quality scaffold (`src/router/`) |
+| **walkforward** | Harnesses only; no duplicate accounting (`src/walkforward/`) |
+| **portfolio** | Sizing / equity helpers (`src/portfolio/`) |
+| **research** | Thin runners and curated results only (`src/research/`) |
+| **utils** | Config / IO / validation (`src/utils/`) |
 
-Deeper indexes: `PROJECT_STATUS.md`, `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md`.
+Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/ARCHITECTURE_RESET_SUMMARY.md`.
+
+Prior Layer 1–3 research outputs and Champion benchmarks remain **historical priors**, not canonical truth for execution semantics.
+
+Deeper indexes: `PROJECT_STATUS.md`, `NEXT_HANDOFF.md`, `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md` (where present).
 
 ## 3. Current Champion v0 (frozen)
 
@@ -30,14 +42,13 @@ Deeper indexes: `PROJECT_STATUS.md`, `src/research/results/RESULTS_INDEX.md`, `s
 
 Champion v0 is **long-only, intraday-only**, and treated as a **frozen benchmark** for research comparisons — not a promoted production system.
 
-## 4. Current active research direction
+## 4. Current active direction
 
-- **Do not** keep polishing Champion v0 parameters.
-- **Do** refine **offline** router filters + trade-quality scoring using the decision-time panel (still no combiner wiring).
-- **Likely next high-edge increment:** **exit overlay diagnostics** (trend swing / runner style behaviors) once router/quality evidence is “good enough” or plateauing.
-- **Scalp / short:** remain **roadmap-only** until dedicated branches exist with explicit non-goals and gates.
+- **Primary:** finish the **architecture reset** — one execution engine, adapters, tests, and documentation — before resuming overlay or large research sweeps.
+- **Do not** run WFO / mini-WFO / live / paper / SPY-first / broad Layer 2 grids as part of this reset unless explicitly re-scoped.
+- **Scalp / short:** remain **roadmap-only** until explicit gates exist.
 
-Latest offline refinement cycle: `src/research/results/router_quality_refinement_v2/`.
+Recent research artifacts (e.g. exit overlay alignment) live under `src/research/results/` and are **diagnostic context** for the reset, not headline execution truth.
 
 ## 5. Artifact policy
 
@@ -56,10 +67,10 @@ Latest offline refinement cycle: `src/research/results/router_quality_refinement
 
 ## 7. Current non-goals
 
-- Full / mini / reduced **walk-forward** automation runs (unless explicitly re-approved in a handoff).
+- Full / mini / reduced **walk-forward** automation runs during the architecture reset (unless explicitly re-approved in a handoff).
 - **Live / paper** trading, **SPY-first** research, or **broad Layer 2** sweeps as a default loop.
-- **Production regime router** wiring inside the combiner, **hard** regime filters, or **short** execution paths.
-- Editing **selected candidate YAMLs** or **strategy signal semantics** during router/quality research cycles.
+- **Production regime router** wiring inside the combiner, **hard** regime filters, or **short** execution paths until execution parity is settled.
+- Editing **selected candidate YAMLs** or **strategy signal semantics** except metadata needed for contracts.
 
 ---
 

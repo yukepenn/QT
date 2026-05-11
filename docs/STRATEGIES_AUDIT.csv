@@ -1,0 +1,2 @@
+strategy,family,allowed_sides,required_features,outputs_stop,outputs_target,outputs_risk,metadata_present,canonical_contract_ready,notes
+*,from metadata.yaml,long_only,varies,yes,yes,yes,partial,partial,see SIGNAL_CONTRACT

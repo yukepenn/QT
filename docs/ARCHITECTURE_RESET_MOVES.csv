@@ -1,0 +1,5 @@
+old_path,new_path,reason,import_adjusted,compatibility_wrapper,notes
+src/backtest/engine.py,src/backtest/legacy/engine_legacy.py,duplicate accounting,Yes,src/backtest/engine.py delegates run_backtest,new run_strategy_backtest uses execution
+src/backtest/fast.py,src/backtest/legacy/fast_legacy.py,numba kernels,Yes,src/backtest/fast.py shim,strategy imports unchanged
+src/backtest/execution.py,src/backtest/legacy/execution_legacy.py,shared validators,Yes,src/backtest/execution.py shim,combiner imports unchanged
+src/combiner/simulator.py,src/combiner/legacy/simulator_legacy.py,numba combiner accounting,Yes,src/combiner/simulator.py re-exports,run.py unchanged import path

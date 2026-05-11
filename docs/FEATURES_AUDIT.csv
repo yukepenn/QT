@@ -1,0 +1,9 @@
+module,outputs,depends_on_future_data,warmup_needed,safe_for_intraday_decision,notes
+src/features/build_features.py,many cols,unknown,yes,yes,audit pending
+src/features/feature_key.py,many cols,unknown,yes,yes,audit pending
+src/features/regime.py,many cols,unknown,yes,yes,audit pending
+src/features/price_action.py,many cols,unknown,yes,yes,audit pending
+src/features/vwap.py,many cols,unknown,yes,yes,audit pending
+src/features/orb.py,many cols,unknown,yes,yes,audit pending
+src/features/levels.py,many cols,unknown,yes,yes,audit pending
+src/features/indicators.py,many cols,unknown,yes,yes,audit pending

@@ -5,61 +5,56 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| **Main research commit (this cycle)** | `Research(exit): refine max-hold replay alignment` — verify SHA with `git log -1 --oneline` after push |
-| Repo tip (after push) | Must equal local `HEAD` after successful `git push origin main` (verify with `git ls-remote origin refs/heads/main`) |
-| Push status | **Verify** with `git status -sb` and `git ls-remote origin refs/heads/main` after push |
-| Working tree | Untracked heavy artifacts under `src/combiner/results/**`, logs, sweep folders — **do not** `git add .` |
-| Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `exit_overlay_diagnostics_v2/local_rows/**` (incl. `alignment_trade_detail.csv`), `.cache/**`, `sweep_*`, `top_runs/` |
+| Latest commit | Architecture reset: **`Feat(architecture): introduce canonical execution engine`** — verify SHA with `git log -1 --oneline` on `main` |
+| Remote | After push: `git ls-remote origin refs/heads/main` must match local `HEAD` |
+| Working tree | Stage only curated paths — **never** `git add .` |
 
 ## B. Validation
 
 | Check | Result |
 |--------|--------|
-| `python -m compileall -q src` | OK (re-run before next handoff) |
-| `python -m pytest -q` | **497 passed** last full run in this cycle |
+| `python -m compileall -q src` | Run before handoff |
+| `python -m pytest -q` | **26 passed** (active `tests/`; `tests/Archive` excluded via `pytest.ini`) |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| Artifact validation — `exit_overlay_diagnostics_v2` | `exit_overlay_diagnostics_v2_artifact_validation.csv` — **0** abs-path hits (re-run after edits) |
-| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|...\|overlay_trade_results_v2.csv\|..."` → **no matches** |
-| ChatGPT bundle (V2) | `src/research/results/exit_overlay_diagnostics_v2/CHATGPT_REVIEW_BUNDLE.md` |
-| Source map (V2) | `src/research/results/exit_overlay_diagnostics_v2/SOURCE_MAP.csv` |
+| Import smoke (`src.execution`, `management`, `backtest.engine`, `combiner.simulator`, `router`, `portfolio`) | **`imports_ok`** |
+| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|..."` → **no matches** |
 
-## C. Exit overlay v2 — max_hold alignment refinement (this cycle)
+## C. Architecture reset (this cycle)
 
-| | |
-|--|--|
-| **Real full-panel alignment reran** | **Yes** — **10,628** rows; **617,160** QQQ bars; **18** grid configs (incl. `max_hold_priority` variants) |
-| **Headline best config** | **`cfg_0015`** (`intrabar_first`) — still **`ALIGNMENT_FAIL`** (`total_r_diff` ≈ **+52.4R**) |
-| **forced_first_on_terminal_bar** | **`cfg_0016_mh_forced`** — `total_r_diff` ≈ **+51.2R** (still FAIL) |
-| **panel_exit_reason_authoritative** | **`cfg_0017_mh_panelauth`** — **identical** aggregate metrics to `cfg_0015` on this panel |
-| **skip_terminal_bar_conflicts** | **`cfg_0018_mh_skipconf`** — **`ALIGNMENT_PASS`** only by **excluding** mismatched rows (**diagnostic**, not overlay baseline) |
-| **Max_hold drift shape** | **476 / 5188** panel `max_hold` rows replay **`stop`/`target`** first — **all 476** have **`replay_exit_bar_index` < `panel_exit_idx`** (**pre-terminal**), **0** on-terminal, **0** after |
-| **Overlay ran** | **No** — `OVERLAY_BLOCKED_ALIGNMENT_FAIL` (`max_hold_alignment_v1/overlay_gate_after_max_hold_alignment.md`) |
-| **Decision** | **`REFINE_REPLAY_ALIGNMENT`** |
-| **Exact next step** | Audit **pre-terminal** materialization for the **476** rows (entry bar alignment, `stop_price`/`target_price` vs session OHLC, `panel_exit_idx` cap, session join), then adjust **research-only** replay if justified; rerun `--mode alignment`; overlay only after PASS/PWW on headline clone |
+| Topic | Status |
+|--------|--------|
+| Canonical **`src/execution/`** | **Present** — fill, exits, pnl, validators, reference `simulate_trade_path`; `fast_path` placeholder |
+| **`src/management/`** | Exit-plan templates from `ManagementMode` → `ExitPlan` (generic; not wired to router) |
+| **`src/backtest/`** | **`run_strategy_backtest`** MVP (first valid signal / session, `sig_*` columns) uses execution; **`run_backtest`** → **`legacy/engine_legacy`** |
+| **`src/combiner/`** | **`simulator.py`** re-exports **`legacy/simulator_legacy`** (Numba accounting still in legacy); **`selection.py` / `state.py`** minimal scaffolds |
+| **`src/router/`**, **`src/portfolio/`** | Scaffolds only (disabled-by-default / generic helpers) |
+| **`src/walkforward/legacy/`** | Package placeholder; main walkforward code not bulk-moved |
+| Docs | `docs/ARCHITECTURE.md`, `MODULE_OWNERSHIP.md`, `EXECUTION_SEMANTICS.md`, `SIGNAL_CONTRACT.md`, `FEATURES_CONTRACT.md`, `STRATEGIES_CONTRACT.md`, reset plan/inventory/moves/summary, audit CSVs |
 
-## D. Synthetic vs real artifacts
+## D. Files moved to legacy
 
-- **Prior committed v2 `alignment/*`:** synthetic smoke — **archived** to `alignment/archive_synthetic_pre_full_panel/`.
-- **Current curated `alignment/*`:** **real** full-panel outputs + `full_panel_alignment_manifest.csv` (`synthetic_or_real=real`, **18** configs).
-- **`overlay_v2/*`:** **not** refreshed for economics; see `overlay_v2/overlay_v2_summary.md`.
+| Old (conceptual) | New |
+|------------------|-----|
+| `src/backtest/engine.py` | `src/backtest/legacy/engine_legacy.py` |
+| `src/backtest/fast.py` | `src/backtest/legacy/fast_legacy.py` |
+| `src/backtest/execution.py` | `src/backtest/legacy/execution_legacy.py` |
+| `src/combiner/simulator.py` | `src/combiner/legacy/simulator_legacy.py` |
 
-## E. Key files
+Shims: `src/backtest/execution.py`, `src/backtest/fast.py`, `src/combiner/simulator.py` (re-exports).
 
-- **max_hold v1:** `max_hold_alignment_v1/*` (baseline inventory, combiner semantics audit, drift aggregates, overlay gate, bug assessment, mode comparison)
-- **Builder:** `src/research/build_max_hold_alignment_v1_aggregates.py` (reads **local-only** `local_rows/alignment_trade_detail.csv`)
-- Alignment: `alignment/alignment_grid_results.csv`, `alignment_best_config.yaml`, `alignment_decision.md`, `full_panel_alignment_manifest.csv`, `full_panel_alignment_failure_*`
-- Decision / bundle: `exit_overlay_diagnostics_v2_decision.md`, `CHATGPT_REVIEW_BUNDLE.md`, `exit_overlay_diagnostics_v2_summary.md`, `chatgpt_key_tables.csv`, `exit_overlay_diagnostics_v2_key_findings.csv`
-- Overlay not run: `comparison_not_run_reason.md`, `overlay_v2/full_panel_overlay_manifest.csv`
+## E. Explicit non-runs
 
-## F. Explicit non-runs
+- No WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1 grids.
+- No new trading strategies; no scalp / short research runs; no selected-candidate YAML edits.
+- No commits of raw trades, parquet, `local_rows`, `top_runs`, sweep folders, caches, logs, npy/npz/memmap.
 
-- No WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1.
-- No production router / exit-management integration.
-- No production combiner semantics change in this task.
-- No strategy / feature / selected-candidate YAML edits.
-- No commit of `local_rows/**`, row-level panel, parquet, logs.
+## F. Risks / caveats
+
+- **Legacy Numba** backtest/combiner paths still contain **duplicate accounting**; they are isolated under `legacy/` but remain the default for existing sweeps until migration.
+- **`run_strategy_backtest`** is **intentionally minimal** (not full sweep parity).
+- **Numba `fast_path`** is a placeholder; parity tests target the reference engine only.
+- Prior research metrics (overlay alignment, Layer3, etc.) are **historical priors** vs new execution semantics.
 
 ## G. Recommended next step (exactly one)
 
-**Audit pre-terminal replay vs panel materialization for the 476 max_hold mismatch rows, refine research-only clone inputs/caps as needed, rerun full-panel `--mode alignment`.**
-
+**`RUN_CANONICAL_EXECUTION_SMOKE`**
