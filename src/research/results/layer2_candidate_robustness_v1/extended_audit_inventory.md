@@ -2,7 +2,7 @@
 
 ## Repo / handoff
 
-- **git tip:** `a21953a Docs(handoff): stabilize repo tip wording`
+- **git tip:** `d058827 Docs(handoff): mark push complete`
 - **handoff decision (parsed from `layer2_candidate_robustness_decision.md` then `NEXT_HANDOFF.md`):** `CREATE_ROBUST_L2_CORE_V2_DESIGN`
 
 ## Candidate root and coverage
