@@ -6,7 +6,7 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before this work | `3f78f41` — verify with `git log -2 --oneline` |
-| New commit | Verify with `git log -1 --oneline` after push |
+| New commit | **`861691d`** — `Research: validate fixed profiles out of window` |
 | Push status | Run `git push`; then **Pushed** `main` → `origin` |
 | Working tree | Tracked files clean after commit; **expected untracked:** `fixed_profile_oow_v1/local_runs/**`, `trade_quality_router_v1*/local_runs/**`, enriched/scored row CSVs, other heavy diagnostics |
 | Expected untracked local-only artifacts | Raw combiner `trades.csv` under `fixed_profile_oow_v1/local_runs/**`; enriched row CSVs — **do not** `git add` |
