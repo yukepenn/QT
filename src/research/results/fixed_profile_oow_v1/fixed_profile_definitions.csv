@@ -1,0 +1,6 @@
+profile_id,config_path,candidate_set,strategies,max_trades_per_day,daily_max_loss_r,cooldown_after_loss_minutes,priority_policy,expected_trades_2023_2024,expected_total_r_2023_2024,role
+vwap_mtp2,configs/layer2_fixed_vwap_mtp2.yaml,vwap_core,vwap_reclaim_reject;vwap_trend_pullback,2,-2.0,15,metadata_priority,337,42.2,primary
+vwap_mtp1,configs/layer2_fixed_vwap_mtp1.yaml,vwap_core,vwap_reclaim_reject;vwap_trend_pullback,1,-1.5,15,metadata_priority,294,36.7,primary
+indicator_mtp1,configs/layer2_fixed_indicator_mtp1.yaml,indicator_completion_core,cci_extreme_snapback;macd_momentum_turn;rsi_failure_swing;stochastic_oversold_cross;supertrend_atr_flip,1,-2.0,15,metadata_priority,502,43.55,primary
+indicator_mtp2,configs/layer2_fixed_indicator_mtp2.yaml,indicator_completion_core,same as mtp1,2,-2.0,15,metadata_priority,1000,72.12,diagnostic
+indicator_mtp3,configs/layer2_fixed_indicator_mtp3.yaml,indicator_completion_core,same as mtp1,3,-2.0,15,metadata_priority,1241,79.48,high_turnover_diagnostic

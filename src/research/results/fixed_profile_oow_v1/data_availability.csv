@@ -1,0 +1,5 @@
+symbol,asset,window_id,window_start,window_end,window_label,rth_sessions_in_window,data_first_available,data_last_available
+QQQ,equity,early_oow,2020-01-01,2022-12-31,pre-selection,754,2020-01-01,2026-04-30
+QQQ,equity,insample_ref,2023-01-01,2024-12-31,selection reference,502,2020-01-01,2026-04-30
+QQQ,equity,late_oow,2025-01-01,2026-04-30,post-selection,332,2020-01-01,2026-04-30
+QQQ,equity,full_available,2020-01-01,2026-04-30,full span (clipped to data),1588,2020-01-01,2026-04-30

@@ -1,0 +1,6 @@
+profile_id,trades_ref,total_r_ref,notes,actual_trades,actual_total_r,sanity_pass,status
+vwap_mtp2,337,42.2,Global L2 VWAP core leader (v1 trade-quality baseline),,,False,NOT_RUN
+vwap_mtp1,294,36.7,"Lower-turnover diagnostic (daily_max_loss_r=-1.5, mtp=1)",,,False,NOT_RUN
+indicator_mtp1,502,43.55,indicator_completion_core mtp=1 (v1.5 comparison),,,False,NOT_RUN
+indicator_mtp2,1000,72.12,v1.5 diagnostic replay,,,False,NOT_RUN
+indicator_mtp3,1241,79.48,v1.5 diagnostic replay; high turnover,,,False,NOT_RUN

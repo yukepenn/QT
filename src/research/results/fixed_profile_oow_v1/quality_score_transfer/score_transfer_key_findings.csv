@@ -1,0 +1,5 @@
+topic,profile,window,result,evidence_strength,implication,next_action
+Data availability,QQQ,2020–2026,Local parquet partitions present; `inspect-data` reports RTH session counts per window,high,OOW replays are feasible on this machine,Run `print-commands` combiner lines without `--use-signal-cache` on OneDrive if unstable
+Combiner runs,all,all,No committed `local_runs/` rows yet — metrics table shows NOT_RUN until combiner executes,high,Curated metrics populate only after fixed replays,Execute `python -m src.combiner.run ...` per `print-commands`
+Quality score OOW,VWAP / indicator,early/late,Needs `entry_regime_label` on trades — enrich each `trades.csv` before score transfer,medium,Raw trades omit regime columns,`enrich_combiner_trades.py` then re-`postprocess`
+Decision,gate,all,`NEED_MORE_FIXED_PROFILE_OOW` until `local_runs/**` populated and reviewed,high,Do not skip straight to Layer3 smoke without OOW metrics,Run five profiles × four windows then `postprocess`

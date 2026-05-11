@@ -1,0 +1,4 @@
+topic,profile,window,result,evidence_strength,implication,next_action
+OOW scaffolding,all,all,Scripts + YAMLs + postprocess pipeline added; metrics empty until local combiner runs,high,Reproducible workflow without changing trading logic,Run combiner on data host then postprocess
+Sanity targets,vwap_mtp2,insample_ref,Expected ~337 trades / ~42.2R (reference from v1 VWAP baseline),medium,Use only to detect config drift — not for optimization,Compare `insample_sanity_metrics.csv` after replay
+Data gating,QQQ,all,`inspect-data` uses parquet inventory + optional `read_bars` session counts,high,Incomplete partitions must be documented before OOW claims,Fix gaps in local `data/raw/ibkr` store first
