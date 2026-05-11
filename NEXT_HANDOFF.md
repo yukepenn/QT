@@ -6,7 +6,7 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before this work | `fda3deb` |
-| New commit | **`dbd2817`** — `Research: run fixed profile out-of-window validation`; tip **`2d620d6`** — `Docs(handoff): clarify OOW commit tips` |
+| New commit | **`dbd2817`** — `Research: run fixed profile out-of-window validation`; repo tip **`e3df303`** (includes small handoff table edits) |
 | Push status | **Pushed** `main` → `origin` |
 | Working tree | Tracked files clean after commit; **expected untracked:** `fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, other heavy diagnostics |
 | Expected untracked local-only artifacts | Raw `trades.csv`, `trades_enriched.csv`, `config_resolved.yaml`, large logs under `fixed_profile_oow_v1/local_runs/**` — **do not** `git add` |
