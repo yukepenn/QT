@@ -1,0 +1,31 @@
+name: layer2_sweep_qqq_global_2023_2024_v2_family_diverse
+base_config: src/combiner/configs/layer2_qqq_global_2023_2024_v2_cost_turnover.yaml
+grid:
+  candidate_set:
+  - opening_trap_core
+  - indicator_completion_core
+  - pa_core
+  - behavior_diverse_no_vwap
+  top_per_strategy:
+  - 1
+  system.max_trades_per_day:
+  - 1
+  - 2
+  system.daily_max_loss_r:
+  - -1.5
+  - -2.0
+  system.cooldown_after_loss_minutes:
+  - 15
+  - 30
+  conflict.priority_policy:
+  - metadata_priority
+  - score_adjusted_priority
+fixed:
+  execution.commission_per_trade: 0.0
+  execution.slippage_per_share: 0.01
+  execution.eod_exit_minute: 389
+  execution.no_new_after_minute: 360
+  execution.recompute_target_from_entry: true
+  execution.min_risk_per_share: 0.03
+  system.max_open_positions: 1
+  system.cooldown_scope: session

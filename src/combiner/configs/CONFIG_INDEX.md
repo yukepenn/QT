@@ -45,7 +45,16 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
   - **purpose:** global Layer 2 on capped `l2_core` universe; buckets emitted by `emit_global_layer2_v2_configs.py`
 - **`layer2_sweep_qqq_global_2023_2024_v2.yaml`**
   - **base_config:** YAML above
-  - **grid:** 7 non-empty `candidate_set` keys × 2 × 2 × 3 × 2 × 2 = **672** combos (no `long_short_mixed`)
+  - **grid:** 7 × 2 × 2 × 3 × 2 × 2 = **336** combos (no `long_short_mixed`)
+
+### Global QQQ 2023–2024 v2 — cost / turnover diagnostics (tuned grids)
+
+- **`layer2_qqq_global_2023_2024_v2_cost_turnover.yaml`**
+  - **candidate_root:** same l2_core **66** YAMLs
+  - **adds:** `behavior_diverse_no_vwap`, `non_vwap_strict_l2_core` (`exclude_strategies` VWAP pair)
+- **`layer2_sweep_qqq_global_2023_2024_v2_lower_turnover_vwap.yaml`** — **72** combos (Track A)
+- **`layer2_sweep_qqq_global_2023_2024_v2_family_diverse.yaml`** — **64** combos (Track B)
+- **`layer2_sweep_qqq_global_2023_2024_v2_non_vwap.yaml`** — **80** combos (Track D)
 
 - **`layer2_qqq_2023_20260430_posthardening_strict.yaml`** (+ sweep)
   - **window**: 2023‑01‑01 → 2026‑04‑30
