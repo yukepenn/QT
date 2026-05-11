@@ -1,0 +1,14 @@
+risk_id,severity,evidence_source,affected_profiles,why_it_matters,diagnostic_to_run,potential_outcome,next_action_if_confirmed
+R_2025Q1,WARNING,complete_risk_flags.csv;complete_monthly_summary.csv,ALL,Late-cycle pocket hurts multiple profiles,weak_period_context + weak_period_profile_pnl,market-context or normal variance,If all profiles hurt + hostile context: document; if only one: profile slice issue
+R_2022Q4,WARNING,complete_risk_flags.csv;complete_monthly_summary.csv,ALL,Early-oow overlap quarter stress,weak_period_context + weak_period_profile_pnl,same,same
+R_2023Q3_PRIMARY,INFO,complete_quarterly_summary.csv,primary_mtp2_meta,CCI profile weak quarter,weak_period_candidate_contribution,CCI-led drag,Flag in primary reference only
+R_MAXHOLD_DEPENDENCY,MEDIUM,complete_exit_slip_comparison.csv;exit reason tables,ALL,Mechanical exit risk,max_hold share in weak slices,High max_hold loss cluster,NEED_WEAK_PERIOD_DIAGNOSTICS
+R_STOP_SENSITIVITY,MEDIUM,exit reason / smoke narrative,pa_gap_mtp2_meta,Stops cluster in stress,weak_period_exit_reason.csv,Stop-driven losses,GAP or PA tuning discussion only after evidence (no YAML edit here)
+R_PA_CONCENTRATION,MEDIUM,complete_risk_flags.csv,pa_only_mtp1_meta,Single path,contribution + context,PA fails in benign context,REFINE_COMBINATION_RULES or accept as PA risk
+R_GAP_LATE_OOW,MEDIUM,complete_risk_flags.csv;core_vs_optional,pa_gap_mtp2_meta,Incremental GAP value late is small,weak_period_candidate_contribution,Confirmed GAP drag late,Document; optional router later (out of scope)
+R_PRIMARY_DD_MARGIN,MEDIUM,complete_ranking;exit slip,primary_mtp2_meta,CCI adds R but DD and late_oow suffer,cost_stress_by_period + labels,Stress fails in slice,Keep primary non-default
+R_NO_SPY,LOW,fixed scope,ALL,Symbol concentration,none in v1,None,Defer SPY explicitly
+R_NO_WFO,LOW,fixed scope,ALL,No path stability across folds,none in v1,None,Defer WFO until after expanded stability
+R_NO_LIVE,LOW,fixed scope,ALL,No execution evidence,none,None,Defer live/paper
+R_CONTEXT_MISCLASS,MEDIUM,label design,ALL,Wrong bucket → wrong narrative,cross-check labels vs raw metrics,Contradiction,recompute thresholds
+R_FULL_WINDOW_OVERLAP,INFO,complete_risk_flags ALL,ALL,Windows overlap; do not sum,artifact gate,User error in interpretation,Document in bundle

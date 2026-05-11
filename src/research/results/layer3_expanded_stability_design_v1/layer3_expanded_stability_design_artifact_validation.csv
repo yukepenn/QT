@@ -1,0 +1,11 @@
+rel_path,ok,rows,cols,error,abs_path_hit,missing_required_columns
+SOURCE_MAP.csv,True,13,6,,,
+chatgpt_key_tables.csv,True,13,5,,,
+expanded_stability_expected_outputs.csv,True,17,7,,,
+expanded_stability_gate_design.csv,True,25,8,,,
+expanded_stability_profile_selection.csv,True,5,12,,,
+expanded_stability_risk_register.csv,True,13,8,,,
+expanded_stability_run_plan.csv,True,10,9,,,
+layer3_expanded_stability_design_key_findings.csv,True,13,6,,,
+market_context_label_design.csv,True,8,7,,,
+weak_period_diagnostic_design.csv,True,14,8,,,

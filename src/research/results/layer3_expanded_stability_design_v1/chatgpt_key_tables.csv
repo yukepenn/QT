@@ -1,0 +1,14 @@
+section,item,metric,value,interpretation
+smoke_recap,full_available_rank_1,profile_id,primary_mtp2_meta,Highest full R; not default due to late_oow and DD
+smoke_recap,full_available_rank_2,profile_id,pa_gap_mtp2_meta,Recommended combined default
+smoke_recap,late_oow_pa_only,total_r,21.49,Strongest late_oow among key profiles in recap table
+smoke_recap,late_oow_pa_gap_mtp2,total_r,18.77,GAP adds early/insample; late increment small vs PA-only
+smoke_recap,late_oow_primary,total_r,11.86,CCI breadth weakens late margin
+design_decision,label,RUN_LAYER3_EXPANDED_STABILITY,YES,Design complete; execution deferred
+weak_periods,anchor_quarters_from_flags,2025Q1;2022Q4,listed in complete_risk_flags,Require diagnostics; do not pre-label market regime
+weak_periods,extra_quarter_from_data,2023Q3 primary,negative Q in quarterly CSV,Candidate slice for CCI profile
+profiles_required,count,2,pa_only_mtp1 + pa_gap_mtp2,Expanded stability core scope
+profiles_reference,count,3,primary + two ablations,Comparison and equivalence checks
+gates,cost_hard,target_limit_stress,positive on full for defaults,Inherited from Layer3 smoke philosophy
+outputs_future,bundle_required,CHATGPT_REVIEW_BUNDLE,YES,GitHub raw readability contract
+outputs_future,source_map_required,SOURCE_MAP,YES,Artifact index without absolute paths

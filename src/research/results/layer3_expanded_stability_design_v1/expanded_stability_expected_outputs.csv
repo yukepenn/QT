@@ -1,0 +1,18 @@
+output_file,purpose,required_columns,input_source,committed_yes_no,chatgpt_critical_yes_no,can_derive_from_existing_results_yes_no
+profile_monthly_stability.csv,Per-profile monthly R grid,profile_id;window;month;total_r;trades,complete_monthly_summary.csv,YES,YES,YES
+profile_quarterly_stability.csv,Per-profile quarterly R grid,profile_id;window;quarter;total_r;trades,complete_quarterly_summary.csv,YES,YES,YES
+rolling_3month_summary.csv,Rolling sum risk,profile_id;end_month;roll_3m_r,profile_monthly_stability.csv,YES,YES,YES
+weak_period_context.csv,QQQ context per slice,slice_id;start;end;qqq_ret;realized_vol;label_*,computed from QQQ data,YES,YES,NO
+weak_period_profile_pnl.csv,Profile PnL in slice,profile_id;slice_id;total_r;trades;avg_r,monthly or trades,YES,YES,YES
+weak_period_exit_reason.csv,Exit mix in slice,profile_id;slice_id;exit_reason;count;share,detailed trades,YES,YES,NO
+weak_period_candidate_contribution.csv,Slice candidate R,profile_id;slice_id;candidate_id;total_r,detailed trades,YES,YES,NO
+market_context_labels.csv,Label per slice,slice_id;label_name;metric_json,weak_period_context.csv,YES,YES,NO
+regime_context_summary.csv,Optional PA columns,slice_id;pa_regime_mode,if available,YES,NO,NO
+drawdown_duration_summary.csv,DD length stats,profile_id;dd_start;dd_end;length_days,equity curve if built,YES,NO,NO
+cost_stress_by_period.csv,Stress R by slice,profile_id;slice_id;scenario;total_r,exit slip engine,YES,YES,NO
+expanded_stability_gate_results.csv,Gate matrix,profile_id;gate_name;pass;level,gate script,YES,YES,NO
+expanded_stability_risk_flags.csv,Risk rows,risk_id;profile_id;severity;notes,evaluator,YES,YES,NO
+expanded_stability_decision.md,Single decision label,markdown narrative,manual,YES,YES,NO
+expanded_stability_summary.md,Narrative summary,sections 1-12,manual,YES,YES,NO
+CHATGPT_REVIEW_BUNDLE.md,GitHub raw review,sections 1-13,manual,YES,YES,NO
+SOURCE_MAP.csv,Artifact index,file_path;purpose;...,manual,YES,YES,YES

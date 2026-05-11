@@ -1,0 +1,9 @@
+label_name,definition,required_inputs,existing_source_available,fallback_if_missing,intended_use,risk_of_misclassification
+uptrend_low_vol,QQQ cumulative return over lookback L positive AND realized vol below median threshold.,daily close L months; daily vol series,YES from raw bars in repo data/,use shorter L or skip label,Gate: benign context bucket for profile comparison,Short windows mis-estimate trend
+uptrend_high_vol,Return positive AND vol above high threshold.,same,YES,split to unknown_mixed if vol missing,Stress context for cost gates,Same as above
+downtrend_low_vol,Return negative AND vol below threshold.,same,YES,unknown_mixed,Adverse drift without panic vol,
+downtrend_high_vol,Return negative AND vol above threshold.,same,YES,unknown_mixed,Crisis-like context bucket,
+range_chop,Trend efficiency below T_eff AND range efficiency high (or VWAP cross count high if available).,OHLC daily or intraday aggregates,partial,unknown_mixed if efficiency unavailable,Chop regime bucket,False chop in slow trends
+high_gap_environment,Daily gap frequency or mean |open-prev_close|/ATR above threshold.,daily OHLC,partial,drop diagnostic if gap series not built without new code,Explain GAP-strategy sensitivity,Misread if ATR stale
+late_trend_climax_like,Strong positive return in quarter BUT vol spike AND reversal proxy (e.g. last month of Q negative).,monthly inside quarter,partial,unknown_mixed,CCI/late-cycle hypothesis for primary,Very heuristic
+unknown_mixed,Insufficient inputs or conflicting signals.,any,always,terminal bucket,Default safe label,Overuse masks structure

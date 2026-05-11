@@ -1,0 +1,14 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,notes
+src/research/results/layer3_expanded_stability_design_v1/CHATGPT_REVIEW_BUNDLE.md,single review entry,YES,,YES,
+src/research/results/layer3_expanded_stability_design_v1/baseline_inventory.md,design baseline,YES,,YES,
+src/research/results/layer3_expanded_stability_design_v1/expanded_stability_profile_selection.csv,profile scope,YES,5,NO,expanded_stability_profile_selection.md
+src/research/results/layer3_expanded_stability_design_v1/weak_period_diagnostic_design.csv,weak period plan,YES,14,NO,weak_period_diagnostic_design.md
+src/research/results/layer3_expanded_stability_design_v1/market_context_label_design.csv,context labels,YES,8,NO,market_context_label_design.md
+src/research/results/layer3_expanded_stability_design_v1/expanded_stability_gate_design.csv,gates,YES,22,NO,expanded_stability_gate_design.md
+src/research/results/layer3_expanded_stability_design_v1/expanded_stability_run_plan.csv,phased plan,YES,10,NO,expanded_stability_run_plan.md
+src/research/results/layer3_expanded_stability_design_v1/expanded_stability_expected_outputs.csv,output schema,YES,14,NO,expanded_stability_expected_outputs.md
+src/research/results/layer3_expanded_stability_design_v1/expanded_stability_risk_register.csv,risk map,YES,12,NO,expanded_stability_risk_register.md
+src/research/results/layer3_expanded_stability_design_v1/layer3_expanded_stability_design_decision.md,decision label,YES,,YES,
+src/research/results/layer3_expanded_stability_design_v1/layer3_expanded_stability_design_summary.md,summary,YES,,YES,
+src/research/results/layer3_expanded_stability_design_v1/layer3_expanded_stability_design_key_findings.csv,key findings,YES,12,NO,
+src/research/results/layer3_expanded_stability_design_v1/chatgpt_key_tables.csv,headline metrics,YES,12,NO,

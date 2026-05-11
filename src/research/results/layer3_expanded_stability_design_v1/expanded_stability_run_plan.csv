@@ -1,0 +1,11 @@
+phase,task,profiles,input_files,output_files,requires_new_trading_run,expected_run_count,reason,not_run_in_this_task
+A,reuse_smoke_monthly_quarterly,ALL,complete_monthly_summary.csv;complete_quarterly_summary.csv,profile_monthly_stability.csv;profile_quarterly_stability.csv,NO,0,Layer3 complete already has rolled-up tables; copy/slice only.,Execution skipped in design task
+B,rolling_3m_from_monthly,pa_only_mtp1_meta;pa_gap_mtp2_meta,profile_monthly_stability.csv,rolling_3month_summary.csv,NO,0,Pandas roll on existing monthly totals.,Execution skipped
+C,weak_period_context_metrics,ALL,QQQ raw daily from data/raw; weak_period_diagnostic_design.csv,weak_period_context.csv,YES_if_daily_missing,NO_or_light,Need QQQ context series; may reuse existing research loaders without combiner.,No raw data pull in this design-only commit
+D,weak_period_profile_pnl,ALL,complete_monthly_summary.csv OR local detailed trades,weak_period_profile_pnl.csv,MAYBE,0-5,Prefer monthly first; detailed only if monthly granularity insufficient.,Detailed trades not committed
+E,weak_period_exits,ALL,local detailed trades per profile window,weak_period_exit_reason.csv,LIKELY_YES,0-12,Only if exit mix required by gate; else mark N/A in report.,Not executed now
+F,weak_period_contribution,pa_gap_mtp2_meta;primary_mtp2_meta,local detailed trades,weak_period_candidate_contribution.csv,LIKELY_YES,0-8,CCI/GAP slice needs candidate_id on trades.,Not executed now
+G,cost_stress_by_period,ALL,exit slip rules + trade tape,cost_stress_by_period.csv,MAYBE,0,May approximate from complete_exit_slip if period split not available.,Not executed now
+H,market_context_labels,ALL,weak_period_context.csv,market_context_labels.csv,NO,0,Deterministic mapping from thresholds after C.,Downstream of C
+I,gate_rollups,ALL,expanded_stability_gate_design.csv + metric CSVs,expanded_stability_gate_results.csv;expanded_stability_risk_flags.csv,NO,0,Scripted evaluation.,Not executed now
+J,decision_bundle,ALL,prior outputs,expanded_stability_decision.md;expanded_stability_summary.md;CHATGPT_REVIEW_BUNDLE.md;SOURCE_MAP.csv,NO,0,Human-readable rollup.,Not executed now

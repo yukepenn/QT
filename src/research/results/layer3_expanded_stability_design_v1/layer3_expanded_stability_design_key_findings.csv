@@ -1,0 +1,14 @@
+topic,profile_id,result,evidence_strength,implication,next_action
+profile_roles,pa_only_mtp1_meta,CLEAN_BASELINE default,high,Anchor all gates,Include in expanded stability required tier
+profile_roles,pa_gap_mtp2_meta,DEFAULT_COMBINED,high,Primary economics path,Include in expanded stability required tier
+profile_roles,primary_mtp2_meta,BREADTH_REFERENCE only,high,Higher full R; weaker late_oow; deeper DD,Compare under context labels; not default
+mtp_ablation,pa_gap_mtp1_meta,mtp2 dominates full_available,high,Keep mtp2 lock,Reference only in expanded run
+mtp_ablation,pa_only_mtp2_meta,Equivalent to mtp1 in smoke,high,mtp non-binding for PA-only,Reference only
+weak_periods,ALL,2025Q1 and 2022Q4 flagged in risk CSV,high,Need slice diagnostics,Run weak_period_* outputs in execution task
+weak_periods,primary_mtp2_meta,2023Q3 negative in quarterly table,medium,CCI-specific pocket,Add to slice candidate list from data
+market_labels,ALL,Data-derived buckets only,high,Avoid narrative labels,Implement threshold file in execution root
+gates,cost,target_limit stress required for defaults,high,Paper-adjacent,Retain hard gate from smoke design
+gates,monthly_quarterly,Warning-first,medium,Tails expected,NEED_WEAK_PERIOD_DIAGNOSTICS path
+artifacts,ALL,SOURCE_MAP + bundle mandatory,high,ChatGPT reviewability,Enforce in expanded_stability_v1
+blocked,WFO,No evidence,high,Cannot claim path stability,Explicit deferral in bundle
+blocked,SPY,No evidence,high,Cannot claim cross-symbol,Explicit deferral in bundle

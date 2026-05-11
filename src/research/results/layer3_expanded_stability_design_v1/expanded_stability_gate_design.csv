@@ -1,0 +1,26 @@
+gate_group,gate_name,threshold,hard_or_warning,applies_to_profiles,rationale,output_file,failure_action
+window,early_oow_total_r_gt_0,total_r > 0,hard,pa_only_mtp1_meta;pa_gap_mtp2_meta;primary_mtp2_meta,Smoke parity,expanded_stability_gate_results.csv,FAIL_EXPANDED_STABILITY
+window,insample_ref_total_r_gt_0,total_r > 0,hard,pa_only_mtp1_meta;pa_gap_mtp2_meta;primary_mtp2_meta,Design parity,expanded_stability_gate_results.csv,FAIL_EXPANDED_STABILITY
+window,late_oow_total_r_gt_0,total_r > 0,hard,pa_only_mtp1_meta;pa_gap_mtp2_meta;primary_mtp2_meta,Design parity,expanded_stability_gate_results.csv,FAIL_EXPANDED_STABILITY
+window,full_available_total_r_gt_0,total_r > 0,hard,pa_only_mtp1_meta;pa_gap_mtp2_meta;primary_mtp2_meta,Design parity,expanded_stability_gate_results.csv,FAIL_EXPANDED_STABILITY
+monthly,pos_month_ratio,pos_month_count / total_months >= 0.45,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Stability smell test,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,max_single_neg_month,max(neg month R) <= -12 R,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Tail month control,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,rolling_3m_min,rolling 3-mo sum >= -8 R,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Grind detection,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+monthly,consecutive_neg_max,max consecutive neg months <= 3,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Streak control,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,worst_quarter_floor,worst quarter R >= -12 R,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Align with smoke warnings,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,weak_quarter_repeat,count quarters with R < -5 <= 4 in full span,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Repeated weakness,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+quarterly,slice_context_review,Any quarter in risk register gets weak_period_interpretation entry,warning,ALL,2025Q1/2022Q4 style evidence without hard-coding regime names,weak_period_interpretation.md,NEED_WEAK_PERIOD_DIAGNOSTICS
+drawdown,full_max_dd_warning,max_dd_r >= -30,warning,ALL,Layer3 parity,expanded_stability_gate_results.csv,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,late_oow_max_dd,max_dd_r >= -20,warning,pa_only_mtp1_meta;pa_gap_mtp2_meta,Late window stress,expanded_stability_gate_results.csv,EXPANDED_STABILITY_READY_WITH_WARNINGS
+drawdown,dd_duration,if available from equity curve,warning,ALL,Optional metric,drawdown_duration_summary.csv,future_optional
+cost,target_limit_stress_full,total_r > 0 under target_limit_stress,hard,pa_only_mtp1_meta;pa_gap_mtp2_meta,Paper-adjacent gate,expanded_stability_gate_results.csv,FAIL_EXPANDED_STABILITY
+cost,symmetric_stress,flag only if negative,warning,ALL,Stress visibility,cost_stress_by_period.csv,EXPANDED_STABILITY_READY_WITH_WARNINGS
+exit,max_hold_share,< 0.60,warning,ALL,Smoke parity,expanded_stability_gate_results.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+exit,stop_share,profile-specific baseline delta,warning,pa_gap_mtp2_meta,Stop sensitivity,weak_period_exit_reason.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+contribution,pa_positive_full,trade_1_total_r > 0 on full_available,hard,pa_gap_mtp2_meta;primary_mtp2_meta,PA must carry,expanded_stability_gate_results.csv,REFINE_COMBINATION_RULES
+contribution,gap_late_oow_non_material_neg,GAP slice R in late_oow >= -2 R or share explained,warning,pa_gap_mtp2_meta,Late GAP story,weak_period_candidate_contribution.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+contribution,cci_justifies_dd_if_primary,CCI share vs incremental R vs DD penalty,warning,primary_mtp2_meta,Optional profile bar,weak_period_candidate_contribution.csv,EXPANDED_STABILITY_READY_WITH_WARNINGS
+market_context,no_catastrophic_single_label,profile min slice R > -15 in any single context bucket unless documented,warning,ALL,Avoid one mystery bucket wipeout,market_context_labels.csv,NEED_WEAK_PERIOD_DIAGNOSTICS
+artifact,source_map_present,file exists,hard,ALL,Review hygiene,SOURCE_MAP.csv,HOLD_BEFORE_STABILITY
+artifact,chatgpt_bundle_present,file exists,hard,ALL,Review hygiene,CHATGPT_REVIEW_BUNDLE.md,HOLD_BEFORE_STABILITY
+artifact,no_abs_paths_in_curated,validator pass,hard,ALL,Repo policy,layer3_expanded_stability_design_artifact_validation.csv,HOLD_BEFORE_STABILITY

@@ -1,0 +1,15 @@
+diagnostic_group,diagnostic_name,input_source,output_file,reason,profile_scope,pass_fail_use,notes
+market_return,qqq_monthly_return,QQQ daily closes aggregated to month,weak_period_context.csv,Anchor slice severity vs passive benchmark,ALL,context_label_input,Do not label slice as up/down without sign of computed return
+market_return,qqq_quarterly_return,QQQ daily closes aggregated to quarter,weak_period_context.csv,Align with calendar quarters used in risk flags,ALL,context_label_input,
+market_return,rolling_peak_drawdown,QQQ daily close series,weak_period_context.csv,Distinguish grind vs crash-like paths,ALL,context_label_input,
+volatility,realized_vol_daily,QQQ daily log returns std,weak_period_context.csv,High vs low vol regimes,ALL,context_label_input,Percentile vs 2y trailing window
+volatility,atr_percentile_placeholder,intraday or daily TR if available,weak_period_context.csv,Optional stress dimension,ALL,warning_only,Mark future_optional if column not available without new feature code
+trend_chop,trend_efficiency,QQQ daily OHLC-derived,weak_period_context.csv,Trend vs chop proxy,ALL,context_label_input,
+trend_chop,vwap_cross_rate,if VWAP on bars exists,weak_period_context.csv,Chop intensity proxy,ALL,warning_only,Fallback unknown if missing
+trend_chop,pa_regime_column_if_present,existing PA/regime features on bars,regime_context_summary.csv,Reuse only,ALL,warning_only,No new primitives required for v1 contract
+profile_behavior,slice_total_r,complete_monthly_summary or detailed trades,weak_period_profile_pnl.csv,Profile PnL in slice,per profile,pass_fail_input,May reuse curated monthly for coarse pass
+profile_behavior,slice_trade_count,detailed trades or monthly rollups,weak_period_profile_pnl.csv,Activity collapse vs loss magnitude,per profile,warning_only,
+exit_mechanics,exit_reason_mix,detailed trades,weak_period_exit_reason.csv,Stop vs max_hold stress in weak slices,per profile,warning_only,Requires detailed replay if not in monthly CSV
+contribution,candidate_slice_r,detailed trades with candidate_id,weak_period_candidate_contribution.csv,PA vs GAP vs CCI attribution,PA_GAP_PRIMARY,pass_fail_input,Reuse Layer3 complementarity pattern
+cost_overlay,slice_stress_r,detailed trades + exit slip rules,cost_stress_by_period.csv,Stress in slice only,per profile,warning_only,Same scenarios as Layer3 smoke design
+interpretation,classification_rulesheet,this design MD + thresholds,weak_period_interpretation.md,Synthesize market vs profile vs normal,ALL,review_gate,Human-in-loop acceptable; rules must be stated ex ante
