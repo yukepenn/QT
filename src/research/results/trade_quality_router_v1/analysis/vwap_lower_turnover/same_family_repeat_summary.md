@@ -1,0 +1,5 @@
+# PnL by same-family repeat
+
+| bucket | trades | total_r | avg_r | median_r | win_rate | pf_r | max_loss_r | share_trades | share_pnl | low_sample_warning | avg_bars_held |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| first_or_unknown | 294 | 36.70651309752729 | 0.1248520853657391 | 0.29336468129578935 | 0.5034013605442177 | 1.2425188770414073 | -1.1428571428570269 | 1.0 | 1.0 | False | 7.309523809523809 |

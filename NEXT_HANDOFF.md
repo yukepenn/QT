@@ -5,61 +5,71 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before this work | `d359306` — Docs(handoff): link follow-up commit |
-| New commit | `ea2e77a` — Research(global-l2): tune cost turnover diagnostics |
-| Follow-up | Docs/CHANGES commits after `ea2e77a` — see `git log ea2e77a..HEAD --oneline` |
-| Push status | **Pushed** `main` → `origin` (verify tip with `git log -1 --oneline`) |
-| Working tree | Clean for tracked files; **untracked local-only:** `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**` (`sweep_*`, `top_runs/`, full `cost_stress/`, etc.); other pre-existing untracked heavy paths under Global L2 v1 folder per prior handoff |
-| Expected untracked local-only heavy artifacts | Tuned diagnostic sweeps under `layer2_qqq_global_2023_2024_v2_cost_turnover/`; do **not** `git add` these |
+| Latest commit before this work | `4c77f4c` — Docs(handoff): avoid stale tip SHA in table |
+| New commit | **Research: add trade quality router diagnostics** — verify tip with `git log -1 --oneline` |
+| Push status | Run `git push`; then confirm **Pushed** `main` → `origin` |
+| Working tree | Tracked files clean after commit; **expected untracked:** `src/research/results/trade_quality_router_v1/local_runs/**`, `src/research/results/trade_quality_router_v1/enriched_trades/*_enriched.csv`, `src/research/results/trade_quality_router_v1/quality_score/scored_trades_*.csv`, `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**`, other pre-existing heavy diagnostics |
+| Expected untracked local-only artifacts | Regenerated combiner `trades.csv` under `trade_quality_router_v1/local_runs/`; do **not** `git add` these |
 
 ## B. Task scope
 
 | | |
 |--|--|
-| Requested | Tune / diagnose Global L2 **cost, turnover, session constraints, objective** after full-window v2; no new strategies/features; no mini-WFO |
-| Completed | `analyze_layer2_cost_turnover` + `build_layer2_tuned_comparison`; tuned YAMLs (72+64+80 combos); preflight + design + gate docs; **216** combos **run local-only** + postprocess exit **0** each |
-| Intentionally not done | Commit `sweep_*` / `top_runs/` / heavy `cost_stress` dumps; mini-WFO; full WFO; live; SPY; `--use-signal-cache` on OneDrive |
+| Requested | Trade-level regime/context enrichment + setup taxonomy + offline trade-quality analysis for Global L2 systems (no trading logic changes) |
+| Completed | `enrich_combiner_trades.py`, `analyze_trade_quality.py`, `score_trade_quality_offline.py`, `trade_quality_helpers.py`; tests ×3; curated `trade_quality_router_v1/` (analysis buckets, quality score thresholds, taxonomy, design + summary); diag YAMLs for lower-turnover VWAP + indicator @ mtp=1 |
+| Intentionally not done | Combiner `regime_router` implementation; hard regime filter; mini/full WFO; live/paper; SPY; strategy/feature primitives; candidate YAML edits; committing raw trades / enriched rows / scored rows / sweep / top_runs |
 
 ## C. Files changed
 
 | Area | Paths |
 |------|--------|
-| Scripts | `src/combiner/analyze_layer2_cost_turnover.py`, `src/combiner/build_layer2_tuned_comparison.py` |
-| Tests | `tests/test_analyze_layer2_cost_turnover.py` |
-| Configs | `src/combiner/configs/layer2_qqq_global_2023_2024_v2_cost_turnover.yaml`, `layer2_sweep_qqq_global_2023_2024_v2_lower_turnover_vwap.yaml`, `layer2_sweep_qqq_global_2023_2024_v2_family_diverse.yaml`, `layer2_sweep_qqq_global_2023_2024_v2_non_vwap.yaml`, `CONFIG_INDEX.md` |
-| Curated results / docs | `src/combiner/results/layer2_qqq_global_2023_2024_v2/layer2_cost_turnover_diagnostic_summary.md`, `layer2_score_decomposition.csv`, `layer2_cost_adjusted_ranking.csv`, `layer2_family_dominance_summary.csv`, `layer2_turnover_summary.csv`, `layer2_cost_turnover_tuning_design.md`, `layer2_tuned_preflight.md`, `layer2_cost_turnover_tuned_comparison.{md,csv}`, `layer2_cost_turnover_gate_decision.md` |
-| Indexes / project docs | `src/combiner/results/RESULTS_INDEX.md`, `src/research/results/RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
-| Local-only heavy | `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**` |
+| Scripts | `src/research/enrich_combiner_trades.py`, `src/research/analyze_trade_quality.py`, `src/research/score_trade_quality_offline.py`, `src/research/trade_quality_helpers.py` |
+| Tests | `tests/test_enrich_combiner_trades.py`, `tests/test_analyze_trade_quality.py`, `tests/test_score_trade_quality_offline.py` |
+| Curated research results | `src/research/results/trade_quality_router_v1/**` except local-only paths below |
+| Docs / indexes | `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
+| Local-only heavy | `trade_quality_router_v1/local_runs/`, `enriched_trades/*_enriched.csv`, `quality_score/scored_trades_*.csv` |
 
 ## D. Validation
 
 | Check | Result |
 |--------|--------|
 | `python -m compileall -q src` | OK |
+| `pytest -q` | **390** passed |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| `pytest -q` | **379** passed |
-| New tests | `tests/test_analyze_layer2_cost_turnover.py` |
-| Postprocess (each tuned track) | Exit **0** |
-| Tracked-heavy check | No matches for forbidden patterns in **tracked** files (run `git ls-files \| Select-String …` before commit) |
+| New tests | `test_enrich_combiner_trades`, `test_analyze_trade_quality`, `test_score_trade_quality_offline` |
+| Tracked-heavy check | Run `git ls-files \| Select-String -Pattern "top_runs|trades.csv|compact_trades|\.parquet"` — expect **no** matches |
 
-## E. Research results
+## E. Manifest / local inventory
 
-- **Original Global L2 baseline (rank-1 unique):** `vwap_core` — VWAP_RECLAIM_REJECT_001 + VWAP_TREND_PULLBACK_001 — **total_r ~42.2**, **PF ~1.21**, **337** trades, **maxDD ~−10.5R** @ slip **0.01**; **+0.02** still positive; **+0.03** **negative** R / **PF < 1**.
-- **Tuned tracks run:** A **72**, B **64**, D **80** (see `layer2_cost_turnover_tuned_comparison.md` for sweep folder names).
-- **Best lower_turnover_vwap (combiner rank-1):** same VWAP pair, **294** trades, **total_r ~36.7**, **maxDD ~−15.5R**; **+0.02** still positive; **+0.03** still fails.
-- **Best family_diverse / non_vwap:** **indicator_completion_core** five-pack — **total_r ~43.5**, **502** trades; **+0.02** positive; **+0.03** still **negative** total_r (PF ~**1.05**).
-- **Cost-adjusted / decomposition:** see `layer2_cost_adjusted_ranking.csv`, `layer2_score_decomposition.csv`; VWAP dominance explained by production **`combiner_score`** weights vs multi-strategy **max_hold / DD / bars-held** penalties (documented in `layer2_cost_turnover_diagnostic_summary.md`).
-- **indicator_completion_core:** still **economically higher total_r** than VWAP headline but **low combiner_score**; under stress, **slightly less awful PF @ 0.03** than VWAP but **not** viable on **total_r**.
-- **Gate decision:** **`TUNE_LAYER2_COST_TURNOVER_AGAIN`** (`layer2_cost_turnover_gate_decision.md`).
+- **git tip:** verify `git log -1 --oneline`
+- **Result roots:** `layer2_qqq_global_2023_2024_v2/`, `trade_quality_router_v1/`
+- **Local sweep/top_runs:** `layer2_qqq_global_2023_2024_v2_cost_turnover/` (untracked typical)
+- **Trades:** regenerated for three systems; paths under `trade_quality_router_v1/local_runs/run_*` (machine-specific timestamps)
+- **Missing files:** none for curated docs; raw trades absent from git by policy
+- **Paste to ChatGPT (if external review):** `src/research/results/trade_quality_router_v1/trade_quality_router_v1_summary.md`, `regime_router_design_from_evidence_v1.md`
 
-## F. Explicit non-runs
+## F. Research results
 
-mini-WFO; full WFO; live/paper; SPY; strategy additions; feature primitives; selected YAML edits; heavy artifact commits; `git add .`
+| Topic | Finding |
+|--------|---------|
+| Systems | VWAP baseline, VWAP lower-turnover, indicator five-pack @ **mtp=1** (502 trades — matches tuned comparison) |
+| Enriched trade counts | 337 / 294 / 502 (local regenerations) |
+| Profitable / unprofitable regimes | No single regime owns all edge; `late_trend_climax` frequent; `trading_range` + `regime_unknown` remain important positive contributors in replays |
+| Trade #2 (VWAP mtp=2) | Bucket **#2** **+5.5R** aggregate (43 trades) — not harmful in-sample |
+| Same-family repeat / prior outcome | Small second-trade cohorts — interpret cautiously |
+| Cost / slip | Symmetric proxy documented; combiner uses single slip for all exits — limitation |
+| Quality score thresholds | VWAP: **top 80%** by score improves total R / DD proxy; indicator: **no** improvement; **`score_ge_60`** on VWAP very small **n** |
+| max_trades_per_day 3/5 | **No** evidence; indicator diagnostics used **mtp=1** to match economics |
+| Router design decision | **`NEED_MORE_TRADE_ENRICHMENT`** |
 
-## G. Risks / caveats
+## G. Explicit non-runs
 
-In-sample QQQ **2023–2024** only; long-only l2_core; no short/both validation; slippage ladder is incremental vs **0.01** baseline; OneDrive + signal cache (**WinError 5**) — runs used **no** `--use-signal-cache`; VWAP remains the **combiner** leader; non-VWAP economics are **indicator**-heavy and **high-turnover**.
+mini-WFO; full WFO; live/paper; SPY; Global L1 rerun; large L2 grids; `--use-signal-cache` on unsafe roots; strategy changes; feature primitive additions; selected candidate YAML edits; hard regime filter; combiner router code; `git add .`; heavy artifact commits
 
-## H. Recommended next step
+## H. Risks / caveats
 
-**Exactly one:** **`TUNE_LAYER2_COST_TURNOVER_AGAIN`**
+In-sample QQQ 2023–2024; long-only; enrichment join on bar close timestamps; optional columns may be missing; `regime_unknown` bucket large; offline score **not** proven predictive; indicator replay **requires mtp=1** to match published **502**-trade economics (mtp=2 → ~1000 trades).
+
+## I. Recommended next step
+
+**Exactly one:** **`NEED_MORE_TRADE_ENRICHMENT`**

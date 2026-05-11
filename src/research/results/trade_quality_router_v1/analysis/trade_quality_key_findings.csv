@@ -1,0 +1,4 @@
+system_label,trades,total_r,top_regimes_by_r_json,worst_regimes_by_r_json
+indicator_completion_mtp1,502,43.545646696105045,"{""regime_unknown"": 20.106078717184282, ""late_trend_climax"": 13.326063819255538, ""trading_range"": 11.14372933723811}","{""broad_bear_channel"": -1.030225177572891, ""trading_range"": 11.14372933723811, ""late_trend_climax"": 13.326063819255538}"
+vwap_baseline_global_l2,337,42.20312730317043,"{""regime_unknown"": 16.669023470695894, ""late_trend_climax"": 13.300903186821243, ""trading_range"": 12.233200645653293}","{""trading_range"": 12.233200645653293, ""late_trend_climax"": 13.300903186821243, ""regime_unknown"": 16.669023470695894}"
+vwap_lower_turnover,294,36.70651309752729,"{""trading_range"": 14.871592057887288, ""regime_unknown"": 11.494921651105855, ""late_trend_climax"": 10.339999388534153}","{""late_trend_climax"": 10.339999388534153, ""regime_unknown"": 11.494921651105855, ""trading_range"": 14.871592057887288}"

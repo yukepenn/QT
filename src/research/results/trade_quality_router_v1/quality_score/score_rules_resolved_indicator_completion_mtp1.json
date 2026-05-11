@@ -1,0 +1,9 @@
+{
+  "regime_bonus": {
+    "late_trend_climax": 8.0,
+    "regime_unknown": 8.0,
+    "trading_range": 8.0
+  },
+  "regime_penalty": {},
+  "note": "Hypothesis components (affinity etc.) documented in regime_router_design_from_evidence_v1.md"
+}

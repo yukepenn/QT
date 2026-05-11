@@ -12,6 +12,7 @@ This index classifies committed Layer 2 result roots without deleting them.
   - **decision**: **`TUNE_LAYER2_COST_TURNOVER_AGAIN`** (`layer2_cost_turnover_gate_decision.md`; prior full sweep: **`TUNE_LAYER2_COST_TURNOVER`** in `layer2_global_full_summary.md`)
   - **key summaries**: `layer2_global_full_summary.md`, `layer2_global_full_top_systems.csv`, `layer2_global_cost_stress_summary.csv`, `layer2_global_behavior_dedupe_summary.csv`, `top_unique_systems.{csv,md}`, `behavior_unique_systems.{csv,md}`, `cost_stress/cost_stress_{results.csv,summary.md}`, `cost_robust_systems.{csv,md}`, **cost/turnover diagnostics** `layer2_cost_turnover_diagnostic_summary.md`, `layer2_score_decomposition.csv`, `layer2_cost_adjusted_ranking.csv`, `layer2_family_dominance_summary.csv`, `layer2_turnover_summary.csv`, `layer2_cost_turnover_tuning_design.md`, `layer2_tuned_preflight.md`, `layer2_cost_turnover_tuned_comparison.{md,csv}`, `layer2_cost_turnover_gate_decision.md`
   - **local-only tuned runs**: `layer2_qqq_global_2023_2024_v2_cost_turnover/` (`sweep_*`, `top_runs/`, full `cost_stress/`) — **not** committed
+  - **trade-quality attribution (research, diagnostic)**: curated bucket summaries under `src/research/results/trade_quality_router_v1/` (offline enrichment of combiner trades; **no** combiner logic change)
   - **keep**: yes (heavy `sweep_*`, `top_runs/`, `sweep_full_console*.log`, `cost_stress/feature_store_stats.json`, `cost_stress/candidate_precompute_profile.csv` remain local / untracked)
 
 - **`layer2_qqq_2020_20260430_posthardening_strict_v1/`**
