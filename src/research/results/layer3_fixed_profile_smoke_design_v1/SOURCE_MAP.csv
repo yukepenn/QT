@@ -1,0 +1,19 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,notes
+src/research/results/layer3_fixed_profile_smoke_design_v1/baseline_inventory.md,design baseline + inputs,YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_profile_selection.csv,profile selection (machine-readable),YES,5,YES,mirror in layer3_smoke_profile_selection.md
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_profile_selection.md,profile selection (review),YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_gate_design.csv,gate spec (machine-readable),YES,8,YES,mirror in layer3_smoke_gate_design.md
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_gate_design.md,gate spec (review),YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_run_plan.csv,future run plan rows,YES,20,YES,mirror in layer3_smoke_run_plan.md
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_run_plan.md,run plan (review),YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/future_layer3_smoke_commands_draft.md,future command shapes,YES,,YES,DESIGN ONLY — NOT RUN
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_expected_outputs.csv,future output contract,YES,16,YES,mirror in layer3_smoke_expected_outputs.md
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_expected_outputs.md,future output contract (review),YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_risk_register.csv,risk register (machine-readable),YES,10,YES,mirror in layer3_smoke_risk_register.md
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_smoke_risk_register.md,risk register (review),YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/chatgpt_key_tables.csv,compact key numbers for ChatGPT,YES,7,NO,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_fixed_profile_smoke_design_decision.md,design decision label,YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_fixed_profile_smoke_design_summary.md,design summary,YES,,YES,
+src/research/results/layer3_fixed_profile_smoke_design_v1/layer3_fixed_profile_smoke_design_key_findings.csv,key findings (machine-readable),YES,,NO,
+src/research/results/layer3_fixed_profile_smoke_design_v1/CHATGPT_REVIEW_BUNDLE.md,single review entry point,YES,,YES,
+

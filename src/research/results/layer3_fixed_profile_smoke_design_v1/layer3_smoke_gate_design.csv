@@ -1,0 +1,11 @@
+gate_category,gate_id,scope,metric,operator,threshold,level,why_it_matters,evidence_source
+window,win_positive_all,per_profile_window,total_r,>,0,FAIL,ensures each window is net positive,fixed_robust_profile_oow_v1/profile_window_summary.csv
+drawdown,dd_full_warning,per_profile_window(full_available),max_dd_r,>=,-30,WARNING,avoid unacceptable full-period drawdown,fixed_robust_profile_oow_v1/profile_window_summary.csv
+drawdown,dd_late_warning,per_profile_window(late_oow),max_dd_r,>=,-20,WARNING,late OOW drawdown should not explode,fixed_robust_profile_oow_v1/profile_window_summary.csv
+stability,neg_month_cap_full,per_profile_window(full_available),negative_month_ratio,<=,0.55,WARNING,avoid profiles driven by a small number of months,fixed_robust_profile_oow_v1/monthly_summary.csv
+stability,worst_month_full_warning,per_profile_window(full_available),worst_month_r,>=,-6,WARNING,flag concentrated monthly loss pockets,fixed_robust_profile_oow_v1/monthly_summary.csv
+stability,worst_quarter_full_warning,per_profile_window(full_available),worst_quarter_r,>=,-10,WARNING,flag concentrated quarterly loss pockets,fixed_robust_profile_oow_v1/quarterly_summary.csv
+cost,limit_stress_positive_full,per_profile_window(full_available),total_r_target_limit_stress,>,0,FAIL,ensure limit-aware overlay preserves sign,fixed_robust_profile_oow_v1/exit_slip/fixed_profile_exit_slip_scenarios.csv
+exit_mechanics,max_hold_share_warning,per_profile_window(full_available),max_hold_share,<=,0.60,WARNING,avoid profiles dominated by max_hold exits,fixed_robust_profile_oow_v1/profile_window_summary.csv
+artifact,csv_parse_all,root,artifact_validation_ok,==,true,FAIL,reviewability + portability,layer3_fixed_profile_smoke_design_v1/layer3_design_artifact_validation.csv
+

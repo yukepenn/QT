@@ -1,0 +1,12 @@
+risk_id,severity,topic,why_it_matters,evidence_source,layer3_smoke_should_inspect,pass_fail_implication
+R1,HIGH,2025Q1 weakness,late-OOW drawdowns can dominate decision quality,fixed_robust_profile_oow_v1/quarterly_summary.csv,flag 2025Q1 quarter return and DD pockets,warning unless it flips window sign or breaks cost overlay
+R2,MEDIUM,2022Q4 weakness,early-OOW pocket can reveal fragility,fixed_robust_profile_oow_v1/quarterly_summary.csv,flag 2022Q4 quarter return and DD pockets,warning unless catastrophic
+R3,MEDIUM,primary/CCI late-OOW thin margin,adds breadth but may degrade robustness,fixed_robust_profile_oow_v1/profile_window_summary.csv,compare late_oow total_r and maxDD for primary vs PA-only/PA+GAP,keep optional baseline unless late margin is strong
+R4,MEDIUM,max_hold exits dependency,exit mechanic may hide adverse selection,fixed_robust_profile_oow_v1/profile_window_summary.csv,monitor max_hold_count share by window,warning; investigate if dominating
+R5,MEDIUM,stop sensitivity,stop share may imply fragile risk control,fixed_robust_profile_oow_v1/profile_window_summary.csv,monitor stop_count share by window,warning; avoid profiles reliant on stop-outs
+R6,HIGH,cost overlay sign flip,profit may depend on unrealistic fills,fixed_robust_profile_oow_v1/exit_slip/fixed_profile_exit_slip_scenarios.csv,apply target-limit-aware overlay for full_available and late_oow,fail if default profiles flip negative
+R7,HIGH,full_available overlap caveat,overlapping windows can mislead economics,design requirement,prefer per-window rows; do not sum overlapping windows,artifact-level gate
+R8,MEDIUM,PA-only concentration risk,single candidate concentration can fail out of sample,fixed_robust_profile_oow_v1/profile_window_summary.csv,ensure PA-only remains positive but treat as baseline not final system,warning only (design-level)
+R9,MEDIUM,PA+GAP dependence on GAP boost,combined profile may be early/insample driven,fixed_robust_profile_oow_v1/profile_window_summary.csv,check late_oow vs PA-only and DD impacts,warning if late degrades materially
+R10,LOW,no SPY / no live / no WFO evidence,limits external validity,project constraints,explicitly note as non-goal and limitation,not a smoke fail; impacts promotion decisions
+

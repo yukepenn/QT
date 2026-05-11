@@ -8,8 +8,8 @@
 | Main research commit (audit baseline) | **`3fd30b7`** — `Research: complete layer2 candidate robustness audit` |
 | Main research commit (robust v2 design cleanup) | **`530c293`** — `Chore(research): harden robust v2 design` |
 | Main research commit (robust v2 diagnostic v1) | **`fc9b065`** — `Research(robust-core): run v2 diag v1` |
-| Main research commit (fixed robust-profile OOW v1) | *(this task)* — run `git log -1 --oneline` after commit |
-| Repo tip | *(this handoff update commit)* — run `git log -1 --oneline` |
+| Main research commit (fixed robust-profile OOW v1) | **`25410d2`** — `Research(robust-core): fixed profile oow` |
+| Repo tip | **`eb291d0`** — `Docs(handoff): fixed robust profile oow` |
 | Push status | Pushed |
 | Working tree status | Expect curated fixed-profile outputs + docs; keep raw `local_runs/**` uncommitted |
 | Expected untracked local-only artifacts | `src/research/results/layer2_candidate_robustness_v1/local_runs/**`, `src/research/results/fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, combiner `sweep_*` / `top_runs/` |
@@ -34,7 +34,7 @@
 
 ## D. Execution
 
-### Fixed robust-profile OOW v1 (this task)
+### Fixed robust-profile OOW v1 (executed)
 
 - **Windows:** `early_oow`, `insample_ref`, `late_oow`, `full_available`
 - **Profiles:** `pa_only_mtp1_meta`, `pa_only_mtp2_meta`, `pa_gap_mtp2_meta`, `primary_mtp2_meta`, `pa_gap_mtp1_meta`
@@ -109,8 +109,9 @@ No Layer2 sweep; no mini/full WFO; no live/paper; no SPY; no Global L1 rerun; no
 - Curated diagnostic root: `src/research/results/robust_l2_core_v2_diagnostic_v1/` (summaries + decision; raw `local_runs/**` local-only)
 - Fixed-profile runner: `src/research/run_fixed_robust_profile_oow.py`
 - Curated fixed-profile root: `src/research/results/fixed_robust_profile_oow_v1/` (results + stability + decision + ChatGPT bundle; raw `local_runs/**` local-only)
+- Layer3 smoke design root: `src/research/results/layer3_fixed_profile_smoke_design_v1/` (**DESIGN ONLY — NOT RUN**; profile selection, gates, run plan, expected outputs schema, risk register, review bundle + source map)
 - Docs/indexes: `RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`
 
 ## L. Recommended next step
 
-**Exactly one:** `PROCEED_TO_LAYER3_FIXED_PROFILE_SMOKE_DESIGN`
+**Exactly one:** `RUN_LAYER3_FIXED_PROFILE_SMOKE` (execute **CORE** only: 2 profiles × 4 windows = 8 runs)

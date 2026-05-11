@@ -1,0 +1,21 @@
+file_path,purpose,required_columns,curated,should_commit,chatgpt_critical
+run_plan.csv,declares executed run plan,"profile_id,window,settings,run_dir_rel,status",yes,yes,yes
+run_execution_manifest.csv,execution manifest (may include local abs in argv_json),varies,yes,yes,no
+run_execution_manifest_sanitized.csv,execution manifest without abs paths,"profile_id,window,status,run_dir_rel",yes,yes,yes
+run_discovery_manifest.csv,discovered run dirs,"profile_id,window,run_dir_rel,status",yes,yes,yes
+profile_window_summary.csv,headline economics per window,"profile_id,window,trades,total_r,max_dd_r,pf_r",yes,yes,yes
+profile_full_available_summary.csv,full-period economics only (non-overlapping use),TBD,yes,yes,yes
+monthly_summary.csv,month stability,"profile_id,window,month,total_r,trades",yes,yes,yes
+quarterly_summary.csv,quarter stability,"profile_id,window,quarter,total_r,trades",yes,yes,yes
+yearly_summary.csv,year stability,"profile_id,window,year,total_r,trades",yes,yes,yes
+drawdown_summary.csv,drawdown by slice,"profile_id,window,period,max_dd_r",yes,yes,yes
+trade_number_summary.csv,trade count sanity,"profile_id,window,trades,trades_per_day",yes,yes,no
+exit_reason_summary.csv,exit mechanics,"profile_id,window,exit_reason,count,share",yes,yes,yes
+exit_slip/layer3_exit_slip_scenarios.csv,cost overlay scenarios,"profile_id,window,scenario,total_r",yes,yes,yes
+risk_flags.csv,explicit risk flags by profile/window,"profile_id,window,risk_id,severity,notes",yes,yes,yes
+gate_results.csv,gate pass/fail evaluation,"profile_id,window,gate_id,level,pass,metric,value,threshold",yes,yes,yes
+layer3_fixed_profile_smoke_decision.md,final decision label + rationale,markdown,yes,yes,yes
+layer3_fixed_profile_smoke_summary.md,summary narrative for review,markdown,yes,yes,yes
+CHATGPT_REVIEW_BUNDLE.md,single entry point for review,markdown,yes,yes,yes
+SOURCE_MAP.csv,index of key artifacts,"file_path,purpose,required_for_review,row_count_if_csv",yes,yes,yes
+

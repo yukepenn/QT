@@ -1,0 +1,22 @@
+plan_id,profile_id,include_class,window,commission,slippage,no_new_after_minute,max_open_positions,signal_cache_allowed,notes
+core_01,pa_only_mtp1_meta,CORE,early_oow,0,0.01,360,1,false,default smoke run
+core_02,pa_only_mtp1_meta,CORE,insample_ref,0,0.01,360,1,false,default smoke run
+core_03,pa_only_mtp1_meta,CORE,late_oow,0,0.01,360,1,false,default smoke run
+core_04,pa_only_mtp1_meta,CORE,full_available,0,0.01,360,1,false,default smoke run
+core_05,pa_gap_mtp2_meta,CORE,early_oow,0,0.01,360,1,false,default smoke run
+core_06,pa_gap_mtp2_meta,CORE,insample_ref,0,0.01,360,1,false,default smoke run
+core_07,pa_gap_mtp2_meta,CORE,late_oow,0,0.01,360,1,false,default smoke run
+core_08,pa_gap_mtp2_meta,CORE,full_available,0,0.01,360,1,false,default smoke run
+opt_01,primary_mtp2_meta,OPTIONAL_BASELINE,early_oow,0,0.01,360,1,false,optional baseline
+opt_02,primary_mtp2_meta,OPTIONAL_BASELINE,insample_ref,0,0.01,360,1,false,optional baseline
+opt_03,primary_mtp2_meta,OPTIONAL_BASELINE,late_oow,0,0.01,360,1,false,optional baseline
+opt_04,primary_mtp2_meta,OPTIONAL_BASELINE,full_available,0,0.01,360,1,false,optional baseline
+abl_01,pa_gap_mtp1_meta,OPTIONAL_ABLATION,early_oow,0,0.01,360,1,false,mtp ablation
+abl_02,pa_gap_mtp1_meta,OPTIONAL_ABLATION,insample_ref,0,0.01,360,1,false,mtp ablation
+abl_03,pa_gap_mtp1_meta,OPTIONAL_ABLATION,late_oow,0,0.01,360,1,false,mtp ablation
+abl_04,pa_gap_mtp1_meta,OPTIONAL_ABLATION,full_available,0,0.01,360,1,false,mtp ablation
+abl_05,pa_only_mtp2_meta,OPTIONAL_ABLATION,early_oow,0,0.01,360,1,false,mtp ablation (expected identical)
+abl_06,pa_only_mtp2_meta,OPTIONAL_ABLATION,insample_ref,0,0.01,360,1,false,mtp ablation (expected identical)
+abl_07,pa_only_mtp2_meta,OPTIONAL_ABLATION,late_oow,0,0.01,360,1,false,mtp ablation (expected identical)
+abl_08,pa_only_mtp2_meta,OPTIONAL_ABLATION,full_available,0,0.01,360,1,false,mtp ablation (expected identical)
+

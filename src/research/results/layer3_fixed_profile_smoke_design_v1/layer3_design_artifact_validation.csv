@@ -1,0 +1,9 @@
+rel_path,ok,rows,cols,error,abs_path_hit,missing_required_columns
+SOURCE_MAP.csv,True,17,6,,,
+chatgpt_key_tables.csv,True,7,5,,,
+layer3_fixed_profile_smoke_design_key_findings.csv,True,6,6,,,
+layer3_smoke_expected_outputs.csv,True,19,6,,,
+layer3_smoke_gate_design.csv,True,9,9,,,
+layer3_smoke_profile_selection.csv,True,5,11,,,
+layer3_smoke_risk_register.csv,True,10,7,,,
+layer3_smoke_run_plan.csv,True,20,10,,,

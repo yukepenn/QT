@@ -1,0 +1,8 @@
+topic,profile_id,result,evidence_strength,implication,next_action
+default_smoke_set,pa_only_mtp1_meta,clean baseline profile,high,use as baseline in all smoke reports,include as CORE
+default_smoke_set,pa_gap_mtp2_meta,strongest combined candidate,high,use as primary combined profile,include as CORE
+optional_baseline,primary_mtp2_meta,positive but weaker late OOW and higher DD,medium,keep as optional baseline,include only if time permits
+interpretation,pa_only_mtp2_meta,expected identical to mtp1,high,ablation only,optional ablation
+interpretation,pa_gap_mtp1_meta,mtp sensitivity check for PA+GAP,medium,ablation only,optional ablation
+artifact_contract,ALL,explicit outputs and review bundle contract,high,smoke results will be reviewable/portable,implement runner to match schema
+

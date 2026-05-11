@@ -1,0 +1,7 @@
+profile_id,role,candidate_ids,max_trades_per_day,daily_max_loss_r,priority_policy,include_in_layer3_smoke,default_priority,reason,caveats,source_fixed_profile_summary
+pa_only_mtp1_meta,CLEAN_BASELINE,PA_BUY_SELL_CLOSE_TREND_003,1,-1.5,metadata_priority,YES,1,cleanest baseline; positive all windows; strongest late_oow,mtp does not bind for single-candidate profile,fixed_robust_profile_oow_v1/profile_window_summary.csv
+pa_gap_mtp2_meta,PRIMARY_COMBINED,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",2,-1.5,metadata_priority,YES,2,best combined candidate; improves early/insample/full while keeping late positive,combo drawdown larger than PA-only; monitor worst quarters,fixed_robust_profile_oow_v1/profile_window_summary.csv
+primary_mtp2_meta,BREADTH_BASELINE,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001,CCI_EXTREME_SNAPBACK_003",2,-1.5,metadata_priority,OPTIONAL_BASELINE,3,interpretability/breadth baseline (tests CCI inclusion),CCI weakens late_oow and increases DD; not default,fixed_robust_profile_oow_v1/profile_window_summary.csv
+pa_gap_mtp1_meta,ABLATION_MTP1,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",1,-1.5,metadata_priority,OPTIONAL_ABLATION,10,confirm whether mtp2 benefit matters for PA+GAP,not default,fixed_robust_profile_oow_v1/profile_window_summary.csv
+pa_only_mtp2_meta,ABLATION_MTP2,PA_BUY_SELL_CLOSE_TREND_003,2,-1.5,metadata_priority,OPTIONAL_ABLATION,11,confirm mtp does not bind for PA-only (expected identical),redundant if identical; keep optional,fixed_robust_profile_oow_v1/profile_window_summary.csv
+

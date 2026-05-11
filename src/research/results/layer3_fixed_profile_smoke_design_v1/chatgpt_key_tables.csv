@@ -1,0 +1,9 @@
+section,item,metric,value,interpretation
+fixed_profile_recap,pa_only_mtp1_meta early_oow,total_r,45.14,positive baseline
+fixed_profile_recap,pa_only_mtp1_meta late_oow,total_r,21.49,strongest late among main profiles
+fixed_profile_recap,pa_gap_mtp2_meta full_available,total_r,131.99,highest combined total but higher DD risk
+fixed_profile_recap,primary_mtp2_meta late_oow,total_r,11.86,positive but weaker late; keep optional
+design_profiles,default_smoke_profiles,count,2,pa_only_mtp1_meta + pa_gap_mtp2_meta
+design_run_plan,core_runs,count,8,2 profiles × 4 windows
+design_run_plan,full_runs_with_optionals,count,20,adds optional baseline + ablations
+
