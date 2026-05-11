@@ -7,10 +7,11 @@
 | Branch | `main` |
 | Main research commit (audit baseline) | **`3fd30b7`** — `Research: complete layer2 candidate robustness audit` |
 | Main research commit (robust v2 design cleanup) | **`530c293`** — `Chore(research): harden robust v2 design` |
-| Main research commit (robust v2 diagnostic v1) | *(this task)* — run `git log -1 --oneline` after commit |
+| Main research commit (robust v2 diagnostic v1) | **`fc9b065`** — `Research(robust-core): run v2 diag v1` |
+| Main research commit (fixed robust-profile OOW v1) | *(this task)* — run `git log -1 --oneline` after commit |
 | Repo tip | *(this handoff update commit)* — run `git log -1 --oneline` |
-| Push status | Pending until `git push` |
-| Working tree status | Expect curated diagnostic outputs + docs; keep raw `local_runs/**` uncommitted |
+| Push status | Pushed |
+| Working tree status | Expect curated fixed-profile outputs + docs; keep raw `local_runs/**` uncommitted |
 | Expected untracked local-only artifacts | `src/research/results/layer2_candidate_robustness_v1/local_runs/**`, `src/research/results/fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, combiner `sweep_*` / `top_runs/` |
 
 ## B. Validation
@@ -22,23 +23,26 @@
 | `python -m src.strategies.loader --list` | 35 strategies |
 | Tracked-heavy check | No matches for `top_runs|trades.csv|...` patterns |
 | Artifact CSV validation | `design_artifact_validation.csv` shows 0 failures / 0 abs paths |
+| Fixed-profile CSV validation | `fixed_profile_artifact_validation.csv` shows 0 failures / 0 abs paths |
+| ChatGPT bundle | `fixed_robust_profile_oow_v1/CHATGPT_REVIEW_BUNDLE.md` |
 
 ## C. Task scope
 
-- **Requested:** run small robust-core Layer2 diagnostic v1 from cleaned `robust_l2_core_v2_design/` candidate sets.
-- **Completed:** executed **168** combined-system runs (7 candidate sets × 3 windows × tiny risk grid) and wrote curated summaries under `robust_l2_core_v2_diagnostic_v1/` (results, axis effects, top systems, complementarity, exit/slip overlay).
+- **Requested:** run fixed robust-profile OOW validation v1 (locked profiles; no per-window best selection).
+- **Completed:** executed **20** runs (5 profiles × 4 windows) under `fixed_robust_profile_oow_v1/` and wrote curated results + stability tables + cost overlay + ChatGPT review bundle.
 - **Intentionally not done:** no Layer2 sweep, no WFO, no live/SPY, no router, no strategy/feature/YAML edits, no OOW tuning, no heavy artifact commits.
 
 ## D. Execution
 
-- **Windows:** `insample_ref`, `early_oow`, `late_oow`
-- **Candidate sets:** `primary_representative_core`, `balanced_representative_core`, `pa_gap_core`, `pa_cci_core`, `gap_cci_core`, `pa_only_core`, `cci_only_core`
-- **Grid:** `max_trades_per_day` ∈ {1,2}; `daily_max_loss_r` ∈ {−1.5, −2.0}; `priority_policy` ∈ {metadata_priority, score_adjusted_priority}
-- **Expected runs:** 168
-- **Discovered runs:** 168 (see `robust_l2_core_v2_diagnostic_v1/run_discovery_manifest.csv`)
-- **Raw run root (local-only):** `src/research/results/robust_l2_core_v2_diagnostic_v1/local_runs/**`
+### Fixed robust-profile OOW v1 (this task)
 
-## D. Input evidence (from full 66/66 audit)
+- **Windows:** `early_oow`, `insample_ref`, `late_oow`, `full_available`
+- **Profiles:** `pa_only_mtp1_meta`, `pa_only_mtp2_meta`, `pa_gap_mtp2_meta`, `primary_mtp2_meta`, `pa_gap_mtp1_meta`
+- **Expected runs:** 20
+- **Discovered runs:** 20 (see `fixed_robust_profile_oow_v1/run_discovery_manifest.csv`)
+- **Raw run root (local-only):** `src/research/results/fixed_robust_profile_oow_v1/local_runs/**`
+
+## E. Input evidence (from full 66/66 audit)
 
 - Coverage: **66/66** candidates, **198/198** candidate-window metric rows `OK`.
 - Robust-positive (nominal): **10**
@@ -77,20 +81,19 @@
 - **Drop from core:** `DROP_FROM_CORE` (e.g. VWAP reclaim/reject 001–003; PA_TRADING_RANGE_BLS_HS_005; RSI_002; ST_004; MACD_001–002).
 - **Side-flip research-only:** `REQUIRES_SIDE_FLIP_RESEARCH` (`MACD_003`, `MULTI_DAY_LEVEL_TRAP_001`–`004`).
 
-## H. Future diagnostic design (NOT RUN)
+## H. Diagnostic design notes (already executed)
 
-- Candidate-set axis: primary, balanced, PA-only, GAP-only, CCI-only, and pairwise mixes (PA+GAP, PA+CCI, GAP+CCI).
-- Small grid axes: `max_trades_per_day` ∈ {1,2}; `daily_max_loss_r` ∈ {−1.5, −2.0}; `priority_policy` ∈ {metadata_priority, score_adjusted_priority}.
-- Risk controls: `max_open_positions=1`, `no_new_after_minute=360`, baseline `slippage=0.01`, `commission=0`.
-- No router; no broad grid.
+The diagnostic grid described here **was executed** and its curated outputs live under:
+
+- `src/research/results/robust_l2_core_v2_diagnostic_v1/`
 
 ## I. Decision
 
-**Exactly one:** **`PROCEED_TO_FIXED_ROBUST_PROFILE_OOW_VALIDATION`**
+**Exactly one:** **`PROCEED_TO_LAYER3_FIXED_PROFILE_SMOKE_DESIGN`**
 
-- Combined-system diagnostic shows multiple candidate sets are positive across all three windows under the tiny grid.
-- `max_trades_per_day=2` is the most material axis for late OOW stability.
-- Exit/slip overlay preserves sign for top configs (stress reduces totals but does not flip the main conclusion).
+- Locked profiles (PA-only / PA+GAP / primary) remain positive across the fixed windows (including `full_available`).
+- PA-only remains the cleanest baseline; PA+GAP is the best combined profile candidate.
+- CCI inclusion remains positive but weakens late OOW versus PA-only/PA+GAP; keep as baseline, not default.
 
 ## J. Explicit non-runs and risks
 
@@ -104,8 +107,10 @@ No Layer2 sweep; no mini/full WFO; no live/paper; no SPY; no Global L1 rerun; no
 - Curated root: `src/research/results/robust_l2_core_v2_design/` (clean CSVs, `design_artifact_validation.*`, `design_cleanup_inventory.md`, expanded config skeletons, runbook + command draft; all **DESIGN ONLY — NOT RUN**)
 - Diagnostic runner: `src/research/run_robust_l2_core_diagnostic.py`
 - Curated diagnostic root: `src/research/results/robust_l2_core_v2_diagnostic_v1/` (summaries + decision; raw `local_runs/**` local-only)
+- Fixed-profile runner: `src/research/run_fixed_robust_profile_oow.py`
+- Curated fixed-profile root: `src/research/results/fixed_robust_profile_oow_v1/` (results + stability + decision + ChatGPT bundle; raw `local_runs/**` local-only)
 - Docs/indexes: `RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`
 
 ## L. Recommended next step
 
-**Exactly one:** `PROCEED_TO_FIXED_ROBUST_PROFILE_OOW_VALIDATION`
+**Exactly one:** `PROCEED_TO_LAYER3_FIXED_PROFILE_SMOKE_DESIGN`
