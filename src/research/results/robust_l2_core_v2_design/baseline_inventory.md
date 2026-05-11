@@ -1,6 +1,6 @@
 # Robust l2_core v2 design — baseline inventory
 
-- **git tip:** `67cbe86 Docs(handoff): note final push tip range`
+- **git tip:** `c460210 Research: design robust layer2 core v2`
 - **handoff decision:** `CREATE_ROBUST_L2_CORE_V2_DESIGN`
 - **audit coverage:** 66 / 66 candidates; 198 / 198 candidate-window metric rows OK
 

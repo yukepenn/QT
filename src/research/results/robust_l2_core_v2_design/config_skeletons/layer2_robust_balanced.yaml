@@ -1,0 +1,31 @@
+# DESIGN ONLY — NOT RUN
+# Do not treat as promoted production config.
+# Generated from robust_l2_core_v2_design.
+#
+# Candidate set: balanced_representative_core
+
+run:
+  start: "YYYY-MM-DD"
+  end: "YYYY-MM-DD"
+
+candidate_root:
+  path: "src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates"
+
+candidate_ids:
+  - "GAP_ACCEPTANCE_FAILURE_001"
+  - "PA_BUY_SELL_CLOSE_TREND_003"
+  - "PA_BUY_SELL_CLOSE_TREND_004"
+  - "CCI_EXTREME_SNAPBACK_003"
+  - "CCI_EXTREME_SNAPBACK_002"
+
+system:
+  symbol: "QQQ"
+  max_open_positions: 1
+  no_new_after_minute: 360
+  commission: 0.0
+  slippage: 0.01
+
+selection:
+  priority_policy: "metadata_priority"  # {metadata_priority, score_adjusted_priority}
+  max_trades_per_day: 1
+  daily_max_loss_r: -1.5

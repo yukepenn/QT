@@ -49,6 +49,30 @@ def _df_to_markdown_table(df: pd.DataFrame) -> str:
     return header + "\n" + sep + "\n" + body + "\n"
 
 
+def _write_csv(df: pd.DataFrame, path: Path) -> None:
+    """
+    Deterministic CSV writer (explicit \n line endings) so GitHub raw views are sane.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(path, index=False, lineterminator="\n")
+
+
+def _repo_relative_path(repo_root: Path, p: str) -> str:
+    """
+    Normalize paths to repo-relative POSIX paths for curated CSVs.
+    - removes Windows drive prefixes if they point inside repo_root
+    - replaces backslashes with forward slashes
+    """
+    s = str(p).replace("\\", "/")
+    rr = str(repo_root.resolve()).replace("\\", "/")
+    if s.startswith(rr + "/"):
+        s = s[len(rr) + 1 :]
+    # If the path contains the repo root somewhere (rare), strip to the first "src/" occurrence.
+    if "src/" in s and not s.startswith("src/"):
+        s = s[s.index("src/") :]
+    return s
+
+
 @dataclass(frozen=True)
 class CandidateRow:
     candidate_id: str
@@ -197,7 +221,7 @@ def build_design(
                 strategy=str(r0["strategy"]),
                 strategy_family=str(r0["strategy_family"]),
                 audit_family=str(r0["audit_family"]),
-                yaml_path=str(r0["yaml_path"]),
+                yaml_path=_repo_relative_path(repo_root, str(r0["yaml_path"])),
                 robustness_label=str(r0["robustness_label"]),
                 policy_action=str(r0["policy_action"]),
                 total_r_insample_ref=_as_float(r0["total_r_insample_ref"]),
@@ -233,6 +257,9 @@ def build_design(
                 "members": ",".join(sorted(m.candidate_id for m in mem)),
                 "n_members": len(mem),
                 "representative_candidate_id": rep.candidate_id,
+                "raw_cluster_representative": rep.candidate_id,
+                "design_representative": "",
+                "design_representative_reason": "",
                 "reason": "same trades-by-window + same total_r-by-window (rounded) under the audit envelope",
             }
         )
@@ -306,7 +333,7 @@ def build_design(
         overlap_df = pd.DataFrame(overlap_rows).sort_values(
             ["jaccard_entry_ts_utc", "jaccard_session_date"], ascending=[False, False]
         )
-        overlap_df.to_csv(out_root / "robust_candidate_overlap_matrix.csv", index=False)
+        _write_csv(overlap_df, out_root / "robust_candidate_overlap_matrix.csv")
 
         # Build strict trade-identical connected components (entry_ts_utc AND session_date Jaccard == 1.0).
         nodes = sorted(cand_entries.keys())
@@ -352,6 +379,9 @@ def build_design(
                     "members": ",".join(sorted(comp)),
                     "n_members": len(comp),
                     "representative_candidate_id": rep.candidate_id,
+                    "raw_cluster_representative": rep.candidate_id,
+                    "design_representative": "",
+                    "design_representative_reason": "",
                     "reason": "entry_ts_utc and session_date sets identical across windows (Jaccard=1.0); treat as one effective signal",
                 }
             )
@@ -374,7 +404,7 @@ def build_design(
     if not allow_local_trade_overlap or not trades_ok:
         # Ensure deterministic artifacts exist even when local trades are missing.
         if not (out_root / "robust_candidate_overlap_matrix.csv").is_file():
-            pd.DataFrame(
+            empty_overlap = pd.DataFrame(
                 columns=[
                     "candidate_a",
                     "candidate_b",
@@ -387,7 +417,8 @@ def build_design(
                     "ok_a",
                     "ok_b",
                 ]
-            ).to_csv(out_root / "robust_candidate_overlap_matrix.csv", index=False)
+            )
+            _write_csv(empty_overlap, out_root / "robust_candidate_overlap_matrix.csv")
         if not (out_root / "robust_candidate_overlap_summary.md").is_file():
             (out_root / "robust_candidate_overlap_summary.md").write_text(
                 "# Robust-candidate overlap summary\n\n"
@@ -416,13 +447,30 @@ def build_design(
             }
         )
     dedupe_df = pd.DataFrame(dedupe_rows).sort_values(["audit_family", "strategy", "candidate_id"])
-    dedupe_df.to_csv(out_root / "robust_candidate_dedupe_table.csv", index=False)
+    _write_csv(dedupe_df, out_root / "robust_candidate_dedupe_table.csv")
+
+    # Fill design representatives into clusters for clarity (raw vs design rep).
+    def _design_rep_for_cluster(row: dict[str, Any]) -> tuple[str, str]:
+        members = str(row.get("members") or "").split(",") if row.get("members") else []
+        members = [m.strip() for m in members if m.strip()]
+        if row.get("cluster_kind") == "TRADE_IDENTICAL" and row.get("strategy") == "pa_buy_sell_close_trend":
+            return "PA_BUY_SELL_CLOSE_TREND_003", "best cross-window balance among trade-identical entries"
+        if row.get("strategy") == "gap_acceptance_failure":
+            return "GAP_ACCEPTANCE_FAILURE_001", "dedupe GAP cluster to one representative"
+        if row.get("strategy") == "cci_extreme_snapback" and "CCI_EXTREME_SNAPBACK_003" in members:
+            return "CCI_EXTREME_SNAPBACK_003", "primary CCI (positive both OOW)"
+        return (str(row.get("raw_cluster_representative") or row.get("representative_candidate_id") or ""), "default = raw representative")
+
+    for c in clusters:
+        rep, why = _design_rep_for_cluster(c)
+        c["design_representative"] = rep
+        c["design_representative_reason"] = why
 
     clusters_df = pd.DataFrame(clusters).sort_values(["n_members", "audit_family"], ascending=[False, True])
-    clusters_df.to_csv(out_root / "effective_signal_clusters.csv", index=False)
+    _write_csv(clusters_df, out_root / "effective_signal_clusters.csv")
 
     near_df = pd.DataFrame(near_rows).sort_values(["kind", "l2_total_r_distance", "candidate_a", "candidate_b"])
-    near_df.to_csv(out_root / "robust_candidate_near_duplicates.csv", index=False)
+    _write_csv(near_df, out_root / "robust_candidate_near_duplicates.csv")
 
     # Representative choices (design-only, deterministic)
     def pick_primary() -> dict[str, str]:
@@ -494,7 +542,37 @@ def build_design(
             }
         )
     rep_df = pd.DataFrame(rep_rows).sort_values(["representative_rank", "audit_family", "candidate_id"])
-    rep_df.to_csv(out_root / "representative_candidate_manifest.csv", index=False)
+    # Expand schema to requested columns and ensure repo-relative paths.
+    rep_df = rep_df.rename(columns={"include_in_extended_core": "include_in_balanced_core"})
+    rep_df["include_in_extended_watchlist"] = "yes"
+    rep_df["include_in_primary_core"] = rep_df["include_in_primary_core"].astype(str)
+    rep_df["include_in_balanced_core"] = rep_df["include_in_balanced_core"].astype(str)
+    rep_df["include_in_extended_watchlist"] = rep_df["include_in_extended_watchlist"].astype(str)
+    rep_df["source_yaml_path"] = rep_df["source_yaml_path"].map(lambda x: _repo_relative_path(repo_root, str(x)))
+    # Reorder / enforce columns
+    rep_cols = [
+        "candidate_id",
+        "strategy",
+        "strategy_family",
+        "audit_family",
+        "representative_role",
+        "representative_rank",
+        "include_in_primary_core",
+        "include_in_balanced_core",
+        "include_in_extended_watchlist",
+        "source_yaml_path",
+        "insample_ref_total_r",
+        "early_oow_total_r",
+        "late_oow_total_r",
+        "trades_insample_ref",
+        "trades_early_oow",
+        "trades_late_oow",
+        "cluster_id",
+        "cluster_role",
+        "reason",
+    ]
+    rep_df = rep_df[[c for c in rep_cols if c in rep_df.columns]]
+    _write_csv(rep_df, out_root / "representative_candidate_manifest.csv")
     (out_root / "representative_candidate_manifest.md").write_text(
         "# Representative candidate manifest (design-only)\n\n"
         + _df_to_markdown_table(rep_df)
@@ -511,21 +589,75 @@ def build_design(
         "CCI_EXTREME_SNAPBACK_003",
         "CCI_EXTREME_SNAPBACK_002",
     ]
+    pa_gap = ["PA_BUY_SELL_CLOSE_TREND_003", "GAP_ACCEPTANCE_FAILURE_001"]
+    pa_cci = ["PA_BUY_SELL_CLOSE_TREND_003", "CCI_EXTREME_SNAPBACK_003"]
+    gap_cci = ["GAP_ACCEPTANCE_FAILURE_001", "CCI_EXTREME_SNAPBACK_003"]
+    pa_only = ["PA_BUY_SELL_CLOSE_TREND_003"]
+    cci_only = ["CCI_EXTREME_SNAPBACK_003", "CCI_EXTREME_SNAPBACK_002"]
+
     extended_watchlist = [r.candidate_id for r in sorted(rows, key=lambda x: x.candidate_id)]
     exclude = labels[labels["policy_action"].isin(["DROP_FROM_CORE", "REQUIRES_SIDE_FLIP_RESEARCH"])].copy()
     exclude_ids = exclude["candidate_id"].astype(str).tolist()
 
-    sets_rows: list[dict[str, Any]] = []
-    for set_name, ids, purpose in [
-        ("primary_representative_core", primary_core, "minimum redundancy; maximum interpretability"),
-        ("balanced_representative_core", balanced_core, "slightly broader core; still deduped"),
-        ("extended_robust_watchlist", extended_watchlist, "all nominal robust-positive (doc-only)"),
-        ("exclude_from_core", exclude_ids, "DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets"),
-    ]:
+    cid_to_meta = labels.set_index("candidate_id")[["strategy", "audit_family", "yaml_path"]].to_dict(orient="index")
+
+    def _set_rows(set_name: str, ids: list[str], *, purpose: str, caveat: str, run_recommended: str) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
         for cid in ids:
-            sets_rows.append({"candidate_set": set_name, "candidate_id": cid, "purpose": purpose})
-    sets_df = pd.DataFrame(sets_rows)
-    sets_df.to_csv(out_root / "candidate_sets_design.csv", index=False)
+            meta = cid_to_meta.get(cid, {})
+            out.append(
+                {
+                    "candidate_set": set_name,
+                    "candidate_id": cid,
+                    "strategy": str(meta.get("strategy", "")),
+                    "family": str(meta.get("audit_family", "")),
+                    "role_in_set": "member",
+                    "source_yaml_path": _repo_relative_path(repo_root, str(meta.get("yaml_path", ""))),
+                    "purpose": purpose,
+                    "caveat": caveat,
+                    "run_recommended": run_recommended,
+                    "design_only": "yes",
+                }
+            )
+        return out
+
+    sets_rows: list[dict[str, Any]] = []
+    sets_rows += _set_rows(
+        "primary_representative_core",
+        primary_core,
+        purpose="minimum redundancy; maximum interpretability",
+        caveat="GAP deduped (001–004 identical); PA 001–003 trade-identical (use 003)",
+        run_recommended="yes",
+    )
+    sets_rows += _set_rows(
+        "balanced_representative_core",
+        balanced_core,
+        purpose="slightly broader core; still deduped",
+        caveat="adds PA_004 partial-overlap and CCI_002 secondary (weaker early OOW)",
+        run_recommended="yes",
+    )
+    sets_rows += _set_rows("pa_gap_core", pa_gap, purpose="pairwise ablation", caveat="", run_recommended="yes")
+    sets_rows += _set_rows("pa_cci_core", pa_cci, purpose="pairwise ablation", caveat="", run_recommended="yes")
+    sets_rows += _set_rows("gap_cci_core", gap_cci, purpose="pairwise ablation", caveat="", run_recommended="yes")
+    sets_rows += _set_rows("pa_only_core", pa_only, purpose="single-family ablation", caveat="optionally add PA_004 in a separate set", run_recommended="yes")
+    sets_rows += _set_rows("cci_only_core", cci_only, purpose="single-family ablation", caveat="CCI_002 is secondary (early OOW weak)", run_recommended="yes")
+    sets_rows += _set_rows(
+        "extended_robust_watchlist",
+        extended_watchlist,
+        purpose="all nominal robust-positive (documentation only)",
+        caveat="contains deduped equivalents; not recommended for immediate diagnostic",
+        run_recommended="no",
+    )
+    sets_rows += _set_rows(
+        "exclude_from_core",
+        exclude_ids,
+        purpose="DROP_FROM_CORE + SIDE_FLIP_RESEARCH_ONLY buckets",
+        caveat="research contrasts only; do not promote to core",
+        run_recommended="no",
+    )
+
+    sets_df = pd.DataFrame(sets_rows).sort_values(["candidate_set", "candidate_id"])
+    _write_csv(sets_df, out_root / "candidate_sets_design.csv")
     (out_root / "candidate_sets_design.md").write_text(
         "# Candidate sets (design-only)\n\n" + _df_to_markdown_table(sets_df) + "\n",
         encoding="utf-8",
@@ -555,18 +687,45 @@ def build_design(
         elif cid in keep_ids:
             # KEEP candidates not chosen as reps are treated as dedup/watchlist.
             bucket = "watchlist_secondary"
+        rep_row = rep_df[rep_df["candidate_id"] == cid]
+        in_primary = "yes" if (not rep_row.empty and rep_row.iloc[0].get("include_in_primary_core") == "yes") else "no"
+        in_balanced = "yes" if (not rep_row.empty and rep_row.iloc[0].get("include_in_balanced_core") == "yes") else "no"
+        side_flip = "yes" if base == "REQUIRES_SIDE_FLIP_RESEARCH" else "no"
+        drop = "yes" if base == "DROP_FROM_CORE" else "no"
+        watch = "yes" if base == "WATCHLIST_DIAGNOSTIC" else "no"
+
+        action = {
+            "core_representative": "CORE_REPRESENTATIVE",
+            "core_secondary_optional": "CORE_SECONDARY_OPTIONAL",
+            "watchlist_secondary": "DEDUPED_EQUIVALENT",
+            "watchlist_diagnostic": "WATCHLIST_DIAGNOSTIC",
+            "drop_from_core": "DROP_FROM_CORE",
+            "side_flip_research_only": "SIDE_FLIP_RESEARCH_ONLY",
+            "too_sparse": "WATCHLIST_DIAGNOSTIC",
+            "needs_more_data": "WATCHLIST_DIAGNOSTIC",
+        }.get(bucket, "WATCHLIST_DIAGNOSTIC")
+
         policy_rows.append(
             {
                 "candidate_id": cid,
                 "strategy": str(r["strategy"]),
-                "audit_family": str(r["audit_family"]),
-                "robustness_label": str(r["robustness_label"]),
-                "policy_action": base,
-                "v2_bucket": bucket,
+                "family": str(r["audit_family"]),
+                "action": action,
+                "reason": "",
+                "source_label": base,
+                "robust_label": str(r["robustness_label"]),
+                "insample_ref_total_r": r.get("total_r_insample_ref", ""),
+                "early_oow_total_r": r.get("total_r_early_oow", ""),
+                "late_oow_total_r": r.get("total_r_late_oow", ""),
+                "include_in_primary_core": in_primary,
+                "include_in_balanced_core": in_balanced,
+                "side_flip_research_only": side_flip,
+                "drop_from_core": drop,
+                "watchlist": watch,
             }
         )
-    policy_df = pd.DataFrame(policy_rows).sort_values(["v2_bucket", "audit_family", "candidate_id"])
-    policy_df.to_csv(out_root / "core_watchlist_drop_actions.csv", index=False)
+    policy_df = pd.DataFrame(policy_rows).sort_values(["action", "family", "candidate_id"])
+    _write_csv(policy_df, out_root / "core_watchlist_drop_actions.csv")
     (out_root / "core_watchlist_drop_policy.md").write_text(
         "# Core / watchlist / drop policy (design-only)\n\n"
         "This reorganizes the full **66**-candidate l2_core into design buckets for future *small* diagnostics.\n\n"
@@ -579,7 +738,7 @@ def build_design(
         "- **CCI** appears only as the snapback representatives.\n\n"
         "## Bucket counts\n\n"
         "```\\n"
-        + policy_df["v2_bucket"].value_counts().to_string()
+        + policy_df["action"].value_counts().to_string()
         + "\\n```\n\n"
         "## Actions table (full)\n\n"
         + _df_to_markdown_table(policy_df)

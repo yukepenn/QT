@@ -1,0 +1,31 @@
+# DESIGN ONLY — NOT RUN
+# Do not treat as promoted production config.
+# Generated from robust_l2_core_v2_design.
+#
+# Candidate-set axis (pairwise):
+# - pa_gap_core
+# - pa_cci_core
+# - gap_cci_core
+#
+# This is intentionally non-runnable until the next task maps these keys into the repo’s actual combiner runner CLI.
+
+candidate_sets:
+  pa_gap_core:
+    candidate_ids:
+      - "PA_BUY_SELL_CLOSE_TREND_003"
+      - "GAP_ACCEPTANCE_FAILURE_001"
+  pa_cci_core:
+    candidate_ids:
+      - "PA_BUY_SELL_CLOSE_TREND_003"
+      - "CCI_EXTREME_SNAPBACK_003"
+  gap_cci_core:
+    candidate_ids:
+      - "GAP_ACCEPTANCE_FAILURE_001"
+      - "CCI_EXTREME_SNAPBACK_003"
+
+fixed:
+  symbol: "QQQ"
+  max_open_positions: 1
+  no_new_after_minute: 360
+  commission: 0.0
+  slippage: 0.01

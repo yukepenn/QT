@@ -1,0 +1,32 @@
+# DESIGN ONLY — NOT RUN
+# Do not treat as promoted production config.
+# Generated from robust_l2_core_v2_design.
+#
+# Small diagnostic grid (intentionally tiny):
+# - candidate_set ∈ {primary_representative_core, balanced_representative_core, pa_gap_core, pa_cci_core, gap_cci_core, pa_only_core, cci_only_core}
+# - max_trades_per_day ∈ {1, 2}
+# - daily_max_loss_r ∈ {-1.5, -2.0}
+# - priority_policy ∈ {metadata_priority, score_adjusted_priority}
+#
+# NOTE: This is a schema sketch only. The next task should translate this into the repo’s actual runner arguments.
+
+candidate_sets:
+  - "primary_representative_core"
+  - "balanced_representative_core"
+  - "pa_gap_core"
+  - "pa_cci_core"
+  - "gap_cci_core"
+  - "pa_only_core"
+  - "cci_only_core"
+
+grid:
+  max_trades_per_day: [1, 2]
+  daily_max_loss_r: [-1.5, -2.0]
+  priority_policy: ["metadata_priority", "score_adjusted_priority"]
+
+fixed:
+  symbol: "QQQ"
+  max_open_positions: 1
+  no_new_after_minute: 360
+  commission: 0.0
+  slippage: 0.01

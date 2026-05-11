@@ -1,0 +1,9 @@
+rel_path,ok,rows,cols,error,abs_path_hit,missing_required_columns
+candidate_sets_design.csv,True,40,10,,,
+core_watchlist_drop_actions.csv,True,66,15,,,
+effective_signal_clusters.csv,True,9,11,,,
+representative_candidate_manifest.csv,True,10,19,,,
+robust_candidate_dedupe_table.csv,True,10,13,,,
+robust_candidate_near_duplicates.csv,True,9,6,,,
+robust_candidate_overlap_matrix.csv,True,45,10,,,
+robust_l2_core_v2_key_findings.csv,True,4,6,,,
