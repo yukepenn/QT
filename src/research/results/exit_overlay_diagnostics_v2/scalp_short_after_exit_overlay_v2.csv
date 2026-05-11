@@ -1,4 +1,4 @@
-question,answer,evidence_strength
-Does aligned exit overlay reduce need for new scalp entries?,Unknown until alignment passes on full panel — max-hold / no-followthrough remain time-stop-like diagnostics only.,INSUFFICIENT
-Defer long-side scalp?,Yes — finish replay alignment before new entry families.,STRONG
-Defer short branch?,Yes — no new evidence for immediate short priority.,STRONG
+topic,status,notes
+scalp_entries,deferred,No aligned exit-overlay economics — cannot argue scalp entries reduce urgency.
+short_branch,deferred,Unchanged; no new evidence from v2 overlays this cycle.
+max_hold_no_followthrough_mimic,diagnostic_only,Path divergence on max_hold vs replay stop/target must be fixed before interpreting max_hold-style overlays.

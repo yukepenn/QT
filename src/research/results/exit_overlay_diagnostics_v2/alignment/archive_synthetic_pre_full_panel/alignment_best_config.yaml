@@ -1,9 +1,9 @@
-config_id: cfg_0015
+config_id: cfg_0005
 entry_price_source: bar_open_plus_slip
-exit_price_source: panel_exit_price_when_original
-forced_exit_policy: panel_exit_idx
+exit_price_source: simulated_bar_price
+forced_exit_policy: max_hold
 risk_policy: abs_entry_minus_stop
 same_bar_policy: stop_first
-slippage_policy: apply_like_combiner
+slippage_policy: none
 start_bar_policy: entry_bar
 target_policy: panel_target_price

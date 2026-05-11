@@ -514,6 +514,173 @@ def _write_alignment_bundle(
     return best
 
 
+def _write_full_panel_alignment_manifest(
+    *,
+    out_root: Path,
+    best: CloneReplayConfig | None,
+    panel_row_count: int,
+    profiles_csv: str,
+    windows_csv: str,
+    synthetic_or_real: str,
+) -> None:
+    """Single-row manifest for handoff / ChatGPT (no absolute paths)."""
+    aln = out_root / "alignment"
+    grid_path = aln / "alignment_grid_results.csv"
+    if best is None or not grid_path.is_file():
+        return
+    grid = pd.read_csv(grid_path)
+    sub = grid[grid["config_id"].astype(str) == str(best.config_id)]
+    if sub.empty:
+        return
+    row = sub.iloc[0].to_dict()
+    label = str(row.get("label", ""))
+    can_overlay = "yes" if label in ("ALIGNMENT_PASS", "ALIGNMENT_PASS_WITH_WARNINGS") else "no"
+    bar_rows = 0
+    bmp = out_root / "bar_load_meta.csv"
+    if bmp.is_file():
+        bm = pd.read_csv(bmp).iloc[0].to_dict()
+        bar_rows = int(bm.get("bar_rows", 0) or 0)
+    notes = (
+        "Synthetic smoke runs use a tiny panel; full-panel real runs set synthetic_or_real=real. "
+        "Prior v2 alignment aggregates may be archived under alignment/archive_synthetic_pre_full_panel/."
+    )
+    _write_csv(
+        pd.DataFrame(
+            [
+                {
+                    "run_type": "full_panel_alignment",
+                    "synthetic_or_real": synthetic_or_real,
+                    "panel_rows_used": int(panel_row_count),
+                    "bar_rows_used": bar_rows,
+                    "profiles": profiles_csv,
+                    "windows": windows_csv,
+                    "best_config": str(best.config_id),
+                    "best_label": label,
+                    "mean_abs_r_diff": row.get("mean_abs_r_diff"),
+                    "median_abs_r_diff": row.get("median_abs_r_diff"),
+                    "p90_abs_r_diff": row.get("p90_abs_r_diff"),
+                    "max_abs_r_diff": row.get("max_abs_r_diff"),
+                    "total_r_diff": row.get("total_r_diff"),
+                    "can_run_overlay": can_overlay,
+                    "notes": notes,
+                }
+            ]
+        ),
+        aln / "full_panel_alignment_manifest.csv",
+    )
+
+
+def _write_alignment_failure_diagnostics(
+    *,
+    out_root: Path,
+    panel: pd.DataFrame,
+    detail: pd.DataFrame,
+    best: CloneReplayConfig,
+) -> None:
+    """When alignment label is FAIL, slice drift by exit_reason / candidate / profile."""
+    aln = out_root / "alignment"
+    grid = pd.read_csv(aln / "alignment_grid_results.csv")
+    sub = grid[grid["config_id"].astype(str) == str(best.config_id)]
+    if sub.empty:
+        return
+    label = str(sub.iloc[0].get("label", ""))
+    if label not in ("ALIGNMENT_FAIL",):
+        return
+    cols = [
+        "trade_id",
+        "profile_id",
+        "window",
+        "exit_reason",
+        "candidate_id",
+        "bars_held",
+        "entry_idx",
+        "exit_idx",
+    ]
+    use = [c for c in cols if c in panel.columns]
+    d = detail[detail["config_id"].astype(str) == str(best.config_id)].merge(
+        panel[use],
+        on=["trade_id", "profile_id", "window"],
+        how="left",
+    )
+    d["signed_r_diff"] = pd.to_numeric(d["r_replay"], errors="coerce") - pd.to_numeric(d["r_original"], errors="coerce")
+    d["abs_r_diff"] = d["signed_r_diff"].abs()
+    by_er = (
+        d.groupby(d["exit_reason"].fillna("NA").astype(str))
+        .agg(
+            rows=("trade_id", "count"),
+            mean_abs_r_diff=("abs_r_diff", "mean"),
+            sum_signed_r_diff=("signed_r_diff", "sum"),
+            exit_reason_match_rate=("exit_reason_match", "mean"),
+        )
+        .reset_index()
+        .sort_values("sum_signed_r_diff", key=abs, ascending=False)
+    )
+    _write_csv(by_er, aln / "full_panel_alignment_failure_by_exit_reason.csv")
+    mh = d[d["exit_reason"].astype(str) == "max_hold"].copy()
+    mh_bad = mh[mh["abs_r_diff"] > 1e-9]
+    div = mh_bad.groupby(mh_bad["exit_reason_replay"].fillna("NA").astype(str)).size().reset_index(name="rows")
+    _write_csv(div, aln / "full_panel_alignment_failure_max_hold_path_divergence.csv")
+    by_cand = (
+        d.groupby(d["candidate_id"].fillna("NA").astype(str))
+        .agg(rows=("trade_id", "count"), mean_abs=("abs_r_diff", "mean"), sum_signed=("signed_r_diff", "sum"))
+        .reset_index()
+        .sort_values("sum_signed", key=abs, ascending=False)
+    )
+    _write_csv(by_cand, aln / "full_panel_alignment_failure_by_candidate.csv")
+    by_prof = (
+        d.groupby(d["profile_id"].fillna("NA").astype(str))
+        .agg(rows=("trade_id", "count"), mean_abs=("abs_r_diff", "mean"), sum_signed=("signed_r_diff", "sum"))
+        .reset_index()
+        .sort_values("sum_signed", key=abs, ascending=False)
+    )
+    _write_csv(by_prof, aln / "full_panel_alignment_failure_by_profile.csv")
+    ex = d.nlargest(80, "abs_r_diff")[
+        [
+            "trade_id",
+            "profile_id",
+            "window",
+            "candidate_id",
+            "exit_reason",
+            "exit_reason_replay",
+            "r_original",
+            "r_replay",
+            "abs_r_diff",
+            "ambiguous_bar",
+        ]
+    ]
+    _write_csv(ex, aln / "full_panel_alignment_failure_examples.csv")
+
+    def _md(df: pd.DataFrame) -> str:
+        if df is None or df.empty:
+            return "_(empty)_"
+        cols = [str(c) for c in df.columns]
+        lines = ["| " + " | ".join(cols) + " |", "| " + " | ".join(["---"] * len(cols)) + " |"]
+        for _, r in df.iterrows():
+            lines.append("| " + " | ".join(str(r[c]) for c in df.columns) + " |")
+        return "\n".join(lines)
+
+    md_lines = [
+        "# full_panel_alignment_failure_analysis",
+        "",
+        f"**Best config:** `{best.config_id}` | **Label:** `{label}`",
+        "",
+        "## Summary",
+        "",
+        "- Aggregate `total_r_diff` exceeds PASS / PASS_WITH_WARNINGS budgets while per-trade mean/median may still look small.",
+        "- Inspect `full_panel_alignment_failure_max_hold_path_divergence.csv` when panel `exit_reason` is `max_hold` but replay exits `target` / `stop`.",
+        "",
+        "## By panel exit_reason",
+        "",
+        _md(by_er),
+        "",
+        "## Max-hold path divergence",
+        "",
+        _md(div),
+        "",
+    ]
+    _write_md(aln / "full_panel_alignment_failure_analysis.md", md_lines)
+
+
 def _load_clone_cfg(path: Path) -> CloneReplayConfig:
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     return CloneReplayConfig.from_mapping(raw)
@@ -629,6 +796,17 @@ def main(argv: list[str] | None = None) -> int:
         best = _write_alignment_bundle(out_root=out, detail=detail, profiles=profs, windows=wins)
         man = pd.DataFrame([c.to_dict() for c in iter_default_alignment_grid()])
         _write_csv(man, out / "alignment/alignment_config_manifest.csv")
+        tag = "real" if len(panel) >= 500 else "synthetic_smoke"
+        _write_full_panel_alignment_manifest(
+            out_root=out,
+            best=best,
+            panel_row_count=len(panel),
+            profiles_csv=",".join(profs),
+            windows_csv=",".join(wins),
+            synthetic_or_real=tag,
+        )
+        if best is not None:
+            _write_alignment_failure_diagnostics(out_root=out, panel=panel, detail=detail, best=best)
         if best is None:
             _write_md(
                 out / "alignment/alignment_decision.md",

@@ -1,0 +1,2 @@
+trade_id,profile_id,window,r_original,r_replay,abs_r_diff,exit_reason_replay,ambiguous_bar
+syn_1,pa_only_mtp1_meta,insample_ref,0.5,0.10000000000002274,0.39999999999997726,session_end,False

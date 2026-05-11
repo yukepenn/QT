@@ -2,6 +2,8 @@
 
 Router/quality v2 answers **which trades to keep**; exit overlay v2 answers **how exits could differ** given identical entries.
 
+**2026-05-11 (full-panel alignment):** **`ALIGNMENT_FAIL`** on the real 10,628-row panel — see `comparison_not_run_reason.md`. **Do not** rank exit overlay vs router/quality on refreshed economics until **`--mode overlay`** reruns after **PASS** or **PASS_WITH_WARNINGS**.
+
 Until **`combiner_clone_replay`** matches panel `r_multiple` within agreed gates, treat **exit overlay v2 PF / drawdown deltas as non-actionable** for integration priority.
 
 Programmatic “best row” picks remain in `router_quality_refinement_v2/` CSVs referenced by v1 `run_exit_overlay_diagnostics.write_router_quality_comparison`.

@@ -1,8 +1,23 @@
 file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
-src/research/exit_overlay_alignment.py,combiner clone replay + grid,yes,,no,no,research-only
-src/research/run_exit_overlay_diagnostics_v2.py,V2 CLI runner,yes,,no,no,
-src/research/exit_overlay_sim.py,overlays + contextual IDs,yes,,no,no,
-tests/test_exit_overlay_alignment.py,unit tests,yes,,no,no,
-src/research/results/exit_overlay_diagnostics_v2/alignment/alignment_grid_results.csv,grid metrics,yes,15,no,no,synthetic-included
-src/research/results/exit_overlay_diagnostics_v2/overlay_v2/overlay_v2_results_by_profile.csv,overlay aggregates,yes,21,overlay_v2_summary.md,no,synthetic smoke
-src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv,Champion panel,yes,10628,baseline_inventory.md,yes,gitignored
+full_panel_run_inventory.md,Run inventory + synthetic vs real,high,,no,Git tip: use NEXT_HANDOFF §A after sync
+full_panel_run_inventory.csv,Machine-readable inventory,high,2,no,
+local_full_panel_input_check.md,Panel + bar presence,high,,no,
+local_full_panel_input_check.csv,Input check table,high,10,no,
+full_panel_commands.md,CLI reference,medium,,no,
+full_panel_commands.ps1,Validation helper script,low,,no,Run from repo root
+alignment/full_panel_alignment_manifest.csv,Single-row alignment manifest,high,2,no,synthetic_or_real=real
+alignment/alignment_grid_results.csv,All configs aggregate metrics,high,16,no,
+alignment/alignment_best_config.yaml,Best clone YAML,high,,no,
+alignment/alignment_decision.md,Gate label,high,,no,
+alignment/full_panel_alignment_failure_analysis.md,Drift narrative,high,,no,
+alignment/full_panel_alignment_failure_by_exit_reason.csv,Drift slice,high,5,no,
+alignment/full_panel_alignment_failure_max_hold_path_divergence.csv,max_hold path counts,high,3,no,
+alignment/archive_synthetic_pre_full_panel/*,Pre-run synthetic backup,medium,,no,
+bar_load_meta.csv,Bar load summary,high,2,no,
+overlay_v2/overlay_v2_summary.md,Overlay status banner,high,,no,States overlay not run
+overlay_v2/full_panel_overlay_manifest.csv,Overlay run manifest,high,2,no,not_run
+comparison_not_run_reason.md,Why exit vs router not refreshed,medium,,no,
+exit_overlay_diagnostics_v2_decision.md,Single decision label,high,,no,REFINE_REPLAY_ALIGNMENT
+CHATGPT_REVIEW_BUNDLE.md,ChatGPT narrative,high,,no,
+exit_overlay_diagnostics_v2_key_findings.csv,Key metrics,high,9,no,
+local_rows/alignment_trade_detail.csv,Per-config per-trade alignment rows,low,159420,yes,DO NOT COMMIT

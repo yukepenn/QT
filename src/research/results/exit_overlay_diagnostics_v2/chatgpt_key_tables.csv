@@ -1,5 +1,10 @@
 section,item,metric,value,interpretation
-alignment,synthetic_row,best_config_id,cfg_0005,grid winner on 1-row smoke only
-alignment,synthetic_row,label,ALIGNMENT_FAIL,need full panel + parquet
-v1_drift,fixed_target_replay,primary_cause,missing_exit_slip,combiner uses raw_ex-slip
-overlay,headline_baseline,r_clone_vs_panel,see_sanity_csv,clone should converge after alignment
+alignment,best_config,config_id,cfg_0015,Lowest mean_abs_r_diff among stop_first-preferring configs
+alignment,gate,label,ALIGNMENT_FAIL,total_r_diff exceeds PASS/PWW budgets
+alignment,rows,panel_rows_used,10628,Full Champion v0 slice
+alignment,bars,bar_rows_used,617160,QQQ 1m parquet span
+alignment,mean_abs_r_diff,mean_abs_r_diff,~0.035,Below 0.05R per-trade mean gate
+alignment,total_r_diff,total_r_diff,~+52.4,Fails aggregate gate
+drift,max_hold_subset,mismatch_rows,476 / 5188,Replay target/stop vs panel max_hold labeling
+overlay,mode,ran,no,Skipped due to ALIGNMENT_FAIL
+decision,label,one_of,REFINE_REPLAY_ALIGNMENT,Fix replay max_hold path before overlay economics

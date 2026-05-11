@@ -1,0 +1,11 @@
+field,value
+git_tip_sha,match_repo_HEAD_after_pull
+v2_decision_label,REFINE_REPLAY_ALIGNMENT
+prior_v2_alignment_synthetic,yes — superseded aggregates archived under alignment/archive_synthetic_pre_full_panel/
+full_panel_alignment_synthetic_or_real,real
+local_panel_expected_path,src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv
+qqq_bars_expected_data_dir,data/raw/ibkr
+local_panel_exists,yes
+qqq_bars_exist,yes
+curated_alignment_overwrite,replaced alignment/*.csv|*.md|*.yaml with full-panel run; synthetic preserved in archive_synthetic_pre_full_panel/
+local_only_do_not_stage,"local_rows/alignment_trade_detail.csv; any overlay_trade_results_v2.csv; parquet; logs"

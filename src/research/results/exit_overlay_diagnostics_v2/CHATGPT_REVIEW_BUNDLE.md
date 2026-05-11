@@ -1,69 +1,120 @@
-# CHATGPT_REVIEW_BUNDLE — exit_overlay_diagnostics_v2
+# CHATGPT_REVIEW_BUNDLE — Exit overlay diagnostics v2 (full-panel alignment cycle)
+
+Readable from GitHub raw. **This cycle ran real full-panel alignment** on **10,628** local panel rows; **overlay mode did not run** because alignment **`ALIGNMENT_FAIL`**.
+
+---
 
 ## 1. Git / validation
 
-After clone: `python -m compileall -q src`, `python -m pytest -q`, `python src/strategies/loader.py --list`, `python -m src.research.validate_research_artifacts --root src/research/results/exit_overlay_diagnostics_v2 --csv-only --output .../exit_overlay_diagnostics_v2_artifact_validation.csv`.
+- **Branch:** `main`.
+- **Scripts touched:** `src/research/run_exit_overlay_diagnostics_v2.py` (post-alignment manifest + failure CSV/MD writers when label is `ALIGNMENT_FAIL`).
+- **Checks:** `python -m compileall -q src` — OK; `python -m pytest -q` — full suite run in this cycle (see `NEXT_HANDOFF.md` §B for counts).
+- **Artifact validation:** `python -m src.research.validate_research_artifacts --root src/research/results/exit_overlay_diagnostics_v2 --csv-only --output .../exit_overlay_diagnostics_v2_artifact_validation.csv`.
+- **Tracked-heavy:** no tracked `trade_context_panel.csv`, parquet, `overlay_trade_results_v2.csv`, etc.
 
-## 2. Why V2 was needed
+---
 
-V1 `fixed_target_replay` ignored combiner **exit slip** and other fill conventions → large mean abs ΔR vs panel.
+## 2. Why this full-panel run was needed
 
-## 3. Champion v0 freeze
+Committed v2 alignment artifacts were **synthetic smoke** (schema validation only). Economic overlay interpretation requires **combiner_clone** replay to match panel **`r_multiple`** within **per-trade and aggregate** gates on the **real** 10k+ panel.
 
-Unchanged — see v1 bundle / `baseline_inventory.md`.
+---
 
-## 4. V1 replay drift recap
+## 3. Local input verification
 
-Mean abs diff ~0.28–0.38R (profile×window); overlays were diagnostic only.
+- **Panel (local-only path, not committed):** `src/research/results/local_detailed_trade_context_replay_v1/local_rows/trade_context_panel.csv` — **10,628 × 170**; profiles/windows as expected; see `local_full_panel_input_check.{md,csv}`.
+- **QQQ bars:** `data/raw/ibkr` — **617,160** rows; **0** missing sessions vs panel (`bar_load_meta.csv`).
 
-## 5. Combiner semantics inventory
+---
 
-See `combiner_semantics_inventory.md` + `.csv`.
+## 4. Synthetic v2 artifact warning
 
-## 6. Alignment grid result
+- Prior curated **`alignment/*`** numerics were **synthetic**.
+- **Archive:** `alignment/archive_synthetic_pre_full_panel/` holds copies before this run.
+- **`overlay_v2/*`** CSVs from earlier smoke are **not** updated this cycle — see `overlay_v2/overlay_v2_summary.md` and `overlay_v2/full_panel_overlay_manifest.csv`.
 
-See `alignment/alignment_grid_results.csv` (15 curated configs + metrics on synthetic row / full run when executed locally).
+---
 
-## 7. Best clone replay config
+## 5. Full-panel alignment result
 
-`alignment/alignment_best_config.yaml` — **currently `cfg_0005` on synthetic one-row grid**; full panel may favor **`cfg_0001`**.
+- **Rows used:** 10,628 (after profile/window filter).
+- **Configs:** 15 (`alignment_config_manifest.csv`).
+- **Overall label:** **`ALIGNMENT_FAIL`** (`alignment_decision.md`, `alignment_grid_results.csv` best row).
+- **Manifest:** `alignment/full_panel_alignment_manifest.csv` — **`synthetic_or_real=real`**.
 
-## 8. Alignment pass/fail
+---
 
-See `alignment/alignment_decision.md` — synthetic row **`ALIGNMENT_FAIL`** → gate **`REFINE_REPLAY_ALIGNMENT`**.
+## 6. Best clone config
 
-## 9. V2 overlay set
+- **`cfg_0015`:** `entry_bar` + `bar_open_plus_slip` + `panel_exit_price_when_original` + `apply_like_combiner` + `abs_entry_minus_stop` + `stop_first` + `panel_exit_idx` + `panel_target_price` (`alignment_best_config.yaml`).
 
-`baseline_original`, `combiner_clone_replay`, `max_hold_tighten_60`, `trend_swing_2R_contextual`, `runner_after_1R_trail_vwap_contextual`, `runner_after_1R_trail_atr_contextual`, `no_followthrough_exit_5bars_contextual`.
+---
 
-## 10–13. Context / weak / ambiguity
+## 7. Alignment pass/fail
 
-See `overlay_v2/trend_swing_v2_context_results.csv`, `runner_v2_context_results.csv`, `no_followthrough_v2_context_results.csv`, `max_hold_v2_context_results.csv`, `overlay_v2_ambiguity_sensitivity.csv`, `overlay_v2_weak_period_results.csv`.
+- **FAIL** (aggregate gate): `total_r_diff` ≈ **+52.4R** vs budgets (≤5 PASS, ≤15 PASS_WITH_WARNINGS).
+- **Per-trade:** mean |ΔR| ≈ **0.035**, median ≈ **0** — good local fit for most rows.
 
-## 14. Ambiguity sensitivity
+---
 
-`stop_first` (headline clone), plus `target_first` / `skip_ambiguous` on overlays in runner.
+## 8. Drift failure analysis
 
-## 15–16. Context + weak periods
+- **Primary mechanism:** **476 / 5188** panel **`max_hold`** rows where replay exits **`target`** (276) or **`stop`** (200) first — `panel_exit_price_when_original` does not apply when exit labels disagree → R drift mass (~+52R signed sum).
+- **Files:** `alignment/full_panel_alignment_failure_analysis.md`, `full_panel_alignment_failure_by_exit_reason.csv`, `full_panel_alignment_failure_max_hold_path_divergence.csv`, `full_panel_alignment_failure_by_candidate.csv`, `full_panel_alignment_failure_by_profile.csv`, `full_panel_alignment_failure_examples.csv`.
 
-`context_specific_overlay_v2.csv` + `.md`.
+---
 
-## 17. Exit vs router/quality v2
+## 9. Overlay results
 
-See `exit_vs_router_quality_v2_comparison.md` — router/quality remains primary **selection** evidence until aligned exit replay stabilizes.
+- **Not run.** Do not use `overlay_v2/*.csv` as full-panel economics until alignment passes and overlay is re-executed.
 
-## 18. Scalp / short roadmap
+---
 
-See `scalp_short_after_exit_overlay_v2.md`.
+## 10. Ambiguity sensitivity
 
-## 19. Decision
+- **Not run** (overlay skipped).
 
-**`REFINE_REPLAY_ALIGNMENT`** — see `exit_overlay_diagnostics_v2_decision.md`.
+---
 
-## 20. Explicit non-runs
+## 11. Context-specific findings
 
-No WFO/live/SPY/broad L2/Global L1; no production router/exit-management; no strategy/feature/YAML edits; no row-level commits.
+- **Not run.**
 
-## 21. Recommended next step
+---
 
-Run full-panel **`--mode alignment`**, then **`--mode overlay`** if alignment passes.
+## 12. Weak-period findings
+
+- **Not run.** See `overlay_v2/weak_period_overlay_v2_interpretation.md`.
+
+---
+
+## 13. Exit vs router/quality comparison
+
+- **Not refreshed.** See `comparison_not_run_reason.md`. Router/quality remains the actionable **selection** path until aligned overlays exist.
+
+---
+
+## 14. Scalp / short roadmap status
+
+- **Deferred** — see `scalp_short_after_exit_overlay_v2.{md,csv}`.
+
+---
+
+## 15. Decision
+
+**`REFINE_REPLAY_ALIGNMENT`**
+
+---
+
+## 16. Explicit non-runs
+
+- No WFO / live / SPY / broad L2 / Global L1.
+- No production router / exit-management integration.
+- No strategy / feature / YAML edits.
+- No row-level panel or overlay CSV commits.
+
+---
+
+## 17. Recommended next step
+
+Fix **max_hold vs intrabar stop/target** reconciliation in **`combiner_clone_long_walk`** (and/or panel exit labeling consistency), then rerun **`--mode alignment`**; if **PASS** or **PASS_WITH_WARNINGS**, rerun **`--mode overlay`** with ambiguity policies and refresh `overlay_v2/*` aggregates.

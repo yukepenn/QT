@@ -5,97 +5,57 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| **Main research commit (this cycle)** | **`85b8306`** — `Research(exit): align overlay replay diagnostics` |
-| Repo tip (after push) | **`ce89962`** — `Docs(handoff): fix NEXT_HANDOFF tip` (on `origin/main`) |
-| Push status | **Pushed** |
-| Working tree | Expect untracked heavy artifacts under `src/combiner/results/**`, logs, sweep folders — **do not** `git add .` |
-| Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `exit_overlay_diagnostics_v2/local_rows/**`, `.cache/**`, `sweep_*`, `top_runs/` |
+| **Main research commit (this cycle)** | `Research(exit): run full-panel overlay alignment` — identify SHA with `git log -1 --oneline` on `main` after pull |
+| Repo tip (after push) | Must equal local `HEAD` after successful `git push origin main` (verify with `git ls-remote origin refs/heads/main`) |
+| Push status | **Verify** with `git status -sb` and `git ls-remote origin refs/heads/main` after push |
+| Working tree | Untracked heavy artifacts under `src/combiner/results/**`, logs, sweep folders — **do not** `git add .` |
+| Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `exit_overlay_diagnostics_v2/local_rows/**` (incl. `alignment_trade_detail.csv`), `.cache/**`, `sweep_*`, `top_runs/` |
 
 ## B. Validation
 
 | Check | Result |
 |--------|--------|
-| `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **491 passed** (includes `tests/test_exit_overlay_alignment.py`, `tests/test_run_exit_overlay_diagnostics_v2.py`) |
-| `python src/strategies/loader.py --list` | **35** strategies |
-| Artifact validation — `exit_overlay_diagnostics_v2` | `exit_overlay_diagnostics_v2_artifact_validation.csv` — **0** abs-path hits |
+| `python -m compileall -q src` | OK (re-run before next handoff) |
+| `python -m pytest -q` | **491 passed** last full run in this cycle |
+| `python -m src.strategies.loader --list` | **35** strategies |
+| Artifact validation — `exit_overlay_diagnostics_v2` | `exit_overlay_diagnostics_v2_artifact_validation.csv` — **0** abs-path hits (re-run after edits) |
 | Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|...\|overlay_trade_results_v2.csv\|..."` → **no matches** |
 | ChatGPT bundle (V2) | `src/research/results/exit_overlay_diagnostics_v2/CHATGPT_REVIEW_BUNDLE.md` |
 | Source map (V2) | `src/research/results/exit_overlay_diagnostics_v2/SOURCE_MAP.csv` |
 
-## C. Task scope
+## C. Exit overlay v2 — full-panel alignment (this cycle)
 
 | | |
 |--|--|
-| **Requested** | Exit overlay diagnostics **V2**: combiner-aligned `combiner_clone_replay`, alignment grid, contextual overlays, ambiguity sensitivity, aggregates vs clone, docs, tests, `NEXT_HANDOFF` A–L, explicit `git add`, no row-level commits |
-| **Completed** | `exit_overlay_alignment.py`, `run_exit_overlay_diagnostics_v2.py`; `exit_overlay_sim.py` extensions; tests; `exit_overlay_diagnostics_v2/**` curated tree (incl. synthetic smoke rows for schema); `validate_research_artifacts` clean on v2 root |
-| **Intentionally not done** | Full **10k+** panel alignment/overlay **numerics** in-repo (requires local QQQ parquet); production combiner wiring; WFO/live/SPY/broad L2 |
+| **Real full-panel alignment ran** | **Yes** — 10,628 rows (Champion v0 profiles × windows) |
+| **QQQ bar rows loaded** | **617,160** (`data/raw/ibkr`, `bar_load_meta.csv`; missing sessions **0**) |
+| **Alignment result** | **`ALIGNMENT_FAIL`** — best grid `cfg_0015`: low mean/median \|ΔR\|, but **`total_r_diff` ≈ +52.4R** exceeds PASS/PWW aggregate budgets |
+| **Overlay ran** | **No** — gates require PASS or PASS_WITH_WARNINGS first |
+| **Decision** | **`REFINE_REPLAY_ALIGNMENT`** |
+| **Exact next step** | Reconcile **panel `max_hold`** vs replay **stop/target** path (476 / 5188 `max_hold` rows); refine `combiner_clone_long_walk` / labeling; rerun `--mode alignment`, then `--mode overlay` if eligible |
 
-## D. Why V2 was needed
+## D. Synthetic vs real artifacts
 
-- V1 **`fixed_target_replay`** drifted from panel **`r_multiple`** (~0.28–0.38R mean abs) — mainly **missing combiner exit slip** and fill conventions (`combiner_semantics_inventory.md`).
-- V2 adds **`combiner_clone_long_walk`** + **alignment grid** to search switch combinations before trusting overlay deltas.
+- **Prior committed v2 `alignment/*`:** synthetic smoke — **archived** to `alignment/archive_synthetic_pre_full_panel/`.
+- **Current curated `alignment/*`:** **real** full-panel outputs + `full_panel_alignment_manifest.csv` (`synthetic_or_real=real`).
+- **`overlay_v2/*`:** **not** refreshed this cycle; treat prior CSVs as **schema smoke only** until overlay reruns (`overlay_v2/overlay_v2_summary.md`).
 
-## E. Alignment results
+## E. Key files
 
-| Topic | Answer |
-|--------|--------|
-| Best clone config (committed YAML) | `src/research/results/exit_overlay_diagnostics_v2/alignment/alignment_best_config.yaml` — currently **`cfg_0005`** from **one-row synthetic** grid (slip `none` won on that toy path) |
-| Full-panel metrics | **Run locally** — see `alignment/alignment_grid_results.csv` after `--mode alignment` |
-| Pass/fail label (synthetic) | **`ALIGNMENT_FAIL`** — see `alignment/alignment_decision.md` |
-| Remaining drift | Until full run: **unknown**; expect `cfg_0001` (`apply_like_combiner`) to be competitive on real data |
+- Inventories: `full_panel_run_inventory.{md,csv}`, `local_full_panel_input_check.{md,csv}`, `full_panel_commands.{md,ps1}`
+- Alignment: `alignment/alignment_grid_results.csv`, `alignment_best_config.yaml`, `alignment_decision.md`, `full_panel_alignment_manifest.csv`, `full_panel_alignment_failure_*`
+- Decision / bundle: `exit_overlay_diagnostics_v2_decision.md`, `CHATGPT_REVIEW_BUNDLE.md`, `exit_overlay_diagnostics_v2_summary.md`, `chatgpt_key_tables.csv`
+- Overlay not run: `comparison_not_run_reason.md`, `overlay_v2/full_panel_overlay_manifest.csv`
 
-## F. V2 overlay results
+## F. Explicit non-runs
 
-| Topic | Answer |
-|--------|--------|
-| Overlays wired | `baseline_original`, `combiner_clone_replay`, `max_hold_tighten_60`, `trend_swing_2R_contextual`, `runner_after_1R_trail_vwap_contextual`, `runner_after_1R_trail_atr_contextual`, `no_followthrough_exit_5bars_contextual` |
-| Ambiguity policies | `stop_first`, `target_first`, `skip_ambiguous` (runner repeats sim per policy) |
-| Aggregates | `overlay_v2/overlay_v2_results_*.csv` — **include synthetic smoke**; re-run on full panel for evidence |
-| Context splits | `trend_swing_v2_context_results.csv`, `runner_v2_context_results.csv`, `no_followthrough_v2_context_results.csv`, `max_hold_v2_context_results.csv` |
-| Weak periods | `overlay_v2_weak_period_results.csv` (headers only if no weak-flag rows in smoke) |
+- No WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1.
+- No production router / exit-management integration.
+- No strategy / feature / selected-candidate YAML edits.
+- No commit of `local_rows/**`, row-level panel, parquet, logs.
 
-## G. Exit vs router/quality comparison
+## G. Recommended next step (exactly one)
 
-| Topic | Answer |
-|--------|--------|
-| Tables | `exit_vs_router_quality_v2_comparison.{csv,md}` — router/quality remain primary **selection** path until clone alignment passes |
-| Preferred path | **Router/quality** for integration priority **until** alignment **PASS** / **PASS_WITH_WARNINGS** on full panel |
+**Refine replay alignment for `max_hold` vs intrabar stop/target, rerun full-panel `--mode alignment`, then overlay if PASS/PWW.**
 
-## H. Scalp / short roadmap
-
-| Topic | Answer |
-|--------|--------|
-| After V2 scaffolding | `scalp_short_after_exit_overlay_v2.{md,csv}` — defer scalp/short; alignment evidence **insufficient** on repo-only smoke |
-
-## I. Decision
-
-**Label (exactly one):** **`REFINE_REPLAY_ALIGNMENT`**
-
-- Synthetic-only alignment row **fails** gates; **full panel + parquet** required.
-- V1 drift root cause is **documented** (exit slip + combiner conventions).
-- **No** production exit-management integration in this commit.
-- Contextual overlays + ambiguity wiring are **research-only**.
-- Router/quality v2 **not superseded** by exit evidence yet.
-
-## J. Explicit non-runs and risks
-
-- **No** WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1.
-- **No** production router / **no** production exit-management in combiner.
-- **No** strategy / feature / selected-candidate YAML / signal edits.
-- **No** short or scalp strategy implementations.
-- Row-level **`trade_context_panel.csv`**, **`overlay_trade_results_v2.csv`**, **`local_rows/**`** remain **local-only**.
-- **Risk:** curated v2 CSVs contain **synthetic** rows — **do not** cite as QQQ economics without local re-run.
-
-## K. Files changed
-
-- `src/research/exit_overlay_alignment.py`, `src/research/run_exit_overlay_diagnostics_v2.py`, `src/research/exit_overlay_sim.py`
-- `tests/test_exit_overlay_alignment.py`, `tests/test_run_exit_overlay_diagnostics_v2.py`; updates to `tests/test_exit_overlay_sim.py` if any
-- `src/research/results/exit_overlay_diagnostics_v2/**` (curated; no `local_rows/**`)
-- `src/research/exit_overlay_alignment.py` label fix (`total_r_diff` zero handling)
-- `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `RESULTS_INDEX.md`, `NEXT_HANDOFF.md`
-
-## L. Recommended next step (exactly one)
-
-**Run `python -m src.research.run_exit_overlay_diagnostics_v2 --mode alignment` on the full local `trade_context_panel.csv` with QQQ parquet present; if alignment passes, run `--mode overlay`.**
 

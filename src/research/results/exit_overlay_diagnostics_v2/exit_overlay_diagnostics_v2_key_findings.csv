@@ -1,0 +1,10 @@
+finding,value,interpretation
+synthetic_v2_superseded,yes,Prior in-repo v2 alignment was schema smoke; real run replaces curated alignment/* with manifest synthetic_or_real=real.
+panel_rows,10628,Full Champion v0 local panel slice used.
+bar_rows,617160,QQQ equity 1m bars loaded for panel span via read_bars.
+best_config,cfg_0015,Lowest mean_abs_r_diff among stop_first-preferring grid per pick_best_config.
+mean_abs_r_diff,~0.035,Below 0.05R mean gate.
+median_abs_r_diff,~0,Below 0.02R median gate.
+total_r_diff,~+52.4,Fails aggregate gate (>15R) → ALIGNMENT_FAIL.
+max_hold_mismatch_rows,476 / 5188 max_hold,Replay hits target/stop before panel-typed max_hold path locks in.
+overlay_mode,not_run,Economic overlay tables must wait for PASS or PASS_WITH_WARNINGS.

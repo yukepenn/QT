@@ -1,0 +1,14 @@
+check,value
+panel_exists,yes
+panel_rows,10628
+panel_columns,170
+profiles_present,"pa_only_mtp1_meta, pa_gap_mtp2_meta, primary_mtp2_meta"
+windows_present,"early_oow, insample_ref, late_oow, full_available"
+session_date_min,2020-01-02
+session_date_max,2026-04-30
+qqq_bar_root,data/raw/ibkr
+qqq_bar_rows_loaded,617160
+qqq_date_range_panel_span,2020-01-02 to 2026-04-30
+missing_sessions,0
+data_reader,src.data.read_bars.read_bars + run_exit_overlay_diagnostics.load_bars_for_panel
+alignment_can_proceed,yes

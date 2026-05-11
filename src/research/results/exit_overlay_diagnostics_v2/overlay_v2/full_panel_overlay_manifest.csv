@@ -1,0 +1,2 @@
+synthetic_or_real,panel_rows_used,alignment_config_used,ambiguity_policies,overlays_tested,can_use_economic_results,notes
+not_run,0,n/a,n/a,n/a,no,Alignment FAIL on full panel — overlay mode skipped; prior overlay_v2 CSVs may be synthetic smoke only.
