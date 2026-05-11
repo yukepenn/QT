@@ -1,0 +1,9 @@
+topic,candidate_set,window_or_axis,result,evidence_strength,implication,next_action
+best_overall_insample,balanced_representative_core,insample_ref,Top insample totals (~72 R) at mtp=2,high,Balanced core is strong in-sample; may not translate late OOW,Proceed to fixed-profile validation with caution
+best_late_oow,pa_only_core,late_oow,Best late OOW totals (~21.5 R) with mtp=2,high,PA pocket transfers best to late OOW,Prioritize PA-only + PA+GAP for next phase
+pairwise_winner,pa_gap_core,all_windows,Strong across all windows (early ~61, late ~19),high,GAP adds complementarity to PA without large late dilution,Use pa_gap as primary diagnostic candidate set
+balanced_dilution,balanced_representative_core,late_oow,Late OOW weaker and larger DD than PA-only/PA+GAP,medium,Secondary candidates can dilute combined system late,Keep balanced as optional comparison only
+grid_axis_mtp,max_trades_per_day,late_oow,mtp=2 materially improves late OOW vs mtp=1,high,Allowing trade #2 is important for robust-core combination,Default to mtp=2 for next validation
+grid_axis_daily_loss,daily_max_loss_r,all_windows,Little to no impact between -1.5 and -2.0,medium,Daily loss cap not binding in this diagnostic grid,Keep grid small; don't overfit cap
+grid_axis_priority,priority_policy,all_windows,Minimal differences between metadata vs score_adjusted,medium,Priority policy not a major lever here,Keep metadata_priority as default
+cost_overlay,exit_slip,early_oow,Stress reduces totals but keeps positives for top configs,medium,Conclusions not entirely slippage-fragile,Carry overlay into fixed-profile validation

@@ -1,6 +1,7 @@
 rel_path,ok,rows,cols,error,abs_path_hit,missing_required_columns
 candidate_sets_design.csv,True,40,10,,,
 core_watchlist_drop_actions.csv,True,66,15,,,
+design_artifact_validation.csv,True,9,7,,,
 effective_signal_clusters.csv,True,9,11,,,
 representative_candidate_manifest.csv,True,10,19,,,
 robust_candidate_dedupe_table.csv,True,10,13,,,

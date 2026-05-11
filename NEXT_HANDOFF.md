@@ -7,9 +7,10 @@
 | Branch | `main` |
 | Main research commit (audit baseline) | **`3fd30b7`** — `Research: complete layer2 candidate robustness audit` |
 | Main research commit (robust v2 design cleanup) | **`530c293`** — `Chore(research): harden robust v2 design` |
-| Repo tip | (this handoff update commit) run `git log -1 --oneline` |
+| Main research commit (robust v2 diagnostic v1) | *(this task)* — run `git log -1 --oneline` after commit |
+| Repo tip | *(this handoff update commit)* — run `git log -1 --oneline` |
 | Push status | Pending until `git push` |
-| Working tree status | Expect docs + curated design-only changes; keep untracked heavy artifacts uncommitted |
+| Working tree status | Expect curated diagnostic outputs + docs; keep raw `local_runs/**` uncommitted |
 | Expected untracked local-only artifacts | `src/research/results/layer2_candidate_robustness_v1/local_runs/**`, `src/research/results/fixed_profile_oow_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, combiner `sweep_*` / `top_runs/` |
 
 ## B. Validation
@@ -24,9 +25,18 @@
 
 ## C. Task scope
 
-- **Requested:** clean/harden `robust_l2_core_v2_design/` artifacts and create design-only runnable skeletons + runbook.
-- **Completed:** CSV hygiene (pandas-readable, multi-line, repo-relative paths), expanded candidate-set schema, full 66-row core/watchlist/drop actions, clarified raw vs design representatives, added deterministic artifact validator + tests, and added future diagnostic runbook/command draft (**NOT RUN**).
+- **Requested:** run small robust-core Layer2 diagnostic v1 from cleaned `robust_l2_core_v2_design/` candidate sets.
+- **Completed:** executed **168** combined-system runs (7 candidate sets × 3 windows × tiny risk grid) and wrote curated summaries under `robust_l2_core_v2_diagnostic_v1/` (results, axis effects, top systems, complementarity, exit/slip overlay).
 - **Intentionally not done:** no Layer2 sweep, no WFO, no live/SPY, no router, no strategy/feature/YAML edits, no OOW tuning, no heavy artifact commits.
+
+## D. Execution
+
+- **Windows:** `insample_ref`, `early_oow`, `late_oow`
+- **Candidate sets:** `primary_representative_core`, `balanced_representative_core`, `pa_gap_core`, `pa_cci_core`, `gap_cci_core`, `pa_only_core`, `cci_only_core`
+- **Grid:** `max_trades_per_day` ∈ {1,2}; `daily_max_loss_r` ∈ {−1.5, −2.0}; `priority_policy` ∈ {metadata_priority, score_adjusted_priority}
+- **Expected runs:** 168
+- **Discovered runs:** 168 (see `robust_l2_core_v2_diagnostic_v1/run_discovery_manifest.csv`)
+- **Raw run root (local-only):** `src/research/results/robust_l2_core_v2_diagnostic_v1/local_runs/**`
 
 ## D. Input evidence (from full 66/66 audit)
 
@@ -76,11 +86,11 @@
 
 ## I. Decision
 
-**Exactly one:** **`RUN_SMALL_ROBUST_CORE_LAYER2_DIAGNOSTIC_DESIGN`**
+**Exactly one:** **`PROCEED_TO_FIXED_ROBUST_PROFILE_OOW_VALIDATION`**
 
-- Dedupe ambiguity is resolved by overlap: **GAP 001–004** and **PA 001–003** are **trade-identical**.
-- Representative sets are now well-defined and low-redundancy.
-- Next task should be config/runbook design only; do not execute in this design pass.
+- Combined-system diagnostic shows multiple candidate sets are positive across all three windows under the tiny grid.
+- `max_trades_per_day=2` is the most material axis for late OOW stability.
+- Exit/slip overlay preserves sign for top configs (stress reduces totals but does not flip the main conclusion).
 
 ## J. Explicit non-runs and risks
 
@@ -92,8 +102,10 @@ No Layer2 sweep; no mini/full WFO; no live/paper; no SPY; no Global L1 rerun; no
 - Validator: `src/research/validate_research_artifacts.py`
 - Test: `tests/test_design_robust_l2_core_v2.py`
 - Curated root: `src/research/results/robust_l2_core_v2_design/` (clean CSVs, `design_artifact_validation.*`, `design_cleanup_inventory.md`, expanded config skeletons, runbook + command draft; all **DESIGN ONLY — NOT RUN**)
+- Diagnostic runner: `src/research/run_robust_l2_core_diagnostic.py`
+- Curated diagnostic root: `src/research/results/robust_l2_core_v2_diagnostic_v1/` (summaries + decision; raw `local_runs/**` local-only)
 - Docs/indexes: `RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`
 
 ## L. Recommended next step
 
-**Exactly one:** `RUN_SMALL_ROBUST_CORE_LAYER2_DIAGNOSTIC_DESIGN`
+**Exactly one:** `PROCEED_TO_FIXED_ROBUST_PROFILE_OOW_VALIDATION`
