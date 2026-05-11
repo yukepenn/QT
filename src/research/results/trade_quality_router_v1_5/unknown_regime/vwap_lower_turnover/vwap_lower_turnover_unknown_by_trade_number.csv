@@ -1,0 +1,2 @@
+bucket,trades,total_r,avg_r,median_r,win_rate,pf_r,max_loss_r,share_unknown_trades,share_unknown_pnl,low_sample_warning
+1,50,11.494921651105855,0.2298984330221171,1.1541666666665527,0.54,1.4837374920604274,-1.090909090908997,1.0,1.0,False

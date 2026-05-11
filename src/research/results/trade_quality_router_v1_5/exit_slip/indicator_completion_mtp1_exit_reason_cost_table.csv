@@ -1,0 +1,4 @@
+system,exit_reason,trades,total_r,avg_r,pf_r
+indicator_completion_mtp1,max_hold,60,12.827856925528266,0.2137976154254711,2.8515998744781905
+indicator_completion_mtp1,stop,226,-233.2096736168723,-1.0319012106941252,0.0
+indicator_completion_mtp1,target,216,263.92746338744905,1.2218864045715234,

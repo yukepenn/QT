@@ -5,71 +5,60 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before this work | `4c77f4c` — Docs(handoff): avoid stale tip SHA in table |
-| New commit | **Research: add trade quality router diagnostics** — verify tip with `git log -1 --oneline` |
-| Push status | **Pushed** `main` → `origin` (verify tip matches `git log -1`) |
-| Working tree | Tracked files clean after commit; **expected untracked:** `src/research/results/trade_quality_router_v1/local_runs/**`, `src/research/results/trade_quality_router_v1/enriched_trades/*_enriched.csv`, `src/research/results/trade_quality_router_v1/quality_score/scored_trades_*.csv`, `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**`, other pre-existing heavy diagnostics |
-| Expected untracked local-only artifacts | Regenerated combiner `trades.csv` under `trade_quality_router_v1/local_runs/`; do **not** `git add` these |
+| Latest commit before this work | `39c3056` — (verify with `git log -2 --oneline`) |
+| New commit | **`9cfe2f6`** — `Research: extend trade quality enrichment diagnostics` |
+| Push status | Run `git push`; then set **Pushed** `main` → `origin` |
+| Working tree | Tracked files clean after commit; **expected untracked:** `src/research/results/trade_quality_router_v1/local_runs/**`, `trade_quality_router_v1/enriched_trades/*`, `trade_quality_router_v1_5/local_runs/**`, `trade_quality_router_v1_5/enriched_staging/**`, scored row CSVs under v1, other pre-existing heavy diagnostics |
+| Expected untracked local-only artifacts | Raw combiner `trades.csv`, row-level enriched/scored CSVs, `local_runs/`, `enriched_staging/` — **do not** `git add` |
 
 ## B. Task scope
 
 | | |
 |--|--|
-| Requested | Trade-level regime/context enrichment + setup taxonomy + offline trade-quality analysis for Global L2 systems (no trading logic changes) |
-| Completed | `enrich_combiner_trades.py`, `analyze_trade_quality.py`, `score_trade_quality_offline.py`, `trade_quality_helpers.py`; tests ×3; curated `trade_quality_router_v1/` (analysis buckets, quality score thresholds, taxonomy, design + summary); diag YAMLs for lower-turnover VWAP + indicator @ mtp=1 |
-| Intentionally not done | Combiner `regime_router` implementation; hard regime filter; mini/full WFO; live/paper; SPY; strategy/feature primitives; candidate YAML edits; committing raw trades / enriched rows / scored rows / sweep / top_runs |
+| Requested | Trade Quality Router **v1.5** diagnostics (unknown decomposition, VWAP holdout + trade #2, indicator mtp 2/3, exit/slip overlay, offline score v1.5, decision + summary) |
+| Completed | Scripts + tests + curated `trade_quality_router_v1_5/**` (no strategy/feature/combiner/candidate changes); diag YAMLs mtp2/mtp3 |
+| Intentionally not done | Online `regime_router`; hard regime filters; mini/full WFO; live/paper; SPY; Global L1 / large L2 grids; simulator exit-type slip productization; committing raw trades / enriched rows / `local_runs/` |
 
 ## C. Files changed
 
 | Area | Paths |
 |------|--------|
-| Scripts | `src/research/enrich_combiner_trades.py`, `src/research/analyze_trade_quality.py`, `src/research/score_trade_quality_offline.py`, `src/research/trade_quality_helpers.py` |
-| Tests | `tests/test_enrich_combiner_trades.py`, `tests/test_analyze_trade_quality.py`, `tests/test_score_trade_quality_offline.py` |
-| Curated research results | `src/research/results/trade_quality_router_v1/**` except local-only paths below |
-| Docs / indexes | `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
-| Local-only heavy | `trade_quality_router_v1/local_runs/`, `enriched_trades/*_enriched.csv`, `quality_score/scored_trades_*.csv` |
+| Scripts | `src/research/decompose_regime_unknown.py`, `validate_trade_quality_holdout.py`, `analyze_exit_slip_attribution.py`, `build_indicator_mtp_diagnostics.py`, `score_trade_quality_v15.py`, `trade_quality_unknown.py` |
+| Tests | `tests/test_decompose_regime_unknown.py`, `tests/test_validate_trade_quality_holdout.py`, `tests/test_analyze_exit_slip_attribution.py` |
+| Curated research results | `src/research/results/trade_quality_router_v1_5/**` (exclude `local_runs/`, `enriched_staging/`) |
+| Docs / indexes | `src/research/results/RESULTS_INDEX.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
+| Local-only heavy | `trade_quality_router_v1_5/local_runs/`, `trade_quality_router_v1_5/enriched_staging/`, v1 `enriched_trades/` |
 
 ## D. Validation
 
 | Check | Result |
 |--------|--------|
 | `python -m compileall -q src` | OK |
-| `pytest -q` | **390** passed |
+| `python -m pytest -q` | **404** passed |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| New tests | `test_enrich_combiner_trades`, `test_analyze_trade_quality`, `test_score_trade_quality_offline` |
-| Tracked-heavy check | Run `git ls-files \| Select-String -Pattern "top_runs|trades.csv|compact_trades|\.parquet"` — expect **no** matches |
+| New tests | `test_decompose_regime_unknown`, `test_validate_trade_quality_holdout`, `test_analyze_exit_slip_attribution` |
+| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs|trades.csv|..."` — **no** matches |
 
-## E. Manifest / local inventory
-
-- **git tip:** verify `git log -1 --oneline`
-- **Result roots:** `layer2_qqq_global_2023_2024_v2/`, `trade_quality_router_v1/`
-- **Local sweep/top_runs:** `layer2_qqq_global_2023_2024_v2_cost_turnover/` (untracked typical)
-- **Trades:** regenerated for three systems; paths under `trade_quality_router_v1/local_runs/run_*` (machine-specific timestamps)
-- **Missing files:** none for curated docs; raw trades absent from git by policy
-- **Paste to ChatGPT (if external review):** `src/research/results/trade_quality_router_v1/trade_quality_router_v1_summary.md`, `regime_router_design_from_evidence_v1.md`
-
-## F. Research results
+## E. Research results
 
 | Topic | Finding |
-|--------|---------|
-| Systems | VWAP baseline, VWAP lower-turnover, indicator five-pack @ **mtp=1** (502 trades — matches tuned comparison) |
-| Enriched trade counts | 337 / 294 / 502 (local regenerations) |
-| Profitable / unprofitable regimes | No single regime owns all edge; `late_trend_climax` frequent; `trading_range` + `regime_unknown` remain important positive contributors in replays |
-| Trade #2 (VWAP mtp=2) | Bucket **#2** **+5.5R** aggregate (43 trades) — not harmful in-sample |
-| Same-family repeat / prior outcome | Small second-trade cohorts — interpret cautiously |
-| Cost / slip | Symmetric proxy documented; combiner uses single slip for all exits — limitation |
-| Quality score thresholds | VWAP: **top 80%** by score improves total R / DD proxy; indicator: **no** improvement; **`score_ge_60`** on VWAP very small **n** |
-| max_trades_per_day 3/5 | **No** evidence; indicator diagnostics used **mtp=1** to match economics |
-| Router design decision | **`NEED_MORE_TRADE_ENRICHMENT`** |
+|--------|--------|
+| Unknown decomposition | VWAP unknown **not** “first 30m only”; **m61–m240** buckets matter — see `unknown_regime/*_unknown_by_minute_bucket.csv` |
+| VWAP holdout | **2023→2024:** train-threshold **top80** **underperforms** test all on total R (`holdout/vwap_quality_holdout_results.csv`) |
+| VWAP trade #2 | **Positive** in **2023** and **2024** (`holdout/vwap_trade_number_stability.md`) |
+| Indicator mtp 2/3 | **Trade #2 ~+28.6R** / 498; **trade #3 ~+7.35R** / 241; total R up, **avg R down** (`indicator_mtp_diagnostics/indicator_mtp_comparison.csv`) |
+| Exit/slip overlay | Symmetric stress harsh; **target-limit** scenarios recover material R (`exit_slip/exit_slip_scenario_comparison.csv`) |
+| Quality score v1.5 | VWAP **2023→2024** top80 still weak (`quality_score_v15/vwap_threshold_holdout_v15.csv`); indicator top80 still worse than all |
+| Router readiness | **`NEED_MORE_TRADE_ENRICHMENT`** (`router_readiness_decision_v15.md`) |
 
-## G. Explicit non-runs
+## F. Explicit non-runs
 
-mini-WFO; full WFO; live/paper; SPY; Global L1 rerun; large L2 grids; `--use-signal-cache` on unsafe roots; strategy changes; feature primitive additions; selected candidate YAML edits; hard regime filter; combiner router code; `git add .`; heavy artifact commits
+mini-WFO; full WFO; live/paper; SPY; Global L1 rerun; large Global L2 grids; `--use-signal-cache` on unsafe roots; strategy changes; feature primitive changes; selected candidate YAML edits; hard regime filter; combiner router code; `git add .`; heavy artifact commits
 
-## H. Risks / caveats
+## G. Risks / caveats
 
-In-sample QQQ 2023–2024; long-only; enrichment join on bar close timestamps; optional columns may be missing; `regime_unknown` bucket large; offline score **not** proven predictive; indicator replay **requires mtp=1** to match published **502**-trade economics (mtp=2 → ~1000 trades).
+In-sample QQQ 2023–2024; long-only; enriched joins on bar timestamps; holdout is **diagnostic** not WFO; target-limit attribution is **research overlay**; indicator higher **mtp** raises turnover risk; `regime_unknown` labels still ambiguous
 
-## I. Recommended next step
+## H. Recommended next step
 
 **Exactly one:** **`NEED_MORE_TRADE_ENRICHMENT`**

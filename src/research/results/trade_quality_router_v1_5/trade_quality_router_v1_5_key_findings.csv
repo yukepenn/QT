@@ -1,0 +1,12 @@
+topic,system,result,evidence_strength,implication,next_action
+regime_unknown,vwap_baseline_global_l2,Mid-morning buckets (m61–m240) carry large unknown PnL share; not “open only”,medium,Do not penalize unknown globally; prefer neutral or decomposed sub-buckets with holdout,More years or WF-style splits on unknown sub-buckets
+regime_unknown,indicator_completion_mtp1,Similar mid-session concentration in unknown rows,medium,Treat unknown as neutral in router v1; revisit labels later,Same as VWAP
+VWAP quality holdout,vwap_baseline_global_l2,2023 train → 2024 test: top80 train threshold lowers test total R vs test all,high,Top80 offline score not validated OOS on this split,Defer optional score router; enrich more splits
+VWAP quality holdout,vwap_baseline_global_l2,H1→H2 and odd→even splits mixed; Q1+Q3→Q2+Q4 weak for top80,medium,In-sample optimism possible,Need more data or different score features (entry-only)
+VWAP trade #2,vwap_baseline_global_l2,Positive in 2023 and 2024; ~43 trades total,medium,Trade #2 not a single-year artifact,Keep mtp policy unchanged; optional deeper month study only if enriched
+Indicator mtp,indicator five-pack,mtp2: +72.1R / 1000 tr; mtp3: +79.5R / 1241 tr; avg R falls vs mtp1,high,Extra trades add R but dilute per-trade edge,Decide production mtp with cost-turnover; no mtp=5 claim
+Indicator trade #2,indicator five-pack,~+28.6R over 498 trades at mtp≥2,high,Trade #2 not “pure overtrading” in-sample,Do not auto-penalize repeat on this evidence alone
+Indicator trade #3,indicator five-pack,~+7.35R / 241 trades; lower avg R than leg1,medium,Leg3 is marginal; likely not worth router complexity yet,Avoid raising mtp without stronger OOS evidence
+Exit slip overlay,vwap + indicator,Symmetric stress harsh; target-limit scenarios recover much edge,high,Published symmetric slip may understate target-heavy systems,Document for future simulator design; keep L2 gates symmetric until modeled
+Offline score v15,indicator_completion_mtp1,Top80 v15 slice still worse than all at mtp1 (table),high,VWAP-derived heuristics do not transfer,Exclude indicator from first score-router prototype or rebuild score with indicator-specific evidence
+Router readiness,all,Criteria for PROCEED not met,high,Stay in enrichment / evidence phase,Follow NEED_MORE_TRADE_ENRICHMENT backlog in NEXT_HANDOFF

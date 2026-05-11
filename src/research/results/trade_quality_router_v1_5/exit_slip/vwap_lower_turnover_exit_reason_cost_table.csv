@@ -1,0 +1,4 @@
+system,exit_reason,trades,total_r,avg_r,pf_r
+vwap_lower_turnover,max_hold,7,3.2356568251549223,0.46223668930784606,6.445373681357934
+vwap_lower_turnover,stop,145,-150.7610794008145,-1.0397315820745827,0.0
+vwap_lower_turnover,target,142,184.23193567318685,1.297407997698499,

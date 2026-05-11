@@ -1,0 +1,4 @@
+system,exit_reason,trades,total_r,avg_r,pf_r
+vwap_baseline_global_l2,max_hold,10,4.316249237409177,0.43162492374091765,8.263931643444245
+vwap_baseline_global_l2,stop,166,-172.67687792855816,-1.0402221561961336,0.0
+vwap_baseline_global_l2,target,161,210.56375599431945,1.3078494161137855,
