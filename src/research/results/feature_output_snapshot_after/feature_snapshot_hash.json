@@ -1,0 +1,10 @@
+{
+  "summary": {
+    "config": "D:\\OneDrive - Washington University in St. Louis\\QT\\src\\strategies\\parameters\\pa_buy_sell_close_trend.yaml",
+    "rows": 2340,
+    "total_columns": 391,
+    "ts_utc_sorted": true,
+    "columns_digest_sha256": "fd59abb44c8000c64478c68ad7a09635d22adb5984dde65be3451b531912979e"
+  },
+  "column_names_sha256": "fc68a2b9c7952af957a1368d1f612bab46d573073439d6b1f95e56ee848e702a"
+}

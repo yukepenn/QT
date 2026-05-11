@@ -5,73 +5,57 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit before this work | `4e25f4a` — `Docs(handoff): stable cleanup tip pointer` |
-| New commit | **Design global Layer 1 and Layer 2** — use `git log -1 --oneline` for SHA |
-| Push status | **Pushed** to `origin/main` *(if push fails, retry from network)* |
-| Working tree | Expected clean post-commit; **`src/strategies/testing_parameters_results/**`** remains local-only (sweeps for this Layer 1 run) — **do not** `git add` it |
-| Known untracked local-only | `repo_cleanup_inventory.csv` regeneration; any sweep folders under `testing_parameters_results/` |
+| Prior tip (pre–feature-perf work) | `6555ee8` — `Design global Layer 1 and Layer 2` |
+| New commit | *(after `git commit`)* — message **`Optimize feature construction performance`** |
+| Push status | *(after `git push`)* |
+| Working tree | Clean post-commit; **`src/strategies/testing_parameters_results/**`** `sweep_*_feature_perf_smoke` remains **local-only** (do not stage) |
 
 ## B. Task scope
 
 | | |
 |--|--|
-| Requested | Global research pipeline: strategy audit, Global Layer 1 QQQ 2023–2024, diversity + fast-context, summaries / leaderboard, Global Layer 2 **design**, conditional Layer 2 only if gates pass |
-| Completed | `global_strategy_audit.py` + `global_strategy_audit_v1/`; `run_global_layer1.py` (manifest, skip list, selection, post-analysis); full **30** runnable sweeps → **`layer1_global_qqq_2023_2024_v1/`**; **81** strict YAMLs; `global_candidate_signal_diversity_qqq_2023_2024_v1/`; `global_branch_leaderboard_v1.*`; `global_layer1_qqq_2023_2024_design.md`; `global_layer2_qqq_2023_2024_design.md`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, `PROGRESS`, `CHANGES`, this file |
-| Intentionally not done | **Global Layer 2 execution** (configs under `src/combiner/configs/layer2_qqq_global_*` and combiner results root **not** created); **mini-WFO**, **full WFO**, **live/paper**; **SPY**; no new strategies or feature primitives |
+| Requested | Feature performance hardening: batch-concat refactors, benchmarks, snapshots, equivalence tests, summary + Numba design doc; **no** behavior / formula / column / `feature_key` changes |
+| Completed | `volume.py`, `volatility.py`, `vwap.py`, `price_action.py`, `orb.py`, `levels.py`; `feature_build_benchmark.py`, `feature_output_snapshot.py`; `feature_build_performance_v1/{before,after}/`, `feature_output_snapshot_{before,after}/`, `feature_performance_hardening_summary.md`, `feature_numba_fastpath_design.md`; `tests/test_feature_performance_equivalence.py`; docs/indexes |
+| Intentionally not done | **Global Layer 1 / Global Layer 2** rerun; **mini-WFO / full WFO / live**; deep Numba rolling kernels (design only in `feature_numba_fastpath_design.md`); `indicators` / `channels` / `regime` / `pa_swings` refactors |
 
 ## C. Files changed
 
 | Area | Paths |
-|------|--------|
-| Source | `src/research/global_strategy_audit.py`, `src/research/run_global_layer1.py` |
-| Tests | **None** |
-| Configs / combiner | **None** (Layer 2 not run) |
-| Research results / docs | `src/research/results/global_strategy_audit_v1/**`, `global_layer1_qqq_2023_2024_design.md`, `global_layer2_qqq_2023_2024_design.md`, `layer1_global_qqq_2023_2024_v1/**`, `global_candidate_signal_diversity_qqq_2023_2024_v1/**`, `global_branch_leaderboard_v1.{csv,md}`, `RESULTS_INDEX.md` |
-| Root docs | `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md` |
-| Intentionally untracked | `src/strategies/testing_parameters_results/**` (sweep outputs tagged `layer1_global_qqq_2023_2024_v1`) |
+|------|-------|
+| Features | `src/features/volume.py`, `volatility.py`, `vwap.py`, `price_action.py`, `orb.py`, `levels.py` |
+| Research scripts | `src/research/feature_build_benchmark.py`, `feature_output_snapshot.py` |
+| Tests | `tests/test_feature_performance_equivalence.py` |
+| Results / docs | `src/research/results/feature_build_performance_v1/**`, `feature_output_snapshot_before/**`, `feature_output_snapshot_after/**`, `feature_numba_fastpath_design.md` |
+| Root / indexes | `README.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`, `NEXT_HANDOFF.md`, `src/research/results/RESULTS_INDEX.md`, `tests/README.md` |
 
 ## D. Validation
 
 | Check | Result |
 |--------|--------|
-| `pytest -q` | **363 passed** |
-| `python -m compileall -q src` | **OK** |
+| `pytest -q` | **374 passed** (363 + 11 new) |
+| `compileall` | **OK** |
 | `loader.py --list` | **35** strategies |
-| Parity (failed_orb, PA tuned v3 ×2) | **OK** (`TOTAL_MISMATCH_FIELDS approx=0`) |
-| Boundary `git grep` | **OK** — `LOOKAHEAD` in documented feature names; `_feat_key` / `DfSignalStrategy` hits only in **markdown** under `src/research/results` (not in `*.py`) |
+| Parity | **failed_orb**, **afternoon_continuation**, **pa_buy_sell_close_trend** tuned v3, **pa_climax_reversal** tuned v3 — `TOTAL_MISMATCH_FIELDS approx=0` |
+| Sweep smoke | `afternoon_continuation` Jan 2025, `--max-combos 50`, tag `feature_perf_smoke` — `engine=numba_fast`, **no** fragmentation warnings in log; `feature_build≈0.64s` aggregate for 50 combos |
+| Boundary greps | **OK** (see prior policy: `_feat_key` / `DfSignalStrategy` may appear in markdown under `src/research/results`) |
 | Heavy `git ls-files` pattern | **No hits** |
-| No `*.py` under `src/*/results` | **OK** (PowerShell glob returned empty) |
 
-## E. Research results
+## E. Performance / equality
 
-| Metric | Value |
-|--------|--------|
-| Strategies in audit CSV | **35** |
-| Runnable READY + grid ≤1500 | **30** sweeps executed |
-| Skipped (grid >1500 or non-READY in audit) | **5** (see `skipped_strategies.*`) |
-| Long / short / both | See `strategy_side_support_matrix.*`; short only where YAML/metadata exposes axes (**no** forced short) |
-| Layer 1 run | **Complete** — `sweep_manifest.csv` |
-| Strict `selected_candidates` YAML count | **81** |
-| Distinct `strategy_family` in strict CSV | **15** |
-| Diversity | `candidate_signal_diversity.csv`, `duplicate_signal_groups.csv`, `strategy_diversity_summary.*`, `family_candidate_summary.*` |
-| Fast-context | All **`ok`** (`fast_context_check.*`) |
-| Layer 2 | **Design only** — gate **NO** (`81` > `80` cap per `global_layer2_gate_decision.md`) |
-| Decision | **`TUNE_GLOBAL_LAYER1_OR_BUCKETS`** — e.g. `--top-per-strategy 4` or slightly stricter filter, then re-check gate before any Layer 2 run |
+- Benchmark CSVs: `feature_build_performance_v1/before/` vs `after/` — **fragmentation_warnings_count → 0** for configs that previously hit `volume`/`price_action` warnings; wall time improved on **`failed_orb`** / **`afternoon_continuation`** paths.
+- Snapshot digests (`pa_buy_sell_close_trend`, Jan 2025 slice): **`columns_digest_sha256` identical** before vs after code change (before snapshot taken on pre-refactor `git checkout` files).
 
 ## F. Explicit non-runs
 
-- **mini-WFO**
-- **full WFO**
-- **live / paper**
-- **Global Layer 2 combiner** (gate failed)
+- Global Layer 1 / Global Layer 2 full reruns  
+- mini-WFO, full WFO, live/paper  
+- New strategies / new feature primitives  
 
 ## G. Risks / caveats
 
-- **Prerun gate** failed by **one** YAML over the documented **80** cap; families/diversity/fast-context otherwise pass.
-- **13** strategies produced **no** strict candidate (filters or sweep shape); see `no_candidate_strategies.txt` and leaderboard zeros.
-- **`pa_generic_breakout_pullback`**, **`pa_broad_channel_zone`**: manifest shows **0** `result_rows` / zero-trade style outcomes — treat as fragile for global promotion until repaired in a later phase.
-- **In-sample only** (2023–2024 QQQ); no OOS claims.
+- **`orb` / `levels`**: refactors are structural (concat) only; ORB known-safe columns unchanged in logic.
+- **`regime` / `indicators` / `channels` / `pa_swings`**: still potential fragmentation or cost on very wide PA configs — addressed in Numba design doc as **P2/P3**.
 
 ## H. Recommended next step
 
-**Exactly one:** **tune global Layer 1 / buckets** — reduce `--top-per-strategy` or tighten one strict axis, re-run `run_global_layer1.py`, and re-evaluate `global_layer2_gate_decision.md` before authoring executable Layer 2 YAMLs.
+**Exactly one:** **Re-run Global Layer 1** (QQQ 2023–2024 global manifest) after this merge to measure real `feature_build` share in `sweep.py` profiles — **not** another PA B/C v4 tuning pass unless Layer 1 still disappoints.

@@ -11,6 +11,7 @@
 |------|----------------|
 | Metrics / drawdown | `test_metrics_drawdown.py` (if present), cost/R in `test_cost_as_r_metrics.py` |
 | Execution validation | `test_execution_validation.py`, `test_combiner_execution.py` |
+| Feature performance / concat refactor | `test_feature_performance_equivalence.py` |
 | Feature no-lookahead | `test_feature_no_lookahead.py` |
 | Feature key | `test_feature_key.py` |
 | Strategy config validation | `test_strategy_config_validation.py` |

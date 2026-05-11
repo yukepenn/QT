@@ -10,6 +10,9 @@ This index classifies **result roots** without moving or deleting them.
 - **Global Layer 1 QQQ 2023–2024 v1 (2026-05-10)** — `global_layer1_qqq_2023_2024_design.md`, `layer1_global_qqq_2023_2024_v1/` (manifest, skipped strategies, strict **`selected_candidates/`** ×81, diversity + fast-context outputs, `layer1_global_summary.md`, `global_layer2_gate_decision.md`); runner `src/research/run_global_layer1.py`; `global_branch_leaderboard_v1.{csv,md}`; `global_candidate_signal_diversity_qqq_2023_2024_v1/`; `global_layer2_qqq_2023_2024_design.md` (design-only; **Layer 2 not run** — gate fails: 81 YAMLs > 80 cap).
   - **keep:** yes
 
+- **Feature build performance v1 (2026-05-10)** — `feature_build_performance_v1/` (before/after `feature_build_benchmark.*`, `feature_performance_hardening_summary.md`); `feature_output_snapshot_{before,after}/`; `feature_numba_fastpath_design.md` (design only); scripts `src/research/feature_build_benchmark.py`, `feature_output_snapshot.py`; batch-concat refactors in `volume.py`, `volatility.py`, `vwap.py`, `price_action.py`, `orb.py`, `levels.py`; tests `test_feature_performance_equivalence.py`. **No** Global Layer 1/2 rerun; **no** mini-WFO/full WFO/live.
+  - **keep:** yes
+
 - **PA Batch A (price-action branch — planning + smokes)** — curated docs:
   - `pa_batch_a_plan.md`, `pa_repo_formatting_check.md`, `pa_feature_foundation_summary.md`
   - `pa_batch_a_parity_smoke.{md,csv}`, `pa_batch_a_jan2025_smoke.{md,csv}`, `pa_batch_a_implementation_summary.md`

@@ -119,19 +119,27 @@ def add_prior_day_levels(
     ]
     sess = sess[merge_cols]
 
-    out = out.merge(sess, on="session_date", how="left")
+    merged = out.merge(sess, on="session_date", how="left")
 
-    g = out.groupby("session_date", sort=False)
-    out["intraday_high_so_far"] = g["high"].cummax().astype(float)
-    out["intraday_low_so_far"] = g["low"].cummin().astype(float)
+    g = merged.groupby("session_date", sort=False)
+    intraday_high_so_far = g["high"].cummax().astype(float)
+    intraday_low_so_far = g["low"].cummin().astype(float)
+    gap_from_prior_close = merged["session_open"] - merged["prior_day_close"]
+    gap_pct_from_prior_close = gap_from_prior_close / merged["prior_day_close"]
+    pr = merged["prior_day_range"].replace(0.0, np.nan)
+    gap_prior_range_norm = gap_from_prior_close.astype(float) / pr
 
-    out["gap_from_prior_close"] = out["session_open"] - out["prior_day_close"]
-    out["gap_pct_from_prior_close"] = (
-        out["gap_from_prior_close"] / out["prior_day_close"]
+    post_intraday = pd.DataFrame(
+        {
+            "intraday_high_so_far": intraday_high_so_far,
+            "intraday_low_so_far": intraday_low_so_far,
+            "gap_from_prior_close": gap_from_prior_close,
+            "gap_pct_from_prior_close": gap_pct_from_prior_close,
+            "gap_prior_range_norm": gap_prior_range_norm,
+        },
+        index=merged.index,
     )
-
-    pr = out["prior_day_range"].replace(0.0, np.nan)
-    out["gap_prior_range_norm"] = out["gap_from_prior_close"].astype(float) / pr
+    out = pd.concat([merged, post_intraday], axis=1)
 
     day_low_tbl = (
         out.groupby("session_date", sort=False)["low"]

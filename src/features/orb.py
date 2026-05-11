@@ -38,36 +38,53 @@ def add_orb(
         .agg(orb_high=("high", "max"), orb_low=("low", "min"))
         .reset_index()
     )
-    out = out.merge(agg, on="session_date", how="left")
+    base = out.merge(agg, on="session_date", how="left")
 
-    out["orb_open_minutes"] = int(open_minutes)
-    out["orb_mid"] = (out["orb_high"] + out["orb_low"]) / 2.0
-    out["orb_width"] = out["orb_high"] - out["orb_low"]
-    out["orb_width_pct"] = out["orb_width"] / out["orb_mid"]
-
-    out["after_orb"] = out["minute_from_open"] >= open_minutes
-
-    clo = out["close"].astype(float)
-    out["above_orb_high"] = clo > out["orb_high"]
-    out["below_orb_low"] = clo < out["orb_low"]
-    out["in_orb_range"] = (clo >= out["orb_low"]) & (clo <= out["orb_high"])
-
-    # Known-safe ORB anchors: NaN/False until ORB is complete (after_orb).
-    m_known = out["after_orb"].astype(bool)
+    clo = base["close"].astype(float)
+    orb_high = base["orb_high"].astype(float)
+    orb_low = base["orb_low"].astype(float)
+    after_orb = base["minute_from_open"] >= open_minutes
+    m_known = after_orb.astype(bool)
     nan = float("nan")
-    out["orb_high_known"] = np.where(m_known, out["orb_high"].astype(float), nan)
-    out["orb_low_known"] = np.where(m_known, out["orb_low"].astype(float), nan)
-    out["orb_mid_known"] = np.where(m_known, out["orb_mid"].astype(float), nan)
-    out["orb_width_pct_known"] = np.where(m_known, out["orb_width_pct"].astype(float), nan)
-    out["above_orb_high_known"] = (m_known & out["above_orb_high"].astype(bool)).astype(bool)
-    out["below_orb_low_known"] = (m_known & out["below_orb_low"].astype(bool)).astype(bool)
 
-    out["orb_breakout_dir"] = 0
-    m_after = out["after_orb"]
-    out.loc[m_after & (clo > out["orb_high"]), "orb_breakout_dir"] = 1
-    out.loc[m_after & (clo < out["orb_low"]), "orb_breakout_dir"] = -1
+    orb_mid = (orb_high + orb_low) / 2.0
+    orb_width = orb_high - orb_low
+    orb_width_pct = orb_width / orb_mid
 
-    out["orb_high_dist"] = clo - out["orb_high"]
-    out["orb_low_dist"] = clo - out["orb_low"]
+    above_orb_high = clo > orb_high
+    below_orb_low = clo < orb_low
+    in_orb_range = (clo >= orb_low) & (clo <= orb_high)
 
-    return out
+    orb_high_known = np.where(m_known, orb_high, nan)
+    orb_low_known = np.where(m_known, orb_low, nan)
+    orb_mid_known = np.where(m_known, orb_mid, nan)
+    orb_width_pct_known = np.where(m_known, orb_width_pct.astype(float), nan)
+    above_orb_high_known = (m_known & above_orb_high.astype(bool))
+    below_orb_low_known = (m_known & below_orb_low.astype(bool))
+
+    m_after = after_orb
+    orb_breakout_dir = np.zeros(len(base), dtype=np.int64)
+    orb_breakout_dir = np.where(m_after & (clo > orb_high), 1, orb_breakout_dir)
+    orb_breakout_dir = np.where(m_after & (clo < orb_low), -1, orb_breakout_dir)
+
+    new_cols: dict[str, pd.Series | np.ndarray] = {
+        "orb_open_minutes": pd.Series(int(open_minutes), index=base.index, dtype=np.int64),
+        "orb_mid": orb_mid,
+        "orb_width": orb_width,
+        "orb_width_pct": orb_width_pct,
+        "after_orb": after_orb,
+        "above_orb_high": above_orb_high,
+        "below_orb_low": below_orb_low,
+        "in_orb_range": in_orb_range,
+        "orb_high_known": orb_high_known,
+        "orb_low_known": orb_low_known,
+        "orb_mid_known": orb_mid_known,
+        "orb_width_pct_known": orb_width_pct_known,
+        "above_orb_high_known": above_orb_high_known,
+        "below_orb_low_known": below_orb_low_known,
+        "orb_breakout_dir": orb_breakout_dir,
+        "orb_high_dist": clo - orb_high,
+        "orb_low_dist": clo - orb_low,
+    }
+
+    return pd.concat([base, pd.DataFrame(new_cols)], axis=1)

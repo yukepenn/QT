@@ -25,12 +25,14 @@ def add_volume_features(
     out = safe_copy(df, copy)
     vol = out["volume"].astype(float)
     g = out.groupby("session_date", sort=False)
-
+    new_cols: dict[str, pd.Series] = {}
     for n in windows:
-        vma = g["volume"].transform(lambda s, w=n: s.rolling(w, min_periods=1).mean().shift(1))
+        vma = g["volume"].transform(
+            lambda s, w=n: s.rolling(w, min_periods=1).mean().shift(1)
+        )
         col_ma = f"volume_ma_{n}_prior"
-        out[col_ma] = vma
+        new_cols[col_ma] = vma
         ratio = vol / vma.replace(0.0, np.nan)
-        out[f"volume_ratio_{n}"] = ratio
+        new_cols[f"volume_ratio_{n}"] = ratio
 
-    return out
+    return pd.concat([out, pd.DataFrame(new_cols)], axis=1)

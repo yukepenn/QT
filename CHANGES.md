@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-10
 
+- Perf(features): **feature construction batch-concat** — `volume.py`, `volatility.py`, `vwap.py`, `price_action.py`, `orb.py`, `levels.py` (no formula / column-name / `feature_key` changes); `feature_build_benchmark.py`, `feature_output_snapshot.py`; curated `feature_build_performance_v1/` + `feature_output_snapshot_{before,after}/` + `feature_numba_fastpath_design.md`; `test_feature_performance_equivalence.py`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, **`NEXT_HANDOFF`**, `tests/README`. **No** Global Layer 1/2 / mini-WFO / full WFO / live.
+
 - Feat(research): **Global Layer 1 QQQ 2023–2024 v1** — `global_strategy_audit.py`, `run_global_layer1.py`; `global_strategy_audit_v1/`; `layer1_global_qqq_2023_2024_v1/` (manifest, strict `selected_candidates/` ×81, diversity + fast-context, gate doc, summary); `global_candidate_signal_diversity_qqq_2023_2024_v1/`; `global_branch_leaderboard_v1.{csv,md}`; `global_layer1_qqq_2023_2024_design.md`, `global_layer2_qqq_2023_2024_design.md`; `RESULTS_INDEX`, `README`, `PROJECT_STATUS`, **`NEXT_HANDOFF`**. **Global Layer 2 not run** (gate: 81 > 80 YAML cap). **No** mini-WFO/full WFO/live; sweep folders under `testing_parameters_results/**` uncommitted.
 
 - Docs(handoff): **NEXT_HANDOFF** — push status for repo cleanup (`9ba6f41`).

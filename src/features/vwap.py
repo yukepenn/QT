@@ -37,57 +37,79 @@ def add_vwap(
     ensure_columns(df, ["session_date", "open", "high", "low", "close", "volume"], context="vwap")
 
     out = safe_copy(df, copy)
+    sess = out["session_date"]
 
-    price = (out["high"] + out["low"] + out["close"]) / 3.0 if typical_price else out["close"].astype(float)
-    out["_v"] = out["volume"].astype(float)
-    out["_pv"] = price * out["_v"]
-    cum_pv = out.groupby("session_date", sort=False)["_pv"].cumsum()
-    cum_v = out.groupby("session_date", sort=False)["_v"].cumsum()
-    out["vwap"] = cum_pv / cum_v.replace(0.0, float("nan"))
-    out["vwap"] = out.groupby("session_date", sort=False)["vwap"].ffill()
-    out.drop(columns=["_pv", "_v"], inplace=True)
-
-    out["vwap_dist"] = out["close"].astype(float) - out["vwap"]
-    out["vwap_dist_pct"] = out["close"].astype(float) / out["vwap"] - 1.0
+    price = (
+        (out["high"] + out["low"] + out["close"]) / 3.0
+        if typical_price
+        else out["close"].astype(float)
+    )
+    v_vol = out["volume"].astype(float)
+    pv = price.astype(float) * v_vol
+    cum_pv = pv.groupby(sess, sort=False).cumsum()
+    cum_v = v_vol.groupby(sess, sort=False).cumsum()
+    vwap = cum_pv / cum_v.replace(0.0, float("nan"))
+    vwap = vwap.groupby(sess, sort=False).ffill()
 
     c = out["close"].astype(float)
-    vw = out["vwap"]
-    out["vwap_side"] = 0
-    out.loc[c > vw, "vwap_side"] = 1
-    out.loc[c < vw, "vwap_side"] = -1
+    vw = vwap
+    vwap_dist = c - vw
+    vwap_dist_pct = c / vw - 1.0
+    vwap_side = pd.Series(np.where(c > vw, 1, np.where(c < vw, -1, 0)), index=out.index, dtype=np.int8)
 
     dev = c - vw
-    centered = out["close"].astype(float) - out["vwap"]
-    out["vwap_std"] = centered.groupby(out["session_date"]).transform(lambda s: s.expanding().std())
+    centered = c - vw
+    vwap_std = centered.groupby(sess, sort=False).transform(lambda s: s.expanding().std())
 
-    vz = dev / out["vwap_std"]
+    vz = dev / vwap_std
     vz = vz.replace([float("inf"), float("-inf")], pd.NA)
-    out["vwap_z"] = vz
+    vwap_z = vz
 
-    gv = out.groupby("session_date", sort=False)["vwap"]
-    out["vwap_slope_5"] = gv.diff(5)
-    out["vwap_slope_15"] = gv.diff(15)
+    gv = vwap.groupby(sess, sort=False)
+    vwap_slope_5 = gv.diff(5)
+    vwap_slope_15 = gv.diff(15)
+    slope_extra: dict[str, pd.Series] = {}
     for _n in (20, 30, 60):
-        out[f"vwap_slope_{_n}"] = gv.diff(_n)
+        slope_extra[f"vwap_slope_{_n}"] = gv.diff(_n)
 
-    c = out["close"].astype(float)
-    vw = out["vwap"].astype(float)
-    out["close_above_vwap"] = (c > vw).astype(np.int8)
-    out["close_below_vwap"] = (c < vw).astype(np.int8)
+    close_above = (c > vw.astype(float)).astype(np.int8)
+    close_below = (c < vw.astype(float)).astype(np.int8)
+    g_sess = close_above.groupby(sess, sort=False)
+    g_sess_b = close_below.groupby(sess, sort=False)
 
-    g_sess = out.groupby("session_date", sort=False)
+    persist: dict[str, pd.Series] = {}
     for _pw in (10, 20, 30, 60):
-        out[f"vwap_persistence_above_{_pw}"] = g_sess["close_above_vwap"].transform(
+        persist[f"vwap_persistence_above_{_pw}"] = g_sess.transform(
             lambda s, w=_pw: s.astype(float).rolling(w, min_periods=1).mean().shift(1)
         )
-        out[f"vwap_persistence_below_{_pw}"] = g_sess["close_below_vwap"].transform(
+        persist[f"vwap_persistence_below_{_pw}"] = g_sess_b.transform(
             lambda s, w=_pw: s.astype(float).rolling(w, min_periods=1).mean().shift(1)
         )
 
+    band_cols: dict[str, pd.Series] = {}
+    vw_f = vw.astype(float)
+    vstd = vwap_std
     for k in bands:
         ku = f"vwap_upper_{k}"
         kl = f"vwap_lower_{k}"
-        out[ku] = vw + float(k) * out["vwap_std"]
-        out[kl] = vw - float(k) * out["vwap_std"]
+        fk = float(k)
+        band_cols[ku] = vw_f + fk * vstd
+        band_cols[kl] = vw_f - fk * vstd
 
-    return out
+    new_cols: dict[str, pd.Series] = {
+        "vwap": vwap,
+        "vwap_dist": vwap_dist,
+        "vwap_dist_pct": vwap_dist_pct,
+        "vwap_side": vwap_side,
+        "vwap_std": vwap_std,
+        "vwap_z": vwap_z,
+        "vwap_slope_5": vwap_slope_5,
+        "vwap_slope_15": vwap_slope_15,
+        "close_above_vwap": close_above,
+        "close_below_vwap": close_below,
+        **slope_extra,
+        **persist,
+        **band_cols,
+    }
+
+    return pd.concat([out, pd.DataFrame(new_cols)], axis=1)

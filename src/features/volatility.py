@@ -28,10 +28,11 @@ def add_intraday_volatility(
     ensure_columns(df, ["session_date", "high", "low", "close"], context="volatility")
 
     out = safe_copy(df, copy)
+    g = out.groupby("session_date", sort=False)
+    sess = out["session_date"]
 
-    out["ret_1m"] = out.groupby("session_date", sort=False)["close"].pct_change()
-
-    prev_close = out.groupby("session_date", sort=False)["close"].shift(1)
+    ret_1m = g["close"].pct_change()
+    prev_close = g["close"].shift(1)
     hl = out["high"].astype(float) - out["low"].astype(float)
     tr = pd.concat(
         [
@@ -41,23 +42,30 @@ def add_intraday_volatility(
         ],
         axis=1,
     ).max(axis=1)
-    out["tr"] = tr
+
+    new_cols: dict[str, pd.Series] = {
+        "ret_1m": ret_1m,
+        "tr": tr,
+    }
+
+    g_ret = ret_1m.groupby(sess, sort=False)
+    g_hi = out["high"].astype(float).groupby(sess, sort=False)
+    g_lo = out["low"].astype(float).groupby(sess, sort=False)
+    g_tr = tr.groupby(sess, sort=False)
+    close_f = out["close"].astype(float)
 
     for w in windows:
         ww = int(w)
-        out[f"ret_std_{ww}"] = out.groupby("session_date", sort=False)["ret_1m"].transform(
+        new_cols[f"ret_std_{ww}"] = g_ret.transform(
             lambda x, n=ww: x.rolling(n, min_periods=1).std()
         )
-        hmax = out.groupby("session_date", sort=False)["high"].transform(
-            lambda x, n=ww: x.rolling(n, min_periods=1).max()
-        )
-        lmin = out.groupby("session_date", sort=False)["low"].transform(
-            lambda x, n=ww: x.rolling(n, min_periods=1).min()
-        )
-        out[f"range_{ww}"] = hmax - lmin
-        out[f"range_pct_{ww}"] = out[f"range_{ww}"] / out["close"].astype(float)
-        out[f"atr_like_{ww}"] = out.groupby("session_date", sort=False)["tr"].transform(
+        hmax = g_hi.transform(lambda x, n=ww: x.rolling(n, min_periods=1).max())
+        lmin = g_lo.transform(lambda x, n=ww: x.rolling(n, min_periods=1).min())
+        rng = hmax - lmin
+        new_cols[f"range_{ww}"] = rng
+        new_cols[f"range_pct_{ww}"] = rng / close_f
+        new_cols[f"atr_like_{ww}"] = g_tr.transform(
             lambda x, n=ww: x.rolling(n, min_periods=1).mean()
         )
 
-    return out
+    return pd.concat([out, pd.DataFrame(new_cols)], axis=1)
