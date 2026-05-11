@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Latest commit before this work | `d359306` — Docs(handoff): link follow-up commit |
-| New commit | **Research(global-l2): tune cost turnover diagnostics** — verify SHA with `git log -1 --oneline` |
-| Push status | Pending |
+| New commit | `ea2e77a` — Research(global-l2): tune cost turnover diagnostics |
+| Push status | **Pushed** `main` → `origin` (`d359306..ea2e77a`) |
 | Working tree | Clean for tracked files; **untracked local-only:** `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**` (`sweep_*`, `top_runs/`, full `cost_stress/`, etc.); other pre-existing untracked heavy paths under Global L2 v1 folder per prior handoff |
 | Expected untracked local-only heavy artifacts | Tuned diagnostic sweeps under `layer2_qqq_global_2023_2024_v2_cost_turnover/`; do **not** `git add` these |
 
