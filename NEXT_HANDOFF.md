@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Main research commit (fixed-profile OOW anchor) | `dbd2817` — `Research: run fixed profile out-of-window validation` |
-| Repo tip (this pack) | **`7e5da17b89c91e01f7eb3a8f5743eda015ed0da3`** — `Research: audit layer2 candidate robustness` |
-| Handoff-only follow-up (if present) | **`db27308`** — `Docs(handoff): fix audit SHA in NEXT_HANDOFF` |
+| Main research commit (candidate audit) | **`7e5da17b89c91e01f7eb3a8f5743eda015ed0da3`** — `Research: audit layer2 candidate robustness` |
+| Repo tip | **`43714bd`** — `Docs(handoff): note follow-up SHA` (doc-only fixes on `NEXT_HANDOFF.md` after `7e5da17`) |
 | Push status | **Pushed** `main` → `origin` |
 | Working tree | Expect **clean** tracked tree after explicit `git add`; **untracked:** `layer2_candidate_robustness_v1/local_runs/**`, `.cache/qt/candidate_signals/**`, `fixed_profile_oow_v1/local_runs/**` |
 | Expected untracked local-only artifacts | Raw `trades.csv`, `config_resolved.yaml`, logs under `layer2_candidate_robustness_v1/local_runs/**` — **do not** `git add` |
