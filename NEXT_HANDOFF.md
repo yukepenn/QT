@@ -6,8 +6,8 @@
 |--------|--------|
 | Branch | `main` |
 | Main research commit | **`1735f42493bd40101e8961b9f74f04083ce3edca`** — `Research(layer3): run fixed profile core smoke` |
-| Repo tip (handoff file) | **`Docs(handoff): layer3 CORE smoke next handoff`** — the commit on `main` immediately **after** the research commit above (touches only `NEXT_HANDOFF.md`). |
-| Push status | Run `git push origin main` then confirm `git ls-remote origin refs/heads/main` matches local `HEAD`. |
+| Repo tip (handoff file) | `Docs(handoff): layer3 CORE smoke next handoff` — first introduction of this `NEXT_HANDOFF` refresh on **`388fca2754c39fe190d2ceac9d7b929eeed4783a`** (child of research commit **`1735f42493bd40101e8961b9f74f04083ce3edca`**); later doc-only commits may follow. |
+| Push status | **Pushed** — immediately after push, `git ls-remote origin refs/heads/main` matched local `HEAD` (re-run after any further commits to `main`). |
 | Working tree status | Curated `layer3_fixed_profile_smoke_v1/**` tracked; expect **untracked** `layer3_fixed_profile_smoke_v1/local_runs/**`, `local_configs/**`, and other research scratch under `src/research/results/` (do not `git add .`). |
 | Expected untracked local-only artifacts | `src/research/results/layer3_fixed_profile_smoke_v1/local_runs/**` (incl. `compact_trades.csv`, `metrics.json`), `local_configs/**`, `.cache/qt/candidate_signals/**`, combiner `sweep_*` / `top_runs/` |
 
