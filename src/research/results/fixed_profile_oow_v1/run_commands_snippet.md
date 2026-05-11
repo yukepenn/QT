@@ -1,4 +1,6 @@
-﻿# Example combiner runs (do not use `--use-signal-cache` on unsafe OneDrive roots)
+﻿# Example combiner runs (legacy snippet)
+
+**Prefer:** `run_commands_multiline.md`, `run_commands_powershell.ps1`, or `python -m src.research.fixed_profile_oow run …` (see `execution_runbook.md`). The blocks below use backslash continuation and can be awkward in PowerShell.
 
 Adjust `--end` to your latest available QQQ date after running `inspect-data`.
 

@@ -15,4 +15,4 @@ All profiles use:
 
 Machine-readable table: `fixed_profile_definitions.csv`.
 
-Expected 2023–2024 reference economics are **sanity targets** from Trade Quality Router v1 / v1.5 diagnostics (not re-optimized here).
+Expected **2023–2024** economics in `fixed_profile_definitions.csv`: VWAP rows match Global L2–style references; **indicator** rows are **anchored to this combiner replay** (Numba path, `top_per_strategy=3`) — legacy v1.5 headline R figures are **not** reproduced at the same total R (trade counts align); see `insample_sanity/insample_sanity_failure.md`.

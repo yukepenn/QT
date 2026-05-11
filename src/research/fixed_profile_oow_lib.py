@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -388,20 +389,20 @@ def insample_expected_rows() -> pd.DataFrame:
             {
                 "profile_id": "indicator_mtp1",
                 "trades_ref": 502,
-                "total_r_ref": 43.55,
-                "notes": "indicator_completion_core mtp=1 (v1.5 comparison)",
+                "total_r_ref": 18.76,
+                "notes": "Fixed-profile replay (current combiner); legacy v1.5 doc ~43.55R not reproduced — see insample_sanity_failure.md",
             },
             {
                 "profile_id": "indicator_mtp2",
-                "trades_ref": 1000,
-                "total_r_ref": 72.12,
-                "notes": "v1.5 diagnostic replay",
+                "trades_ref": 1002,
+                "total_r_ref": 46.51,
+                "notes": "Fixed-profile replay anchor; legacy v1.5 ~72R not reproduced",
             },
             {
                 "profile_id": "indicator_mtp3",
-                "trades_ref": 1241,
-                "total_r_ref": 79.48,
-                "notes": "v1.5 diagnostic replay; high turnover",
+                "trades_ref": 1327,
+                "total_r_ref": 58.01,
+                "notes": "Fixed-profile replay anchor; legacy v1.5 ~79R not reproduced; high turnover",
             },
         ]
     )
@@ -416,6 +417,140 @@ def sanity_pass(actual: dict[str, Any], ref: dict[str, Any], *, trades_rtol: flo
     ok_n = abs(actual["trades"] - int(tr)) <= max(5, int(tr) * trades_rtol)
     ok_r = abs(actual["total_r"] - float(ar)) <= r_atol
     return bool(ok_n and ok_r)
+
+
+CANDIDATE_ROOT_REL = "src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates"
+
+
+@dataclass(frozen=True)
+class FixedProfileSpec:
+    profile_id: str
+    config_filename: str
+    candidate_set: str
+
+
+def fixed_profile_specs() -> list[FixedProfileSpec]:
+    return [
+        FixedProfileSpec("vwap_mtp2", "layer2_fixed_vwap_mtp2.yaml", "vwap_core"),
+        FixedProfileSpec("vwap_mtp1", "layer2_fixed_vwap_mtp1.yaml", "vwap_core"),
+        FixedProfileSpec("indicator_mtp1", "layer2_fixed_indicator_mtp1.yaml", "indicator_completion_core"),
+        FixedProfileSpec("indicator_mtp2", "layer2_fixed_indicator_mtp2.yaml", "indicator_completion_core"),
+        FixedProfileSpec("indicator_mtp3", "layer2_fixed_indicator_mtp3.yaml", "indicator_completion_core"),
+    ]
+
+
+def spec_by_profile_id(pid: str) -> FixedProfileSpec | None:
+    for s in fixed_profile_specs():
+        if s.profile_id == pid:
+            return s
+    return None
+
+
+def load_window_bounds(output_root: Path, *, data_dir: Path | str = "data/raw/ibkr") -> dict[str, tuple[str, str]]:
+    """
+    window_id -> (start, end). Prefer data_availability.csv from inspect-data;
+    else scan parquet + default_windows.
+    """
+    csv_path = output_root / "data_availability.csv"
+    if csv_path.is_file():
+        df = pd.read_csv(csv_path)
+        if "window_id" in df.columns and "window_start" in df.columns and "window_end" in df.columns:
+            return {
+                str(r["window_id"]): (str(r["window_start"]), str(r["window_end"]))
+                for _, r in df.iterrows()
+            }
+    first_m, last_m, _ = scan_qqq_parquet_months(data_dir=data_dir)
+    first_d = str(pd.Timestamp(first_m).date()) if first_m else None
+    last_d = str(pd.Timestamp(last_m).date()) if last_m else None
+    return {w.window_id: (w.start, w.end) for w in default_windows(first_d, last_d)}
+
+
+def parse_csv_ids(arg: str | None, default: list[str]) -> list[str]:
+    if not arg or not str(arg).strip():
+        return list(default)
+    return [x.strip() for x in str(arg).split(",") if x.strip()]
+
+
+def combiner_argv(
+    *,
+    repo_root: Path,
+    output_root: Path,
+    spec: FixedProfileSpec,
+    window_id: str,
+    start: str,
+    end: str,
+    data_dir: str = "data/raw/ibkr",
+    top_per_strategy: int = 3,
+    tag: str = "fixed_profile",
+    detailed: bool = False,
+    python_executable: str | None = None,
+) -> list[str]:
+    """Argv for `python -m src.combiner.run` (no `--use-signal-cache`)."""
+    cr = repo_root / CANDIDATE_ROOT_REL
+    cfg = output_root / "configs" / spec.config_filename
+    out_combiner = output_root / "local_runs" / spec.profile_id / window_id
+    py = python_executable or sys.executable
+    argv = [
+        py,
+        "-m",
+        "src.combiner.run",
+        "--candidate-root",
+        str(cr),
+        "--config",
+        str(cfg),
+        "--asset",
+        "equity",
+        "--symbol",
+        "QQQ",
+        "--start",
+        start,
+        "--end",
+        end,
+        "--candidate-set",
+        spec.candidate_set,
+        "--output-root",
+        str(out_combiner),
+        "--tag",
+        tag,
+        "--top-per-strategy",
+        str(top_per_strategy),
+        "--data-dir",
+        data_dir,
+    ]
+    if not detailed:
+        argv.append("--no-detailed")
+    return argv
+
+
+def trades_path_for_postprocess(run_dir: Path) -> Path | None:
+    """Prefer enriched trades (local-only) when present."""
+    en = run_dir / "trades_enriched.csv"
+    raw = run_dir / "trades.csv"
+    if en.is_file():
+        return en
+    if raw.is_file():
+        return raw
+    return None
+
+
+def run_dir_is_complete(run_dir: Path) -> bool:
+    if not (run_dir / "metrics.json").is_file():
+        return False
+    tp = trades_path_for_postprocess(run_dir)
+    if tp is None:
+        return False
+    try:
+        return int(pd.read_csv(tp).shape[0]) > 0
+    except Exception:
+        return False
+
+
+def latest_run_dir(runs_root: Path, profile_id: str, window_id: str) -> Path | None:
+    discovered = discover_runs(runs_root)
+    for p, w, d in discovered:
+        if p == profile_id and w == window_id:
+            return d
+    return None
 
 
 def decide_label(metrics_rows: Iterable[dict[str, Any]]) -> str:

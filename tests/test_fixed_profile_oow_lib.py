@@ -5,10 +5,13 @@ import numpy as np
 import pandas as pd
 
 from src.research.fixed_profile_oow_lib import (
+    FixedProfileSpec,
+    combiner_argv,
     decide_label,
     default_windows,
     exit_slip_scenarios_table,
     insample_expected_rows,
+    load_window_bounds,
     max_drawdown_r,
     metrics_from_trades,
     sanity_pass,
@@ -71,7 +74,38 @@ def test_exit_slip_scenarios_table_minimal() -> None:
     assert set(sm["scenario"]) == {"published", "symmetric_stress", "target_limit_stress", "symmetric_extreme"}
 
 
-def test_score_transfer_train_test_split(tmp_path) -> None:
+def test_combiner_argv_has_no_signal_cache_flag() -> None:
+    from pathlib import Path
+
+    spec = FixedProfileSpec("vwap_mtp2", "layer2_fixed_vwap_mtp2.yaml", "vwap_core")
+    argv = combiner_argv(
+        repo_root=Path("/repo"),
+        output_root=Path("/out"),
+        spec=spec,
+        window_id="insample_ref",
+        start="2023-01-01",
+        end="2024-12-31",
+        python_executable="python",
+    )
+    joined = " ".join(argv)
+    assert "--use-signal-cache" not in joined
+    assert "src.combiner.run" in joined
+    assert "vwap_core" in joined
+
+
+def test_load_window_bounds_from_csv(tmp_path) -> None:
+    from src.research.fixed_profile_oow_lib import load_window_bounds
+
+    root = tmp_path / "r"
+    root.mkdir()
+    pd.DataFrame(
+        [
+            {"window_id": "insample_ref", "window_start": "2023-01-01", "window_end": "2024-12-31"},
+            {"window_id": "early_oow", "window_start": "2020-01-01", "window_end": "2022-12-31"},
+        ]
+    ).to_csv(root / "data_availability.csv", index=False)
+    b = load_window_bounds(root, data_dir=tmp_path)
+    assert b["insample_ref"] == ("2023-01-01", "2024-12-31")
     tax = tmp_path / "tax.csv"
     tax.write_text(
         "family,setup_type,broader_class,example_strategies,likely_affinity_regimes,likely_avoid_regimes,notes\n"

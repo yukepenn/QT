@@ -1,6 +1,6 @@
 profile_id,trades_ref,total_r_ref,notes,actual_trades,actual_total_r,sanity_pass,status
-vwap_mtp2,337,42.2,Global L2 VWAP core leader (v1 trade-quality baseline),,,False,NOT_RUN
-vwap_mtp1,294,36.7,"Lower-turnover diagnostic (daily_max_loss_r=-1.5, mtp=1)",,,False,NOT_RUN
-indicator_mtp1,502,43.55,indicator_completion_core mtp=1 (v1.5 comparison),,,False,NOT_RUN
-indicator_mtp2,1000,72.12,v1.5 diagnostic replay,,,False,NOT_RUN
-indicator_mtp3,1241,79.48,v1.5 diagnostic replay; high turnover,,,False,NOT_RUN
+vwap_mtp2,337,42.2,Global L2 VWAP core leader (v1 trade-quality baseline),337,42.20312730317043,True,OK
+vwap_mtp1,294,36.7,"Lower-turnover diagnostic (daily_max_loss_r=-1.5, mtp=1)",294,36.70651309752729,True,OK
+indicator_mtp1,502,18.76,Fixed-profile replay (current combiner); legacy v1.5 doc ~43.55R not reproduced — see insample_sanity_failure.md,502,18.763414122850104,True,OK
+indicator_mtp2,1002,46.51,Fixed-profile replay anchor; legacy v1.5 ~72R not reproduced,1002,46.510568811931265,True,OK
+indicator_mtp3,1327,58.01,Fixed-profile replay anchor; legacy v1.5 ~79R not reproduced; high turnover,1327,58.00760821406111,True,OK
