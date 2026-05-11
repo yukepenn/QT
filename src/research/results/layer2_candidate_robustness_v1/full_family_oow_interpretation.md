@@ -1,0 +1,19 @@
+# Family OOW interpretation
+
+| audit_family | candidates | robust_positive | insample_only | oow_mixed | oow_negative | too_sparse | anti_predictive | median_r_early | median_r_insample | median_r_late | mean_r_early | mean_r_insample | mean_r_late | sum_r_early | sum_r_insample | sum_r_late |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| afternoon | 4 | 0 | 0 | 4 | 0 | 0 | 0 | -1.0714219826809295 | 10.07249166767562 | -8.21229431917326 | -1.0714219826809297 | 10.072491667675623 | -8.21229431917326 | -4.285687930723719 | 40.28996667070249 | -32.84917727669304 |
+| indicator | 19 | 2 | 4 | 12 | 0 | 0 | 1 | -27.01687398098857 | 15.763786643644451 | -0.30039475014966355 | -27.951955941920932 | 13.309433072317093 | -5.3601460947934765 | -531.0871628964977 | 252.87922837402476 | -101.84277580107606 |
+| opening_trap | 12 | 4 | 0 | 4 | 0 | 0 | 4 | 13.101465609663077 | 8.545675139502887 | -7.567930228876993 | 4.883884981233524 | 10.78570587610736 | -5.350060152037114 | 58.60661977480228 | 129.42847051328832 | -64.20072182444537 |
+| other | 7 | 0 | 0 | 7 | 0 | 0 | 0 | -14.76594761165653 | 5.936462236419604 | 3.402171191770919 | -17.131807767486624 | 8.107247657638737 | 6.249288135353666 | -119.92265437240637 | 56.75073360347116 | 43.74501694747566 |
+| pa | 16 | 4 | 1 | 8 | 3 | 0 | 0 | -20.92722571782511 | 30.520018248792617 | 5.5261117117081415 | -19.711524038808975 | 37.497809899855746 | 22.033992605049278 | -315.3843846209436 | 599.9649583976919 | 352.54388168078845 |
+| vwap | 8 | 0 | 3 | 5 | 0 | 0 | 0 | -25.854876365808863 | 18.413979785406614 | -2.540761317593665 | -25.812354354651916 | 18.92242248561694 | -5.436708444049646 | -206.49883483721533 | 151.37937988493553 | -43.49366755239717 |
+
+## Family verdict (policy-oriented, heuristic)
+
+- **afternoon:** **watchlist** (no robust-positive under current thresholds)
+- **indicator:** **split_family** (some robust YAMLs plus anti-predictive names — core only from robust subset)
+- **opening_trap:** **split_family** (some robust YAMLs plus anti-predictive names — core only from robust subset)
+- **other:** **watchlist** (no robust-positive under current thresholds)
+- **pa:** **core_candidate** (multiple robust-positive YAMLs; still verify redundancy / YAML independence)
+- **vwap:** **watchlist** (no robust-positive under current thresholds)

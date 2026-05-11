@@ -1,3 +1,7 @@
 audit_family,candidates_audited,robust_positive,insample_only,oow_mixed,oow_negative,too_sparse,high_turnover_fragile,anti_predictive
+afternoon,4,0,0,4,0,0,0,0
 indicator,19,2,4,12,0,0,0,1
+opening_trap,12,4,0,4,0,0,0,4
+other,7,0,0,7,0,0,0,0
+pa,16,4,1,8,3,0,0,0
 vwap,8,0,3,5,0,0,0,0

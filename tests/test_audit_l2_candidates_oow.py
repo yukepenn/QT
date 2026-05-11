@@ -80,6 +80,7 @@ def test_merge_metrics_for_labels_and_family_counts():
             "selection_score": 1.0,
             "warning": "",
             "side": "long",
+            "audit_family": "vwap",
             "trades": 40,
             "total_r": 20.0,
             "avg_r": 0.1,
@@ -95,6 +96,7 @@ def test_merge_metrics_for_labels_and_family_counts():
             "selection_score": 1.0,
             "warning": "",
             "side": "long",
+            "audit_family": "vwap",
             "trades": 40,
             "total_r": 2.0,
             "avg_r": 0.05,
@@ -110,6 +112,7 @@ def test_merge_metrics_for_labels_and_family_counts():
             "selection_score": 1.0,
             "warning": "",
             "side": "long",
+            "audit_family": "vwap",
             "trades": 40,
             "total_r": 1.0,
             "avg_r": 0.05,
@@ -123,6 +126,64 @@ def test_merge_metrics_for_labels_and_family_counts():
     fam = family_label_counts(wide)
     assert not fam.empty
     assert fam.iloc[0]["audit_family"] == "vwap"
+
+
+def test_merge_metrics_includes_candidate_with_missing_windows():
+    nan = float("nan")
+    rows = [
+        {
+            "candidate_id": "B",
+            "window_id": "insample_ref",
+            "status": "OK",
+            "strategy": "failed_orb",
+            "strategy_family": "orb",
+            "yaml_path": "p/B.yaml",
+            "selection_score": None,
+            "warning": "",
+            "side": "long",
+            "audit_family": "opening_trap",
+            "trades": 40,
+            "total_r": 10.0,
+            "avg_r": 0.1,
+            "trades_per_day": 0.5,
+        },
+        {
+            "candidate_id": "B",
+            "window_id": "early_oow",
+            "status": "MISSING",
+            "strategy": "failed_orb",
+            "strategy_family": "orb",
+            "yaml_path": "p/B.yaml",
+            "selection_score": None,
+            "warning": "",
+            "side": "long",
+            "audit_family": "opening_trap",
+            "trades": 0,
+            "total_r": nan,
+            "avg_r": nan,
+            "trades_per_day": 0.0,
+        },
+        {
+            "candidate_id": "B",
+            "window_id": "late_oow",
+            "status": "MISSING",
+            "strategy": "failed_orb",
+            "strategy_family": "orb",
+            "yaml_path": "p/B.yaml",
+            "selection_score": None,
+            "warning": "",
+            "side": "long",
+            "audit_family": "opening_trap",
+            "trades": 0,
+            "total_r": nan,
+            "avg_r": nan,
+            "trades_per_day": 0.0,
+        },
+    ]
+    long_df = pd.DataFrame(rows)
+    wide = merge_metrics_for_labels(long_df)
+    assert len(wide) == 1
+    assert wide.iloc[0]["robustness_label"] == "TOO_SPARSE"
 
 
 def test_policy_action_no_oow_tuning_leakage():

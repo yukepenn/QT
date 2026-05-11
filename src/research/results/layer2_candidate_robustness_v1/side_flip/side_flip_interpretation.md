@@ -9,3 +9,17 @@ For every window, the proxy mirrors the sign of the realized long profile `total
 ## Verdict
 
 **Inverse hypothesis not supported** for production or research promotion beyond bookkeeping curiosity. Any future contrarian work needs explicit short mechanics and a different simulator contract.
+
+## Full-audit note (2026-05-11)
+
+After **66 / 66** singleton replays, **`ANTI_PREDICTIVE_CANDIDATE`** expanded to **five** YAMLs (**`MACD_MOMENTUM_TURN_003`** plus **`MULTI_DAY_LEVEL_TRAP_001`–`004`**). These belong on a **research** queue only — see `future_side_flip_watchlist.csv`. **No** new side-flip combiner runs were **required** for this v1 completion; the existing non-executable proxy remains sufficient.
+
+## Anti-predictive candidates (research queue)
+
+These are **not** production shorts. Any executable side-flip diagnostic would be a **future** task.
+
+- `MACD_MOMENTUM_TURN_003`
+- `MULTI_DAY_LEVEL_TRAP_001`
+- `MULTI_DAY_LEVEL_TRAP_002`
+- `MULTI_DAY_LEVEL_TRAP_003`
+- `MULTI_DAY_LEVEL_TRAP_004`

@@ -214,22 +214,40 @@ def assign_robustness_label(
 
 
 def merge_metrics_for_labels(long_df: pd.DataFrame) -> pd.DataFrame:
-    """Wide pivot + labels using insample avg_r / tpd."""
+    """Wide pivot + labels using insample avg_r / tpd (all candidates with ≥1 row in long_df)."""
     if long_df.empty:
         return pd.DataFrame()
+    win = ["early_oow", "insample_ref", "late_oow"]
+    meta = long_df.groupby("candidate_id").first()[["strategy", "strategy_family", "yaml_path", "selection_score", "warning", "side"]]
     ok = long_df[long_df["status"] == "OK"].copy()
     if ok.empty:
-        return pd.DataFrame()
-    meta = ok.groupby("candidate_id").first()[["strategy", "strategy_family", "yaml_path", "selection_score", "warning", "side"]]
-    piv_r = ok.pivot_table(index="candidate_id", columns="window_id", values="total_r", aggfunc="first")
-    piv_n = ok.pivot_table(index="candidate_id", columns="window_id", values="trades", aggfunc="first")
-    piv_a = ok.pivot_table(index="candidate_id", columns="window_id", values="avg_r", aggfunc="first")
-    piv_t = ok.pivot_table(index="candidate_id", columns="window_id", values="trades_per_day", aggfunc="first")
-    piv_r.columns = [f"total_r_{c}" for c in piv_r.columns]
-    piv_n.columns = [f"trades_{c}" for c in piv_n.columns]
-    piv_a.columns = [f"avg_r_{c}" for c in piv_a.columns]
-    piv_t.columns = [f"tpd_{c}" for c in piv_t.columns]
-    wide = meta.join(piv_r, how="inner").join(piv_n, how="left").join(piv_a, how="left").join(piv_t, how="left").reset_index()
+        piv_r = pd.DataFrame(index=meta.index)
+        piv_n = pd.DataFrame(index=meta.index)
+        piv_a = pd.DataFrame(index=meta.index)
+        piv_t = pd.DataFrame(index=meta.index)
+    else:
+        piv_r = ok.pivot_table(index="candidate_id", columns="window_id", values="total_r", aggfunc="first").reindex(meta.index)
+        piv_n = ok.pivot_table(index="candidate_id", columns="window_id", values="trades", aggfunc="first").reindex(meta.index)
+        piv_a = ok.pivot_table(index="candidate_id", columns="window_id", values="avg_r", aggfunc="first").reindex(meta.index)
+        piv_t = ok.pivot_table(index="candidate_id", columns="window_id", values="trades_per_day", aggfunc="first").reindex(meta.index)
+    piv_r = piv_r.rename(columns={c: f"total_r_{c}" for c in list(piv_r.columns)})
+    piv_n = piv_n.rename(columns={c: f"trades_{c}" for c in list(piv_n.columns)})
+    piv_a = piv_a.rename(columns={c: f"avg_r_{c}" for c in list(piv_a.columns)})
+    piv_t = piv_t.rename(columns={c: f"tpd_{c}" for c in list(piv_t.columns)})
+
+    def _ensure_cols(d: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+        out = d.copy()
+        for c in cols:
+            if c not in out.columns:
+                out[c] = pd.NA
+        return out
+
+    need = [f"{p}_{w}" for w in win for p in ("total_r", "trades", "avg_r", "tpd")]
+    piv_r = _ensure_cols(piv_r, [f"total_r_{w}" for w in win])
+    piv_n = _ensure_cols(piv_n, [f"trades_{w}" for w in win])
+    piv_a = _ensure_cols(piv_a, [f"avg_r_{w}" for w in win])
+    piv_t = _ensure_cols(piv_t, [f"tpd_{w}" for w in win])
+    wide = meta.join(piv_r, how="left").join(piv_n, how="left").join(piv_a, how="left").join(piv_t, how="left").reset_index()
     labels = []
     for _, r in wide.iterrows():
         def getf(prefix: str, w: str) -> float:
@@ -239,7 +257,7 @@ def merge_metrics_for_labels(long_df: pd.DataFrame) -> pd.DataFrame:
         def geti(prefix: str, w: str) -> int:
             c = f"{prefix}_{w}"
             v = r.get(c)
-            if v is None or (isinstance(v, float) and pd.isna(v)):
+            if v is None or pd.isna(v):
                 return 0
             return int(v)
 
@@ -304,13 +322,79 @@ def fixed_profile_strategy_candidates(
     return out
 
 
-def collect_long_metrics_frame(*, runs_root: Path, candidate_root: Path) -> pd.DataFrame:
+def collect_long_metrics_frame(
+    *,
+    runs_root: Path,
+    candidate_root: Path,
+    window_ids: list[str] | None = None,
+) -> pd.DataFrame:
+    """
+    One row per (candidate_id, window_id) for all YAMLs under candidate_root.
+
+    status: OK (metrics + trades>0), EMPTY (metrics, 0 trades), FAILED (run dir, no metrics),
+    MISSING (no run dir / no run_*).
+    """
     metas = {m.candidate_id: m for m in iter_candidate_metas(candidate_root)}
+    wids = window_ids or ["early_oow", "insample_ref", "late_oow"]
+    runs_root = runs_root.resolve()
     rows: list[dict[str, Any]] = []
-    for cid, wid, rdir in discover_singleton_runs(runs_root):
-        m = metas.get(cid)
-        rows.append(read_metrics_row(rdir, candidate_id=cid, window_id=wid, meta=m))
+    for cid in sorted(metas.keys()):
+        m = metas[cid]
+        seg = safe_run_segment(cid)
+        for wid in wids:
+            wdir = runs_root / seg / wid
+            latest: Path | None = None
+            if wdir.is_dir():
+                cand_runs = sorted(wdir.glob("run_*"), key=lambda p: p.stat().st_mtime, reverse=True)
+                latest = cand_runs[0] if cand_runs else None
+            if latest is None:
+                rows.append(_synthetic_audit_row(meta=m, window_id=wid, status="MISSING"))
+            elif not (latest / "metrics.json").is_file():
+                rows.append(_synthetic_audit_row(meta=m, window_id=wid, status="FAILED", run_dir=str(latest)))
+            else:
+                rows.append(read_metrics_row(latest, candidate_id=cid, window_id=wid, meta=m))
     return pd.DataFrame(rows)
+
+
+def _synthetic_audit_row(
+    *,
+    meta: CandidateMeta,
+    window_id: str,
+    status: str,
+    run_dir: str = "",
+) -> dict[str, Any]:
+    nan = float("nan")
+    return {
+        "candidate_id": meta.candidate_id,
+        "window_id": window_id,
+        "status": status,
+        "strategy": meta.strategy,
+        "strategy_family": meta.strategy_family,
+        "yaml_path": meta.yaml_path,
+        "selection_score": meta.selection_score,
+        "warning": meta.warning,
+        "side": meta.side,
+        "audit_family": family_group(meta),
+        "trades": 0,
+        "sessions": 0,
+        "total_r": nan,
+        "avg_r": nan,
+        "median_r": nan,
+        "pf_r": None,
+        "win_rate": 0.0,
+        "max_dd_r": 0.0,
+        "target_count": 0,
+        "stop_count": 0,
+        "eod_count": 0,
+        "max_hold_count": 0,
+        "trades_per_day": 0.0,
+        "avg_bars_held": 0.0,
+        "selection_rate": 0.0,
+        "rejected_signals": 0,
+        "window_start": "",
+        "window_end": "",
+        "run_dir": run_dir,
+    }
 
 
 def labels_table_from_wide(wide: pd.DataFrame) -> pd.DataFrame:

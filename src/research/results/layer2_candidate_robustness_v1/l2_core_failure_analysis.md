@@ -1,44 +1,72 @@
-# l2_core failure analysis (singleton replay, vwap + indicator slice)
+# l2_core failure analysis (singleton replay — **full 66** candidates)
 
-## 1. VWAP candidate failure analysis
+This document summarizes **fixed-profile-style** singleton combiner replays (default audit envelope `layer2_fixed_vwap_mtp2.yaml`) across **early_oow**, **insample_ref**, **late_oow**. It is **not** a combination-grid audit.
 
-Across **8** VWAP-class YAMLs under singleton replay (same combiner envelope as fixed-profile VWAP mtp2):
+## 1. Summary after full l2_core audit
 
-- **Zero** candidates received **`ROBUST_POSITIVE`**.
-- **Three** reclaim-reject variants are **`INSAMPLE_ONLY`** (`VWAP_RECLAIM_REJECT_001`–`003`): strong 2023–2024 replay, materially negative on both OOW windows in this audit.
-- Pullback variants are mostly **`OOW_MIXED`** (one OOW window better than the other under the heuristic).
+| robustness_label | count (n=66) |
+|------------------|-------------:|
+| OOW_MIXED | 40 |
+| ROBUST_POSITIVE | 10 |
+| INSAMPLE_ONLY | 8 |
+| ANTI_PREDICTIVE_CANDIDATE | 5 |
+| OOW_NEGATIVE | 3 |
+| TOO_SPARSE / HIGH_TURNOVER_FRAGILE | 0 |
 
-**Interpretation:** VWAP **combination** failure in fixed-profile OOW is **not** explained by one bad apple alone; the VWAP slice shows **broad** insample-vs-OOW decay at the candidate level.
+**Headline:** VWAP and broad indicator weakness seen in the first slice **generalize for those families**, but **do not** describe the full core: **gap acceptance failure** and **PA buy/sell close trend** contribute **eight** of **ten** robust-positive YAMLs.
 
-## 2. Indicator candidate failure analysis
+## 2. VWAP failure analysis
 
-Across **19** indicator YAMLs:
+**Eight** YAMLs, **zero** `ROBUST_POSITIVE`. **Three** reclaim/reject variants are **`INSAMPLE_ONLY`** (**001**–**003**); pullbacks and **004** skew **`OOW_MIXED`**.
 
-- **Two** CCI snapback rows are **`ROBUST_POSITIVE`** (`CCI_EXTREME_SNAPBACK_002`, `003`) under this heuristic — the only robust-positive hits in the audited slice.
-- **Four** MACD rows are **`INSAMPLE_ONLY`** or mixed; **`MACD_MOMENTUM_TURN_003`** is flagged **`ANTI_PREDICTIVE_CANDIDATE`** (weak insample vs strongly negative OOW with adequate trade counts).
-- RSI / Supertrend / Stochastic rows skew **`OOW_MIXED`** or **`INSAMPLE_ONLY`** rather than clean OOW strength.
+**Conclusion:** Fixed-profile VWAP OOW pain is **candidate-level** on this slice, not only combiner weighting.
 
-**Interpretation:** indicator **mtp** fixed profiles combine many names; singleton evidence shows **most** individuals still fail cross-window tests, while a **narrow** CCI subset looks less bad. Combination toxicity (overlap, trade caps) remains plausible but **cannot** rescue the broad indicator basket on its own.
+## 3. Indicator failure analysis
 
-## 3. Family-level comparison
+**Nineteen** YAMLs; only **CCI_EXTREME_SNAPBACK_002** and **003** are **`ROBUST_POSITIVE`**. **MACD** cluster is **`INSAMPLE_ONLY`** or catastrophic OOW; **`MACD_MOMENTUM_TURN_003`** is **`ANTI_PREDICTIVE_CANDIDATE`**. RSI / Stochastic / Supertrend are mostly **`OOW_MIXED`** or drops.
 
-| audit_family | candidates | robust_positive | dominant failure mode |
-|----------------|-------------|-----------------|------------------------|
-| vwap | 8 | 0 | insample_only + mixed |
-| indicator | 19 | 2 | mixed + insample_only |
+**Conclusion:** Treat **indicator mtp stacks** as **high structural risk** unless overlap and turnover are explicitly modeled; **CCI** is the only robust pocket here.
 
-Opening-trap / PA / afternoon families were **not** audited in v1 pack.
+## 4. Opening / trap analysis (`opening_trap` audit family, **12** YAMLs)
 
-## 4. High-turnover / avg-R decay
+- **`GAP_ACCEPTANCE_FAILURE_001`–`004`:** all **`ROBUST_POSITIVE`** with **identical** window `total_r` in this audit — treat as **one effective configuration** for diversity planning.
+- **`FAILED_ORB_*`:** **`OOW_MIXED`** — no robust-positive under thresholds.
+- **`MULTI_DAY_LEVEL_TRAP_001`–`004`:** all **`ANTI_PREDICTIVE_CANDIDATE`** (positive insample, strongly negative OOW with adequate counts).
 
-`HIGH_TURNOVER_FRAGILE` did **not** trigger in this slice under current thresholds (insample turnover + avg_r gate). Indicator turnover stress seen in **mtp3** fixed profiles is primarily a **combination** phenomenon; candidate-level singletons still show weak OOW without always tripping the turnover-fragile bucket.
+**Conclusion:** “Opening trap” is **split**: gap-failure variants are strong; multi-day level trap behaves like a **fade** of the long signal on OOW.
 
-## 5. Correlation / redundancy
+## 5. PA analysis (**16** YAMLs)
 
-No pairwise signal correlation matrix was computed in v1 (would require additional diagnostics or cached signal arrays). Qualitative overlap remains a risk for indicator **mtp2/3** profiles.
+- **`PA_BUY_SELL_CLOSE_TREND_001`–`004`:** **`ROBUST_POSITIVE`** with large positive OOW on both windows for **001**–**003** and strong early / modest late for **004**.
+- **`PA_FAILED_RANGE_BREAKOUT_TRAP_*`:** mostly **`OOW_MIXED`** with **catastrophic early_oow** on several IDs (large negative `total_r_early_oow`).
+- **`PA_TRADING_RANGE_BLS_HS_001`–`003`:** **`OOW_NEGATIVE`** under the heuristic; **005** is **`INSAMPLE_ONLY`**.
 
-## 6. Implications for l2_core policy
+**Conclusion:** PA is **not** uniformly good; strength concentrates in **buy/sell close trend**; range/trap PA templates need **watchlist** treatment.
 
-- VWAP names should remain **watchlist / diagnostic** until **per-candidate** OOW stability exists.
-- Indicator **mtp** stacks should be **capped** unless backed by candidate-level audits showing non-redundant edges.
-- Extend audit to **PA** and **opening_trap** before any “robust core v2” construction.
+## 6. Afternoon / other analysis
+
+- **`afternoon`** (**4**): all **`OOW_MIXED`** — no robust-positive.
+- **`other`** (**7**, ORB continuation + prior close reclaim): all **`OOW_MIXED`** — no robust-positive.
+
+## 7. Candidate vs combination failure
+
+Singleton evidence shows **per-candidate** breakage for VWAP and most indicators **before** any combination overlap argument. **Gap** and **PA close trend** positives show **candidate-level** OOW resilience under the same envelope — combination toxicity remains a **secondary** concern for v2 design, not the sole explanation for all failures.
+
+## 8. Family concentration / redundancy
+
+- **GAP** quadruplet: **identical** metrics → **one** effective signal for diversification counts.
+- **PA_BUY_SELL_CLOSE_TREND** **001**–**003** share **identical** early/late `total_r` in metrics export — near-duplicate parameter stems; **004** differs slightly on insample/late.
+
+## 9. Turnover and avg-R decay
+
+`HIGH_TURNOVER_FRAGILE` did **not** trigger for any candidate under current thresholds. High trade counts on some PA robust names are **not** auto-excluded — monitor **avg_r** vs turnover in future gates.
+
+## 10. Is fixed-profile failure representative of all l2_core?
+
+**No.** VWAP/indicator weakness is **real** but **not universal**: **`opening_trap`** (gap) and **`pa`** (close trend) contribute the majority of **`ROBUST_POSITIVE`** counts.
+
+## 11. Implications for Layer2 candidate selection
+
+- Promote **gap acceptance failure** and **PA buy/sell close trend** families into **v2 core design** **only** with explicit **dedupe** rules and **no** OOW tuning.
+- Keep **VWAP** and non-CCI **indicator** names on **watchlist / drop** unless new evidence arrives from a **different** audit contract.
+- **`MULTI_DAY_LEVEL_TRAP`** should **not** enter a long-only core without a **separate** executable short research track.

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 import shutil
 import subprocess
 import sys
@@ -27,6 +28,15 @@ from src.research.audit_l2_candidates_oow_lib import (
     labels_table_from_wide,
     merge_metrics_for_labels,
     strategy_label_counts,
+)
+from src.research.audit_l2_candidates_oow_report import (
+    write_candidate_oow_summary_md,
+    write_compact_highlights,
+    write_family_interpretation,
+    write_full_candidate_interpretation,
+    write_policy_action_summary,
+    write_robust_core_dry_run,
+    write_side_flip_watchlist,
 )
 from src.research.fixed_profile_oow import cmd_inspect_data as fixed_cmd_inspect_data
 from src.research.fixed_profile_oow_lib import load_window_bounds
@@ -112,6 +122,7 @@ def _run_has_metrics(run_dir: Path) -> bool:
     return (run_dir / "metrics.json").is_file()
 
 
+def cmd_print_commands(argv: list[str] | None) -> int:
     p = argparse.ArgumentParser(description="Print example combiner lines for l2 candidate audit.")
     p.add_argument("--candidate-root", required=True)
     p.add_argument("--combiner-config", default=None)
@@ -157,6 +168,159 @@ def _run_has_metrics(run_dir: Path) -> bool:
     return 0
 
 
+def cmd_inventory(argv: list[str] | None) -> int:
+    p = argparse.ArgumentParser(description="Write remaining_candidate_inventory.* and extended_audit_inventory.md.")
+    p.add_argument("--candidate-root", required=True)
+    p.add_argument("--output-root", required=True)
+    p.add_argument("--windows-root", default="src/research/results/fixed_profile_oow_v1")
+    p.add_argument("--windows", default="early_oow,insample_ref,late_oow")
+    p.add_argument("--families", default=None, help="Comma-separated audit families for planned_for_extended_audit flag")
+    p.add_argument("--data-dir", default="data/raw/ibkr")
+    args = p.parse_args(argv)
+    cwd = Path.cwd()
+    cr = Path(args.candidate_root)
+    if not cr.is_absolute():
+        cr = cwd / cr
+    out = Path(args.output_root)
+    if not out.is_absolute():
+        out = cwd / out
+    runs_sub = out / "local_runs"
+    wids = _parse_windows(args.windows)
+    from src.research.audit_l2_candidates_oow_lib import family_group, safe_run_segment
+
+    def has_metrics(cid: str, wid: str) -> bool:
+        seg = safe_run_segment(cid)
+        wdir = runs_sub / seg / wid
+        if not wdir.is_dir():
+            return False
+        lat = _latest_run_dir(wdir)
+        return bool(lat and (lat / "metrics.json").is_file())
+
+    all_metas = iter_candidate_metas(cr)
+    aud_ids = {m.candidate_id for m in all_metas if all(has_metrics(m.candidate_id, w) for w in wids)}
+    fam_filter: set[str] | None = None
+    if args.families:
+        fam_filter = {x.strip().lower() for x in args.families.split(",") if x.strip()}
+    rows: list[dict[str, Any]] = []
+    for m in all_metas:
+        g = family_group(m)
+        aid = m.candidate_id in aud_ids
+        planned = (not aid) and (not fam_filter or g in fam_filter)
+        rows.append(
+            {
+                "candidate_id": m.candidate_id,
+                "strategy": m.strategy,
+                "family": g,
+                "side": m.side,
+                "yaml_path": m.yaml_path,
+                "already_audited": "yes" if aid else "no",
+                "planned_for_extended_audit": "yes" if planned else "no",
+                "reason": "all windows have metrics.json" if aid else ("matches family filter" if planned else "outside filter or already done"),
+                "notes": "",
+            }
+        )
+    import pandas as pd
+
+    inv = pd.DataFrame(rows).sort_values(["already_audited", "family", "candidate_id"])
+    inv.to_csv(out / "remaining_candidate_inventory.csv", index=False)
+    n_all = len(all_metas)
+    n_aud = len(aud_ids)
+    n_plan = int((inv["planned_for_extended_audit"] == "yes").sum())
+    git_tip = ""
+    try:
+        git_tip = subprocess.check_output(
+            ["git", "log", "-1", "--oneline"],
+            cwd=str(_ROOT),
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+    except Exception:
+        git_tip = "(unavailable)"
+    nh_path = _ROOT / "NEXT_HANDOFF.md"
+    handoff_decision = "(see NEXT_HANDOFF.md §J. Decision)"
+    for path in (out / "layer2_candidate_robustness_decision.md", nh_path):
+        if not path.is_file():
+            continue
+        nh = path.read_text(encoding="utf-8", errors="replace")
+        m = re.search(r"\*\*`([^`]+)`\*\*", nh)
+        if m:
+            handoff_decision = m.group(1).strip()
+            break
+    aud_fams = sorted({str(x) for x in inv.loc[inv["already_audited"] == "yes", "family"].unique()})
+    rem_fams = sorted({str(x) for x in inv.loc[inv["already_audited"] == "no", "family"].unique()})
+    plan_ids = inv.loc[inv["planned_for_extended_audit"] == "yes", "candidate_id"].astype(str).tolist()
+    skip_ids = inv.loc[inv["already_audited"] == "yes", "candidate_id"].astype(str).tolist()
+    post_paths = [
+        "candidate_oow_metrics.csv",
+        "candidate_oow_wide_metrics.csv",
+        "candidate_robustness_labels.csv",
+        "family_oow_summary.csv",
+        "strategy_oow_summary.csv",
+        "candidate_audit_run_manifest.csv",
+        "run_execution_manifest.csv",
+        "run_discovery_manifest.csv",
+        "l2_core_failure_analysis.csv",
+        "l2_core_policy_v2_candidate_actions.csv",
+    ]
+    if n_aud >= n_all:
+        skip_section_title = "### All l2_core candidates (metrics complete on all windows)"
+        skip_note = f"**{n_all}** candidates — list for inventory reconciliation (not only last-wave skips)."
+    else:
+        skip_section_title = "### Candidates with prior full-window metrics (typical `--skip-existing` hits)"
+        skip_note = ""
+    lines = [
+        "# Extended audit inventory",
+        "",
+        "## Repo / handoff",
+        "",
+        f"- **git tip:** `{git_tip}`",
+        f"- **handoff decision (parsed from `layer2_candidate_robustness_decision.md` then `NEXT_HANDOFF.md`):** `{handoff_decision}`",
+        "",
+        "## Candidate root and coverage",
+        "",
+        f"- candidate root: `{cr.as_posix()}`",
+        f"- total l2_core YAMLs: **{n_all}**",
+        f"- fully replayed (metrics.json on all **{len(wids)}** windows): **{n_aud}**",
+        f"- remaining without full metrics grid: **{n_all - n_aud}**",
+        f"- planned in filtered slice (`planned_for_extended_audit=yes`): **{n_plan}**",
+        f"- **audit families already complete:** {', '.join(aud_fams) or '(none)'}",
+        f"- **families still incomplete (if any):** {', '.join(rem_fams) if n_all - n_aud else '(none — full grid)'}",
+        "",
+        "## Candidate IDs",
+        "",
+        "### Planned for extended singleton run (this filter)",
+        "",
+        ("- " + "\n- ".join(plan_ids)) if plan_ids else "- *(none — all candidates have metrics on all windows, or filter excluded remaining)*",
+        "",
+        skip_section_title,
+        "",
+        skip_note,
+        "",
+        ("- " + "\n- ".join(skip_ids)) if skip_ids else "- *(none)*",
+        "",
+        "## Local raw runs (do not commit)",
+        "",
+        f"- `{runs_sub.as_posix()}/<candidate_id>/<window_id>/run_*`",
+        "",
+        "## Postprocess outputs (curated, under output root)",
+        "",
+        "\n".join(f"- `{p}`" for p in post_paths),
+        "",
+        "## Reconciliation",
+        "",
+        f"- `n_all` ({n_all}) = `n_aud` ({n_aud}) + incomplete ({n_all - n_aud})",
+        "",
+    ]
+    (out / "extended_audit_inventory.md").write_text("\n".join(lines), encoding="utf-8")
+    try:
+        md_body = inv.to_markdown(index=False)
+    except Exception:
+        md_body = "```\n" + inv.to_csv(index=False) + "\n```\n"
+    (out / "remaining_candidate_inventory.md").write_text("# Remaining candidate inventory\n\n" + md_body, encoding="utf-8")
+    print(f"[audit] wrote {out / 'remaining_candidate_inventory.csv'}", flush=True)
+    return 0
+
+
 def cmd_run(argv: list[str] | None) -> int:
     p = argparse.ArgumentParser(description="Run singleton combiner replays per candidate × window.")
     p.add_argument("--candidate-root", required=True)
@@ -173,6 +337,11 @@ def cmd_run(argv: list[str] | None) -> int:
     p.add_argument("--data-dir", default="data/raw/ibkr")
     p.add_argument("--tag", default="l2_candidate_audit")
     p.add_argument("--use-signal-cache", action="store_true")
+    p.add_argument(
+        "--no-signal-cache",
+        action="store_true",
+        help="Default-safe: do not use disk signal cache (same as omitting --use-signal-cache).",
+    )
     args = p.parse_args(argv)
     cwd = Path.cwd()
     repo = _ROOT
@@ -210,7 +379,10 @@ def cmd_run(argv: list[str] | None) -> int:
     from src.research.audit_l2_candidates_oow_lib import safe_run_segment
 
     n_planned = 0
+    abort = False
     for m in metas:
+        if abort:
+            break
         seg = safe_run_segment(m.candidate_id)
         for wid in windows:
             n_planned += 1
@@ -239,7 +411,7 @@ def cmd_run(argv: list[str] | None) -> int:
                 end=en,
                 out_window_root=wdir,
                 data_dir=args.data_dir,
-                use_signal_cache=bool(args.use_signal_cache),
+                use_signal_cache=bool(args.use_signal_cache) and not bool(args.no_signal_cache),
                 tag=args.tag,
             )
             if args.dry_run:
@@ -269,6 +441,7 @@ def cmd_run(argv: list[str] | None) -> int:
                 }
             )
             if args.stop_on_fail and rc != 0:
+                abort = True
                 break
 
     manifest_path = out / "candidate_audit_run_manifest.csv"
@@ -359,6 +532,13 @@ def cmd_postprocess(argv: list[str] | None) -> int:
     if not labels.empty:
         pol = labels[["candidate_id", "audit_family", "robustness_label", "policy_action", "yaml_path"]].copy()
         pol.to_csv(out / "l2_core_policy_v2_candidate_actions.csv", index=False)
+        write_candidate_oow_summary_md(out=out, labels=labels)
+        write_compact_highlights(out=out, wide=wide)
+        write_full_candidate_interpretation(out=out, long_df=long_df, wide=wide)
+        write_family_interpretation(out=out, wide=wide, long_df=long_df)
+        write_policy_action_summary(out=out, labels=labels)
+        write_robust_core_dry_run(out=out, labels=labels)
+        write_side_flip_watchlist(out=out, labels=labels)
 
     disc_rows: list[dict[str, str]] = []
     for cid, wid, rdir in discover_singleton_runs(runs_sub):
@@ -414,10 +594,28 @@ def main(argv: list[str] | None = None) -> int:
     s3.add_argument("--data-dir", default="data/raw/ibkr")
     s3.add_argument("--tag", default="l2_candidate_audit")
     s3.add_argument("--use-signal-cache", action="store_true")
+    s3.add_argument(
+        "--no-signal-cache",
+        action="store_true",
+        help="Explicitly disable disk signal cache (default; safe on OneDrive).",
+    )
 
     s4 = sub.add_parser("postprocess")
     s4.add_argument("--candidate-root", required=True)
     s4.add_argument("--output-root", required=True)
+    s4.add_argument(
+        "--windows-root",
+        default=None,
+        help="Optional; reserved for future window discovery (currently uses runs on disk only).",
+    )
+
+    s5 = sub.add_parser("inventory", help="Write remaining_candidate_inventory.* and extended_audit_inventory.md.")
+    s5.add_argument("--candidate-root", required=True)
+    s5.add_argument("--output-root", required=True)
+    s5.add_argument("--windows-root", default="src/research/results/fixed_profile_oow_v1")
+    s5.add_argument("--windows", default="early_oow,insample_ref,late_oow")
+    s5.add_argument("--families", default=None)
+    s5.add_argument("--data-dir", default="data/raw/ibkr")
 
     args = p.parse_args(argv)
     if args.cmd == "inspect-data":
@@ -471,6 +669,23 @@ def main(argv: list[str] | None = None) -> int:
                 "--tag",
                 args.tag,
                 *(["--use-signal-cache"] if args.use_signal_cache else []),
+                *(["--no-signal-cache"] if args.no_signal_cache else []),
+            ]
+        )
+    if args.cmd == "inventory":
+        return cmd_inventory(
+            [
+                "--candidate-root",
+                args.candidate_root,
+                "--output-root",
+                args.output_root,
+                "--windows-root",
+                args.windows_root,
+                "--windows",
+                args.windows,
+                *(["--families", args.families] if args.families else []),
+                "--data-dir",
+                args.data_dir,
             ]
         )
     if args.cmd == "postprocess":

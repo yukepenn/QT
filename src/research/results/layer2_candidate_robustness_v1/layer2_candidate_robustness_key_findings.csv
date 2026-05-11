@@ -1,8 +1,16 @@
-topic,family,candidate_or_profile,result,evidence_strength,implication,next_action
-fixed_profile_oow,vwap,vwap_mtp1/2,Both OOW windows negative under replay,high (20-profile matrix prior),Combination failure confirmed at profile level,Keep VWAP on watchlist
-singleton_audit,vwap,8 YAMLs,0 ROBUST_POSITIVE; 3 INSAMPLE_ONLY reclaim-reject,medium (singleton envelope),VWAP weakness is candidate-level not only weighting,Extend audit optional windows only after core families complete
-singleton_audit,indicator,19 YAMLs,2 ROBUST_POSITIVE (CCI_002/003); rest mixed/insample-only,medium,Small CCI pocket less bad; most indicators still fragile,Re-audit after remaining families
-singleton_audit,indicator,MACD_MOMENTUM_TURN_003,ANTI_PREDICTIVE_CANDIDATE,medium,Demote from core consideration,REQUIRES_SIDE_FLIP_RESEARCH tag = research queue not production
-side_flip_proxy,indicator,mtp1/2/3,-R proxy only; insample becomes negative under proxy,high (definition),Negating R breaks insample edge — not a strategy,Do not pursue production short from proxy
-coverage_gap,pa/opening_trap/afternoon,39 YAMLs,Not run in v1 pack,high,Cannot claim all-core failure yet,RUN_MORE_CANDIDATE_OOW_AUDIT
-robust_core,n/a,dry-run,Insufficient (<6 candidates; single family for robust positives),high,No robust_core_dry_run manifest,Complete family coverage first
+topic,family,candidate_or_group,result,evidence_strength,implication,next_action
+Full coverage,l2_core,66 YAMLs,66/66 singleton windows OK,high,Audit grid complete; labels comparable across families,Freeze audit envelope for v2 design references
+Robust pocket,indicator,"CCI_002, CCI_003",ROBUST_POSITIVE under heuristic,medium,Narrow oscillator pocket survives OOW,Allow max 2 CCI stems in v2 core draft
+VWAP weakness,vwap,8 YAMLs,0 ROBUST_POSITIVE,high,VWAP names remain risky on fixed envelope,Exclude VWAP from v2 core unless contract changes
+Indicator breadth,indicator,"MACD, RSI, Stoch, ST",mostly MIXED/INSAMPLE_ONLY,high,mtp-style stacks need overlap modeling,Watchlist / drop for core v2
+Anti-predictive,indicator,MACD_MOMENTUM_TURN_003,ANTI_PREDICTIVE,high,Strong OOW fade vs long,Side-flip research queue only (non-executable today)
+Anti-predictive,opening_trap,MULTI_DAY_LEVEL_TRAP_001-004,ANTI_PREDICTIVE (4),high,Consistent long-signal breakdown OOW,Drop from long core; no promotion without short mechanics
+Gap strength,opening_trap,GAP_ACCEPTANCE_FAILURE_001-004,ROBUST_POSITIVE (identical metrics),high,Strong OOW; likely redundant stems,Dedupe to one representative in v2 design
+PA strength,pa,PA_BUY_SELL_CLOSE_TREND_001-004,ROBUST_POSITIVE,high,Best PA family in audit,Promote to v2 core with turnover review
+PA weakness,pa,PA_TRADING_RANGE_BLS_HS_001-003,OOW_NEGATIVE,medium,Template-level OOW loss,Drop from core
+PA stress,pa,PA_FAILED_RANGE_BREAKOUT_TRAP_*,OOW_MIXED + catastrophic early,medium,Early window fragility,Watchlist only
+Afternoon,afternoon,AFTERNOON_CONTINUATION_*,all OOW_MIXED,medium,No robust hits,No core promotion
+Other,other,"ORB_CONTINUATION, PRIOR_CLOSE_RECLAIM",all OOW_MIXED,medium,No robust hits,No core promotion
+Combination vs single,meta,all families,singleton shows both per-name fail and per-name win,high,Cannot blame combiner alone for all failures,Use singleton labels as v2 design inputs
+Side-flip,meta,fixed-profile proxy,inverse not supported,high,Sign flip is algebraic only,Do not trade contrarian from proxy
+Dry-run gate,meta,KEEP_CORE pool,PASS (10 names / 3 families),medium,Meets scripted robust-core thresholds,Author l2_core v2 design from manifest
