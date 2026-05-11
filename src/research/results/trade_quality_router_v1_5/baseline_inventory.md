@@ -5,7 +5,7 @@
 ## Git tip (fill at commit time)
 
 - **Branch:** `main`
-- **Tip:** `ccdd0bb` — `Research: extend trade quality enrichment diagnostics`
+- **Tip:** `ccdd0bb` — `Research: extend trade quality enrichment diagnostics` (repo HEAD may include handoff-only commits after this SHA)
 
 ## Handoff decision (pre–v1.5 commit)
 
