@@ -7,8 +7,8 @@
 | Branch | `main` |
 | Latest commit before this work | `d359306` — Docs(handoff): link follow-up commit |
 | New commit | `ea2e77a` — Research(global-l2): tune cost turnover diagnostics |
-| Follow-up | `8258117` Docs(handoff): record cost-turnover diagnostic push; `01ee6db` Docs(changes): note handoff push record; `60576cd` Docs(handoff): link follow-up commits |
-| Push status | **Pushed** `main` → `origin` (through `60576cd`) |
+| Follow-up | Docs/CHANGES commits after `ea2e77a` — see `git log ea2e77a..HEAD --oneline` |
+| Push status | **Pushed** `main` → `origin` (verify tip with `git log -1 --oneline`) |
 | Working tree | Clean for tracked files; **untracked local-only:** `src/combiner/results/layer2_qqq_global_2023_2024_v2_cost_turnover/**` (`sweep_*`, `top_runs/`, full `cost_stress/`, etc.); other pre-existing untracked heavy paths under Global L2 v1 folder per prior handoff |
 | Expected untracked local-only heavy artifacts | Tuned diagnostic sweeps under `layer2_qqq_global_2023_2024_v2_cost_turnover/`; do **not** `git add` these |
 
