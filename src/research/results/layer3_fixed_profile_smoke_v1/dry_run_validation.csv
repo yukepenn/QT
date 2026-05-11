@@ -1,0 +1,6 @@
+check,passed,detail
+row_count_8,True,rows=8
+only_core_profiles,True,"profiles=['pa_gap_mtp2_meta', 'pa_only_mtp1_meta']"
+no_primary,True,
+no_ablations,True,
+run_dir_rel_safe,True,run_dir_rel pattern

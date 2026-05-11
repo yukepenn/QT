@@ -1,0 +1,9 @@
+section,profile_id,window,metric,value,interpretation
+per_window,pa_gap_mtp2_meta,early_oow,total_r,60.95349922123789,Layer3 CORE replay
+per_window,pa_gap_mtp2_meta,full_available,total_r,131.99220402799673,Layer3 CORE replay
+per_window,pa_gap_mtp2_meta,insample_ref,total_r,52.271583243854316,Layer3 CORE replay
+per_window,pa_gap_mtp2_meta,late_oow,total_r,18.767121562904507,Layer3 CORE replay
+per_window,pa_only_mtp1_meta,early_oow,total_r,45.14041230536661,Layer3 CORE replay
+per_window,pa_only_mtp1_meta,full_available,total_r,104.59469676655733,Layer3 CORE replay
+per_window,pa_only_mtp1_meta,insample_ref,total_r,37.96783399907462,Layer3 CORE replay
+per_window,pa_only_mtp1_meta,late_oow,total_r,21.486450462116103,Layer3 CORE replay

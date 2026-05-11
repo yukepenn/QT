@@ -1,0 +1,11 @@
+topic,profile_id,window_or_period,result,evidence_strength,implication,next_action
+window_total_r,pa_gap_mtp2_meta,early_oow,total_r=60.9535,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp2_meta,full_available,total_r=131.9922,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp2_meta,insample_ref,total_r=52.2716,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_gap_mtp2_meta,late_oow,total_r=18.7671,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_only_mtp1_meta,early_oow,total_r=45.1404,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_only_mtp1_meta,full_available,total_r=104.5947,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_only_mtp1_meta,insample_ref,total_r=37.9678,high,headline economics for CORE window,compare to fixed OOW reference
+window_total_r,pa_only_mtp1_meta,late_oow,total_r=21.4865,high,headline economics for CORE window,compare to fixed OOW reference
+profile_smoke_label,pa_gap_mtp2_meta,ALL,LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS,high,gate rollup,RUN_OPTIONAL_LAYER3_BASELINE_ABLATION
+profile_smoke_label,pa_only_mtp1_meta,ALL,LAYER3_CORE_SMOKE_PASS_WITH_WARNINGS,high,gate rollup,RUN_OPTIONAL_LAYER3_BASELINE_ABLATION

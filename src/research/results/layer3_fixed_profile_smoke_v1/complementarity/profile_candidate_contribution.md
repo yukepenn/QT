@@ -1,0 +1,12 @@
+# PA+GAP candidate contribution (CORE)
+
+| candidate_id | total_r | trades | share_of_total_r |
+|---|---:|---:|---:|
+| `GAP_ACCEPTANCE_FAILURE_001` | 20.2538 | 185 | 0.3323 |
+| `PA_BUY_SELL_CLOSE_TREND_003` | 40.6997 | 633 | 0.6677 |
+| `GAP_ACCEPTANCE_FAILURE_001` | 41.5618 | 403 | 0.3149 |
+| `PA_BUY_SELL_CLOSE_TREND_003` | 90.4304 | 1344 | 0.6851 |
+| `GAP_ACCEPTANCE_FAILURE_001` | 20.0011 | 129 | 0.3826 |
+| `PA_BUY_SELL_CLOSE_TREND_003` | 32.2705 | 434 | 0.6174 |
+| `GAP_ACCEPTANCE_FAILURE_001` | 1.3069 | 89 | 0.0696 |
+| `PA_BUY_SELL_CLOSE_TREND_003` | 17.4602 | 277 | 0.9304 |

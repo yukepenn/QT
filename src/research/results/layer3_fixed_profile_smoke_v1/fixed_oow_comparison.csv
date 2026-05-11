@@ -1,0 +1,9 @@
+profile_id,window,layer3_total_r,fixed_oow_reference_total_r,delta,material_delta,notes
+pa_gap_mtp2_meta,early_oow,60.95349922123789,60.95349922123789,0.0,False,
+pa_gap_mtp2_meta,full_available,131.99220402799673,131.9922040279967,2.842170943040401e-14,False,
+pa_gap_mtp2_meta,insample_ref,52.271583243854316,52.27158324385432,-7.105427357601002e-15,False,
+pa_gap_mtp2_meta,late_oow,18.767121562904507,18.767121562904507,0.0,False,
+pa_only_mtp1_meta,early_oow,45.14041230536661,45.14041230536661,0.0,False,
+pa_only_mtp1_meta,full_available,104.59469676655733,104.59469676655732,1.4210854715202004e-14,False,
+pa_only_mtp1_meta,insample_ref,37.96783399907462,37.96783399907462,0.0,False,
+pa_only_mtp1_meta,late_oow,21.486450462116103,21.486450462116103,0.0,False,
