@@ -1,0 +1,36 @@
+name: layer2_sweep_qqq_global_2023_2024_v2
+base_config: src/combiner/configs/layer2_qqq_global_2023_2024_v2.yaml
+grid:
+  candidate_set:
+  - all_behavior_diverse
+  - all_low_turnover
+  - all_strict_l2_core
+  - indicator_completion_core
+  - opening_trap_core
+  - pa_core
+  - vwap_core
+  top_per_strategy:
+  - 1
+  - 2
+  system.max_trades_per_day:
+  - 1
+  - 2
+  system.daily_max_loss_r:
+  - -1.5
+  - -2.0
+  - -3.0
+  system.cooldown_after_loss_minutes:
+  - 0
+  - 15
+  conflict.priority_policy:
+  - metadata_priority
+  - score_adjusted_priority
+fixed:
+  execution.commission_per_trade: 0.0
+  execution.slippage_per_share: 0.01
+  execution.eod_exit_minute: 389
+  execution.no_new_after_minute: 360
+  execution.recompute_target_from_entry: true
+  execution.min_risk_per_share: 0.03
+  system.max_open_positions: 1
+  system.cooldown_scope: session

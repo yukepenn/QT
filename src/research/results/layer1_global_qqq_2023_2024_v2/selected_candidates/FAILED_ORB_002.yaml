@@ -1,0 +1,74 @@
+candidate_id: FAILED_ORB_002
+strategy: failed_orb
+asset: equity
+symbol: QQQ
+strategy_family: opening_reversal
+conflict_group: QQQ_directional
+default_priority: 85
+default_active_start_minute: 5
+default_active_end_minute: 90
+metadata:
+  family: opening_reversal
+  conflict_group: QQQ_directional
+  default_priority: 85
+  default_active_start_minute: 5
+  default_active_end_minute: 90
+selection:
+  score: 1.0400607498342544
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\failed_orb\sweep_20260511_003018_layer1_global_qqq_2023_2024_v2\results.csv
+  row_index: 709
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\failed_orb\sweep_20260511_003018_layer1_global_qqq_2023_2024_v2
+metrics:
+  trades: 221
+  profit_factor: 1.1701877934272673
+  total_r: 9.00704502955866
+  win_rate: 0.5067873303167421
+  total_net_pnl: 14.137500000002774
+  avg_r: 0.0407558598622563
+  avg_net_pnl: 0.0639705882353066
+  max_drawdown_pnl: -7.297499999999843
+  max_drawdown_r: -8.275178115692729
+  avg_bars_held: 16.97737556561086
+  stop_count: 97
+  target_count: 74
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 50
+config:
+  strategy: failed_orb
+  features:
+    orb_open_minutes: 5
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 5
+    entry_end_minute: 90
+    fail_window_bars: 1
+    confirm_mode: momentum_turn
+    require_vwap_reclaim: true
+    require_volume_climax: false
+    min_close_location: 0.55
+    min_volume_mult: 1.5
+  risk:
+    stop_mode: failed_extreme
+    atr_buffer: 0.1
+    target_mode: fixed_r
+    target_r: 1.25
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

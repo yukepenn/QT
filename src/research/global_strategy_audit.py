@@ -313,9 +313,22 @@ def main(argv: list[str] | None = None) -> int:
     n_review = sum(1 for r in elig_rows if r["current_status"] == "REVIEW_GRID_TOO_LARGE")
     n_defer = sum(1 for r in elig_rows if r["current_status"] == "DEFER_IMPLEMENTATION_RISK")
 
+    out_posix = str(out.resolve()).replace("\\", "/")
+    if "global_strategy_audit_v2" in out_posix:
+        title = "Global strategy audit summary (v2, post feature hardening)"
+        extra = [
+            "",
+            "This audit was produced **after** commit `51bfe17` (feature construction performance).",
+            "Strategy logic and YAML grids are unchanged vs the pre-hardening v1 audit; eligibility should match v1.",
+            "Input to **Global Layer 1 v2** (`layer1_global_qqq_2023_2024_v2`).",
+        ]
+    else:
+        title = "Global strategy audit summary (v1)"
+        extra = []
+
     summary = "\n".join(
         [
-            "# Global strategy audit summary (v1)",
+            f"# {title}",
             "",
             f"- Strategies audited: **{len(elig_rows)}**",
             f"- `READY_GLOBAL_L1`: **{n_ready}**",
@@ -330,6 +343,9 @@ def main(argv: list[str] | None = None) -> int:
             "- `strategy_side_support_matrix.csv` / `.md`",
             "",
             "Policy: no short axes are invented; unknown side grids default to **READY_LONG_ONLY**.",
+        ]
+        + extra
+        + [
             "",
             "Next: run `python src/research/run_global_layer1.py` with `--audit` pointing at the CSV.",
         ]

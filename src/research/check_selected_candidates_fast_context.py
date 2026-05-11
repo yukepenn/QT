@@ -97,6 +97,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--symbol", default="QQQ")
     p.add_argument("--start", required=True)
     p.add_argument("--end", required=True)
+    p.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        help="If set, write fast_context_check.csv and .md under this directory (unless overridden).",
+    )
     p.add_argument("--out-csv", type=Path, default=None)
     p.add_argument("--out-md", type=Path, default=None)
     args = p.parse_args(argv)
@@ -119,6 +125,15 @@ def main(argv: list[str] | None = None) -> int:
 
     out_csv = args.out_csv
     out_md = args.out_md
+    if args.output_root is not None:
+        oroot = args.output_root
+        if not oroot.is_absolute():
+            oroot = Path.cwd() / oroot
+        oroot.mkdir(parents=True, exist_ok=True)
+        if out_csv is None:
+            out_csv = oroot / "fast_context_check.csv"
+        if out_md is None:
+            out_md = oroot / "fast_context_check.md"
     if out_csv:
         if not out_csv.is_absolute():
             out_csv = Path.cwd() / out_csv

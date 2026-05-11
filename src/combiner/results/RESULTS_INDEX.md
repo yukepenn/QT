@@ -106,6 +106,10 @@ Stale Layer 2 roots below were **`git rm`’d**; use **post-hardening** strict/r
   - **status**: legacy / unclear naming; keep for history
   - **replacement**: post-hardening roots
 
+## C. Global v2 diagnostics (local-only)
+
+- **`layer2_qqq_global_2023_2024_v2/diagnostics/`** — created by a **Q1 2023** `--diagnostics-only` smoke (`diag_smoke_q1`). Contains `candidate_precompute_profile.csv`, `feature_store_stats.json`, overlap/conflict CSVs. **Not committed** (see `docs/ARTIFACT_POLICY.md`). Curated summary: `src/research/results/layer2_global_diagnostics_smoke_q1_2023.md`.
+
 ## Notes
 
 - Large per-run artifacts (e.g. `top_runs/`, detailed `run_*` folders) are intentionally gitignored.

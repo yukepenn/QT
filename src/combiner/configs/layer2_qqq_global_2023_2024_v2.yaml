@@ -1,0 +1,107 @@
+name: layer2_qqq_global_2023_2024_v2
+candidate_root: src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates
+execution:
+  commission_per_trade: 0.0
+  slippage_per_share: 0.01
+  eod_exit_minute: 389
+  no_new_after_minute: 360
+  recompute_target_from_entry: true
+  min_risk_per_share: 0.03
+system:
+  max_open_positions: 1
+  max_trades_per_day: 2
+  daily_max_loss_r: -2.0
+  cooldown_after_loss_minutes: 15
+  cooldown_scope: session
+conflict:
+  priority_policy: metadata_priority
+  same_bar_policy: priority
+  tie_breakers:
+  - candidate_score
+  - candidate_rank
+  - candidate_index
+  opposite_direction_policy: ''
+candidate_sets:
+  opening_trap_core:
+    include_warnings: false
+    max_per_strategy: 4
+    strategies:
+    - failed_orb
+    - gap_acceptance_failure
+    - orb_continuation
+  vwap_core:
+    include_warnings: false
+    max_per_strategy: 4
+    strategies:
+    - vwap_reclaim_reject
+    - vwap_trend_pullback
+  indicator_completion_core:
+    include_warnings: false
+    max_per_strategy: 4
+    strategies:
+    - cci_extreme_snapback
+    - macd_momentum_turn
+    - rsi_failure_swing
+    - stochastic_oversold_cross
+    - supertrend_atr_flip
+  pa_core:
+    include_warnings: false
+    max_per_strategy: 4
+    strategies:
+    - pa_buy_sell_close_trend
+    - pa_climax_reversal
+    - pa_failed_range_breakout_trap
+    - pa_trading_range_bls_hs
+  all_strict_l2_core:
+    include_warnings: false
+    max_per_strategy: 80
+  all_behavior_diverse:
+    include_warnings: false
+    max_per_strategy: 1
+  all_low_turnover:
+    include_warnings: false
+    max_per_strategy: 4
+    candidate_ids:
+    - AFTERNOON_CONTINUATION_001
+    - AFTERNOON_CONTINUATION_002
+    - AFTERNOON_CONTINUATION_003
+    - AFTERNOON_CONTINUATION_004
+    - CCI_EXTREME_SNAPBACK_001
+    - CCI_EXTREME_SNAPBACK_002
+    - CCI_EXTREME_SNAPBACK_004
+    - FAILED_ORB_001
+    - FAILED_ORB_002
+    - FAILED_ORB_003
+    - FAILED_ORB_005
+    - GAP_ACCEPTANCE_FAILURE_001
+    - GAP_ACCEPTANCE_FAILURE_002
+    - GAP_ACCEPTANCE_FAILURE_003
+    - GAP_ACCEPTANCE_FAILURE_004
+    - MULTI_DAY_LEVEL_TRAP_001
+    - MULTI_DAY_LEVEL_TRAP_002
+    - MULTI_DAY_LEVEL_TRAP_003
+    - MULTI_DAY_LEVEL_TRAP_004
+    - PA_CLIMAX_REVERSAL_001
+    - PA_CLIMAX_REVERSAL_002
+    - PA_CLIMAX_REVERSAL_003
+    - PA_CLIMAX_REVERSAL_004
+    - PA_TRADING_RANGE_BLS_HS_001
+    - PA_TRADING_RANGE_BLS_HS_002
+    - PA_TRADING_RANGE_BLS_HS_003
+    - PA_TRADING_RANGE_BLS_HS_005
+    - PRIOR_CLOSE_RECLAIM_001
+    - PRIOR_CLOSE_RECLAIM_002
+    - PRIOR_CLOSE_RECLAIM_003
+    - PRIOR_CLOSE_RECLAIM_005
+    - RSI_FAILURE_SWING_001
+    - RSI_FAILURE_SWING_002
+    - RSI_FAILURE_SWING_003
+    - RSI_FAILURE_SWING_005
+    - VWAP_RECLAIM_REJECT_001
+    - VWAP_RECLAIM_REJECT_002
+    - VWAP_RECLAIM_REJECT_003
+    - VWAP_RECLAIM_REJECT_004
+    - VWAP_TREND_PULLBACK_001
+    - VWAP_TREND_PULLBACK_002
+    - VWAP_TREND_PULLBACK_003
+    - VWAP_TREND_PULLBACK_005

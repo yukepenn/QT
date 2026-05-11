@@ -1,0 +1,111 @@
+candidate_id: MACD_MOMENTUM_TURN_003
+strategy: macd_momentum_turn
+asset: equity
+symbol: QQQ
+strategy_family: macd_momentum_shift
+conflict_group: QQQ_directional
+default_priority: 53
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: macd_momentum_shift
+  conflict_group: QQQ_directional
+  default_priority: 53
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 0.6224092986229277
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\macd_momentum_turn\sweep_20260511_001139_layer1_global_qqq_2023_2024_v2\results.csv
+  row_index: 31
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\macd_momentum_turn\sweep_20260511_001139_layer1_global_qqq_2023_2024_v2
+metrics:
+  trades: 501
+  profit_factor: 1.0636962208423189
+  total_r: 3.580635776436836
+  win_rate: 0.469061876247505
+  total_net_pnl: 4.99781250000575
+  avg_r: 0.0071469775976783
+  avg_net_pnl: 0.009975673652706
+  max_drawdown_pnl: -7.045587499998646
+  max_drawdown_r: -16.328291809170842
+  avg_bars_held: 5.147704590818363
+  stop_count: 266
+  target_count: 234
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 1
+config:
+  strategy: macd_momentum_turn
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows:
+      - 20
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples:
+      - - 8
+        - 21
+        - 9
+      - - 8
+        - 26
+        - 9
+      - - 12
+        - 21
+        - 9
+      - - 12
+        - 26
+        - 9
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    macd_fast: 12
+    macd_slow: 26
+    macd_signal: 9
+    ema_window: 20
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    trigger_mode: zero_reclaim
+    require_price_above_ema: true
+    require_vwap_side: false
+    min_hist_slope: 0.0
+  risk:
+    stop_mode: atr_buffer
+    target_mode: fixed_r
+    target_r: 1.25
+    ema_buffer_atr: 0.1
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 60

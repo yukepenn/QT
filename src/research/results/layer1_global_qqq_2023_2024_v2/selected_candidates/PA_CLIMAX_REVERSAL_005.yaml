@@ -1,0 +1,111 @@
+candidate_id: PA_CLIMAX_REVERSAL_005
+strategy: pa_climax_reversal
+asset: equity
+symbol: QQQ
+strategy_family: pa_climax_reversal
+conflict_group: QQQ_directional
+default_priority: 45
+default_active_start_minute: 45
+default_active_end_minute: 330
+metadata:
+  family: pa_climax_reversal
+  conflict_group: QQQ_directional
+  default_priority: 45
+  default_active_start_minute: 45
+  default_active_end_minute: 330
+selection:
+  score: 1.249296174403407
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_climax_reversal\sweep_20260511_003637_layer1_global_qqq_2023_2024_v2\results.csv
+  row_index: 586
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_climax_reversal\sweep_20260511_003637_layer1_global_qqq_2023_2024_v2
+metrics:
+  trades: 50
+  profit_factor: 1.3580040526850088
+  total_r: 5.910439715605149
+  win_rate: 0.44
+  total_net_pnl: 3.5335000000008563
+  avg_r: 0.1182087943121029
+  avg_net_pnl: 0.0706700000000171
+  max_drawdown_pnl: -2.5324999999999136
+  max_drawdown_r: -6.290149133855962
+  avg_bars_held: 8.66
+  stop_count: 28
+  target_count: 21
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 1
+config:
+  strategy: pa_climax_reversal
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_regime_window: 30
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 45
+    entry_end_minute: 195
+    climax_score_min: 0.58
+    bar_range_expansion_min: 1.44
+    bear_context_min: 0.28
+    max_dist_below_vwap_atr: -0.1
+    use_bar_range_expansion: true
+  risk:
+    stop_mode: signal_low
+    target_mode: fixed_r
+    target_r: 1.65
+    atr_buffer_mult: 0.4
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 38

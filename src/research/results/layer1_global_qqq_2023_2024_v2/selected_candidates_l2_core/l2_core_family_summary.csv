@@ -1,0 +1,16 @@
+strategy_family,n_candidates
+oscillator_reversal,12
+afternoon_trend,4
+atr_trend_following,4
+gap_behavior,4
+multi_day_level_trap,4
+opening_reversal,4
+pa_climax_reversal,4
+pa_close_trend_continuation,4
+pa_range_breakout_failure,4
+pa_trading_range,4
+value_reclaim,4
+vwap_reclaim,4
+vwap_trend,4
+macd_momentum_shift,3
+opening_momentum,3

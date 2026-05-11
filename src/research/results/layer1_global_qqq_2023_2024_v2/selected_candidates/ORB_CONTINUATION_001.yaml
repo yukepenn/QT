@@ -1,0 +1,70 @@
+candidate_id: ORB_CONTINUATION_001
+strategy: orb_continuation
+asset: equity
+symbol: QQQ
+strategy_family: opening_momentum
+conflict_group: QQQ_directional
+default_priority: 90
+default_active_start_minute: 0
+default_active_end_minute: 90
+metadata:
+  family: opening_momentum
+  conflict_group: QQQ_directional
+  default_priority: 90
+  default_active_start_minute: 0
+  default_active_end_minute: 90
+selection:
+  score: 0.42972845827076755
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_continuation\sweep_20260511_001426_layer1_global_qqq_2023_2024_v2\results.csv
+  row_index: 329
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\orb_continuation\sweep_20260511_001426_layer1_global_qqq_2023_2024_v2
+metrics:
+  trades: 353
+  profit_factor: 1.0639438000326902
+  total_r: 5.399337685516121
+  win_rate: 0.4135977337110481
+  total_net_pnl: 9.785000000002242
+  avg_r: 0.0152955741799323
+  avg_net_pnl: 0.0277195467422159
+  max_drawdown_pnl: -16.627499999997838
+  max_drawdown_r: -23.188338875048775
+  avg_bars_held: 19.555240793201133
+  stop_count: 196
+  target_count: 97
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 60
+config:
+  strategy: orb_continuation
+  features:
+    orb_open_minutes: 7
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+  signal:
+    side: long_only
+    entry_start_minute: 7
+    entry_end_minute: 90
+    require_vwap_side: true
+    require_vwap_slope: true
+    daily_signal_mode: first_signal
+  risk:
+    stop_mode: orb_mid
+    stop_buffer: 0.0
+    target_mode: fixed_r
+    target_r: 1.75
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 45

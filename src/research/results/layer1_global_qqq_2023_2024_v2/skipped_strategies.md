@@ -1,0 +1,9 @@
+# Skipped strategies (global Layer 1)
+
+| strategy | reason |
+|----------|--------|
+| bollinger_band_fade_chop | audit_status:REVIEW_GRID_TOO_LARGE |
+| consecutive_bar_exhaustion | audit_status:REVIEW_GRID_TOO_LARGE |
+| donchian_channel_breakout | audit_status:REVIEW_GRID_TOO_LARGE |
+| intraday_ma_crossover | audit_status:REVIEW_GRID_TOO_LARGE |
+| midday_compression_breakout | audit_status:REVIEW_GRID_TOO_LARGE |

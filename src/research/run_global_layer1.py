@@ -158,13 +158,18 @@ def _write_family_candidate_summary(sel_csv: Path, out_csv: Path, out_md: Path) 
 
 
 def _run_post_analysis(args: argparse.Namespace, out_root: Path, manifest_rows: list[dict[str, Any]]) -> None:
-    div_out = (
-        _ROOT
-        / "src"
-        / "research"
-        / "results"
-        / "global_candidate_signal_diversity_qqq_2023_2024_v1"
-    )
+    div_out = args.diversity_output_root
+    if div_out is None:
+        div_out = (
+            _ROOT
+            / "src"
+            / "research"
+            / "results"
+            / "global_candidate_signal_diversity_qqq_2023_2024_v1"
+        )
+    else:
+        if not div_out.is_absolute():
+            div_out = Path.cwd() / div_out
     div_out.mkdir(parents=True, exist_ok=True)
     sel_dir = out_root / "selected_candidates"
     yamls = sorted(sel_dir.glob("*.yaml")) if sel_dir.is_dir() else []
@@ -279,7 +284,14 @@ def _run_post_analysis(args: argparse.Namespace, out_root: Path, manifest_rows: 
         gate_lines.append(
             "Conditional Global Layer 2 **not** executed (see `global_layer2_qqq_2023_2024_design.md`)."
         )
-    (out_root / "global_layer2_gate_decision.md").write_text("\n".join(gate_lines) + "\n", encoding="utf-8")
+    gate_body = "\n".join(gate_lines) + "\n"
+    (out_root / "global_layer2_gate_decision.md").write_text(gate_body, encoding="utf-8")
+    if args.copy_gate_md_to is not None:
+        gpath = args.copy_gate_md_to
+        if not gpath.is_absolute():
+            gpath = Path.cwd() / gpath
+        gpath.parent.mkdir(parents=True, exist_ok=True)
+        gpath.write_text(gate_body, encoding="utf-8")
 
     # layer1_global_summary.md
     summary_parts = [
@@ -317,8 +329,16 @@ def _run_post_analysis(args: argparse.Namespace, out_root: Path, manifest_rows: 
     (out_root / "layer1_global_summary.md").write_text("\n".join(summary_parts) + "\n", encoding="utf-8")
 
     # Branch leaderboard (repo-level research/results)
-    lb_csv = _ROOT / "src" / "research" / "results" / "global_branch_leaderboard_v1.csv"
-    lb_md = _ROOT / "src" / "research" / "results" / "global_branch_leaderboard_v1.md"
+    lb_csv = args.branch_leaderboard_csv
+    lb_md = args.branch_leaderboard_md
+    if lb_csv is None:
+        lb_csv = _ROOT / "src" / "research" / "results" / "global_branch_leaderboard_v1.csv"
+    elif not lb_csv.is_absolute():
+        lb_csv = Path.cwd() / lb_csv
+    if lb_md is None:
+        lb_md = _ROOT / "src" / "research" / "results" / "global_branch_leaderboard_v1.md"
+    elif not lb_md.is_absolute():
+        lb_md = Path.cwd() / lb_md
     lb_rows: list[dict[str, Any]] = []
     div_by_strat: dict[str, dict[str, Any]] = {}
     dsum = div_out / "strategy_diversity_summary.csv"
@@ -353,12 +373,13 @@ def _run_post_analysis(args: argparse.Namespace, out_root: Path, manifest_rows: 
         )
     lb_df = pd.DataFrame(lb_rows)
     lb_df.to_csv(lb_csv, index=False)
+    lb_title = "Global branch leaderboard v2" if "v2" in lb_csv.name else "Global branch leaderboard v1"
     if not lb_df.empty:
         headers = list(lb_df.columns)
         body = [[str(v) for v in r] for r in lb_df.values.tolist()]
-        lb_md.write_text("# Global branch leaderboard v1\n\n" + _md_table(headers, body) + "\n", encoding="utf-8")
+        lb_md.write_text(f"# {lb_title}\n\n" + _md_table(headers, body) + "\n", encoding="utf-8")
     else:
-        lb_md.write_text("# Global branch leaderboard v1\n\n(no rows)\n", encoding="utf-8")
+        lb_md.write_text(f"# {lb_title}\n\n(no rows)\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -389,6 +410,30 @@ def main(argv: list[str] | None = None) -> int:
         "--no-post-analysis",
         action="store_true",
         help="Skip diversity, fast-context check, Layer1 summary, and branch leaderboard.",
+    )
+    p.add_argument(
+        "--diversity-output-root",
+        type=Path,
+        default=None,
+        help="Output root for candidate_signal_diversity.py (default: legacy v1 path).",
+    )
+    p.add_argument(
+        "--branch-leaderboard-csv",
+        type=Path,
+        default=None,
+        help="Write global branch leaderboard CSV here (default: v1 path under research/results).",
+    )
+    p.add_argument(
+        "--branch-leaderboard-md",
+        type=Path,
+        default=None,
+        help="Write global branch leaderboard MD here (default: v1 path under research/results).",
+    )
+    p.add_argument(
+        "--copy-gate-md-to",
+        type=Path,
+        default=None,
+        help="Also write global_layer2_gate_decision.md body to this path (e.g. research/results gate v2).",
     )
     args = p.parse_args(argv)
 

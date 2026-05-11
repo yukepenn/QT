@@ -37,6 +37,16 @@ This index classifies `src/combiner/configs/*.yaml` without changing YAML conten
 
 ## B. Reference / historical (keep for comparison; not the default)
 
+### Global competition QQQ 2023–2024 v2 (post feature hardening)
+
+- **`layer2_qqq_global_2023_2024_v2.yaml`**
+  - **window:** intended 2023‑01‑01 → 2024‑12‑31 (sweep not committed in this drop)
+  - **candidate_root:** `src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates` (**66** strict YAMLs)
+  - **purpose:** global Layer 2 on capped `l2_core` universe; buckets emitted by `emit_global_layer2_v2_configs.py`
+- **`layer2_sweep_qqq_global_2023_2024_v2.yaml`**
+  - **base_config:** YAML above
+  - **grid:** 7 non-empty `candidate_set` keys × 2 × 2 × 3 × 2 × 2 = **672** combos (no `long_short_mixed`)
+
 - **`layer2_qqq_2023_20260430_posthardening_strict.yaml`** (+ sweep)
   - **window**: 2023‑01‑01 → 2026‑04‑30
   - **candidate_root**: `src/research/results/layer1_all10_qqq_2023_20260430_posthardening_v1/selected_candidates`

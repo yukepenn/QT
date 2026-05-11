@@ -1,0 +1,5 @@
+config,rows,final_column_count,wall_sec_mean,wall_sec_min,wall_sec_max,warnings_count,fragmentation_warnings_count,notes
+src/strategies/parameters/failed_orb.yaml,7800,381,0.4736,0.3823,0.6483,0,0,repeat=3
+src/strategies/parameters/afternoon_continuation.yaml,7800,381,0.3883,0.3858,0.3925,0,0,repeat=3
+src/strategies/parameters/pa_buy_sell_close_trend.yaml,7800,391,0.3922,0.3861,0.3964,0,0,repeat=3
+src/strategies/parameters/pa_climax_reversal.yaml,7800,391,0.4059,0.3963,0.4203,0,0,repeat=3

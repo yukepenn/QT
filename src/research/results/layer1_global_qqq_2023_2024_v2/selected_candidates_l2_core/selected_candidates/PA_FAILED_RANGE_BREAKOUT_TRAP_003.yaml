@@ -1,0 +1,109 @@
+candidate_id: PA_FAILED_RANGE_BREAKOUT_TRAP_003
+strategy: pa_failed_range_breakout_trap
+asset: equity
+symbol: QQQ
+strategy_family: pa_range_breakout_failure
+conflict_group: QQQ_directional
+default_priority: 47
+default_active_start_minute: 60
+default_active_end_minute: 330
+metadata:
+  family: pa_range_breakout_failure
+  conflict_group: QQQ_directional
+  default_priority: 47
+  default_active_start_minute: 60
+  default_active_end_minute: 330
+selection:
+  score: 1.1888848232404818
+  filters_used: strict
+  warning: ''
+source:
+  results_csv: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_failed_range_breakout_trap\sweep_20260511_001738_layer1_global_qqq_2023_2024_v2\results.csv
+  row_index: 378
+  sweep_folder: D:\OneDrive - Washington University in St. Louis\QT\src\strategies\testing_parameters_results\pa_failed_range_breakout_trap\sweep_20260511_001738_layer1_global_qqq_2023_2024_v2
+metrics:
+  trades: 321
+  profit_factor: 1.2025317396833877
+  total_r: 78.25845054973598
+  win_rate: 0.2305295950155763
+  total_net_pnl: 9.053511755980594
+  avg_r: 0.2437957961050965
+  avg_net_pnl: 0.0282040864672292
+  max_drawdown_pnl: -7.236070416421455
+  max_drawdown_r: -39.34352020510399
+  avg_bars_held: 7.218068535825545
+  stop_count: 219
+  target_count: 79
+  eod_count: 0
+  end_of_data_count: 0
+  max_hold_count: 23
+config:
+  strategy: pa_failed_range_breakout_trap
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows: []
+      adx_windows: []
+      supertrend_tuples: []
+    regime:
+      windows:
+      - 20
+      - 30
+      - 60
+    pa:
+      swing_windows:
+      - 10
+      - 20
+      - 30
+      - 60
+      regime_windows:
+      - 20
+      - 30
+      - 60
+      atr_window: 20
+    pa_range_window: 60
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 180
+    fail_window_bars: 6
+    require_tr_regime: false
+    tr_regime_max: 0.42
+  risk:
+    stop_mode: range_low_buffer
+    target_mode: range_mid
+    target_r: 1.25
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30

@@ -1,0 +1,21 @@
+# Strategy diversity summary
+
+| strategy | n_candidates | n_unique_pure_signal_hash | n_unique_signal_hash | total_signals_sum |
+| --- | --- | --- | --- | --- |
+| afternoon_continuation | 5 | 1 | 3 | 1185 |
+| cci_extreme_snapback | 5 | 3 | 5 | 898 |
+| failed_orb | 5 | 3 | 3 | 1090 |
+| gap_acceptance_failure | 5 | 1 | 1 | 645 |
+| macd_momentum_turn | 3 | 3 | 3 | 1499 |
+| multi_day_level_trap | 5 | 2 | 5 | 240 |
+| orb_continuation | 3 | 3 | 3 | 1039 |
+| pa_buy_sell_close_trend | 5 | 2 | 5 | 2251 |
+| pa_climax_reversal | 5 | 1 | 1 | 250 |
+| pa_failed_range_breakout_trap | 5 | 2 | 2 | 1710 |
+| pa_trading_range_bls_hs | 5 | 2 | 2 | 353 |
+| prior_close_reclaim | 5 | 2 | 3 | 759 |
+| rsi_failure_swing | 5 | 3 | 5 | 730 |
+| stochastic_oversold_cross | 5 | 3 | 5 | 2510 |
+| supertrend_atr_flip | 5 | 3 | 5 | 2494 |
+| vwap_reclaim_reject | 5 | 2 | 3 | 1006 |
+| vwap_trend_pullback | 5 | 2 | 2 | 764 |
