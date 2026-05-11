@@ -1,0 +1,3 @@
+gate,reason
+OVERLAY_BLOCKED_ALIGNMENT_FAIL,Best economic clone row cfg_0015 remains ALIGNMENT_FAIL (total_r_diff ~ +52.4R).
+OVERLAY_BLOCKED_PANEL_AUTHORITATIVE_ONLY,"panel_exit_reason_authoritative does not improve metrics; dominant drift is pre-terminal, not terminal-bar ordering."

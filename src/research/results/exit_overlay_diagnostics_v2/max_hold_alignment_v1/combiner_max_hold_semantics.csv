@@ -1,0 +1,9 @@
+topic,file,line_range,order_within_bar,notes
+intrabar_stop_target_long,_simulate_combiner_numba path,423-453,1,Evaluated only when i>=entry_idx; long: low<=stop and high>=target; both hit -> EX_STOP first.
+max_hold_after_intrabar,_simulate_combiner_numba path,455-460,2,Only if exr still 0; bars_held = i-entry_idx+1; exit at bar close clo with slip.
+eod_after_max_hold,_simulate_combiner_numba path,462-465,3,minute-of-day vs eod_m.
+session_boundary,_simulate_combiner_numba path,467-470,4,When session id changes on next bar.
+end_of_data,_simulate_combiner_numba path,472-475,5,Last bar fallback.
+intrabar_stop_target_long,Python simulator loop,972-1002,1,Mirror of numba branch for side==1 / else short.
+max_hold_after_intrabar,Python simulator loop,1004-1009,2,bh = i - entry_idx + 1; EX_MAX_HOLD at clo with slip.
+exit_idx_trade_log,Python path after exit,491-501,bars_held stored as i-entry_idx+1 (same as bh at exit).

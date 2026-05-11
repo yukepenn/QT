@@ -2,6 +2,7 @@ config_id: cfg_0015
 entry_price_source: bar_open_plus_slip
 exit_price_source: panel_exit_price_when_original
 forced_exit_policy: panel_exit_idx
+max_hold_priority: intrabar_first
 risk_policy: abs_entry_minus_stop
 same_bar_policy: stop_first
 slippage_policy: apply_like_combiner

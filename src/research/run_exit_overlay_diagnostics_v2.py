@@ -273,9 +273,13 @@ def run_alignment_grid(
     bars: pd.DataFrame,
     *,
     configs: Iterable[CloneReplayConfig] | None = None,
+    max_hold_priorities: list[str] | None = None,
 ) -> pd.DataFrame:
     by_day: dict[str, pd.DataFrame] = {str(d): g for d, g in bars.groupby("session_date", sort=False)}
     cfgs = list(configs) if configs is not None else list(iter_default_alignment_grid())
+    if max_hold_priorities:
+        allow = {str(x).strip() for x in max_hold_priorities if str(x).strip()}
+        cfgs = [c for c in cfgs if c.max_hold_priority in allow]  # type: ignore[comparison-overlap]
     rows_out: list[dict[str, Any]] = []
     for cfg in cfgs:
         meta = cfg.to_dict()
@@ -305,6 +309,10 @@ def run_alignment_grid(
                     "exit_reason_replay": res.exit_reason,
                     "exit_reason_match": match_ex,
                     "ambiguous_bar": bool(res.ambiguous_bar),
+                    "panel_exit_reason": row.get("exit_reason"),
+                    "panel_exit_idx": row.get("exit_idx"),
+                    "replay_exit_bar_index": getattr(res, "exit_bar_index", -1),
+                    "bars_held_replay": int(res.bars_held),
                 }
             )
     return pd.DataFrame(rows_out)
@@ -417,6 +425,7 @@ def _write_alignment_bundle(
         "same_bar_policy",
         "forced_exit_policy",
         "target_policy",
+        "max_hold_priority",
     ]
     if detail.empty:
         _write_csv(pd.DataFrame([{"note": "no_alignment_rows"}]), aln / "alignment_grid_results.csv")
@@ -701,6 +710,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--aggregate-only", action="store_true")
     p.add_argument("--local-row-output", action="store_true")
     p.add_argument("--skip-existing", action="store_true")
+    p.add_argument("--max-hold-priorities", type=str, default="", help="Comma filter: subset of max_hold_priority values to run.")
     p.add_argument("--stop-on-fail", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     args = p.parse_args(argv)
@@ -713,13 +723,21 @@ def main(argv: list[str] | None = None) -> int:
     profs = _parse_list(args.profiles)
     wins = _parse_list(args.windows)
     amb_policies = _parse_list(args.ambiguity_policies)
+    mh_priority_filter = [x.strip() for x in str(args.max_hold_priorities).split(",") if x.strip()] or None
+
+    def _alignment_configs_run() -> list[CloneReplayConfig]:
+        all_c = list(iter_default_alignment_grid())
+        if not mh_priority_filter:
+            return all_c
+        allow = set(mh_priority_filter)
+        return [c for c in all_c if c.max_hold_priority in allow]
 
     panel_path = Path(args.local_panel)
     if not panel_path.is_file():
         raise SystemExit(f"missing local panel: {panel_path}")
 
     if args.dry_run:
-        cfgs = list(iter_default_alignment_grid())
+        cfgs = _alignment_configs_run()
         plan = pd.DataFrame(
             [
                 {
@@ -730,6 +748,7 @@ def main(argv: list[str] | None = None) -> int:
                     "windows": ",".join(wins),
                     "alignment_configs": len(cfgs),
                     "config_ids_sample": ",".join(c.config_id for c in cfgs[:8]),
+                    "max_hold_priorities_filter": ",".join(mh_priority_filter) if mh_priority_filter else "(all)",
                     "overlays": args.overlays or "(overlay mode default)",
                     "ambiguity_policies": ",".join(amb_policies),
                     "aggregate_only": bool(args.aggregate_only),
@@ -788,13 +807,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.stop_on_fail:
                 raise SystemExit("no QQQ bars")
             return 1
-        detail = run_alignment_grid(panel, bars)
+        detail = run_alignment_grid(panel, bars, max_hold_priorities=mh_priority_filter)
         if args.local_row_output and len(detail):
             lr = out / "local_rows"
             lr.mkdir(parents=True, exist_ok=True)
             detail.to_csv(lr / "alignment_trade_detail.csv", index=False, lineterminator="\n")
         best = _write_alignment_bundle(out_root=out, detail=detail, profiles=profs, windows=wins)
-        man = pd.DataFrame([c.to_dict() for c in iter_default_alignment_grid()])
+        man = pd.DataFrame([c.to_dict() for c in _alignment_configs_run()])
         _write_csv(man, out / "alignment/alignment_config_manifest.csv")
         tag = "real" if len(panel) >= 500 else "synthetic_smoke"
         _write_full_panel_alignment_manifest(

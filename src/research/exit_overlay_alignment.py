@@ -35,6 +35,12 @@ RiskPolicyT = Literal["panel_risk_per_share", "abs_entry_minus_stop"]
 SameBarPolicyT = Literal["stop_first", "target_first", "skip_ambiguous"]
 ForcedExitPolicyT = Literal["panel_exit_idx", "eod_exit_minute", "max_hold"]
 TargetPolicyT = Literal["panel_target_price", "entry_plus_target_r_times_risk"]
+MaxHoldPriorityT = Literal[
+    "intrabar_first",
+    "forced_first_on_terminal_bar",
+    "panel_exit_reason_authoritative",
+    "skip_terminal_bar_conflicts",
+]
 
 
 @dataclass(frozen=True)
@@ -50,6 +56,7 @@ class CloneReplayConfig:
     same_bar_policy: SameBarPolicyT
     forced_exit_policy: ForcedExitPolicyT
     target_policy: TargetPolicyT
+    max_hold_priority: MaxHoldPriorityT = "intrabar_first"
 
     def to_dict(self) -> dict[str, str]:
         return {k: str(v) for k, v in asdict(self).items()}
@@ -67,7 +74,10 @@ class CloneReplayConfig:
             "forced_exit_policy",
             "target_policy",
         )
-        return CloneReplayConfig(**{k: m[k] for k in keys})  # type: ignore[arg-type]
+        base = {k: m[k] for k in keys}
+        mhp = m.get("max_hold_priority", "intrabar_first")
+        base["max_hold_priority"] = str(mhp)
+        return CloneReplayConfig(**base)  # type: ignore[arg-type]
 
 
 def _slip_for_exit(cfg: CloneReplayConfig) -> float:
@@ -173,14 +183,14 @@ def combiner_clone_long_walk(
     Deterministic long walk for one row. Returns ``SimResult`` compatible with overlay harness.
     """
     if not len(session_bars):
-        return SimResult(0.0, float(row.get("entry_price", 0.0)), "no_bars", 0, False, False)
+        return SimResult(0.0, float(row.get("entry_price", 0.0)), "no_bars", 0, False, False, -1)
 
     exit_slip = _slip_for_exit(cfg)
     entry_open_slip = _slip_for_entry_open(cfg)
 
     pos = _resolve_entry_position(session_bars, row, start_bar_policy=cfg.start_bar_policy)
     if pos >= len(session_bars):
-        return SimResult(0.0, float(row.get("entry_price", 0.0)), "entry_not_found", 0, False, False)
+        return SimResult(0.0, float(row.get("entry_price", 0.0)), "entry_not_found", 0, False, False, -1)
 
     ent_price = _entry_price_long(
         session_bars,
@@ -192,7 +202,7 @@ def combiner_clone_long_walk(
     stop_px = float(row["stop_price"])
     act_risk = _act_risk_long(ent_price=ent_price, stop_px=stop_px, risk_policy=cfg.risk_policy, row=row)
     if act_risk <= 0 or not math.isfinite(act_risk):
-        return SimResult(0.0, ent_price, "bad_risk", 0, False, False)
+        return SimResult(0.0, ent_price, "bad_risk", 0, False, False, -1)
 
     tgt = _target_price_long(row, ent_price=ent_price, act_risk=act_risk, target_policy=cfg.target_policy)
     amb_policy = _ambiguity_enum(cfg.same_bar_policy)
@@ -212,6 +222,9 @@ def combiner_clone_long_walk(
         max_hold_m = DEFAULT_MAX_HOLD_MINUTES
 
     any_amb = False
+    panel_exr_n = _normalize_exit_reason(row.get("exit_reason"))
+    panel_exit_i = int(row["exit_idx"]) if "exit_idx" in row and pd.notna(row.get("exit_idx")) else None
+
     for j in range(pos, cap_j):
         bars_held = j - pos + 1
         ts_j = ts.iloc[j]
@@ -221,24 +234,42 @@ def combiner_clone_long_walk(
         exr = ""
         raw_ex = 0.0
 
-        lo, hi = float(l[j]), float(h[j])
-        res, is_amb = _intrabar_resolution(low=lo, high=hi, stop=stop_px, target=tgt, policy=amb_policy)
-        if is_amb:
-            any_amb = True
+        mh_priority = cfg.max_hold_priority
+        forced_terminal = (
+            mh_priority == "forced_first_on_terminal_bar" and max_hold_m > 0 and bars_held == max_hold_m
+        )
+        panel_auth_here = (
+            mh_priority == "panel_exit_reason_authoritative"
+            and panel_exr_n == "max_hold"
+            and panel_exit_i is not None
+            and int(j) == int(panel_exit_i)
+        )
 
-        if j >= pos:
-            if res == "ambiguous_skip":
-                pass
-            elif res == "stop":
-                exr = "stop"
-                raw_ex = stop_px
-            elif res == "target":
-                exr = "target"
-                raw_ex = tgt
-
-        if not exr and max_hold_m > 0 and bars_held >= max_hold_m:
+        if panel_auth_here:
+            exr = "max_hold"
+            raw_ex = float(row["exit_price"])
+        elif forced_terminal:
             exr = "max_hold"
             raw_ex = float(c[j])
+        else:
+            lo, hi = float(l[j]), float(h[j])
+            res, is_amb = _intrabar_resolution(low=lo, high=hi, stop=stop_px, target=tgt, policy=amb_policy)
+            if is_amb:
+                any_amb = True
+
+            if j >= pos:
+                if res == "ambiguous_skip":
+                    pass
+                elif res == "stop":
+                    exr = "stop"
+                    raw_ex = stop_px
+                elif res == "target":
+                    exr = "target"
+                    raw_ex = tgt
+
+            if not exr and max_hold_m > 0 and bars_held >= max_hold_m:
+                exr = "max_hold"
+                raw_ex = float(c[j])
 
         if not exr and mfo >= int(eod_minute):
             exr = "eod_exit"
@@ -256,14 +287,14 @@ def combiner_clone_long_walk(
             else:
                 ex_price = _exit_px_long(raw_level=raw_ex, slip=exit_slip)
             r_mult = (ex_price - ent_price) / act_risk if act_risk > 0 else 0.0
-            return SimResult(float(r_mult), float(ex_price), exr, int(bars_held), bool(any_amb), False)
+            return SimResult(float(r_mult), float(ex_price), exr, int(bars_held), bool(any_amb), False, int(j))
 
     last = max(cap_j - 1, pos)
     raw_ex = float(c[last])
     ex_price = _exit_px_long(raw_level=raw_ex, slip=exit_slip)
     bars_held = last - pos + 1
     r_mult = (ex_price - ent_price) / act_risk if act_risk > 0 else 0.0
-    return SimResult(float(r_mult), float(ex_price), "panel_cap_close", int(bars_held), bool(any_amb), False)
+    return SimResult(float(r_mult), float(ex_price), "panel_cap_close", int(bars_held), bool(any_amb), False, int(last))
 
 
 def alignment_label(
@@ -342,19 +373,58 @@ def iter_default_alignment_grid() -> Iterator[CloneReplayConfig]:
         ("cfg_0012", "entry_bar", "bar_open_plus_slip", "simulated_bar_price", "apply_like_combiner", "abs_entry_minus_stop", "skip_ambiguous", "max_hold", "panel_target_price"),
         ("cfg_0013", "entry_bar", "bar_open_plus_slip", "simulated_bar_price", "apply_like_combiner", "abs_entry_minus_stop", "stop_first", "panel_exit_idx", "panel_target_price"),
         ("cfg_0014", "entry_bar", "panel_entry_price", "panel_exit_price_when_original", "apply_like_combiner", "panel_risk_per_share", "stop_first", "panel_exit_idx", "panel_target_price"),
-        ("cfg_0015", "entry_bar", "bar_open_plus_slip", "panel_exit_price_when_original", "apply_like_combiner", "abs_entry_minus_stop", "stop_first", "panel_exit_idx", "panel_target_price"),
+        ("cfg_0015", "entry_bar", "bar_open_plus_slip", "panel_exit_price_when_original", "apply_like_combiner", "abs_entry_minus_stop", "stop_first", "panel_exit_idx", "panel_target_price", "intrabar_first"),
+        (
+            "cfg_0016_mh_forced",
+            "entry_bar",
+            "bar_open_plus_slip",
+            "panel_exit_price_when_original",
+            "apply_like_combiner",
+            "abs_entry_minus_stop",
+            "stop_first",
+            "panel_exit_idx",
+            "panel_target_price",
+            "forced_first_on_terminal_bar",
+        ),
+        (
+            "cfg_0017_mh_panelauth",
+            "entry_bar",
+            "bar_open_plus_slip",
+            "panel_exit_price_when_original",
+            "apply_like_combiner",
+            "abs_entry_minus_stop",
+            "stop_first",
+            "panel_exit_idx",
+            "panel_target_price",
+            "panel_exit_reason_authoritative",
+        ),
+        (
+            "cfg_0018_mh_skipconf",
+            "entry_bar",
+            "bar_open_plus_slip",
+            "panel_exit_price_when_original",
+            "apply_like_combiner",
+            "abs_entry_minus_stop",
+            "stop_first",
+            "panel_exit_idx",
+            "panel_target_price",
+            "skip_terminal_bar_conflicts",
+        ),
     ]
     for tup in raw:
+        base = tup[:9]
+        mhp: MaxHoldPriorityT = tup[9] if len(tup) > 9 else "intrabar_first"  # type: ignore[assignment]
         yield CloneReplayConfig(
-            config_id=tup[0],
-            start_bar_policy=tup[1],  # type: ignore[arg-type]
-            entry_price_source=tup[2],  # type: ignore[arg-type]
-            exit_price_source=tup[3],  # type: ignore[arg-type]
-            slippage_policy=tup[4],  # type: ignore[arg-type]
-            risk_policy=tup[5],  # type: ignore[arg-type]
-            same_bar_policy=tup[6],  # type: ignore[arg-type]
-            forced_exit_policy=tup[7],  # type: ignore[arg-type]
-            target_policy=tup[8],  # type: ignore[arg-type]
+            config_id=base[0],
+            start_bar_policy=base[1],  # type: ignore[arg-type]
+            entry_price_source=base[2],  # type: ignore[arg-type]
+            exit_price_source=base[3],  # type: ignore[arg-type]
+            slippage_policy=base[4],  # type: ignore[arg-type]
+            risk_policy=base[5],  # type: ignore[arg-type]
+            same_bar_policy=base[6],  # type: ignore[arg-type]
+            forced_exit_policy=base[7],  # type: ignore[arg-type]
+            target_policy=base[8],  # type: ignore[arg-type]
+            max_hold_priority=mhp,
         )
 
 
@@ -366,6 +436,10 @@ def pick_best_config(agg: pd.DataFrame) -> CloneReplayConfig | None:
         sf = sub[sub["same_bar_policy"].astype(str) == "stop_first"]
         if len(sf):
             sub = sf
+    if "max_hold_priority" in sub.columns:
+        prefer = sub[sub["max_hold_priority"].astype(str).isin(("intrabar_first", "forced_first_on_terminal_bar"))]
+        if len(prefer):
+            sub = prefer
     sub = sub.sort_values(["mean_abs_r_diff", "median_abs_r_diff", "max_abs_r_diff"], ascending=True)
     row = sub.iloc[0].to_dict()
     return CloneReplayConfig.from_mapping(row)
@@ -375,16 +449,24 @@ def aggregate_alignment_per_config_slice(df: pd.DataFrame, group_cols: list[str]
     parts: list[dict[str, Any]] = []
     for key, g in df.groupby(group_cols, dropna=False):
         keys = key if isinstance(key, tuple) else (key,)
-        orig = pd.to_numeric(g["r_original"], errors="coerce")
-        rep = pd.to_numeric(g["r_replay"], errors="coerce")
+        g_use = g
+        if "max_hold_priority" in g.columns and len(g) and str(g["max_hold_priority"].iloc[0]) == "skip_terminal_bar_conflicts":
+            if "panel_exit_reason" in g.columns:
+                pe = g["panel_exit_reason"].map(_normalize_exit_reason) == "max_hold"
+                er = g["exit_reason_replay"].map(_normalize_exit_reason).isin(["stop", "target"])
+                g_use = g[~(pe & er)]
+            else:
+                g_use = g
+        orig = pd.to_numeric(g_use["r_original"], errors="coerce")
+        rep = pd.to_numeric(g_use["r_replay"], errors="coerce")
         diff = (rep - orig).abs()
         signed = rep - orig
-        n = int(len(g))
+        n = int(len(g_use))
         matched_exit = None
-        if "exit_reason_match" in g.columns:
-            matched_exit = float(pd.to_numeric(g["exit_reason_match"], errors="coerce").mean())
+        if "exit_reason_match" in g_use.columns:
+            matched_exit = float(pd.to_numeric(g_use["exit_reason_match"], errors="coerce").mean())
         sign_match = float((np.sign(orig.fillna(0)) == np.sign(rep.fillna(0))).mean()) if n else 0.0
-        amb_ct = int(g["ambiguous_bar"].sum()) if "ambiguous_bar" in g.columns else 0
+        amb_ct = int(g_use["ambiguous_bar"].sum()) if "ambiguous_bar" in g_use.columns else 0
         row_dict: dict[str, Any] = {c: keys[i] for i, c in enumerate(group_cols)}
         row_dict.update(
             {

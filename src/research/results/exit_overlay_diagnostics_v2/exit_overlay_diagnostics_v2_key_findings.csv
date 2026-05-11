@@ -1,10 +1,15 @@
 finding,value,interpretation
-synthetic_v2_superseded,yes,Prior in-repo v2 alignment was schema smoke; real run replaces curated alignment/* with manifest synthetic_or_real=real.
+synthetic_v2_superseded,yes,Real full-panel alignment replaces smoke numerics; archive under alignment/archive_synthetic_pre_full_panel/.
 panel_rows,10628,Full Champion v0 local panel slice used.
-bar_rows,617160,QQQ equity 1m bars loaded for panel span via read_bars.
-best_config,cfg_0015,Lowest mean_abs_r_diff among stop_first-preferring grid per pick_best_config.
+bar_rows,617160,QQQ equity 1m bars loaded for panel span.
+alignment_configs,18,Grid includes max_hold_priority research modes.
+best_config,cfg_0015,Best pick among economic clone policies per pick_best_config.
 mean_abs_r_diff,~0.035,Below 0.05R mean gate.
 median_abs_r_diff,~0,Below 0.02R median gate.
 total_r_diff,~+52.4,Fails aggregate gate (>15R) → ALIGNMENT_FAIL.
-max_hold_mismatch_rows,476 / 5188 max_hold,Replay hits target/stop before panel-typed max_hold path locks in.
-overlay_mode,not_run,Economic overlay tables must wait for PASS or PASS_WITH_WARNINGS.
+max_hold_mismatch_rows,476 / 5188 max_hold,Replay hits stop/target while panel types max_hold.
+pre_terminal_mismatch,476 before panel_exit_idx,Not explained by terminal-bar max_hold vs intrabar ordering alone.
+forced_first_total_r_diff,~+51.2,forced_first_on_terminal_bar: marginal aggregate change.
+panelauth_vs_intrabar,identical,panel_exit_reason_authoritative matches cfg_0015 on this dataset.
+skip_conflicts_pass,yes diagnostic,PASS only by excluding contested rows — not overlay baseline.
+overlay_mode,not_run,Economic overlay tables must wait for PASS or PASS_WITH_WARNINGS under headline clone.

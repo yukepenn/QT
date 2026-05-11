@@ -6,14 +6,15 @@
 
 ## Rationale
 
-- Full-panel **real** alignment ran on **10,628** Champion v0 rows with **617,160** QQQ 1m bars (`data/raw/ibkr`, zero missing sessions).
-- Best grid row **`cfg_0015`** achieves low **mean / median** absolute R error vs panel, but **aggregate `total_r_diff` ≈ +52.4R** exceeds the **≤5R / ≤15R** budgets → label **`ALIGNMENT_FAIL`** (see `alignment/alignment_grid_results.csv`, `full_panel_alignment_manifest.csv`).
-- Failure analysis shows drift is **not** target/stop micro-slips: it concentrates on **5188** panel **`max_hold`** rows; **476** of those have replay exiting **`target`** or **`stop`** first — **path / same-bar ordering** vs panel `max_hold` labeling (`alignment/full_panel_alignment_failure_*`).
-- **`--mode overlay`** was **not** executed; existing `overlay_v2/*` aggregates remain **non-authoritative** for economics until alignment passes (see `overlay_v2/overlay_v2_summary.md`, `overlay_v2/full_panel_overlay_manifest.csv`).
+- Full-panel **real** alignment reran on **10,628** Champion v0 rows with **617,160** QQQ 1m bars; **`alignment_decision`** remains **`ALIGNMENT_FAIL`** for headline clone **`cfg_0015`** (`total_r_diff` ≈ **+52.4R**).
+- Combiner audit (`max_hold_alignment_v1/combiner_max_hold_semantics.md`): on each in-position bar, **intrabar stop/target are evaluated before `max_hold`**; terminal **`max_hold` does not preempt** intrabar touches on that bar (`src/combiner/simulator.py`).
+- Max_hold drift is **5188** panel rows typed **`max_hold`**; **476** have replay exiting **`stop`** or **`target`** first. Row-level classification (`max_hold_alignment_v1/max_hold_drift_overview.*`): **all 476** replays exit on a bar index **strictly before** `panel_exit_idx` (**pre-terminal** path divergence), not “same bar max_hold vs intrabar”.
+- Research-only modes: **`forced_first_on_terminal_bar`** marginally lowers **`total_r_diff`** (~**51.2R**); **`panel_exit_reason_authoritative`** matches **`cfg_0015`** aggregates because the override only applies at **`j == panel_exit_idx`**; **`skip_terminal_bar_conflicts`** yields **`ALIGNMENT_PASS`** only by **excluding** mismatches — **not** overlay-eligible.
+- **`--mode overlay`** was **not** executed; gate **`OVERLAY_BLOCKED_ALIGNMENT_FAIL`** (`max_hold_alignment_v1/overlay_gate_after_max_hold_alignment.md`).
 
 ## Recommended next step
 
-Refine **`combiner_clone_long_walk`** / panel exit labeling so **max_hold** vs intrabar **stop/target** resolution matches the combiner + archived panel; then rerun **`--mode alignment`**, and only if PASS / PASS_WITH_WARNINGS rerun **`--mode overlay`** with ambiguity policies.
+Reconcile **pre-terminal** replay vs panel for the **476** rows: verify **entry bar index**, **stop/target levels**, **`panel_exit_idx` cap**, and **session bar alignment** against combiner materialization assumptions before changing economic overlay design.
 
 ## Explicit non-runs
 

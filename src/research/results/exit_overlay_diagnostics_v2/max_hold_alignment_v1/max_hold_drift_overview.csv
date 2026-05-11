@@ -1,0 +1,10 @@
+metric,value
+git_tip_at_build,c342c7b9c963f0154ece92271ff88af7b66fcb6a
+alignment_config,cfg_0015
+panel_rows_in_detail,10628
+max_hold_panel_rows,5188
+max_hold_mismatch_rows_replay_stop_or_target,476
+mismatch_touch_before_panel_exit_idx,476
+mismatch_touch_on_panel_exit_idx,0
+mismatch_touch_after_panel_exit_idx,0
+replay_exit_reason_dist_on_mismatches,"{'target': 276, 'stop': 200}"

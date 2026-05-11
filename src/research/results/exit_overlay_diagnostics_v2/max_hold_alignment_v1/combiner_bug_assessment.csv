@@ -1,0 +1,3 @@
+classification,summary
+AMBIGUOUS_SEMANTICS_DOCUMENT_ONLY,"Combiner loop orders intrabar stop/target before max_hold on each bar (simulator.py); panel max_hold with earlier replay stop/target implies path/materialization mismatch, not a proven single-line bug."
+INSUFFICIENT_PANEL_TRACE,"476 rows need reconciling fields (e.g. effective intrabar policy at archive time, staged stop, partials) to prove whether panel or clone diverges from historical combiner."

@@ -6,18 +6,29 @@ local_full_panel_input_check.csv,Input check table,high,10,no,
 full_panel_commands.md,CLI reference,medium,,no,
 full_panel_commands.ps1,Validation helper script,low,,no,Run from repo root
 alignment/full_panel_alignment_manifest.csv,Single-row alignment manifest,high,2,no,synthetic_or_real=real
-alignment/alignment_grid_results.csv,All configs aggregate metrics,high,16,no,
+alignment/alignment_grid_results.csv,All configs aggregate metrics,high,18,no,Includes max_hold_priority column
 alignment/alignment_best_config.yaml,Best clone YAML,high,,no,
 alignment/alignment_decision.md,Gate label,high,,no,
 alignment/full_panel_alignment_failure_analysis.md,Drift narrative,high,,no,
 alignment/full_panel_alignment_failure_by_exit_reason.csv,Drift slice,high,5,no,
 alignment/full_panel_alignment_failure_max_hold_path_divergence.csv,max_hold path counts,high,3,no,
 alignment/archive_synthetic_pre_full_panel/*,Pre-run synthetic backup,medium,,no,
+max_hold_alignment_v1/baseline_inventory.md,Pre-work snapshot + inputs,high,,no,
+max_hold_alignment_v1/baseline_inventory.csv,Machine-readable baseline,high,20,no,
+max_hold_alignment_v1/combiner_max_hold_semantics.md,Combiner ordering audit,high,,no,
+max_hold_alignment_v1/combiner_max_hold_semantics.csv,Audit table,high,8,no,
+max_hold_alignment_v1/max_hold_drift_overview.md,Drift counts narrative,high,,no,
+max_hold_alignment_v1/max_hold_drift_overview.csv,Drift counts,high,10,no,
+max_hold_alignment_v1/max_hold_alignment_comparison.md,Config mode comparison,high,,no,
+max_hold_alignment_v1/max_hold_alignment_comparison.csv,Comparison table,high,5,no,
+max_hold_alignment_v1/overlay_gate_after_max_hold_alignment.md,Overlay eligibility,high,,no,
+max_hold_alignment_v1/combiner_bug_assessment.md,Bug vs trace assessment,high,,no,
 bar_load_meta.csv,Bar load summary,high,2,no,
 overlay_v2/overlay_v2_summary.md,Overlay status banner,high,,no,States overlay not run
 overlay_v2/full_panel_overlay_manifest.csv,Overlay run manifest,high,2,no,not_run
 comparison_not_run_reason.md,Why exit vs router not refreshed,medium,,no,
 exit_overlay_diagnostics_v2_decision.md,Single decision label,high,,no,REFINE_REPLAY_ALIGNMENT
 CHATGPT_REVIEW_BUNDLE.md,ChatGPT narrative,high,,no,
-exit_overlay_diagnostics_v2_key_findings.csv,Key metrics,high,9,no,
-local_rows/alignment_trade_detail.csv,Per-config per-trade alignment rows,low,159420,yes,DO NOT COMMIT
+exit_overlay_diagnostics_v2_key_findings.csv,Key metrics,high,12,no,
+src/research/build_max_hold_alignment_v1_aggregates.py,Emit max_hold_alignment_v1 aggregates,medium,,yes,Reads gitignored alignment_trade_detail.csv
+local_rows/alignment_trade_detail.csv,Per-config per-trade alignment rows,low,191304,yes,DO NOT COMMIT

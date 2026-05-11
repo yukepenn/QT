@@ -1,10 +1,15 @@
 section,item,metric,value,interpretation
-alignment,best_config,config_id,cfg_0015,Lowest mean_abs_r_diff among stop_first-preferring configs
-alignment,gate,label,ALIGNMENT_FAIL,total_r_diff exceeds PASS/PWW budgets
+alignment,best_config,config_id,cfg_0015,Still lowest mean_abs_r_diff among stop_first + intrabar/forced max_hold picks
+alignment,gate,label,ALIGNMENT_FAIL,total_r_diff ~ +52.4R exceeds PASS/PWW budgets
+alignment,grid_size,configs,18,Includes max_hold_priority variants
 alignment,rows,panel_rows_used,10628,Full Champion v0 slice
 alignment,bars,bar_rows_used,617160,QQQ 1m parquet span
 alignment,mean_abs_r_diff,mean_abs_r_diff,~0.035,Below 0.05R per-trade mean gate
 alignment,total_r_diff,total_r_diff,~+52.4,Fails aggregate gate
-drift,max_hold_subset,mismatch_rows,476 / 5188,Replay target/stop vs panel max_hold labeling
-overlay,mode,ran,no,Skipped due to ALIGNMENT_FAIL
-decision,label,one_of,REFINE_REPLAY_ALIGNMENT,Fix replay max_hold path before overlay economics
+drift,max_hold_subset,mismatch_rows,476 / 5188,Replay stop/target vs panel max_hold
+drift,touch_timing,replay_vs_panel_exit_idx,476 before / 0 on / 0 after,Pre-terminal path divergence (not terminal-bar ordering)
+modes,forced_first,total_r_diff,~+51.2,Small improvement; still FAIL
+modes,panelauth,total_r_diff,~+52.4,Override only at j==panel_exit_idx; never fires on mismatches here
+modes,skip_conflicts,label,ALIGNMENT_PASS,Excludes mismatched rows — diagnostic only
+overlay,mode,ran,no,Blocked: ALIGNMENT_FAIL
+decision,label,one_of,REFINE_REPLAY_ALIGNMENT,Audit pre-terminal materialization before overlay

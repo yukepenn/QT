@@ -172,6 +172,8 @@ class SimResult:
     bars_held: int
     ambiguous_bar: bool
     changed_exit_vs_replay: bool
+    #: Index into ``session_bars`` at exit (0-based). ``-1`` if unknown / sentinel path.
+    exit_bar_index: int = -1
 
 
 def simulate_long_overlay(
