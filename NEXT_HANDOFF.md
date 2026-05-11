@@ -7,8 +7,8 @@
 | Branch | `main` |
 | Parent before this cycle | **`fefb268`** — `Research(router): refine offline quality diagnostics` |
 | **Main research commit (this cycle)** | **`26e95cf4b37f7aec1976db4f320e2b0e2c9ed4a0`** (`26e95cf`) — `Research(exit): run overlay diagnostics` |
-| Repo tip (after push) | **`898cff30d97d59741f2b9df6918e724dbb86b829`** (`898cff3`) — `Docs(handoff): set repo tip SHA` (includes prior handoff SHA fix); matches **`git ls-remote origin refs/heads/main`** as of push |
-| Push status | **Pushed** to `origin/main` (see tip SHA above) |
+| Repo tip (after push) | **`e2c539cf5a3d8c426a4905144ceba715a378578d`** (`e2c539c`) — `Docs(handoff): sync NEXT remote tip` — matches **`git ls-remote origin refs/heads/main`** |
+| Push status | **Pushed** — local `main` aligned with `origin/main` |
 | Working tree | Expect **untracked** heavy/local artifacts under `src/combiner/results/**`, enriched/scored CSVs, logs — **do not** `git add .` |
 | Expected untracked local-only | `local_detailed_trade_context_replay_v1/local_rows/**`, `exit_overlay_diagnostics_v1/local_rows/**`, `.cache/qt/candidate_signals/**`, `sweep_*`, `top_runs/` |
 
