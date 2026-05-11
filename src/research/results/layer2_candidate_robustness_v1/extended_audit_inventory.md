@@ -2,7 +2,7 @@
 
 ## Repo / handoff
 
-- **git tip:** `d058827 Docs(handoff): mark push complete`
+- **git tip:** `c69ea89 Docs(research): refresh extended audit inventory git tip`
 - **handoff decision (parsed from `layer2_candidate_robustness_decision.md` then `NEXT_HANDOFF.md`):** `CREATE_ROBUST_L2_CORE_V2_DESIGN`
 
 ## Candidate root and coverage
