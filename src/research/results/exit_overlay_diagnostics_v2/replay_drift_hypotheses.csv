@@ -1,0 +1,6 @@
+hypothesis,v2_switch_or_metric,notes
+exit_slip_missing,slippage_policy,matches combiner _numba_exit_px
+entry_bar_timestamp,start_bar_policy,searchsorted on entry_ts_utc
+risk_denominator,risk_policy,panel vs abs(entry-stop)
+target_materialization,target_policy,panel vs entry_plus_target_r_times_risk
+path_truncation,forced_exit_policy,panel_exit_idx caps bars

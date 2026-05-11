@@ -1,0 +1,21 @@
+# overlay_v2_config (research-only)
+
+overlays_default:
+  - baseline_original
+  - combiner_clone_replay
+  - max_hold_tighten_60
+  - trend_swing_2R_contextual
+  - runner_after_1R_trail_vwap_contextual
+  - runner_after_1R_trail_atr_contextual
+  - no_followthrough_exit_5bars_contextual
+
+ambiguity_policies_default:
+  - stop_first
+  - target_first
+  - skip_ambiguous
+
+clone_headline_same_bar: stop_first
+
+reference_only_optional:
+  - max_hold_tighten_30
+  - no_followthrough_exit_3bars

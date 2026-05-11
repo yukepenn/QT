@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- Research(exit): **exit overlay diagnostics v2 (combiner-aligned replay scaffolding)** — `src/research/exit_overlay_alignment.py` (`combiner_clone_long_walk`, alignment grid, metrics); `src/research/run_exit_overlay_diagnostics_v2.py` (`alignment` / `overlay` modes, dry-run plans, aggregates); `src/research/exit_overlay_sim.py` (`combiner_clone_replay` via `clone_replay_cfg`, contextual overlay IDs); `tests/test_exit_overlay_alignment.py`, `tests/test_run_exit_overlay_diagnostics_v2.py`; `exit_overlay_alignment.py` fix for **zero `total_r_diff`** in alignment labels; curated `src/research/results/exit_overlay_diagnostics_v2/**` (incl. synthetic-smoke CSVs for schema — **re-run locally** on full panel + parquet for economics); `exit_overlay_diagnostics_v2_artifact_validation.csv`; `NEXT_HANDOFF.md` / indexes refreshed. **Decision (curated):** **`REFINE_REPLAY_ALIGNMENT`**. **No** WFO/live/SPY/broad L2/Global L1; **no** production router/exit-management; **no** strategy/feature/YAML edits; **no** `local_rows/**` commits.
+
 - Docs(handoff): **NEXT_HANDOFF remote tip** — document final `origin/main` SHA after handoff follow-up commits.
 
 - Docs(handoff): **NEXT_HANDOFF SHA correction** — align documented main/tip SHA with amended `Research(exit): run overlay diagnostics` commit after `git commit --amend`.

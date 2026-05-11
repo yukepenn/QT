@@ -1,0 +1,7 @@
+overlay_id,eligibility_rule,notes
+baseline_original,all trades,panel r_multiple reference
+combiner_clone_replay,all trades,uses alignment_best_config.yaml
+max_hold_tighten_60,broad diagnostic,cap 60 bars
+trend_swing_2R_contextual,trend_long or always_in_long + VWAP supportive + not late_climax,extends trend_swing_2R
+runner_*_contextual,strong trend_long/always_in_long + not late_climax + not range_chop,after +1R
+no_followthrough_exit_5bars_contextual,GAP candidate or trading_range/late_climax or downtrend market label,not global PA trend

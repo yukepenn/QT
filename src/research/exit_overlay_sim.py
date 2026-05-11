@@ -80,6 +80,56 @@ def trend_swing_eligible(row: pd.Series) -> bool:
     return ctx == "trend_long" or lab == "always_in_long"
 
 
+def _decision_truthy(row: pd.Series, *keys: str) -> bool:
+    for k in keys:
+        if k not in row.index:
+            continue
+        v = row[k]
+        if pd.isna(v):
+            continue
+        if isinstance(v, (bool, np.bool_)):
+            if bool(v):
+                return True
+            continue
+        s = str(v).strip().lower()
+        if s in ("true", "1", "t", "yes"):
+            return True
+        try:
+            if float(v) != 0.0:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
+
+def trend_swing_2R_contextual_eligible(row: pd.Series) -> bool:
+    if str(row.get("context_bucket", "") or "") == "late_climax":
+        return False
+    if not trend_swing_eligible(row):
+        return False
+    return _decision_truthy(row, "decision_close_above_vwap", "close_above_vwap")
+
+
+def runner_contextual_eligible(row: pd.Series) -> bool:
+    if str(row.get("context_bucket", "") or "") == "late_climax":
+        return False
+    if str(row.get("market_context_label", "") or "") == "range_chop":
+        return False
+    ctx = str(row.get("context_bucket", "") or "")
+    lab = str(row.get("decision_pa_always_in_side_20_label", "") or "")
+    return ctx == "trend_long" or lab == "always_in_long"
+
+
+def no_followthrough_5bars_contextual_eligible(row: pd.Series) -> bool:
+    cid = str(row.get("candidate_id", "") or "")
+    if "GAP" in cid.upper():
+        return True
+    if str(row.get("context_bucket", "") or "") in ("trading_range", "late_climax"):
+        return True
+    m = str(row.get("market_context_label", "") or "")
+    return "downtrend" in m
+
+
 def _side_is_long(side: Any) -> bool:
     s = str(side).lower()
     if s in ("long", "1", "true"):
@@ -202,6 +252,24 @@ def simulate_long_overlay(
 
     replay = fixed_walk(target, None)
 
+    oid = overlay_id
+    if oid == "trend_swing_2R_contextual":
+        if row is None or not trend_swing_2R_contextual_eligible(row):
+            return replay
+        oid = "trend_swing_2R"
+    elif oid == "runner_after_1R_trail_vwap_contextual":
+        if row is None or not runner_contextual_eligible(row):
+            return replay
+        oid = "runner_after_1R_trail_vwap"
+    elif oid == "runner_after_1R_trail_atr_contextual":
+        if row is None or not runner_contextual_eligible(row):
+            return replay
+        oid = "runner_after_1R_trail_atr"
+    elif oid == "no_followthrough_exit_5bars_contextual":
+        if row is None or not no_followthrough_5bars_contextual_eligible(row):
+            return replay
+        oid = "no_followthrough_exit_5bars"
+
     if overlay_id == "baseline_original":
         if row is None:
             return replay
@@ -218,14 +286,14 @@ def simulate_long_overlay(
     if overlay_id == "fixed_target_replay":
         return replay
 
-    if overlay_id in ("trend_swing_1p5R", "trend_swing_2R"):
+    if oid in ("trend_swing_1p5R", "trend_swing_2R"):
         if row is None or not trend_swing_eligible(row):
             return replay
-        mult = 1.5 if overlay_id == "trend_swing_1p5R" else 2.0
+        mult = 1.5 if oid == "trend_swing_1p5R" else 2.0
         tgt2 = entry + mult * risk
         return fixed_walk(tgt2, None)
 
-    if overlay_id == "runner_after_1R_trail_vwap":
+    if oid == "runner_after_1R_trail_vwap":
         active = False
         trail = stop
         amb = False
@@ -262,7 +330,7 @@ def simulate_long_overlay(
         px = float(c[-1])
         return SimResult((px - entry) / risk, px, "session_end", len(session_bars) - pos, amb, True)
 
-    if overlay_id == "runner_after_1R_trail_atr":
+    if oid == "runner_after_1R_trail_atr":
         active = False
         trail = stop
         amb = False
@@ -298,8 +366,8 @@ def simulate_long_overlay(
         px = float(c[-1])
         return SimResult((px - entry) / risk, px, "session_end", len(session_bars) - pos, amb, True)
 
-    if overlay_id in ("no_followthrough_exit_3bars", "no_followthrough_exit_5bars"):
-        n_ft = 3 if "3bars" in overlay_id else 5
+    if oid in ("no_followthrough_exit_3bars", "no_followthrough_exit_5bars"):
+        n_ft = 3 if "3bars" in oid else 5
         thr = 0.15 * risk
         for j in range(pos, len(session_bars)):
             bar = j - pos + 1
@@ -324,8 +392,8 @@ def simulate_long_overlay(
         px = float(c[min(len(session_bars) - 1, pos + 500)])
         return SimResult((px - entry) / risk, px, "session_end", len(session_bars) - pos, False, True)
 
-    if overlay_id in ("max_hold_tighten_30", "max_hold_tighten_60"):
-        cap = 30 if "30" in overlay_id else 60
+    if oid in ("max_hold_tighten_30", "max_hold_tighten_60"):
+        cap = 30 if "30" in oid else 60
         amb = False
         for j in range(pos, len(session_bars)):
             bar = j - pos + 1
@@ -357,9 +425,16 @@ def simulate_row(
     row: pd.Series,
     overlay_id: str,
     ambiguity: AmbiguityPolicy,
+    clone_replay_cfg: Any | None = None,
 ) -> SimResult:
     if not _side_is_long(row.get("side", "long")):
         return SimResult(0.0, float(row.get("entry_price", 0.0)), "not_long_skipped", 0, False, False)
+    if overlay_id == "combiner_clone_replay":
+        if clone_replay_cfg is None:
+            raise ValueError("combiner_clone_replay requires clone_replay_cfg=CloneReplayConfig(...)")
+        from src.research.exit_overlay_alignment import combiner_clone_long_walk
+
+        return combiner_clone_long_walk(session_bars=session_bars, row=row, cfg=clone_replay_cfg)
     return simulate_long_overlay(
         session_bars=session_bars,
         entry_ts_utc=pd.Timestamp(row["entry_ts_utc"]),

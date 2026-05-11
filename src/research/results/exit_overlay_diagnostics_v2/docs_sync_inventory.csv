@@ -1,0 +1,6 @@
+file,stale_issue_found,action_taken,behavior_change,notes
+NEXT_HANDOFF.md,v1-only scope,rewritten A-L for V2,handoff only,
+RESULTS_INDEX.md,missing v2,added exit_overlay_diagnostics_v2,index,
+PROJECT_STATUS.md,missing v2,added paragraph,status,
+PROGRESS.md,missing v2,added line,changelog,
+CHANGES.md,missing v2,added bullet,changelog,

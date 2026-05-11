@@ -1,0 +1,5 @@
+path,variant,profile_id,total_r,PF_R,maxDD_proxy,retention_pct,implementation_complexity,overfit_risk,data_quality_risk,next_step_priority
+router_v2_best_promising,(see router_v2_results.csv),(see file),(see file),(see file),(see file),(see file),medium,high_without_oos,low,diagnostic_only
+quality_v2_best_in_sample,(see quality_variant_results.csv),(see file),(see file),(see file),(see file),(see file),medium,high_in_sample,low,diagnostic_only
+combined_light_guard_top_row,(see combined_guard_results.csv),(see file),(see file),(see file),(see file),(see file),high_combo,medium_high,low,diagnostic_only
+exit_overlay_v2_aligned,(pending full panel),(pending),(pending),(pending),(pending),1.0,medium_exit_engine,medium_path_sim,ambiguous_intrabar,blocked_until_alignment_pass

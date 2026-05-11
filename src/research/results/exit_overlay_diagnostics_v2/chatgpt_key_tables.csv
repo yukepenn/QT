@@ -1,0 +1,5 @@
+section,item,metric,value,interpretation
+alignment,synthetic_row,best_config_id,cfg_0005,grid winner on 1-row smoke only
+alignment,synthetic_row,label,ALIGNMENT_FAIL,need full panel + parquet
+v1_drift,fixed_target_replay,primary_cause,missing_exit_slip,combiner uses raw_ex-slip
+overlay,headline_baseline,r_clone_vs_panel,see_sanity_csv,clone should converge after alignment

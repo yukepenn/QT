@@ -1,0 +1,9 @@
+topic,convention,source_reference
+entry_bar,signal_i_plus_1_open,simulator.py entry_idx
+entry_price_long,open_next_plus_slip,simulator.py ent_price
+stop_price,signal_bar_stop_matrix,simulator.py stop_m
+exit_price_long,raw_minus_slip,simulator.py _numba_exit_px
+same_bar_long,stop_before_target,simulator.py hit_stop and hit_tgt
+max_hold,bars_held_from_entry_idx,simulator.py bh
+eod_exit,minute_ge_default_389,exit_overlay_sim EOD_EXIT_MINUTE
+r_multiple,(exit-entry)/act_risk,simulator.py r_mult
