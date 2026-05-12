@@ -1,15 +1,24 @@
 """Single-strategy backtest adapter.
 
-Canonical fill/exit/PnL lives in ``src.execution``. This module converts signal
-rows to ``TradeIntent`` and calls ``execution.path.simulate_trade_path``.
+Canonical fill / exit / risk / target materialization / PnL lives in
+``src.execution``. This module **only**:
 
-``run_backtest`` delegates to ``legacy.engine_legacy`` for historical sweep
-parity until fully ported.
+- validates standard signal columns,
+- maps each signal row to a raw :class:`TradeIntent` (no entry fill, no risk,
+  no fixed-R target math),
+- calls :func:`src.execution.path.simulate_trade_path`,
+- flattens :class:`TradeResult` for metrics.
+
+``run_backtest`` delegates to ``legacy.engine_legacy`` — **legacy Numba
+accounting**, pre-reset semantics, **not** canonical execution. Do not treat
+its outputs as interchangeable with ``run_strategy_backtest``.
 
 Canonical signal columns (default :class:`BacktestConfig` maps these):
 
-- ``sig_valid``, ``sig_side``, ``sig_stop``, ``sig_target``, ``sig_target_mode``,
-  ``sig_target_r``, ``sig_risk_per_share``, ``sig_max_hold_bars`` (optional),
+- ``sig_valid``, ``sig_side``, ``sig_stop``, ``sig_target`` (optional for
+  ``fixed_r``), ``sig_target_mode``, ``sig_target_r``, ``sig_risk_per_share``
+  (optional — execution derives risk if absent),
+  ``sig_max_hold_bars`` (optional),
   ``sig_candidate_id``, ``sig_strategy``, ``sig_management_mode`` (optional).
 
 Strategies may emit legacy names internally; map them before calling
@@ -36,7 +45,7 @@ def run_backtest(
     *,
     config: BacktestConfig | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
-    """Legacy engine (pre-reset semantics) for full sweep parity."""
+    """Legacy engine (Numba fast path, pre-reset semantics) — **not canonical**."""
     return run_backtest_legacy(df, config=config)
 
 
@@ -64,29 +73,70 @@ def signals_to_trade_intents(
     cfg: BacktestConfig,
     local_entry_idx: int,
     global_signal_idx: int,
-    entry_price: float,
-    stop_px: float,
-    tgt_px: float,
-    risk: float,
-    tr: float,
-    tm: str,
     strategy_name: str,
-) -> TradeIntent:
-    sd = int(row[cfg.side_col])
+) -> TradeIntent | None:
+    """Map one valid signal row to a **raw** :class:`TradeIntent` (no fill/risk/target math)."""
+    sd = int(row[cfg.side_col]) if not pd.isna(row[cfg.side_col]) else 0
+    if sd == 0:
+        return None
+    stop_raw = row[cfg.stop_col]
+    if pd.isna(stop_raw):
+        return None
+    stop_px = float(stop_raw)
+    tm = str(row[cfg.target_mode_col] or "").strip().lower()
+    if tm not in ("fixed_r", "fixed_price", "none"):
+        return None
+
+    tr_raw = row[cfg.target_r_col]
+    tgt_raw = row[cfg.target_col]
+    rs_raw = row.get(cfg.risk_col, float("nan"))
+
+    target_r: float | None
+    target_px: float | None
+    risk_override: float | None
+
+    if tm == "fixed_r":
+        if pd.isna(tr_raw) or not (float(tr_raw) == float(tr_raw) and float(tr_raw) > 0):
+            return None
+        target_r = float(tr_raw)
+        target_px = None
+    elif tm == "fixed_price":
+        if pd.isna(tgt_raw):
+            return None
+        target_r = None
+        target_px = float(tgt_raw)
+    else:
+        target_r = None
+        target_px = None
+
+    if pd.isna(rs_raw):
+        risk_override = None
+    else:
+        risk_override = float(rs_raw)
+
+    cand = row.get("sig_candidate_id", strategy_name)
+    if pd.isna(cand):
+        cand = strategy_name
+    mgm = row.get("sig_management_mode", "fixed_r")
+    if pd.isna(mgm) or str(mgm).strip() == "":
+        mgm = "fixed_r"
+
+    max_hold = int(cfg.max_hold_minutes) if cfg.max_hold_minutes is not None else None
+
     return TradeIntent(
-        candidate_id=strategy_name,
+        candidate_id=str(cand),
         strategy=strategy_name,
         side=sd,
         signal_idx=int(global_signal_idx),
         entry_idx=int(local_entry_idx),
-        stop_price=float(stop_px),
-        target_price=float(tgt_px),
-        target_r=float(tr) if tm == "fixed_r" else 0.0,
-        risk_per_share=float(risk),
-        max_hold_bars=int(cfg.max_hold_minutes) if cfg.max_hold_minutes is not None else None,
-        management_mode="fixed_r",
+        stop_price=stop_px,
+        max_hold_bars=max_hold,
+        management_mode=str(mgm),
+        target_mode=tm,  # type: ignore[arg-type]
+        target_price=target_px,
+        target_r=target_r,
+        risk_per_share=risk_override,
         qty=float(cfg.quantity),
-        target_mode="fixed_r" if tm == "fixed_r" else "fixed_price",
         metadata={},
     )
 
@@ -105,9 +155,12 @@ def trade_results_to_frame(results: list[TradeResult]) -> pd.DataFrame:
             {
                 "ok": r.ok,
                 "reject_reason": r.reject_reason,
+                "gross_r_multiple": r.gross_r_multiple,
+                "net_r_multiple": r.net_r_multiple,
                 "r_multiple": r.r_multiple,
-                "net_pnl_per_share": r.net_pnl_per_share,
+                "risk_per_share": r.risk_per_share,
                 "gross_pnl_per_share": r.gross_pnl_per_share,
+                "net_pnl_per_share": r.net_pnl_per_share,
                 "bars_held": r.bars_held,
                 "exit_reason": _exit_reason_str(r.exit_reason),
                 "legs": len(r.legs),
@@ -125,7 +178,11 @@ def run_strategy_backtest(
     policy: ExecutionPolicy | None = None,
     exit_plan: ExitPlan | None = None,
 ) -> tuple[pd.DataFrame, dict]:
-    """Canonical backtest: per session, first valid signal → ``execution`` path."""
+    """Canonical backtest: per session, first valid signal → execution path.
+
+    MVP: **one trade per session** after first qualifying signal. No fill,
+    risk, or target math here — only raw field extraction.
+    """
     cfg = config or BacktestConfig()
     pol = policy or default_intraday_policy(
         slippage_per_share=cfg.slippage_per_share,
@@ -144,57 +201,24 @@ def run_strategy_backtest(
             row = sess.iloc[i]
             v = row[cfg.valid_col]
             valid = not pd.isna(v) and bool(v)
-            sd = int(row[cfg.side_col]) if not pd.isna(row[cfg.side_col]) else 0
-            if not valid or sd == 0:
+            if not valid:
                 continue
             if i + 1 >= n:
                 continue
             if sess.iloc[i + 1][cfg.session_col] != row[cfg.session_col]:
                 continue
-            stop_raw = row[cfg.stop_col]
-            if pd.isna(stop_raw):
-                continue
-            stop_px = float(stop_raw)
             ent_i = i + 1
-            ent_open = float(sess.iloc[ent_i][cfg.open_col])
-            slip = float(pol.slippage_per_share)
-            entry_price = ent_open + slip if sd == 1 else ent_open - slip
-            if sd == 1:
-                risk = entry_price - stop_px
-            else:
-                risk = stop_px - entry_price
-            if risk <= 0:
-                continue
-            tm = str(row[cfg.target_mode_col] or "").strip().lower()
-            tr_raw = row[cfg.target_r_col]
-            tr = float(tr_raw) if not pd.isna(tr_raw) else float("nan")
-            tgt_raw = row[cfg.target_col]
-            if pd.isna(tgt_raw):
-                continue
-            if tm == "fixed_r":
-                if not (tr == tr and tr > 0):
-                    continue
-                tgt_px = entry_price + tr * risk if sd == 1 else entry_price - tr * risk
-            elif tm == "fixed_price":
-                tgt_px = float(tgt_raw)
-            else:
-                continue
             strat = str(row.get(cfg.strategy_col, "strategy") or "strategy")
-            local_entry = ent_i
-            bars_slice = work.iloc[gix].reset_index(drop=True)
             intent = signals_to_trade_intents(
                 row,
                 cfg=cfg,
-                local_entry_idx=local_entry,
+                local_entry_idx=ent_i,
                 global_signal_idx=int(gix[i]),
-                entry_price=entry_price,
-                stop_px=stop_px,
-                tgt_px=tgt_px,
-                risk=risk,
-                tr=tr,
-                tm=tm,
                 strategy_name=strat,
             )
+            if intent is None:
+                continue
+            bars_slice = work.iloc[gix].reset_index(drop=True)
             res = simulate_trade_path(bars_slice, intent, pol, exit_plan)
             if not res.ok:
                 continue
@@ -202,13 +226,15 @@ def run_strategy_backtest(
                 {
                     "session_date": row[cfg.session_col],
                     "r_multiple": res.r_multiple,
+                    "gross_r_multiple": res.gross_r_multiple,
+                    "net_r_multiple": res.net_r_multiple,
                     "net_pnl": res.net_pnl_per_share * cfg.quantity,
                     "exit_reason": _exit_reason_str(res.exit_reason),
                     "bars_held": res.bars_held,
-                    "risk_per_share": risk,
+                    "risk_per_share": res.risk_per_share,
                 }
             )
-            break  # MVP: one trade per session
+            break
 
     tdf = trades_to_frame(trades)
     summ = (

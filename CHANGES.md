@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Test(execution):** expand accounting boundary matrix — `materialize.py` (entry/risk/target + targetless guards); gross/net R on `TradeResult`; `scale_fill_policy` (`close` / `trigger_price`); backtest adapter boundary (raw `TradeIntent` only); metrics `total_gross_r`; sweep legacy banner; docs (`EXECUTION_SEMANTICS`, boundary review + test matrix summary, ownership audit); tests (**68** `pytest`).
+
 - **Test(execution):** canonical execution smoke — hardened `src/execution` (exit order, conservative trailing, touch scale-out + close fill, NFT, `ExitPlan.max_hold_bars_cap`, `TradeResult` helpers / `REJECTED`); combiner `selection`/`state` helpers; backtest `trade_results_to_frame`; `scripts/canonical_execution_smoke.py`; docs (`CANONICAL_EXECUTION_*`, `CODE_READABILITY_CHECK`, `ACCOUNTING_OWNERSHIP_AUDIT`, `EXECUTION_SEMANTICS`, audits); expanded tests (**49** `pytest`).
 
 - **Feat(execution):** canonical **`src/execution/`** package (types, policy, fill, exits, pnl, validators, reference `path.simulate_trade_path`; `fast_path` delegates to reference). **`src/management/`**, **`src/router/`**, **`src/portfolio/`** scaffolds. **`src/data/validation.py`**, **`src/utils/io.py`** helpers.

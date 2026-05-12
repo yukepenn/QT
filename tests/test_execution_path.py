@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from src.execution.path import simulate_trade_path
 from src.execution.policy import default_intraday_policy
-from src.execution.types import ExitPlan, ExitReason, Side, TradeIntent
+from src.execution.types import ExitPlan, ExitReason, ScaleOutRule, Side, TradeIntent, TrailingRule
 
 
 def _bars(n: int = 10) -> pd.DataFrame:
@@ -285,3 +286,157 @@ def test_exit_plan_max_hold_cap():
     assert res.ok
     assert res.exit_reason == ExitReason.MAX_HOLD
     assert res.bars_held == 2
+
+
+def test_stop_checked_before_scale_out_same_bar():
+    df = pd.DataFrame(
+        {
+            "open": [100.0, 100.0],
+            "high": [100.0, 103.0],
+            "low": [100.0, 94.0],
+            "close": [100.0, 95.0],
+            "minute_from_open": np.array([0, 1], dtype=np.int32),
+        }
+    )
+    pol = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=0.0, eod_exit_minute=999)
+    plan = ExitPlan(scale_outs=(ScaleOutRule(trigger_r=0.5, exit_fraction=1.0),))
+    intent = TradeIntent(
+        candidate_id="c",
+        strategy="s",
+        side=1,
+        signal_idx=0,
+        entry_idx=0,
+        stop_price=99.0,
+        target_price=300.0,
+        target_r=50.0,
+        risk_per_share=1.0,
+        max_hold_bars=None,
+        management_mode="runner",
+    )
+    res = simulate_trade_path(df, intent, pol, plan)
+    assert res.ok
+    assert res.exit_reason == ExitReason.STOP
+
+
+def test_trailing_prior_checked_before_scale_out():
+    df = pd.DataFrame(
+        {
+            "open": [100.0, 100.0, 101.0],
+            "high": [100.0, 100.4, 103.0],
+            "low": [100.0, 99.9, 99.3],
+            "close": [100.0, 100.2, 102.0],
+            "minute_from_open": np.array([0, 1, 2], dtype=np.int32),
+        }
+    )
+    pol = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=0.0, eod_exit_minute=999)
+    plan = ExitPlan(
+        trailing=TrailingRule(distance_r=1.0),
+        scale_outs=(ScaleOutRule(trigger_r=0.5, exit_fraction=1.0),),
+    )
+    intent = TradeIntent(
+        candidate_id="c",
+        strategy="s",
+        side=1,
+        signal_idx=0,
+        entry_idx=1,
+        stop_price=90.0,
+        target_price=300.0,
+        target_r=50.0,
+        risk_per_share=1.0,
+        max_hold_bars=None,
+        management_mode="runner",
+    )
+    res = simulate_trade_path(df, intent, pol, plan)
+    assert res.ok
+    assert res.exit_reason == ExitReason.TRAILING
+
+
+def test_target_checked_before_max_hold_same_bar():
+    df = pd.DataFrame(
+        {
+            "open": [100.0, 100.0],
+            "high": [100.0, 102.5],
+            "low": [100.0, 99.5],
+            "close": [100.0, 102.0],
+            "minute_from_open": np.array([0, 1], dtype=np.int32),
+        }
+    )
+    pol = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=0.0, eod_exit_minute=999)
+    intent = TradeIntent(
+        candidate_id="c",
+        strategy="s",
+        side=1,
+        signal_idx=0,
+        entry_idx=1,
+        stop_price=99.0,
+        target_price=300.0,
+        target_r=2.0,
+        risk_per_share=1.0,
+        max_hold_bars=1,
+        management_mode="fixed_r",
+    )
+    res = simulate_trade_path(df, intent, pol, None)
+    assert res.ok
+    assert res.exit_reason == ExitReason.TARGET
+
+
+def test_max_hold_checked_before_eod_same_bar():
+    df = pd.DataFrame(
+        {
+            "open": [100.0, 100.0],
+            "high": [100.0, 100.1],
+            "low": [100.0, 99.9],
+            "close": [100.0, 100.0],
+            "minute_from_open": np.array([388, 390], dtype=np.int32),
+        }
+    )
+    pol = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=0.0, eod_exit_minute=389)
+    intent = TradeIntent(
+        candidate_id="c",
+        strategy="s",
+        side=1,
+        signal_idx=0,
+        entry_idx=0,
+        stop_price=90.0,
+        target_price=300.0,
+        target_r=10.0,
+        risk_per_share=1.0,
+        max_hold_bars=2,
+        management_mode="fixed_r",
+    )
+    res = simulate_trade_path(df, intent, pol, None)
+    assert res.ok
+    assert res.exit_reason == ExitReason.MAX_HOLD
+
+
+def test_commission_reduces_net_r_not_gross_r():
+    df = pd.DataFrame(
+        {
+            "open": [100.0, 100.0],
+            "high": [100.0, 103.0],
+            "low": [100.0, 99.5],
+            "close": [100.0, 102.9],
+            "minute_from_open": np.array([0, 1], dtype=np.int32),
+        }
+    )
+    pol0 = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=0.0, eod_exit_minute=999)
+    pol1 = default_intraday_policy(slippage_per_share=0.0, commission_per_trade=1.0, eod_exit_minute=999)
+    intent = TradeIntent(
+        candidate_id="c",
+        strategy="s",
+        side=1,
+        signal_idx=0,
+        entry_idx=0,
+        stop_price=99.0,
+        target_price=300.0,
+        target_r=2.0,
+        risk_per_share=1.0,
+        max_hold_bars=None,
+        management_mode="fixed_r",
+    )
+    r0 = simulate_trade_path(df, intent, pol0, None)
+    r1 = simulate_trade_path(df, intent, pol1, None)
+    assert r0.ok and r1.ok
+    assert r0.gross_r_multiple == pytest.approx(r1.gross_r_multiple)
+    assert r1.net_r_multiple < r0.net_r_multiple
+    assert r1.r_multiple == pytest.approx(r1.net_r_multiple)

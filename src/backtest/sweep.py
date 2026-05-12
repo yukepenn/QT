@@ -1,4 +1,11 @@
-"""Parameter sweep using testing_parameters YAML grids (Numba fast path only)."""
+"""Parameter sweep (**legacy Numba fast path only** — not canonical execution).
+
+Uses ``src.backtest.fast`` → ``legacy.fast_legacy`` kernels. Accounting is
+**pre-reset** Numba semantics and must not be treated as interchangeable with
+``src.execution.path.simulate_trade_path`` without a dedicated parity study.
+
+Canonical sweep on the reference engine is **future work**.
+"""
 
 from __future__ import annotations
 

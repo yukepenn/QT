@@ -5,7 +5,7 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit | **`Test(execution): harden canonical execution smoke`** — verify SHA with `git log -1 --oneline` after pull |
+| Latest commit | **`Test(execution): expand accounting boundary matrix`** — verify SHA with `git log -1 --oneline` after pull/push |
 | Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
 | Working tree | Stage curated paths only — **never** `git add .` |
 
@@ -13,44 +13,42 @@
 
 | Check | Result |
 |--------|--------|
-| `python -m compileall -q src` | Run before handoff |
-| `python -m pytest -q` | **49 passed** (active `tests/`; `tests/Archive` excluded) |
-| `python -m src.strategies.loader --list` | **35** strategies |
-| `python scripts/canonical_execution_smoke.py` | Synthetic OHLC smoke (adds repo root to `sys.path`) |
+| `python -m compileall -q src` | Pass (run locally before push) |
+| `python -m pytest -q` | **68 passed** (active `tests/`; `tests/Archive` excluded) |
+| `python -m src.strategies.loader --list` | Run before handoff |
+| Import smoke (`src.execution`, `src.backtest.engine`, `src.backtest.metrics`, combiner, router, portfolio) | `imports_ok` |
+| `python scripts/canonical_execution_smoke.py` | Synthetic OHLC smoke |
 | Tracked-heavy check | No forbidden paths in `git ls-files` |
 
-## C. Canonical execution smoke
+## C. Accounting boundary resolution
 
-- Reference engine **`simulate_trade_path`** refactored for readability + documented exit order.
-- **Conservative trailing:** trail **checked** using prior bar’s ratcheted level; **updated** after other same-bar decisions.
-- **Scale-out:** touch-based **trigger**; **close** used as raw exit price for the scale-out leg (documented).
-- **`TradeResult`:** `REJECTED` reason; `is_win`, `total_qty_frac`, `has_partial` properties.
-- **`ExitPlan.max_hold_bars_cap`** interacts with `TradeIntent.max_hold_bars` via `min`.
+- **`src/execution/materialize.py`:** canonical entry fill, initial risk, target (`fixed_r` / `fixed_price` / `none`), targetless exit-path guard (EOD sentinel `eod_exit_minute >= 500` disables EOD for validation only; scale-out without trailing rejected).
+- **`src/backtest/engine.py`:** raw `sig_*` → `TradeIntent` only; no adapter-side fill/risk/target math; `run_backtest` remains legacy Numba entry.
+- **`src/backtest/metrics.py`:** aggregates `r_multiple` / `net_pnl` / optional `gross_r_multiple`; does not recompute trade R from OHLC.
 
-## D. Execution semantics covered
+## D. Execution semantics updates
 
-See `docs/EXECUTION_SEMANTICS.md` and `docs/CANONICAL_EXECUTION_SMOKE_SUMMARY.md` — includes: stop/target (+ ambiguity), trailing, scale-out, NFT, max-hold (+ cap), EOD, end-data, MFE/MAE, short gate, commission single charge per trade.
+- Documented exit order matches `src/execution/path.py` (stop/target → prior trailing → scale-out → NFT → max-hold → EOD → end data → trail ratchet).
+- **`scale_fill_policy`:** `close` vs `trigger_price` for scale-out raw fill.
+- Gross vs net R on `TradeResult`; `r_multiple` aliases net R.
 
-## E. Management support
+## E. Backtest adapter changes
 
-- Modes still generic; **scalp** adds `max_hold_bars_cap=12` + NFT defaults.
-- Runner / reversal / swing / fixed_r plans unchanged structurally; tests assert valid `ExitPlan` objects.
+- `signals_to_trade_intents` — no `entry_price` / precomputed risk / `tgt_px` parameters; passes `target_mode`, `target_r`, optional `target_price`, optional `risk_per_share`.
+- MVP unchanged: first valid signal per session → one `simulate_trade_path` call.
 
-## F. Backtest adapter status
+## F. Metrics / R multiple changes
 
-- `run_strategy_backtest` remains **minimal** (first signal / session MVP).
-- Added **`trade_results_to_frame`** for `TradeResult` inspection.
-- Canonical **`sig_*`** column expectations documented in module docstring.
+- `summarize_trades`: `total_r` = sum of `r_multiple` (net); `total_net_pnl` = sum of `net_pnl`; `total_gross_r` when `gross_r_multiple` column exists.
 
-## G. Combiner status
+## G. Legacy sweep status
 
-- **`simulator.py`**: still **legacy Numba** re-export — **do not extend** for new accounting.
-- **`selection.py` / `state.py`**: deterministic priority + day/cooldown/daily-loss helpers with tests.
+- **`src/backtest/sweep.py`** module docstring: **legacy Numba fast**, not canonical execution.
+- Canonical sweep on reference engine: **deferred**.
 
-## H. Contract audit
+## H. Test matrix coverage
 
-- `docs/FEATURES_AUDIT.csv`, `docs/STRATEGIES_AUDIT.csv` regenerated (lightweight rows).
-- `docs/SIGNAL_CONTRACT.md` — still authoritative for column naming; adapters may map legacy names.
+- Materialization, targetless (trailing, EOD path, scale+trail, rejections), exit-priority same-bar cases, scale fill policies, commission gross vs net, metrics aggregation, legacy boundary / import hygiene.
 
 ## I. Explicit non-runs
 
@@ -58,14 +56,14 @@ No WFO, mini-WFO, live/paper, SPY, broad Layer2, Champion migration, historical 
 
 ## J. Risks / caveats
 
-- Legacy combiner/backtest still hold duplicate accounting.
-- Numba `fast_path` remains a delegating placeholder.
-- Scale-out fill-at-close is conservative; revisit if research needs touch fills.
+- Targetless validation uses an **EOD minute sentinel** (`>= 500`); consider a dedicated policy flag later.
+- Combiner simulator remains legacy Numba.
+- No canonical sweep / Numba parity harness yet.
 
 ## K. Files changed (high level)
 
-`src/execution/*`, `src/management/modes.py`, `src/backtest/engine.py`, `src/combiner/selection.py`, `src/combiner/state.py`, `src/combiner/simulator.py` (docstring), `scripts/canonical_execution_smoke.py`, `docs/*` (smoke + semantics + audits), `tests/test_*`.
+`src/execution/*` (incl. `materialize.py`, `__init__.py` exports), `src/backtest/engine.py`, `src/backtest/metrics.py`, `src/backtest/sweep.py`, `tests/test_execution_*.py`, `tests/test_backtest_*`, `tests/test_legacy_boundary.py`, `docs/EXECUTION_SEMANTICS.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.*`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`, `docs/ACCOUNTING_OWNERSHIP_AUDIT.md`, `CHANGES.md`, `PROGRESS.md`, `NEXT_HANDOFF.md`.
 
 ## L. Recommended next step (exactly one)
 
-**`EXPAND_EXECUTION_TEST_MATRIX`**
+**`HOLD_AND_REVIEW`**

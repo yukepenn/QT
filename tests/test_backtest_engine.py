@@ -21,7 +21,7 @@ def test_run_strategy_backtest_smoke():
             "sig_valid": [False] * 3 + [True] + [False] * (n - 4),
             "sig_side": [0] * 3 + [1] + [0] * (n - 4),
             "sig_stop": [float("nan")] * 3 + [99.0] + [float("nan")] * (n - 4),
-            "sig_target": [float("nan")] * 3 + [102.0] + [float("nan")] * (n - 4),
+            "sig_target": [float("nan")] * n,
             "sig_target_mode": [""] * 3 + ["fixed_r"] + [""] * (n - 4),
             "sig_target_r": [float("nan")] * 3 + [2.0] + [float("nan")] * (n - 4),
             "sig_risk_per_share": [float("nan")] * 3 + [1.0] + [float("nan")] * (n - 4),

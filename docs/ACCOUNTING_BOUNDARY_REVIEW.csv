@@ -1,0 +1,15 @@
+file,current_role,allowed_to_compute_fill,allowed_to_compute_exit,allowed_to_compute_pnl,observed_boundary_leak,action,notes
+src/execution/materialize.py,canonical materialization,yes,no,no,no,keep,Entry risk target levels only; no bar loop
+src/execution/path.py,canonical simulator,yes,yes,yes,no,keep,Single-trade path; calls materialize then loop
+src/execution/fill.py,canonical fill helpers,yes,no,no,no,keep,Slippage at fills
+src/execution/exits.py,canonical intrabar detection,no,yes,no,no,keep,Touch/stop/target/EOD helpers
+src/execution/pnl.py,canonical PnL/R helpers,no,no,yes,no,keep,Gross/net; commission once per trade
+src/execution/validators.py,intent/bars validation,no,no,no,no,keep,No price path accounting
+src/backtest/engine.py,adapter + legacy re-export,no,no,no,no (adapter),keep,run_strategy_backtest delegates accounting to execution; run_backtest legacy
+src/backtest/metrics.py,aggregation only,no,no,no,no,keep,summarize_trades sums columns; total_gross_r optional
+src/backtest/sweep.py,legacy CLI grid,no,yes,yes,yes,mark legacy,Numba fast engine; docstring states non-canonical
+src/backtest/legacy/fast_legacy.py,legacy Numba kernel,yes,yes,yes,yes,keep legacy,Do not extend for new semantics
+src/backtest/legacy/engine_legacy.py,legacy full backtest,yes,yes,yes,yes,keep legacy,Pre-reset accounting
+src/combiner/simulator.py,legacy re-export,no,yes,yes,yes,document only,Points at legacy Numba stack
+src/combiner/selection.py,candidate ordering,no,no,no,no,keep,No fills
+src/combiner/state.py,day state / guards,no,no,no,no,keep,No fills

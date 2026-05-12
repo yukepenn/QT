@@ -1,4 +1,9 @@
-"""Trade and equity metrics."""
+"""Trade and equity metrics.
+
+Trade-level ``r_multiple`` / ``net_pnl`` are **aggregated as-is** from the
+input frame. Canonical execution must populate those columns; this module does
+not recompute per-trade R or fills.
+"""
 
 from __future__ import annotations
 
@@ -266,6 +271,7 @@ def summarize_trades(
         "total_net_pnl": 0.0,
         "avg_net_pnl": 0.0,
         "total_r": 0.0,
+        "total_gross_r": float("nan"),
         "avg_r": 0.0,
         "profit_factor": 0.0,
         "max_drawdown_pnl": 0.0,
@@ -314,6 +320,10 @@ def summarize_trades(
     cum_pnl = net.cumsum()
     cum_r = r.cumsum()
 
+    total_gross_r = float("nan")
+    if "gross_r_multiple" in trades_df.columns:
+        total_gross_r = float(trades_df["gross_r_multiple"].astype(float).sum())
+
     er = trades_df["exit_reason"].astype(str).str.lower()
     base = {
         "trades": n,
@@ -321,6 +331,7 @@ def summarize_trades(
         "total_net_pnl": float(net.sum()),
         "avg_net_pnl": float(net.mean()),
         "total_r": float(r.sum()),
+        "total_gross_r": total_gross_r,
         "avg_r": float(r.mean()),
         "profit_factor": profit_factor(net),
         "max_drawdown_pnl": max_drawdown(cum_pnl),

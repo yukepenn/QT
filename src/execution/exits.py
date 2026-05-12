@@ -16,16 +16,29 @@ def intrabar_stop_target_hit(
     high: float,
     low: float,
     stop: float,
-    target: float,
+    target: float | None,
     ambiguity: AmbiguityPolicy,
 ) -> tuple[bool, bool]:
-    """Return ``(stop_hit, target_hit)`` for this bar's range."""
-    del ambiguity  # reserved for extensions / logging
+    """Return ``(stop_hit, target_hit)`` for this bar's range.
+
+    If ``target`` is ``None`` or non-finite, ``target_hit`` is ``False``.
+    """
+    del ambiguity
     if side == Side.LONG:
-        return low <= stop, high >= target
-    if side == Side.SHORT:
-        return high >= stop, low <= target
-    raise ValueError("invalid side")
+        stop_hit = low <= stop
+        if target is None or not math.isfinite(float(target)):
+            target_hit = False
+        else:
+            target_hit = high >= float(target)
+    elif side == Side.SHORT:
+        stop_hit = high >= stop
+        if target is None or not math.isfinite(float(target)):
+            target_hit = False
+        else:
+            target_hit = low <= float(target)
+    else:
+        raise ValueError("invalid side")
+    return stop_hit, target_hit
 
 
 def resolve_stop_target_order(
@@ -72,6 +85,13 @@ def scale_out_triggered_touch(
     if side == Side.SHORT:
         return unrealized_r_touch_short(entry, low, risk) >= trigger_r
     return False
+
+
+def scale_out_trigger_price(*, side: int, entry: float, risk: float, trigger_r: float) -> float:
+    """Price level at ``+trigger_r`` R (before slippage) for scale fill policy."""
+    if side == Side.LONG:
+        return float(entry) + float(trigger_r) * float(risk)
+    return float(entry) - float(trigger_r) * float(risk)
 
 
 def trailing_hit_long(low: float, trail_stop: float) -> bool:

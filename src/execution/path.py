@@ -23,6 +23,7 @@ import pandas as pd
 
 from src.execution import exits as ex
 from src.execution import fill as fl
+from src.execution import materialize as mat_mod
 from src.execution import pnl as pnl_mod
 from src.execution.types import (
     ExecutionPolicy,
@@ -85,7 +86,7 @@ def _maybe_exit_stop_target(
     hi: float,
     lo: float,
     stop: float,
-    target: float,
+    target: float | None,
     policy: ExecutionPolicy,
     push_exit: Callable[..., None],
     qty_rem: float,
@@ -101,7 +102,12 @@ def _maybe_exit_stop_target(
     first = ex.resolve_stop_target_order(st_hit, tg_hit, policy.same_bar_policy)
     if first is None:
         return None
-    raw = stop if first == ExitReason.STOP else target
+    if first == ExitReason.STOP:
+        raw = stop
+    else:
+        if target is None or not math.isfinite(float(target)):
+            return None
+        raw = float(target)
     push_exit(qty_rem, raw, first)
     return first
 
@@ -146,7 +152,7 @@ def _maybe_scale_out(
     scale_idx: int,
     push_exit: Callable[..., None],
 ) -> tuple[ExitReason | None, int]:
-    """Touch trigger, fill at **close** for the partial (documented)."""
+    """Touch trigger; raw fill from ``ExecutionPolicy.scale_fill_policy``."""
     if not (policy.allow_partial_exits and exit_plan.scale_outs and qty_rem > 1e-12):
         return None, scale_idx
     if scale_idx >= len(exit_plan.scale_outs):
@@ -162,7 +168,13 @@ def _maybe_scale_out(
     ):
         return None, scale_idx
     qty_part = qty * float(rule.exit_fraction)
-    push_exit(qty_part, close, ExitReason.SCALE_OUT)
+    if policy.scale_fill_policy == "trigger_price":
+        raw_px = ex.scale_out_trigger_price(
+            side=side, entry=entry_px, risk=risk, trigger_r=float(rule.trigger_r)
+        )
+    else:
+        raw_px = close
+    push_exit(qty_part, raw_px, ExitReason.SCALE_OUT)
     return ExitReason.SCALE_OUT, scale_idx + 1
 
 
@@ -296,13 +308,17 @@ def simulate_trade_path(
     if not oki:
         return TradeResult(False, msgi, exit_reason=ExitReason.REJECTED)
 
+    mat = mat_mod.materialize_trade_levels(bars, intent, policy, exit_plan)
+    if not mat.ok:
+        return TradeResult(False, mat.reject_reason, exit_reason=ExitReason.REJECTED)
+
     side = int(intent.side)
     slip = float(policy.slippage_per_share)
     j = int(intent.entry_idx)
-    entry_px = fl.entry_fill_price(float(o[j]), side, slip)
+    entry_px = mat.entry_price
     stop = float(intent.stop_price)
-    target = float(intent.target_price)
-    risk = float(intent.risk_per_share)
+    target: float | None = mat.target_price
+    risk = float(mat.risk_per_share)
     qty = float(intent.qty)
     qty_rem = qty
     legs: list[FillLeg] = []
@@ -480,7 +496,8 @@ def simulate_trade_path(
             side=side, entry=leg.entry_price, exit_px=leg.exit_price
         )
     net = pnl_mod.net_pnl_per_share_from_gross(gross, float(policy.commission_per_trade), qty)
-    r_weighted = pnl_mod.weighted_r(legs)
+    gross_r = pnl_mod.weighted_r(legs)
+    net_r = pnl_mod.net_r_multiple_from_net_pnl(net, risk) if risk > 0 else float("nan")
     bars_held = last_idx - j + 1
 
     return TradeResult(
@@ -489,7 +506,10 @@ def simulate_trade_path(
         legs=tuple(legs),
         gross_pnl_per_share=gross,
         net_pnl_per_share=net,
-        r_multiple=r_weighted,
+        gross_r_multiple=gross_r,
+        net_r_multiple=net_r,
+        r_multiple=net_r,
+        risk_per_share=risk,
         mfe_R=mfe_r,
         mae_R=mae_r,
         bars_held=bars_held,

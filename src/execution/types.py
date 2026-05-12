@@ -1,8 +1,10 @@
 """Core dataclasses and enums for canonical execution accounting.
 
-All backtest/combiner adapters should build :class:`TradeIntent` rows and pass
-them to :func:`src.execution.path.simulate_trade_path` rather than reimplement
-fills, stops, or R math.
+All backtest/combiner adapters should build :class:`TradeIntent` with **raw**
+signal fields (stop, optional risk, ``target_mode``, ``target_r`` and/or
+``target_price``) and pass them to :func:`src.execution.path.simulate_trade_path`.
+Entry fill, initial risk, and fixed-R target **materialization** happen inside
+execution (see :mod:`src.execution.materialize`).
 """
 
 from __future__ import annotations
@@ -41,8 +43,9 @@ class AmbiguityPolicy(IntEnum):
     TARGET_FIRST = 1
 
 
-TargetMode = Literal["fixed_r", "fixed_price"]
+TargetMode = Literal["fixed_r", "fixed_price", "none"]
 EntryTiming = Literal["next_open"]
+ScaleFillPolicy = Literal["close", "trigger_price"]
 
 
 @dataclass(frozen=True)
@@ -59,6 +62,7 @@ class ExecutionPolicy:
     allow_partial_exits: bool = True
     allow_trailing: bool = True
     allow_short: bool = False
+    scale_fill_policy: ScaleFillPolicy = "close"
 
 
 @dataclass
@@ -107,7 +111,19 @@ class ExitPlan:
 
 @dataclass
 class TradeIntent:
-    """One trade opportunity after signals are aligned to bar indices."""
+    """Raw signal-aligned trade request (pre-materialization).
+
+    ``risk_per_share``: optional; if ``None``, execution derives it from entry
+    fill and ``stop_price``.
+
+    ``target_mode``:
+
+    - ``fixed_r``: ``target_r`` required (``> 0``); ``target_price`` ignored for
+      materialization (recomputed at entry).
+    - ``fixed_price``: ``target_price`` required.
+    - ``none``: no fixed profit target; requires a viable management/time exit
+      path (validated in :mod:`src.execution.materialize`).
+    """
 
     candidate_id: str
     strategy: str
@@ -115,13 +131,13 @@ class TradeIntent:
     signal_idx: int
     entry_idx: int
     stop_price: float
-    target_price: float
-    target_r: float
-    risk_per_share: float
     max_hold_bars: int | None
     management_mode: str
-    qty: float = 1.0
     target_mode: TargetMode = "fixed_r"
+    target_price: float | None = None
+    target_r: float | None = None
+    risk_per_share: float | None = None
+    qty: float = 1.0
     metadata: dict[str, Any] = field(default_factory=dict)
     family: str = "unknown"
     setup_type: str = "unknown"
@@ -140,14 +156,23 @@ class FillLeg:
 
 @dataclass
 class TradeResult:
-    """Outcome of :func:`simulate_trade_path`."""
+    """Outcome of :func:`simulate_trade_path`.
+
+    ``gross_r_multiple`` is price-path R (Σ ``qty_frac × leg_r``) before
+    commission. ``net_r_multiple`` is ``net_pnl_per_share / risk_per_share``.
+    ``r_multiple`` aliases ``net_r_multiple`` for headline reporting.
+    ``risk_per_share`` is the **initial** risk denominator used for R.
+    """
 
     ok: bool
     reject_reason: str
     legs: tuple[FillLeg, ...] = ()
     gross_pnl_per_share: float = 0.0
     net_pnl_per_share: float = 0.0
+    gross_r_multiple: float = 0.0
+    net_r_multiple: float = 0.0
     r_multiple: float = 0.0
+    risk_per_share: float = float("nan")
     mfe_R: float = 0.0
     mae_R: float = 0.0
     bars_held: int = 0

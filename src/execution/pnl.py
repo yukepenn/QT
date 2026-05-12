@@ -62,3 +62,10 @@ def cost_as_r(commission_per_trade: float, qty: float, risk_per_share: float) ->
     if qty <= 0 or risk_per_share <= 0:
         return float("nan")
     return (commission_per_trade / qty) / risk_per_share
+
+
+def net_r_multiple_from_net_pnl(net_pnl_per_share: float, risk_per_share: float) -> float:
+    """Net R = net PnL/share ÷ initial risk (commission reflected in net PnL)."""
+    if not math.isfinite(net_pnl_per_share) or not math.isfinite(risk_per_share) or risk_per_share <= 0:
+        return float("nan")
+    return float(net_pnl_per_share) / float(risk_per_share)

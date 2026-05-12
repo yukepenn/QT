@@ -19,7 +19,7 @@ This document defines **what each top-level package may do** and what is **forbi
 
 ## 4. `execution/` (canonical)
 
-**Owns:** fill math, exit ordering, ambiguity policy, PnL, R-multiple, MFE/MAE path accounting.  
+**Owns:** entry and exit fill math, **materialization** of entry price, initial risk, and targets (`materialize.py`), exit ordering, ambiguity policy, gross and net PnL/R (commission as one charge per trade), `scale_fill_policy`, MFE/MAE path accounting.  
 **Must not:** strategy discovery, combiner priority rules, walk-forward folds.
 
 All backtest/combiner/research replay code that needs fills must call into `execution/`.
@@ -31,13 +31,13 @@ All backtest/combiner/research replay code that needs fills must call into `exec
 
 ## 6. `backtest/`
 
-**Owns:** single-strategy adapter: signals → `TradeIntent` → `execution.path.simulate_trade_path`.  
-**Must not:** duplicate fill/exit/PnL loops (legacy engines live under `backtest/legacy/`).
+**Owns:** single-strategy adapter: validate signal columns, map rows to **raw** `TradeIntent` (no adapter-side entry fill, risk, or fixed-R target math) → `execution.path.simulate_trade_path`; `metrics.py` **aggregates** canonical trade columns only (`r_multiple`, `net_pnl`, optional `gross_r_multiple`).  
+**Must not:** compute entry fill price, execution risk from fill, fixed-R target from entry/risk, or per-trade exit PnL/R from OHLC (legacy engines under `backtest/legacy/` and **Numba sweep** remain non-canonical; see `src/backtest/sweep.py` docstring).
 
 ## 7. `combiner/`
 
 **Owns:** candidate arbitration, risk knobs (max trades, cooldown, daily loss), building `TradeIntent`, calling `execution`.  
-**Must not:** reimplement entry/exit fill pricing or standalone R accounting.
+**Must not:** implement fill/exit/PnL accounting in new mainline code; the legacy Numba `simulator` path is compatibility-only until migrated.
 
 ## 8. `router/` (scaffold)
 

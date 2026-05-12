@@ -33,6 +33,8 @@ def validate_execution_policy(p: ExecutionPolicy) -> tuple[bool, str]:
         return False, "bad_slippage"
     if not is_finite_price(p.commission_per_trade) or p.commission_per_trade < 0:
         return False, "bad_commission"
+    if str(p.scale_fill_policy) not in ("close", "trigger_price"):
+        return False, "bad_scale_fill_policy"
     return True, "ok"
 
 
@@ -47,12 +49,24 @@ def validate_trade_intent(
         return False, "bad_entry_idx"
     if not is_finite_price(intent.stop_price):
         return False, "bad_stop"
-    if not is_finite_price(intent.target_price) and intent.target_mode == "fixed_price":
-        return False, "bad_target"
-    if not is_finite_price(intent.risk_per_share) or intent.risk_per_share <= 0:
-        return False, "bad_risk"
     if intent.qty <= 0:
         return False, "bad_qty"
+
+    mode = str(intent.target_mode or "fixed_r").strip().lower()
+    if mode not in ("fixed_r", "fixed_price", "none"):
+        return False, "bad_target_mode"
+
+    if intent.risk_per_share is not None:
+        if not is_finite_price(intent.risk_per_share) or float(intent.risk_per_share) <= 0:
+            return False, "bad_risk_override"
+
+    if mode == "fixed_price":
+        if intent.target_price is None or not is_finite_price(intent.target_price):
+            return False, "bad_target_fixed_price"
+    elif mode == "fixed_r":
+        tr = intent.target_r
+        if tr is None or not (is_finite_price(float(tr)) and float(tr) > 0):
+            return False, "bad_target_r"
     return True, "ok"
 
 

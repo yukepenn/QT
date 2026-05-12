@@ -33,7 +33,11 @@ Slippage is **per share**, applied **once** at each fill. Commission is **per ro
 
 1. **Stop / target** (same-bar ambiguity via `ExecutionPolicy.same_bar_policy`; default `stop_first`).
 2. **Trailing stop** using the level **carried in from the prior bar** only (see below).
-3. **Scale-out** rules (touch-based trigger on favorable `high`/`low`; fill raw price at **bar close** for that leg — documented conservative choice).
+3. **Scale-out** rules (touch-based trigger on favorable `high`/`low`). Raw exit price for the scale leg is set by `ExecutionPolicy.scale_fill_policy`:
+
+   - **`close`** (default): bar **close** (conservative).
+   - **`trigger_price`:** theoretical touch price at `entry ± trigger_r × risk` (then slippage applied).
+
 4. **No-followthrough** (observed closes only; never overrides an earlier stop/target exit on the same bar because those are checked first).
 5. **Max hold** (effective hold = `min(intent.max_hold_bars, exit_plan.max_hold_bars_cap)` when both set).
 6. **EOD** (`minute_from_open >= eod_exit_minute`).
@@ -44,6 +48,10 @@ trailing stop price using that bar’s range so it may trigger **starting on the
 next bar**. The current bar’s favorable extreme **does not** tighten the trail
 and then stop you on the **same** bar under this default (no trailing
 lookahead).
+
+## Targetless trades (`target_mode == "none"`)
+
+No fixed profit target is materialized. Materialization requires a non–END_DATA-only exit path (trailing, max-hold on intent or plan cap, configured no-followthrough pair, or **active** EOD). For validation, EOD counts as active only when `eod_exit_minute < 500` (tests commonly use `999` to disable forced EOD for this check). Scale-out without trailing does **not** satisfy targetless validation by itself.
 
 ## Trailing (default conservative)
 
@@ -68,8 +76,10 @@ first (step 1 before step 3).
 - **Gross PnL/share:** Σ `qty_frac_i ×` signed delta per share for each leg.
 - **Net PnL/share:** gross − **one** `commission_per_trade / qty` allocation
   for the whole trade (partials do not each pay the full round-trip again).
-- **R multiple:** net PnL per share ÷ **initial risk per share** at entry (positive risk definition).
-- **Multi-leg / partials:** total R = Σ `qty_frac_i × leg_r_i` with Σ `qty_frac_i = 1` after scaling.
+- **`gross_r_multiple`:** Σ `qty_frac_i × leg_r_i` using per-leg fills (no commission in `leg_r`).
+- **`net_r_multiple`:** `net_pnl_per_share / initial_risk_per_share`.
+- **`r_multiple`:** alias of **`net_r_multiple`** for headline reporting.
+- **Multi-leg / partials:** Σ `qty_frac_i = 1` after scaling.
 
 ## MFE / MAE
 
@@ -81,6 +91,7 @@ first (step 1 before step 3).
 - Short when `allow_short=False` → reject.
 - Non-positive risk → reject intent.
 - Missing target under `fixed_r` → reject unless explicit relaxed policy flags (default: reject).
+- **`target_mode == "none"`** without a valid management/time exit path (per materialization rules) → reject at materialization.
 
 ## Canonicality
 

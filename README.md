@@ -9,7 +9,7 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 
 ## 2. Target architecture (reset in progress)
 
-The codebase is moving to a **single canonical execution accounting layer** under `src/execution/`. Backtest and combiner become **adapters** that build `TradeIntent` rows and call `execution.path.simulate_trade_path`; legacy Numba paths that duplicate fills/exits/R live under `**/legacy/` with import shims until parity migration finishes.
+The codebase is moving to a **single canonical execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). Backtest and combiner become **adapters** that map signals to intents and call `execution.path.simulate_trade_path`; legacy Numba paths that duplicate fills/exits/R live under `**/legacy/` with import shims until parity migration finishes.
 
 | Layer | Role |
 |-------|------|
@@ -26,12 +26,12 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **research** | Thin runners and curated results only (`src/research/`) |
 | **utils** | Config / IO / validation (`src/utils/`) |
 
-Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/ARCHITECTURE_RESET_SUMMARY.md`, `docs/CANONICAL_EXECUTION_SMOKE_SUMMARY.md`.
+Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/ARCHITECTURE_RESET_SUMMARY.md`, `docs/CANONICAL_EXECUTION_SMOKE_SUMMARY.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.md`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
 ### Smoke check (canonical engine)
 
 - Run `python scripts/canonical_execution_smoke.py` (synthetic OHLC) and `python -m pytest -q` before resuming strategy research.
-- Trailing + exit order are documented in `docs/EXECUTION_SEMANTICS.md`.
+- Trailing, exit order, scale fill policy, and gross vs net R are documented in `docs/EXECUTION_SEMANTICS.md` and `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
 Prior Layer 1–3 research outputs and Champion benchmarks remain **historical priors**, not canonical truth for execution semantics.
 
