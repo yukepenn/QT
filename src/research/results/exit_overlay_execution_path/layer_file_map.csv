@@ -1,0 +1,40 @@
+layer,file_path,current_role,target_role,active_status,owns_accounting_yes_no,should_own_accounting_yes_no,imports_execution_path_yes_no,notes,safe_action_now
+Layer1,src/data/*,bars IO + validation,bars IO + validation,active,no,no,partial via callers,No fill/PnL; execution consumes bars,keep
+Layer1,src/features/*,feature primitives,feature primitives,active,no,no,no,No accounting,keep
+Layer1,src/strategies/loader.py,strategy discovery,strategy discovery,active,no,no,no,Signals only,keep
+Layer1,src/backtest/engine.py,orchestrate L1 backtest,orchestrate L1 backtest,active,no,no,yes when execution-backed,Delegates path.simulate_trade_path,keep
+Layer1,src/backtest/sweep.py,L1 sweep CLI + grids,L1 sweep CLI + grids,active,no,no,optional via engine,Canonical smoke + validate-pipeline,keep
+Layer1,src/backtest/signal_adapter.py,signal contract adapter,signal contract adapter,active,no,no,no,,keep
+Layer1,src/backtest/strategy_runner.py,bars→signals pipeline,bars→signals pipeline,active,no,no,no,,keep
+Layer1,src/backtest/metrics.py,L1 aggregates,L1 aggregates,active,no,no,no,Must not redefine R from raw fills,keep
+Layer2,src/combiner/candidate.py,candidate dataclasses + metadata encode,candidate dataclasses,active,no,no,no,,keep
+Layer2,src/combiner/precompute.py,signal matrices + prep,signal matrices + prep,active,no,no,no,Cache + prep only,keep
+Layer2,src/combiner/signal_cache.py,optional disk cache,optional disk cache,active,no,no,no,,keep
+Layer2,src/combiner/selection.py,arbitration helpers,arbitration helpers,active,no,no,no,,keep
+Layer2,src/combiner/state.py,day/session guards,day/session guards,active,no,no,no,,keep
+Layer2,src/combiner/simulator.py,lazy legacy bridge,lazy legacy bridge,compatibility_reference,yes legacy path,no,legacy only,Legacy accounting isolated,mark_only
+Layer2,src/combiner/adapter.py,execution_backed combiner walk,execution_backed combiner walk,active,no,no,yes,simulate_combiner_canonical → simulate_trade_path,keep
+Layer2,src/combiner/trade_intent_adapter.py,TradeIntent construction,TradeIntent construction,active,no,no,yes,Maps candidate rows to execution types,keep
+Layer2,src/combiner/run.py,CLI + fixed config runs,CLI + fixed config runs,active,yes legacy engine,no,yes when engine execution_backed,Engine switch,keep
+Layer2,src/combiner/sweep.py,Layer2 sweep CLI,Layer2 sweep CLI,active,yes legacy engine,no,yes when engine execution_backed,Broad sweeps out of scope for this task,keep
+Layer2,src/combiner/metrics.py,combiner metrics helpers,combiner metrics helpers,active,no,no,no,Aggregates execution outputs,keep
+Layer3,src/walkforward/folds.py,fold calendar helpers,fold calendar helpers,active,no,no,no,,keep
+Layer3,src/walkforward/fixed_system.py,frozen system loader,frozen system loader,active,no,no,via combiner,WFO explicitly not run,keep
+Layer3,src/walkforward/runner.py,WFO / harness orchestration,WFO harness,active,no,no,via combiner,,keep
+Layer3,src/walkforward/reports.py,reporting,reporting,active,no,no,no,,keep
+Layer3,src/walkforward/metrics.py,L3 metrics,L3 metrics,active,no,no,no,,keep
+Support,src/execution/types.py,canonical trade types,canonical trade types,active,no,no,no,Contracts only,keep
+Support,src/execution/path.py,reference path simulator,reference path simulator,active,yes,yes,yes,Single source of path PnL,keep
+Support,src/execution/policy.py,fill priority / policy,fill priority / policy,active,yes,yes,yes,,keep
+Support,src/execution/materialize.py,entry/target materialization,entry/target materialization,active,yes,yes,yes,,keep
+Support,src/execution/fill.py,intrabar fill semantics,intrabar fill semantics,active,yes,yes,yes,,keep
+Support,src/execution/exits.py,exit ordering,exit ordering,active,yes,yes,yes,,keep
+Support,src/execution/pnl.py,R / PnL composition,R / PnL composition,active,yes,yes,yes,,keep
+Support,src/execution/validators.py,trade setup validation,trade setup validation,active,no,no,no,Guards only,keep
+Support,src/management/modes.py,management scaffold,management scaffold,archive_later,no,no,no,Not promoted in this task,mark_only
+Support,src/management/trailing.py,management scaffold,management scaffold,archive_later,no,no,no,,mark_only
+Support,src/management/no_followthrough.py,management scaffold,management scaffold,archive_later,no,no,no,NFT lives in ExitPlan in execution types,mark_only
+Support,src/router/*,router scaffold,router scaffold,archive_later,no,no,no,Blocked for production,mark_only
+Support,src/portfolio/*,portfolio scaffold,portfolio scaffold,archive_later,no,no,no,,mark_only
+Support,src/research/*,thin runners + results,thin runners + results,active,no,no,runner-specific,this task adds run_exit_overlay_execution_path,keep
+Support,archive/*,legacy reference code,legacy reference code,compatibility_reference,yes in legacy subtree,no,no,Do not delete per policy,keep

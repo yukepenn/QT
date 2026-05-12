@@ -1,0 +1,4 @@
+key,value,exists
+data_dir,D:\OneDrive - Washington University in St. Louis\QT\data\raw\ibkr,True
+candidate_root,D:\OneDrive - Washington University in St. Louis\QT\src\research\results\Archive\layer1_global_qqq_2023_2024_v2\selected_candidates_l2_core\selected_candidates,True
+config,D:\OneDrive - Washington University in St. Louis\QT\src\combiner\configs\Archive\layer2_qqq_global_2023_2024_v2.yaml,True

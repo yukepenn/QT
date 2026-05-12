@@ -1,0 +1,8 @@
+topic,label,notes
+baseline_execution_backed,OVERLAY_DIAGNOSTIC_ONLY,Reference path; Jan 2024 smoke matches combiner_adapter_parity scale (16 trades PA-only; 23 PA+GAP) — not a legacy parity claim
+max_hold_tighten_60,OVERLAY_REJECT,Reduces total_R vs baseline on both profiles (smoke + repo coverage); tighter cap trades time for R
+no_followthrough_exit_5bars,OVERLAY_REJECT,Large winner haircut on PA+GAP (smoke total_R negative); repo span still positive but PF_R and total_R well below baseline
+trend_swing_2r,OVERLAY_DIAGNOSTIC_ONLY,Small PA-only smoke uplift; PA+GAP smoke similar total_R to baseline; repo span modest vs baseline — not a clear risk-adjusted win without drawdown modeling
+trail_after_1r_simple,OVERLAY_UNSUPPORTED_BY_EXECUTION_CONTRACT,ExitPlan / trailing rules lack arm-after-R threshold in current contract
+runner_after_1r_reference,OVERLAY_UNSUPPORTED_BY_EXECUTION_CONTRACT,No runner / scale ladder in fixed-R diagnostic contract
+evidence_strength,OVERLAY_NEEDS_MORE_DATA,Smoke window is one month; repo coverage is broad but still one symbol and fixed champion set — economic significance not established

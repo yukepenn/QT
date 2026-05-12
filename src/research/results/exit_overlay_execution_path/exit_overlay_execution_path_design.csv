@@ -1,0 +1,8 @@
+id,principle,contract_reference,status
+P1,execution_backed baseline only,simulate_combiner_canonical,required
+P2,no third PnL engine,simulate_trade_path only for overlays,required
+P3,repo_local_bars,data/raw/ibkr via resolve_ibkr_data_dir,required
+P4,champion_candidates_only,Archive selected_candidates root,required
+P5,unsupported_marked_not_faked,apply_overlay unsupported + overlay_unsupported.csv,required
+P6,diagnostic_only,no combiner production behavior change,required
+P7,no_src_management_promotion,management/ unchanged,required

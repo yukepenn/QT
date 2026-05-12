@@ -1,0 +1,3 @@
+overlay,reason
+trail_after_1r_simple,no arm-after-R threshold on TrailingRule in ExitPlan
+runner_after_1r_reference,runner/scale ladder not in current fixed-R diagnostic contract

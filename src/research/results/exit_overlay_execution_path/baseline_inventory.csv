@@ -1,0 +1,10 @@
+key,value
+git_tip_before_work,25a38bbfdfe62267c7f0fe01024021ad96972d0e
+next_handoff_decision_before_work,RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH
+execution_backed_readiness_label,EXECUTION_BACKED_READY_FOR_RESEARCH
+repo_local_data_path,data/raw/ibkr
+candidate_root_used,src/research/results/Archive/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates
+champion_candidate_ids_smoke,"PA_BUY_SELL_CLOSE_TREND_003;GAP_ACCEPTANCE_FAILURE_001"
+result_root_this_task,src/research/results/exit_overlay_execution_path
+prior_interrupt_local_outputs,none_observed_under_result_root_before_curated_run
+non_goals_summary,"No WFO; no live/paper; no SPY sweeps; no broad Layer2; no Global Layer1; no new strategies; no production router/exit-management; no short/scalp; no deletion/archive of legacy; no third PnL engine"

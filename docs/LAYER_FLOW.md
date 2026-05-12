@@ -58,7 +58,7 @@ Synthetic parity and drift notes: ``src/research/results/combiner_adapter_parity
 
 ## research/
 
-Thin runners and curated aggregates only; no canonical accounting.
+Thin runners and curated aggregates only; no canonical accounting. **Exit overlay (execution path):** ``src/research/run_exit_overlay_execution_path.py`` replays baseline ``simulate_combiner_canonical`` trades with modified ``ExitPlan`` / ``TradeIntent`` via ``simulate_trade_path`` only (see ``src/research/results/exit_overlay_execution_path/``).
 
 ## portfolio/
 

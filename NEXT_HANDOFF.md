@@ -10,57 +10,69 @@
 
 ## B. Validation
 
-| Check | Result (post repo-local parity) |
-|--------|----------------------------------|
+| Check | Result (post exit-overlay diagnostic) |
+|--------|----------------------------------------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **135** passed |
+| `python -m pytest -q` | **142** passed |
 | `python -m src.strategies.loader --list` | OK |
 | `python -m src.backtest.sweep --smoke` | OK |
 | `python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend` | OK |
-| `python -m src.combiner.run --help` | OK — `--engine` documents `legacy` / `legacy_reference` / `canonical` / `execution_backed` |
-| `python -m src.research.run_combiner_adapter_parity --help` | OK — `--bar-root`, `--data-dir`, `--real-smoke-suite`, `--aggregate-only`, `--dry-run` |
-| `python -m src.research.validate_research_artifacts --root src/research/results/combiner_adapter_parity --csv-only` | OK |
+| `python -m src.combiner.run --help` | OK |
+| `python -m src.combiner.sweep --help` | OK |
+| `python -m src.research.run_combiner_adapter_parity --help` | OK |
+| `python -m src.research.run_exit_overlay_execution_path --help` | OK |
+| `python -m src.research.validate_research_artifacts --root src/research/results/exit_overlay_execution_path --csv-only` | OK → `exit_overlay_execution_path_artifact_validation.csv` |
 
 ## C. Task scope
 
-**Repo-local `data/`** (IBKR 1m shards under `data/raw/ibkr/`, ~34 MB, 104 parquet files) is **intentionally committed** for reproducible small-window QQQ research. **`.gitignore`** negates `*.parquet` only under that subtree. **`run_combiner_adapter_parity`** gained **`resolve_ibkr_data_dir`**, **`--bar-root`**, **`--real-smoke-suite`**, real dual-engine smoke + **`parity/real_data_parity_*`**. **`run_combiner_fixed_config`** supports **`return_trades_df`** for metrics-only smoke. No new versioned result roots beyond **`combiner_adapter_parity/`**.
+**Exit overlay on execution path (research-only):** thin runner `src/research/run_exit_overlay_execution_path.py` + tests `tests/test_exit_overlay_execution_path.py`. **No third PnL engine** — baseline **`simulate_combiner_canonical`**; overlays **`simulate_trade_path`** with modified **`TradeIntent` / `ExitPlan`**. **No** WFO, broad Layer2, Global Layer1, live/paper, SPY, router production, scalp/short, Champion YAML edits, legacy deletion.
 
-## D. Data / bars
+## D. Data / candidate inputs
 
-- **Path:** `data/raw/ibkr` (from `--bar-root data` or default).
-- **QQQ Jan 2024 window:** **8190** bars, **21** NY sessions (see `repo_local_data_load_check.csv`).
-- **Parquet outside `data/`:** still ignored by global `*.parquet` (do not commit research parquet elsewhere).
+- **Bars:** repo-local **`data/raw/ibkr`** (via `--bar-root data` → `resolve_ibkr_data_dir`).
+- **Candidates:** `src/research/results/Archive/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates`.
+- **Profiles / IDs:** `pa_only_mtp1_meta` → `PA_BUY_SELL_CLOSE_TREND_003`; `pa_gap_mtp2_meta` → PA + `GAP_ACCEPTANCE_FAILURE_001`. CLI supports comma-separated **`--profile`** for a single aggregate CSV batch.
 
-## E. Real smoke / parity
+## E. Layer file map / cleanup inventory
 
-- **execution_backed** and **legacy_reference** both **OK** for 1- and 2-candidate Champion smoke (`smoke/real_*_smoke_summary.csv`).
-- **Real parity label:** **`REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS`** — identical trade counts; small `total_r` drift (`parity/real_data_parity_*`).
-- **Synthetic toy matrix:** unchanged documented drift (`parity/parity_summary.csv`).
+- **`layer_file_map.csv` / `.md`:** Layer1/2/3 + execution/support roles; confirms only **`src/execution/`** should own accounting math.
+- **`file_cleanup_candidates.csv` / `.md`:** classify only — **no deletes**.
 
-## F. Execution-backed readiness
+## F. Overlay support status
 
-**`EXECUTION_BACKED_READY_FOR_RESEARCH`** — see `src/research/results/combiner_adapter_parity/execution_backed_readiness.md`.
+| Overlay | Status |
+|---------|--------|
+| `baseline_execution_backed` | supported |
+| `max_hold_tighten_60` | supported |
+| `no_followthrough_exit_5bars` | supported |
+| `trend_swing_2r` | supported |
+| `trail_after_1r_simple` | **unsupported** (no arm-after-R trailing threshold in contract) |
+| `runner_after_1r_reference` | **unsupported** (no runner ladder) |
 
-## G. Layer reachability
+Deduped reasons: `overlay_unsupported.csv`.
 
-See `combiner_adapter_parity/layer_reachability.md` — real dual-engine Layer2 smoke **OK**; exit overlay on execution path **OK** to resume (research-only); router **BLOCKED**.
+## G. Overlay results
+
+- **Smoke:** QQQ **2024-01** — see `overlay_smoke_summary.csv` (both profiles). **max_hold** and **NFT** reduce **`total_r`** vs baseline; **NFT** turns **PA+GAP** smoke **negative**; **trend_swing_2r** slightly helps PA-only smoke.
+- **Repo coverage:** full QQQ span in committed shards (**~2020–2026** on this checkout) — `overlay_repo_coverage_*`. Same qualitative pattern: **max_hold** / **NFT** haircut baseline **`total_r`**; **trend_swing_2r** near baseline.
+- **Local-only:** `_local_only/` (precompute profiles, feature stats, optional replay row CSVs) — **gitignored**.
 
 ## H. Decision
 
-**`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`**
+**`USE_EXECUTION_BACKED_FOR_RESEARCH_AND_REBUILD_LAYER1_2_3`**
 
 ## I. Explicit non-runs / risks
 
-No WFO, mini-WFO, live/paper, SPY research sweeps, broad Layer2 sweeps, Global Layer1, new strategies, Champion YAML edits, raw row-level trade panels, `top_runs` / `local_runs`, caches, logs, `git add .`, production router/exit-management, scalp/short.
+No mini/full WFO, production exit-management, inverse/side-flip research, new strategies, combiner production behavior changes, raw row-level trade commits, `top_runs` / `local_runs` (new), parquet outside `data/raw/ibkr`.
 
-## J. Files changed (high level)
+## J. Files changed
 
-`.gitignore`, `data/raw/ibkr/**`, `src/combiner/run.py`, `src/research/run_combiner_adapter_parity.py`, `tests/test_combiner_adapter_parity.py`, `src/research/results/combiner_adapter_parity/**`, `docs/LAYER_FLOW.md`, handoff/status/index docs.
+`.gitignore` (`src/research/results/**/_local_only/`), `src/research/run_exit_overlay_execution_path.py`, `tests/test_exit_overlay_execution_path.py`, `src/research/results/exit_overlay_execution_path/**` (curated CSV/MD), `docs/LAYER_FLOW.md`, `src/research/results/RESULTS_INDEX.md`, `NEXT_HANDOFF.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`.
 
 ## K. Local-only artifacts
 
-Combiner full outputs still use **temp** dirs when running smoke; only **curated** CSV/MD under `combiner_adapter_parity/` plus committed **`data/`** bars.
+`src/research/results/exit_overlay_execution_path/_local_only/` — precompute CSV/MD/JSON + optional **`--local-row-output`** replay tables; **not** committed.
 
 ## L. Recommended next step (exactly one)
 
-**`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`**
+**`USE_EXECUTION_BACKED_FOR_RESEARCH_AND_REBUILD_LAYER1_2_3`**

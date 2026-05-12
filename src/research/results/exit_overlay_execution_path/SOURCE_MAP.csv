@@ -1,0 +1,18 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/research/run_exit_overlay_execution_path.py,Orchestrate smoke + repo overlay diagnostics,yes,,no,no,Comma-separated --profile; gitignores _local_only precompute
+tests/test_exit_overlay_execution_path.py,Unit tests for overlay registry + apply_overlay + aggregates,yes,,no,no,No heavy data
+src/research/results/exit_overlay_execution_path/CHATGPT_REVIEW_BUNDLE.md,Human-readable review bundle,yes,,yes,no,This file
+src/research/results/exit_overlay_execution_path/exit_overlay_execution_path_decision.md,Single-label decision,yes,,yes,no,USE_EXECUTION_BACKED_FOR_RESEARCH_AND_REBUILD_LAYER1_2_3
+src/research/results/exit_overlay_execution_path/overlay_smoke_summary.csv,Per-overlay aggregates smoke+repo,yes,24,no,no,Includes repo_coverage rows
+src/research/results/exit_overlay_execution_path/overlay_interpretation.md,Narrative interpretation,yes,,yes,no,
+src/research/results/exit_overlay_execution_path/overlay_key_findings.csv,Labelled findings,yes,7,no,no,Mirrored as exit_overlay_execution_path_key_findings.csv
+src/research/results/exit_overlay_execution_path/overlay_unsupported.csv,Deduped unsupported reasons,yes,4,no,no,
+src/research/results/exit_overlay_execution_path/layer_file_map.csv,Layer inventory,yes,39,no,no,
+src/research/results/exit_overlay_execution_path/file_cleanup_candidates.csv,Future cleanup classification,yes,8,no,no,
+src/research/results/exit_overlay_execution_path/baseline_inventory.csv,Pre-work git + inputs snapshot,yes,8,no,no,
+src/research/results/exit_overlay_execution_path/baseline_validation.csv,Validation matrix,yes,11,no,no,
+src/research/results/exit_overlay_execution_path/exit_overlay_execution_path_design.csv,Design principles IDs,yes,7,no,no,
+src/research/results/exit_overlay_execution_path/exit_overlay_execution_path_artifact_validation.csv,CSV hygiene scan,yes,33,no,no,validate_research_artifacts
+src/combiner/adapter.py,Baseline combiner canonical,for deep dive,,no,no,simulate_combiner_canonical
+src/execution/path.py,Reference path simulator,for deep dive,,no,no,simulate_trade_path
+src/research/results/exit_overlay_execution_path/_local_only/*,Precompute + replay scratch,no,,,yes,gitignored

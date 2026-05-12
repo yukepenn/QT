@@ -1,0 +1,10 @@
+path,type,current_status,reason,safe_delete_after,dependency_before_deleting,recommended_action_now
+src/backtest/legacy/,source,compatibility_reference,Numba sweep + legacy engine,after L1 rebuilt on execution-backed,none in this task,keep
+src/combiner/legacy/,source,compatibility_reference,legacy simulator sources,after combiner fully execution-backed,parity tests,keep
+archive/legacy_combiner/,source,compatibility_reference,reference_simulator host,until adapter fully replaces,import graph,keep
+src/research/results/exit_overlay_diagnostics_v2/,result_root,historical_prior,pre-execution-overlay alignment diagnostics,after research superseded,none,keep
+src/research/results/combiner_adapter_parity/,result_root,active,parity + readiness anchor for execution_backed,never without review,none,keep
+src/research/results/exit_overlay_execution_path/_local_only/,cache,local_only,precompute profiles + replay rows + feature stats,anytime,not required for review,keep gitignored
+src/research/results/Archive/**/local_runs/,result_root,historical_prior,archived diagnostic commands,long horizon,none,keep
+src/research/run_exit_overlay_execution_path.py,source,active,this task runner,,,keep
+tests/test_exit_overlay_execution_path.py,test,active,pure helper tests,,,keep

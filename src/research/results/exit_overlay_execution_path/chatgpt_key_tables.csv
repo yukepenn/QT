@@ -1,0 +1,13 @@
+section,item,metric,value,interpretation
+Smoke,PA-only baseline,total_r,6.138,Reference execution-backed Jan 2024 window
+Smoke,PA-only max_hold_60,total_r,4.277,OVERLAY_REJECT — lower R vs baseline on same 16 trades
+Smoke,PA-only NFT 5b,total_r,2.045,OVERLAY_REJECT — stagnation exit cuts winners
+Smoke,PA-only trend_2r,total_r,6.624,OVERLAY_DIAGNOSTIC_ONLY — modest uplift; not decisive alone
+Smoke,PA+GAP baseline,total_r,4.412,Second candidate changes competition baseline
+Smoke,PA+GAP NFT 5b,total_r,-0.379,OVERLAY_REJECT — window total goes negative
+Repo,PA-only baseline,total_r,99.568,Long-span reference (~1379 trades)
+Repo,PA-only NFT 5b,total_r,11.747,Large haircut vs baseline; still positive total R
+Unsupported,trail_after_1r_simple,replayed_trades,0,Correctly blocked — no silent baseline fallback
+Unsupported,runner_after_1r_reference,replayed_trades,0,Correctly blocked — ladder not in contract
+Validation,pytest,count,142,Suite green after new tests
+Hygiene,_local_only,gitignore,src/research/results/**/_local_only/,Precompute + replay rows not staged

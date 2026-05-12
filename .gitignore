@@ -51,6 +51,7 @@ src/research/results/**/rejected_signals.csv
 src/research/results/**/top_runs/
 src/research/results/**/run_*/
 src/research/results/**/sweep_*/
+src/research/results/**/_local_only/
 
 # Heavy walkforward outputs (curated CSV/MD via selective git add)
 src/walkforward/results/**/trades.csv

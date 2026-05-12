@@ -1,0 +1,2 @@
+step,profile,start,end,repo_coverage,status
+exit_overlay_execution_path,"pa_only_mtp1_meta,pa_gap_mtp2_meta",2024-01-01,2024-01-31,True,OK

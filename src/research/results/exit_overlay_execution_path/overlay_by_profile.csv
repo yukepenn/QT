@@ -1,0 +1,13 @@
+window_label,profile,overlay,source,trades,total_r,avg_r,profit_factor_r,exit_reason_counts,start,end
+smoke,pa_only_mtp1_meta,baseline_execution_backed,combiner_canonical,16,6.138469623213083,0.38365435145081767,2.338119577464933,max_hold=9;stop=4;target=3,2024-01-01,2024-01-31
+smoke,pa_only_mtp1_meta,max_hold_tighten_60,per_trade_replay,16,4.277255015179489,0.26732843844871806,2.317938196670963,max_hold=13;stop=2;target=1,2024-01-01,2024-01-31
+smoke,pa_only_mtp1_meta,no_followthrough_exit_5bars,per_trade_replay,16,2.045127150393996,0.12782044689962474,2.2795358980407983,no_followthrough=14;target=2,2024-01-01,2024-01-31
+smoke,pa_only_mtp1_meta,trend_swing_2r,per_trade_replay,16,6.623763740860238,0.4139852338037649,2.443908414017377,max_hold=10;stop=4;target=2,2024-01-01,2024-01-31
+smoke,pa_only_mtp1_meta,trail_after_1r_simple,per_trade_replay,0,0.0,0.0,,,2024-01-01,2024-01-31
+smoke,pa_only_mtp1_meta,runner_after_1r_reference,per_trade_replay,0,0.0,0.0,,,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,baseline_execution_backed,combiner_canonical,23,4.4120391216731,0.19182778789883043,1.4521588527918943,max_hold=8;stop=9;target=6,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,max_hold_tighten_60,per_trade_replay,23,1.5583203646444697,0.06775305933236825,1.185167180319714,max_hold=13;stop=7;target=3,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,no_followthrough_exit_5bars,per_trade_replay,23,-0.3789504335455323,-0.016476105806327492,0.9057902651031294,no_followthrough=20;stop=1;target=2,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,trend_swing_2r,per_trade_replay,23,6.478367722078932,0.2816681618295188,1.663922335318831,max_hold=10;stop=9;target=4,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,trail_after_1r_simple,per_trade_replay,0,0.0,0.0,,,2024-01-01,2024-01-31
+smoke,pa_gap_mtp2_meta,runner_after_1r_reference,per_trade_replay,0,0.0,0.0,,,2024-01-01,2024-01-31

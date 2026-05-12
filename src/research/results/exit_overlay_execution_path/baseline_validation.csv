@@ -1,0 +1,13 @@
+check,result,notes
+git_branch_main,OK,synced origin/main at task start
+python_m_compileall_src,OK,python -m compileall -q src
+pytest_full,OK,142 passed
+src_strategies_loader_list,OK,emits available_strategies list
+src_backtest_sweep_smoke,OK,exit 0
+src_backtest_sweep_validate_pipeline_pa_buy_sell_close_trend,OK,exit 0
+src_combiner_run_help,OK,usage header present
+src_combiner_sweep_help,OK,usage header present
+src_research_run_combiner_adapter_parity_help,OK,usage header present
+src_research_run_exit_overlay_execution_path_help,OK,--profile and --overlays documented
+tracked_heavy_scan,NOTE,legacy Archive paths still track small local_runs run_command.txt files; no new heavy patterns added by this task
+parquet_tracked,data/raw/ibkr only,matches prior audit expectation

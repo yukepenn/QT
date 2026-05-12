@@ -1,0 +1,5 @@
+overlay,candidate_id,reason
+trail_after_1r_simple,PA_BUY_SELL_CLOSE_TREND_003,no arm-after-R threshold on TrailingRule in ExitPlan
+runner_after_1r_reference,PA_BUY_SELL_CLOSE_TREND_003,runner/scale ladder not in current fixed-R diagnostic contract
+trail_after_1r_simple,GAP_ACCEPTANCE_FAILURE_001,no arm-after-R threshold on TrailingRule in ExitPlan
+runner_after_1r_reference,GAP_ACCEPTANCE_FAILURE_001,runner/scale ladder not in current fixed-R diagnostic contract
