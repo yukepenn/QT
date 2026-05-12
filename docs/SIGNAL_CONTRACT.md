@@ -2,7 +2,21 @@
 
 Strategies may keep internal column names during transition. Downstream adapters map into this canonical schema.
 
-## Canonical columns
+## Canonical `sig_*` DataFrame (Layer 1 / backtest adapter)
+
+The **reference backtest adapter** (`run_strategy_backtest`) validates the columns in `STANDARD_SIGNAL_COLUMNS` from `src/strategies/strategy/base.py` (including `sig_valid`, `sig_side`, `sig_stop`, `sig_target_mode`, `sig_target`, `sig_target_r`, `sig_risk_per_share`, `sig_entry_ref`, `sig_reason`, `sig_strategy`).
+
+Optional columns consumed by execution when present include `sig_max_hold_bars`, `sig_candidate_id`, `sig_management_mode`.
+
+**Light adapter:** `src/backtest/signal_adapter.py`
+
+- `infer_signal_mapping(strategy_name)` — reads optional `output_contract` from metadata (`old_col` → `sig_*`).
+- `canonicalize_signal_frame(df, mapping)` — renames only; does not invent prices.
+- `validate_canonical_signal_frame` / `assert_canonical_signal_frame` — standard column presence plus sanity on rows where `sig_valid` is true (`sig_target_mode` in `fixed_r` / `fixed_price` / `none`, non-zero `sig_side`, finite `sig_stop`).
+
+## Conceptual columns (documentation / combiner context)
+
+Some docs and routers refer to denormalized names:
 
 | Column | Type | Notes |
 |--------|------|--------|
@@ -23,7 +37,7 @@ Strategies may keep internal column names during transition. Downstream adapters
 
 ## Adapter policy
 
-- `backtest` / `combiner` adapters read legacy `sig_*` columns and populate `TradeIntent` + `ExecutionPolicy`.
+- `backtest` / `combiner` adapters read `sig_*` columns and populate `TradeIntent` + `ExecutionPolicy`.
 - `src/backtest/engine.py` documents expected `sig_*` names; use `trade_results_to_frame` to inspect raw `TradeResult` rows.
 - Full strategy refactors are **out of scope** for phase 0–3; metadata must load for every registered strategy where possible.
 

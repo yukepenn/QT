@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Backtest:** canonical Layer 1 sweep smoke — `sweep.py` (`expand_param_grid`, `config_hash`, `run_canonical_sweep`, `run_single_canonical_combo`, `run_synthetic_canonical_smoke`, CLI `--smoke` / `--canonical-help`, legacy `argv[0] == "--legacy"` delegation); `signal_adapter.py`; tests (**100** `pytest`); docs (`CANONICAL_SWEEP_*`, implementation plan + inventory CSV, strategy integration plan, result schema, smoke summary, `SIGNAL_CONTRACT`, `LAYER_FLOW`, `LEGACY_RESULTS_POLICY`); status files.
+
 - **Architecture:** clarify canonical layer connectivity — `docs/LAYER_FLOW.md` (+ CSV), `CANONICAL_SWEEP_DESIGN.md`, `CANONICAL_COMBINER_DESIGN.md`, `LAYER3_VALIDATION_DESIGN.md`, `WALKFORWARD_STATUS.*`, `FEATURE_STRATEGY_CONNECTIVITY.*`, `LEGACY_RESULTS_POLICY.md`, `MAINLINE_LEGACY_SURGERY_*`; backtest `sweep.py` placeholder + `legacy/sweep_legacy.py`; `fast.py` TM-only + reject Numba prepare/run; `precompute` → `legacy.fast_legacy`; combiner `simulator` legacy-only doc; tests (**85** `pytest`).
 
 - **Test(execution):** expand accounting boundary matrix — `materialize.py` (entry/risk/target + targetless guards); gross/net R on `TradeResult`; `scale_fill_policy` (`close` / `trigger_price`); backtest adapter boundary (raw `TradeIntent` only); metrics `total_gross_r`; sweep legacy banner; docs (`EXECUTION_SEMANTICS`, boundary review + test matrix summary, ownership audit); tests (**68** `pytest`).

@@ -9,7 +9,7 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 
 ## 2. Target architecture (reset in progress)
 
-The codebase is moving to a **single canonical execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (canonical single-strategy adapter) and a **Layer 1 sweep placeholder** (`python -m src.backtest.sweep` — use `--legacy` for the historical Numba grid under `legacy/sweep_legacy.py`). The **combiner** still uses an **explicit legacy Numba** simulator re-export until an execution-backed adapter lands. Legacy Numba kernels remain under `**/legacy/**`.
+The codebase is moving to a **single canonical execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (canonical single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic canonical grid; **`--legacy` as the first argv token** runs the historical Numba grid under `legacy/sweep_legacy.py`. The **combiner** still uses an **explicit legacy Numba** simulator re-export until an execution-backed adapter lands. Legacy Numba kernels remain under `**/legacy/**`.
 
 | Layer | Role |
 |-------|------|
@@ -18,7 +18,7 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **strategies** | Raw candidate signals (`src/strategies/`) |
 | **execution** | Canonical fills, exits, PnL (`src/execution/`) |
 | **management** | Exit-plan templates (`src/management/`) |
-| **backtest** | Single-strategy adapter; sweep **placeholder** + `--legacy` grid (`src/backtest/`) |
+| **backtest** | Single-strategy adapter; canonical sweep **smoke** + explicit `--legacy` grid (`src/backtest/`) |
 | **combiner** | Candidate arbitration (legacy sim today; target = execution adapter) (`src/combiner/`) |
 | **router** | Permission / quality scaffold (`src/router/`) |
 | **walkforward** | Layer 3 harnesses (orchestration; not canonical until combiner uses execution) (`src/walkforward/`) |
@@ -31,6 +31,7 @@ Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/LAY
 ### Smoke check (canonical engine)
 
 - Run `python scripts/canonical_execution_smoke.py` (synthetic OHLC) and `python -m pytest -q` before resuming strategy research.
+- Run `python -m src.backtest.sweep --smoke` to exercise the canonical sweep + `run_strategy_backtest` path without QQQ parquet.
 - Trailing, exit order, scale fill policy, and gross vs net R are documented in `docs/EXECUTION_SEMANTICS.md` and `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
 Prior Layer 1–3 research outputs and Champion benchmarks remain **historical priors** (see `docs/LEGACY_RESULTS_POLICY.md`), **not** current canonical truth for execution semantics until regenerated under `src/execution`.

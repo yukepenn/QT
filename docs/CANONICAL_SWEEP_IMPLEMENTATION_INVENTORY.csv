@@ -1,0 +1,10 @@
+file,current_role,canonical_needed,legacy_needed,imports_execution,imports_legacy,action_this_task,risk,notes
+src/backtest/sweep.py,Canonical sweep API + CLI + synthetic smoke,Yes,Delegation only via main argv0,Yes (engine.run_strategy_backtest),No (helpers import sweep_legacy for grid YAML only),Implement smoke + API,Med,Keep legacy helpers for YAML/grid validation only
+src/backtest/engine.py,Single-strategy adapter → simulate_trade_path,Unchanged,N/A,Yes,No,None,Low,Already canonical
+src/backtest/metrics.py,summarize_trades aggregates,Unchanged,N/A,No,No,None,Low,
+src/backtest/fast.py,TM_* only + __getattr__ guard,N/A,N/A,No,No,None,Low,Must not re-export Numba kernels
+src/backtest/legacy/sweep_legacy.py,Numba grid sweep,No,Yes,Optional,Yes,No logic change,Low,Explicit --legacy only
+src/strategies/loader.py,Strategy registry + configs,Future real sweep,No,No,No,None,Low,
+src/strategies/metadata.yaml,Family / features / optional output_contract,Mapping hints,No,No,No,infer_signal_mapping reads contracts,Low,
+src/features/build_features.py,Feature columns for strategies,Future sweep input,No,No,No,Document dependency,Med,
+src/data/read_bars.py,Bar load + validate,Future sweep input,No,No,No,Document dependency,Med,

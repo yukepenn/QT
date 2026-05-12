@@ -1,6 +1,20 @@
 # Canonical Layer 1 sweep (design)
 
-**Status:** Not implemented. Mainline CLI: `python -m src.backtest.sweep` (use `--legacy` for Numba reference grid).
+**Status:** **Synthetic canonical sweep implemented** in `src/backtest/sweep.py` (`--smoke`, `run_canonical_sweep`, `run_synthetic_canonical_smoke`). Real-symbol bar/feature wiring is **future** (see `docs/CANONICAL_SWEEP_IMPLEMENTATION_PLAN.md`). Mainline CLI: `python -m src.backtest.sweep`; **`--legacy` must be the first argv token** to run the Numba reference grid (`src/backtest/legacy/sweep_legacy.py`).
+
+## Canonical responsibilities
+
+- Expand parameter grids (`expand_param_grid`).
+- Load strategy + apply params (real path: future; smoke uses pre-built `sig_*` rows).
+- Generate or accept signals, then **map** to canonical `sig_*` (`src/backtest/signal_adapter.py` when renames are needed).
+- Call **`run_strategy_backtest`** → **`simulate_trade_path`** → **`summarize_trades`**.
+- Stamp **`execution_semantics_version`**, strategy id, **`config_hash`**, data window labels, cost assumptions via policy/backtest config, `engine=canonical_reference`, `canonical_or_legacy=canonical` on saved rows.
+
+## Canonical sweep must **not**
+
+- Compute fill prices, exit prices, or trade R outside `src/execution`.
+- Import or silently call `src.backtest.legacy.fast_legacy` for accounting.
+- Present smoke outputs as performance evidence.
 
 ## Target pipeline
 
@@ -8,7 +22,7 @@
 2. **Build features** — `FeatureStore` / `src/features` (no lookahead).
 3. **Load strategy** — `src/strategies/loader.py`.
 4. **Generate signals** — strategy-specific arrays or row-wise signals.
-5. **Map to canonical contract** — columns per `docs/SIGNAL_CONTRACT.md` / `docs/FEATURES_CONTRACT.md`.
+5. **Map to canonical contract** — columns per `docs/SIGNAL_CONTRACT.md` / `docs/FEATURES_CONTRACT.md` and `signal_adapter`.
 6. **Run backtest adapter** — `run_strategy_backtest` (or batch wrapper) → `simulate_trade_path` per trade.
 7. **Summarize metrics** — `src/backtest/metrics.py` only aggregates canonical columns.
 

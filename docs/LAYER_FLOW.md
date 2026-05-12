@@ -16,7 +16,7 @@ This document ties **research layers** to **module ownership** after the executi
 4. **`run_strategy_backtest`** (`src/backtest/engine.py`) maps rows → `TradeIntent` → **`simulate_trade_path`** (`src/execution/path.py`).
 5. Aggregate metrics (`src/backtest/metrics.py`); emit configs / YAML / metadata for Layer 2.
 
-**Current status:** Canonical single-strategy path exists. **Grid sweep** on the reference engine is **not implemented**; `python -m src.backtest.sweep` defaults to a notice. **Legacy** Numba sweep: `python -m src.backtest.sweep --legacy …` → `src.backtest.legacy.sweep_legacy`.
+**Current status:** Canonical single-strategy path exists. **Grid sweep** on the reference engine is **implemented for synthetic smoke** (`python -m src.backtest.sweep --smoke`, `run_canonical_sweep`); real QQQ/bar-backed sweep remains future work. Default CLI (no args) prints help and exits non-zero. **Legacy** Numba sweep: **`python -m src.backtest.sweep --legacy …`** (legacy argv first) → `src.backtest.legacy.sweep_legacy` with `engine=legacy_numba_fast`.
 
 **Future acceleration:** Numba only under `src.execution.fast_path` **after** parity tests vs `simulate_trade_path` — never a second PnL definition in `backtest.fast`.
 
