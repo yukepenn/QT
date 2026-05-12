@@ -23,7 +23,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from src.backtest.legacy.fast_legacy import prepare_backtest_arrays, run_fast_backtest_from_arrays
+from fast_legacy import prepare_backtest_arrays, run_fast_backtest_from_arrays
 from src.data.read_bars import read_bars
 from src.features.feature_key import feature_key_from_config
 from src.features.feature_store import FeatureStore

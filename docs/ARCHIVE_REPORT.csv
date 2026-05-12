@@ -1,0 +1,3 @@
+old_path,new_archive_path,reason,still_imported_by_mainline,future_action,notes
+src/backtest/legacy/,archive/legacy_backtest/,Historical Numba sweep/backtest,No,Keep read-only,Intra-archive imports only
+src/combiner/legacy/simulator_legacy.py,src/combiner/reference_simulator.py,Renamed in mainline,Yes via simulator.py,Migrate to execution-backed combiner,validate_trade_setup now from execution.validators

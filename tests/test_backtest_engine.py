@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from src.backtest.engine import run_strategy_backtest
-from src.backtest.legacy.engine_legacy import BacktestConfig
+from src.backtest.backtest_config import BacktestConfig
 
 
 def test_run_strategy_backtest_smoke():

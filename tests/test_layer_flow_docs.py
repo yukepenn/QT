@@ -18,7 +18,7 @@ def test_layer_flow_mentions_layers():
 
 def test_design_docs_exist():
     for name in (
-        "CANONICAL_SWEEP_DESIGN.md",
+        "BACKTEST_SWEEP_DESIGN.md",
         "CANONICAL_COMBINER_DESIGN.md",
         "LEGACY_RESULTS_POLICY.md",
         "MAINLINE_LEGACY_SURGERY_PLAN.md",

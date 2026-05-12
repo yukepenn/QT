@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Architecture:** mainline backtest cleanup — `archive/legacy_backtest/`; modular `sweep_*`; CLI without `--legacy`; `ENGINE_LABEL` / `result_lineage`; renamed sweep artifacts; `FeatureFrameCache`; `backtest_config` / `config`; `combiner/bar_arrays`; `reference_simulator`; `execution/validators` trade-setup; engine multi-trade knobs; doc renames; tests **114** `pytest`.
+
 - **Backtest:** canonical real-symbol sweep connector — `strategy_runner.py`; `sweep.py` (`run_canonical_real_symbol_sweep`, `run_single_canonical_from_signals`, `--validate-pipeline`, `--dry-run`, `--asset`, artifact bundle, `--data-root` guard); extended `SweepResult`; docs (`CANONICAL_REAL_SWEEP_*`, integration STATUS CSV, result schema); tests (**115** `pytest`).
 
 - **Backtest:** canonical Layer 1 sweep smoke — `sweep.py` (`expand_param_grid`, `config_hash`, `run_canonical_sweep`, `run_single_canonical_combo`, `run_synthetic_canonical_smoke`, CLI `--smoke` / `--canonical-help`, legacy `argv[0] == "--legacy"` delegation); `signal_adapter.py`; tests (**100** `pytest`); docs (`CANONICAL_SWEEP_*`, implementation plan + inventory CSV, strategy integration plan, result schema, smoke summary, `SIGNAL_CONTRACT`, `LAYER_FLOW`, `LEGACY_RESULTS_POLICY`); status files.

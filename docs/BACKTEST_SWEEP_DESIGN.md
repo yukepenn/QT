@@ -1,6 +1,6 @@
 # Canonical Layer 1 sweep (design)
 
-**Status:** **Synthetic + real-symbol MVP implemented** in `src/backtest/sweep.py` (`--smoke`, `run_canonical_real_symbol_sweep`, `--validate-pipeline`, `--dry-run`). Real runs require `read_bars` partitions for the requested window. **`--legacy` must be the first argv token** for Numba (`src/backtest/legacy/sweep_legacy.py`).
+**Status:** **Synthetic + real-symbol MVP implemented** in `src/backtest/sweep.py` (`--smoke`, `run_real_symbol_sweep`, `--validate-pipeline`, `--dry-run`). Real runs require `read_bars` partitions for the requested window. Historical Numba sweep lives under **`archive/legacy_backtest/`** (not imported by mainline).
 
 ## Canonical responsibilities
 

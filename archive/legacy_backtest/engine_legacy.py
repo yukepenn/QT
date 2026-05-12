@@ -18,7 +18,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from src.backtest.metrics import summarize_trades
-from src.backtest.legacy.execution_legacy import (
+from execution_legacy import (
     is_finite_price,
     valid_fixed_price_target_side,
     valid_stop_side,

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def test_integration_status_csv_has_champion_trio():
-    root = Path(__file__).resolve().parents[1] / "docs" / "CANONICAL_STRATEGY_INTEGRATION_STATUS.csv"
+    root = Path(__file__).resolve().parents[1] / "docs" / "STRATEGY_INTEGRATION_STATUS.csv"
     with root.open(encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
     ids = {r["strategy"] for r in rows}

@@ -5,11 +5,11 @@ import inspect
 import src.execution.path as path_mod
 
 
-def test_sweep_module_documents_legacy_engine():
+def test_sweep_module_documents_reference_engine():
     import src.backtest.sweep as sweep
 
     doc = (sweep.__doc__ or "").lower()
-    assert "legacy" in doc or "not canonical" in doc
+    assert "reference" in doc or "run_strategy_backtest" in doc
 
 
 def test_importing_execution_does_not_pull_legacy_fast():

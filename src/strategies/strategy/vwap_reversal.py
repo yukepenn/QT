@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from src.backtest.fast import TM_FIXED_PX, TM_FIXED_R, TM_NONE
+from src.backtest.constants import TM_FIXED_PX, TM_FIXED_R, TM_NONE
 from src.data.read_bars import read_bars
 from src.features.build_features import build_basic_features
 from src.strategies.strategy.base import (

@@ -1,4 +1,4 @@
-"""Canonical sweep result columns (smoke / schema contract)."""
+"""Sweep result columns (smoke / schema contract)."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ REQUIRED = {
     "profit_factor_r",
     "execution_semantics_version",
     "engine",
-    "canonical_or_legacy",
+    "result_lineage",
     "symbol",
     "start",
     "end",
@@ -32,8 +32,8 @@ REQUIRED = {
 
 
 def test_synthetic_sweep_has_schema_columns():
-    df = sweep.run_synthetic_canonical_smoke()
+    df = sweep.run_synthetic_smoke()
     assert REQUIRED.issubset(set(df.columns))
-    assert (df["engine"] == sweep.CANONICAL_ENGINE_LABEL).all()
-    assert (df["canonical_or_legacy"] == "canonical").all()
+    assert (df["engine"] == sweep.ENGINE_LABEL).all()
+    assert (df["result_lineage"] == "mainline").all()
     assert df["execution_semantics_version"].astype(str).str.len().gt(0).all()

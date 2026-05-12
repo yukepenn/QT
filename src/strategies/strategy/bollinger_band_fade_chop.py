@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from src.backtest.fast import TM_FIXED_PX, TM_FIXED_R, TM_NONE
+from src.backtest.constants import TM_FIXED_PX, TM_FIXED_R, TM_NONE
 from src.strategies.strategy._atr_helpers import atr_series
 from src.strategies.strategy.base import BaseStrategy, init_standard_signal_columns
 from src.strategies.strategy.fast_utils import (

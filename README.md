@@ -9,7 +9,7 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 
 ## 2. Target architecture (reset in progress)
 
-The codebase is moving to a **single canonical execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (canonical single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic canonical grid; **`--legacy` as the first argv token** runs the historical Numba grid under `legacy/sweep_legacy.py`. The **combiner** still uses an **explicit legacy Numba** simulator re-export until an execution-backed adapter lands. Legacy Numba kernels remain under `**/legacy/**`.
+The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). The **combiner** still exposes a **Numba reference** simulator (`src/combiner/reference_simulator.py`) via `combiner.simulator` until an execution-backed Layer 2 loop lands.
 
 | Layer | Role |
 |-------|------|
@@ -18,7 +18,7 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **strategies** | Raw candidate signals (`src/strategies/`) |
 | **execution** | Canonical fills, exits, PnL (`src/execution/`) |
 | **management** | Exit-plan templates (`src/management/`) |
-| **backtest** | Single-strategy adapter; canonical sweep **synthetic + real-symbol MVP** + explicit `--legacy` grid (`src/backtest/`) |
+| **backtest** | Single-strategy adapter; Layer 1 sweep **synthetic + real-symbol MVP** (`src/backtest/`) |
 | **combiner** | Candidate arbitration (legacy sim today; target = execution adapter) (`src/combiner/`) |
 | **router** | Permission / quality scaffold (`src/router/`) |
 | **walkforward** | Layer 3 harnesses (orchestration; not canonical until combiner uses execution) (`src/walkforward/`) |
@@ -26,7 +26,7 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **research** | Thin runners and curated results only (`src/research/`) |
 | **utils** | Config / IO / validation (`src/utils/`) |
 
-Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/LAYER_FLOW.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/CANONICAL_SWEEP_DESIGN.md`, `docs/CANONICAL_COMBINER_DESIGN.md`, `docs/LEGACY_RESULTS_POLICY.md`, `docs/MAINLINE_LEGACY_SURGERY_PLAN.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.md`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
+Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/LAYER_FLOW.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/BACKTEST_SWEEP_DESIGN.md`, `docs/CANONICAL_COMBINER_DESIGN.md`, `docs/LEGACY_RESULTS_POLICY.md`, `docs/MAINLINE_LEGACY_SURGERY_PLAN.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.md`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
 ### Smoke check (canonical engine)
 

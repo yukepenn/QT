@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from src.backtest.legacy.execution_legacy import validate_trade_setup
+from src.execution.validators import validate_trade_setup
 from src.combiner.candidate import Candidate
 
 # Rejection reason codes (signal evaluation)

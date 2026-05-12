@@ -19,7 +19,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from src.backtest.legacy.fast_legacy import prepare_backtest_arrays
+from src.combiner.bar_arrays import prepare_backtest_arrays
 from src.combiner.candidate import Candidate, merged_strategy_config
 from src.combiner.signal_cache import (
     SignalCacheKeyParts,

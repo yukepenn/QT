@@ -1,4 +1,4 @@
-"""Real-symbol canonical sweep wiring (no QQQ parquet in CI)."""
+"""Real-symbol sweep wiring (no QQQ parquet in CI)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 import src.backtest.sweep as sweep
-from src.backtest.sweep import CanonicalSweepConfig, run_canonical_real_symbol_sweep
+from src.backtest.sweep import SweepRunConfig, run_real_symbol_sweep
 
 
 def _fake_bars_qqq(*, rows: int = 220) -> pd.DataFrame:
@@ -28,12 +28,15 @@ def _fake_bars_qqq(*, rows: int = 220) -> pd.DataFrame:
     )
 
 
-def test_run_canonical_real_symbol_sweep_dry_run_uses_monkeypatched_bars(monkeypatch):
-    monkeypatch.setattr(sweep, "read_bars", lambda **kwargs: _fake_bars_qqq())
+def test_run_real_symbol_sweep_dry_run_uses_monkeypatched_bars(monkeypatch):
+    monkeypatch.setattr(
+        "src.backtest.sweep_results.read_bars",
+        lambda **kwargs: _fake_bars_qqq(),
+    )
 
-    cfg = CanonicalSweepConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.engine.run_strategy_backtest") as eng:
-        df = run_canonical_real_symbol_sweep(
+    cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
+    with mock.patch("src.backtest.sweep_results.run_strategy_backtest") as eng:
+        df = run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
             asset="equity",
@@ -49,17 +52,20 @@ def test_run_canonical_real_symbol_sweep_dry_run_uses_monkeypatched_bars(monkeyp
     eng.assert_not_called()
     assert len(df) == 1
     assert df["notes"].iloc[0] == "dry_run"
-    assert (df["engine"] == sweep.CANONICAL_ENGINE_LABEL).all()
+    assert (df["engine"] == sweep.ENGINE_LABEL).all()
 
 
-def test_run_canonical_real_invokes_engine_when_not_dry_run(monkeypatch):
-    monkeypatch.setattr(sweep, "read_bars", lambda **kwargs: _fake_bars_qqq())
+def test_run_real_symbol_invokes_engine_when_not_dry_run(monkeypatch):
+    monkeypatch.setattr(
+        "src.backtest.sweep_results.read_bars",
+        lambda **kwargs: _fake_bars_qqq(),
+    )
 
-    cfg = CanonicalSweepConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
+    cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
     real = __import__("src.backtest.engine", fromlist=["run_strategy_backtest"]).run_strategy_backtest
 
-    with mock.patch("src.backtest.sweep.run_strategy_backtest", wraps=real) as spy:
-        run_canonical_real_symbol_sweep(
+    with mock.patch("src.backtest.sweep_results.run_strategy_backtest", wraps=real) as spy:
+        run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
             asset="equity",
@@ -76,10 +82,10 @@ def test_run_canonical_real_invokes_engine_when_not_dry_run(monkeypatch):
 
 
 def test_empty_bars_raises():
-    cfg = CanonicalSweepConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.sweep.read_bars", lambda **kwargs: pd.DataFrame()):
+    cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
+    with mock.patch("src.backtest.sweep_results.read_bars", lambda **kwargs: pd.DataFrame()):
         with pytest.raises(ValueError, match="No bars"):
-            run_canonical_real_symbol_sweep(
+            run_real_symbol_sweep(
                 strategy_name="orb_continuation",
                 symbol="QQQ",
                 asset="equity",
@@ -95,12 +101,15 @@ def test_empty_bars_raises():
 
 
 def test_max_combos_limits_grid(tmp_path, monkeypatch):
-    monkeypatch.setattr(sweep, "read_bars", lambda **kwargs: _fake_bars_qqq())
+    monkeypatch.setattr(
+        "src.backtest.sweep_results.read_bars",
+        lambda **kwargs: _fake_bars_qqq(),
+    )
     g = tmp_path / "grid.yaml"
     g.write_text("grid:\n  risk.target_r: [1.0, 1.5, 2.0]\n", encoding="utf-8")
-    cfg = CanonicalSweepConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.engine.run_strategy_backtest"):
-        df = run_canonical_real_symbol_sweep(
+    cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
+    with mock.patch("src.backtest.sweep_results.run_strategy_backtest"):
+        df = run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
             asset="equity",

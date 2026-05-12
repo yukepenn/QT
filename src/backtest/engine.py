@@ -1,7 +1,7 @@
 """Single-strategy backtest adapter.
 
-Canonical fill / exit / risk / target materialization / PnL lives in
-``src.execution``. This module **only**:
+Fill / exit / risk / target materialization / PnL live in ``src.execution``.
+This module **only**:
 
 - validates standard signal columns,
 - maps each signal row to a raw :class:`TradeIntent` (no entry fill, no risk,
@@ -9,11 +9,7 @@ Canonical fill / exit / risk / target materialization / PnL lives in
 - calls :func:`src.execution.path.simulate_trade_path`,
 - flattens :class:`TradeResult` for metrics.
 
-``run_backtest`` delegates to ``legacy.engine_legacy`` — **legacy Numba
-accounting**, pre-reset semantics, **not** canonical execution. Do not treat
-its outputs as interchangeable with ``run_strategy_backtest``.
-
-Canonical signal columns (default :class:`BacktestConfig` maps these):
+Standard signal columns (default :class:`BacktestConfig` maps these):
 
 - ``sig_valid``, ``sig_side``, ``sig_stop``, ``sig_target`` (optional for
   ``fixed_r``), ``sig_target_mode``, ``sig_target_r``, ``sig_risk_per_share``
@@ -32,21 +28,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from src.backtest.legacy.engine_legacy import BacktestConfig, run_backtest as run_backtest_legacy
+from src.backtest.backtest_config import BacktestConfig
 from src.backtest.metrics import summarize_trades
 from src.execution.path import simulate_trade_path
 from src.execution.policy import default_intraday_policy
 from src.execution.types import ExecutionPolicy, ExitPlan, ExitReason, TradeIntent, TradeResult
 from src.strategies.strategy.base import validate_standard_signal_columns
-
-
-def run_backtest(
-    df: pd.DataFrame,
-    *,
-    config: BacktestConfig | None = None,
-) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
-    """Legacy engine (Numba fast path, pre-reset semantics) — **not canonical**."""
-    return run_backtest_legacy(df, config=config)
 
 
 def _exit_reason_str(reason: ExitReason | None) -> str:
@@ -178,10 +165,10 @@ def run_strategy_backtest(
     policy: ExecutionPolicy | None = None,
     exit_plan: ExitPlan | None = None,
 ) -> tuple[pd.DataFrame, dict]:
-    """Canonical backtest: per session, first valid signal → execution path.
+    """Reference backtest: scan valid signals in time order; optional multi-trade per session.
 
-    MVP: **one trade per session** after first qualifying signal. No fill,
-    risk, or target math here — only raw field extraction.
+    Default matches prior behavior: ``max_trades_per_session=1``,
+    ``cooldown_bars=0`` (first qualifying signal per session only).
     """
     cfg = config or BacktestConfig()
     pol = policy or default_intraday_policy(
@@ -192,20 +179,27 @@ def run_strategy_backtest(
     validate_standard_signal_columns(df)
     work = df.sort_values(cfg.time_col).reset_index(drop=True)
     trades: list[dict[str, Any]] = []
+    max_tr = max(1, int(cfg.max_trades_per_session))
+    cd = max(0, int(cfg.cooldown_bars))
 
     for _, sub in work.groupby(cfg.session_col, sort=False):
         gix = sub.index.to_numpy()
         sess = sub.reset_index(drop=True)
         n = len(sess)
-        for i in range(max(0, n - 1)):
+        trades_count = 0
+        i = 0
+        while i < max(0, n - 1) and trades_count < max_tr:
             row = sess.iloc[i]
             v = row[cfg.valid_col]
             valid = not pd.isna(v) and bool(v)
             if not valid:
+                i += 1
                 continue
             if i + 1 >= n:
+                i += 1
                 continue
             if sess.iloc[i + 1][cfg.session_col] != row[cfg.session_col]:
+                i += 1
                 continue
             ent_i = i + 1
             strat = str(row.get(cfg.strategy_col, "strategy") or "strategy")
@@ -217,11 +211,14 @@ def run_strategy_backtest(
                 strategy_name=strat,
             )
             if intent is None:
+                i += 1
                 continue
             bars_slice = work.iloc[gix].reset_index(drop=True)
             res = simulate_trade_path(bars_slice, intent, pol, exit_plan)
             if not res.ok:
+                i += 1
                 continue
+            exit_idx_local = ent_i + int(res.bars_held) - 1
             trades.append(
                 {
                     "session_date": row[cfg.session_col],
@@ -234,7 +231,8 @@ def run_strategy_backtest(
                     "risk_per_share": res.risk_per_share,
                 }
             )
-            break
+            trades_count += 1
+            i = exit_idx_local + cd + 1
 
     tdf = trades_to_frame(trades)
     summ = (

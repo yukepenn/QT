@@ -1,0 +1,3 @@
+path,current_role,target_role,keep_mainline,archive,rewrite,depends_on_legacy,has_accounting_logic,future_folder,action_this_task,notes
+src/backtest/sweep.py,CLI orchestration,CLI,Yes,No,Yes,No,No,backtest,Refactored,Delegates to sweep_* modules
+archive/legacy_backtest/sweep_legacy.py,Numba grid sweep,Historical,No,Yes,No,N/A,Yes,archive,Archived,Run manually with PYTHONPATH if needed

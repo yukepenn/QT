@@ -1,20 +1,13 @@
-"""Combiner simulation (**legacy Numba compatibility only**).
+"""Combiner simulation (**reference Numba Layer 2**).
 
-The symbols below are re-exported **explicitly** from
-``src.combiner.legacy.simulator_legacy`` for ``run.py`` / ``sweep.py`` parity
-during the architecture reset.
-
-**Do not** extend this module with new accounting logic. Canonical Layer 2
-simulation will build :class:`src.execution.types.TradeIntent` rows and call
-``src.execution.path.simulate_trade_path``; see ``docs/CANONICAL_COMBINER_DESIGN.md``.
-
-There is **no** wildcard re-export; add new names to ``__all__`` only when they
-exist on the legacy module and are required for compatibility.
+Symbols are re-exported from ``src.combiner.reference_simulator`` for
+``run.py`` / ``sweep.py`` compatibility. New accounting should use
+:class:`src.execution.types.TradeIntent` and :func:`src.execution.path.simulate_trade_path`.
 """
 
 from __future__ import annotations
 
-from src.combiner.legacy.simulator_legacy import (
+from src.combiner.reference_simulator import (
     EX_EOD,
     EX_END_DATA,
     EX_END_SESSION,
