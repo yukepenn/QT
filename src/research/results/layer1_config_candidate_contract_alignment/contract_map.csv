@@ -1,0 +1,19 @@
+yaml_section,yaml_key,owner,runtime_consumer,maps_to,default,validation_rule,notes
+features,*,strategy + feature_key,build_features_from_config,feature columns in bar+feat frame,,strategy.validate_config,execution does not read features directly
+signal,*,strategy,generate_signals → sig_*,canonical signal columns,,strategy.validate_config,
+risk,stop_mode,strategy,signal generation + TradeIntent hints,stop placement mode,,strategy.validate_config,
+risk,target_mode,strategy + execution,materialize fixed_r / etc.,Execution target mode,fixed_r,strategy.validate_config,
+risk,target_r,strategy + execution,R multiple target,,,strategy.validate_config,
+risk,atr_buffer_mult,strategy,signal/risk geometry,,,strategy.validate_config,
+risk,min_risk_per_share,shared,ExecutionPolicy + materialize risk_too_small,ExecutionPolicy.min_risk_per_share,0.0,>=0 finite,threads via BacktestConfig in Layer1
+risk,max_trades_per_day,compat alias,BacktestConfig.max_trades_per_session,session trade cap,1 if no override,>0 after resolve,only if backtest.max_trades_per_session absent
+risk,max_trades_per_session,compat alias,BacktestConfig.max_trades_per_session,same,,lower precedence than backtest.*,
+backtest,eod_exit_minute,Layer1 scan + policy,ExecutionPolicy.eod_exit_minute,389,int,>=0,
+backtest,quantity,metrics + TradeIntent sizing,quantity for PnL dollars,1.0,>0,
+backtest,commission_per_trade,ExecutionPolicy,commission_per_trade,0.0,>=0,
+backtest,slippage_per_share,ExecutionPolicy,slippage_per_share,0.0,>=0,
+backtest,recompute_target_from_entry,historical / UI,BacktestConfig flag (no second target engine),True,bool,document only; execution materializes from entry for fixed_r
+backtest,max_hold_minutes,engine → TradeIntent,max_hold_bars (1m bars),None,>0 when set,
+backtest,max_trades_per_session,engine session scan,max trades per session,1,int,>0,
+backtest,cooldown_bars,engine session scan,cooldown between entries,0,int,>=0,
+backtest,min_risk_per_share,compat fallback,BacktestConfig.min_risk_per_share,only if risk.min_risk absent,0,>=0,

@@ -1,0 +1,14 @@
+check,result,notes
+compileall_src,OK,
+pytest_full,OK,163 passed
+strategies_loader_list,OK,
+backtest_sweep_help,OK,
+backtest_sweep_smoke,OK,
+backtest_validate_pipeline_pa,OK,
+combiner_run_help,OK,
+combiner_sweep_help,OK,
+promotion_script_help,OK,python -m src.research.run_layer1_execution_backed_controlled --help
+validate_candidates_empty,OK,--allow-empty on l1_execution_backed_controlled README-only root
+optional_dry_run_pa,OK,PA QQQ 2024-01-02..2024-01-05 dry-run max-combos 1 no-save; params_json includes fixed+grid keys
+tracked_heavy_scan,NOTE,historical Archive paths may still match
+parquet_tracked,data_raw_ibkr_only,expected

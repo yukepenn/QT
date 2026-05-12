@@ -275,6 +275,7 @@ def run_single_combo(
         slippage_per_share=bt.slippage_per_share,
         commission_per_trade=bt.commission_per_trade,
         eod_exit_minute=bt.eod_exit_minute,
+        min_risk_per_share=bt.min_risk_per_share,
     )
     _tdf, summ = run_strategy_backtest(df, config=bt, policy=pol, exit_plan=None)
     h = config_hash({"combo": dict(combo), "strategy": strategy})
@@ -332,6 +333,7 @@ def run_single_combo_from_signals(
         slippage_per_share=bt.slippage_per_share,
         commission_per_trade=bt.commission_per_trade,
         eod_exit_minute=bt.eod_exit_minute,
+        min_risk_per_share=bt.min_risk_per_share,
     )
     sem = _semantics_version(pol)
     h = config_hash({"combo": dict(combo_params), "strategy": strategy, "feature_key": feature_config_hash})

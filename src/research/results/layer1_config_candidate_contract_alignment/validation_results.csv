@@ -1,0 +1,7 @@
+check,result
+compileall,OK
+pytest,163 passed
+promote_help,OK
+validate_empty_root,OK
+validate_research_artifacts_alignment,OK 8 rows
+validate_research_artifacts_controlled_design,OK 14 rows

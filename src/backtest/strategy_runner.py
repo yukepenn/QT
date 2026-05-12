@@ -35,6 +35,92 @@ from src.strategies.loader import (
 
 STANDARD_SIGNAL_CONTRACT_VERSION = "standard_sig_v1"
 
+_TESTING_DOC_RESERVED_TOP_KEYS = frozenset({"strategy", "notes", "description", "fixed", "grid"})
+
+
+def normalize_override_mapping(obj: Any, *, prefix: str = "") -> dict[str, Any]:
+    """Flatten nested override dicts to dotted keys for :func:`apply_overrides`.
+
+    - Nested dicts become ``section.subkey`` paths.
+    - Lists, tuples, scalars, and ``None`` are leaves (not expanded into index keys).
+    - Keys that already contain ``.`` are still valid leaf paths when the value is not
+      a non-empty dict (YAML may use ``risk.min_risk_per_share: 0.03`` at a nesting level).
+    """
+    if obj is None:
+        return {}
+    if not isinstance(obj, dict):
+        raise TypeError(f"override mapping must be a dict, got {type(obj).__name__}")
+    out: dict[str, Any] = {}
+    for k, v in obj.items():
+        if not isinstance(k, str):
+            raise TypeError(f"override keys must be str, got {type(k).__name__}")
+        path = f"{prefix}.{k}" if prefix else k
+        if isinstance(v, dict) and v and "." not in k:
+            out.update(normalize_override_mapping(v, prefix=path))
+        elif isinstance(v, dict) and not v:
+            continue
+        elif isinstance(v, dict) and "." in k:
+            raise ValueError(f"cannot nest dict under dotted key {path!r}; use nested mapping or a flat key")
+        else:
+            out[path] = v
+    return out
+
+
+def _overlap_error(fixed_keys: set[str], grid_keys: set[str]) -> ValueError:
+    inter = sorted(fixed_keys & grid_keys)
+    return ValueError(f"testing YAML `fixed` and `grid` both set keys {inter!r}; keys must be disjoint")
+
+
+def grid_combos_from_document(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    """Resolved override combos: ``base + fixed + one grid branch`` per row.
+
+    Contract:
+    - ``fixed:`` is merged into every combo first (dotted keys).
+    - ``grid:`` expands a Cartesian product; each branch must not overlap ``fixed`` keys.
+    - Legacy top-level lists (excluding reserved keys) are still supported when no
+      ``grid:`` section exists.
+    - If only ``fixed`` is present, returns a single combo.
+    - If neither ``fixed`` nor grid content exists, returns ``[{}]``.
+    """
+    fixed_flat = normalize_override_mapping(doc.get("fixed") or {})
+
+    if "grid" in doc and isinstance(doc["grid"], dict):
+        grid_branches = expand_grid({"grid": doc["grid"]})
+        if not grid_branches:
+            return [dict(fixed_flat)] if fixed_flat else [{}]
+        merged: list[dict[str, Any]] = []
+        for combo in grid_branches:
+            gkeys = set(combo.keys())
+            if gkeys & set(fixed_flat.keys()):
+                raise _overlap_error(set(fixed_flat.keys()), gkeys)
+            row = dict(fixed_flat)
+            row.update(combo)
+            merged.append(row)
+        return merged
+
+    inner = {k: v for k, v in doc.items() if k not in _TESTING_DOC_RESERVED_TOP_KEYS}
+    if not inner:
+        return [dict(fixed_flat)] if fixed_flat else [{}]
+
+    keys = list(inner.keys())
+    vals: list[list[Any]] = []
+    for k in keys:
+        v = inner[k]
+        if isinstance(v, (list, tuple)):
+            vals.append(list(v))
+        else:
+            vals.append([v])
+    merged_legacy: list[dict[str, Any]] = []
+    for combo in itertools.product(*vals):
+        grid_row = dict(zip(keys, combo))
+        gkeys = set(grid_row.keys())
+        if gkeys & set(fixed_flat.keys()):
+            raise _overlap_error(set(fixed_flat.keys()), gkeys)
+        row = dict(fixed_flat)
+        row.update(grid_row)
+        merged_legacy.append(row)
+    return merged_legacy
+
 
 def load_yaml_or_json(path: str | Path) -> Any:
     p = Path(path)
@@ -80,23 +166,6 @@ def load_grid_document(path: str | Path) -> dict[str, Any]:
     return raw
 
 
-def grid_combos_from_document(doc: dict[str, Any]) -> list[dict[str, Any]]:
-    if "grid" in doc and isinstance(doc["grid"], dict):
-        return expand_grid({"grid": doc["grid"]})
-    inner = {k: v for k, v in doc.items() if k not in ("strategy", "notes", "description")}
-    if not inner:
-        return [{}]
-    keys = list(inner.keys())
-    vals: list[list[Any]] = []
-    for k in keys:
-        v = inner[k]
-        if isinstance(v, (list, tuple)):
-            vals.append(list(v))
-        else:
-            vals.append([v])
-    return [dict(zip(keys, combo)) for combo in itertools.product(*vals)]
-
-
 def apply_combo_overrides(base_cfg: dict[str, Any], combo: dict[str, Any]) -> dict[str, Any]:
     return apply_overrides(base_cfg, combo)
 
@@ -140,11 +209,9 @@ def flatten_grid_document(doc: dict[str, Any]) -> dict[str, Any]:
 def validate_testing_grid_for_strategy(strategy: str, testing: dict[str, Any]) -> None:
     strat = load_strategy(strategy)
     base = load_strategy_config(strategy)
-    grid_list = expand_grid(testing)
-    fixed = testing.get("fixed") or {}
-    for i, combo_flat in enumerate(grid_list):
+    resolved = grid_combos_from_document(testing)
+    for i, combo_flat in enumerate(resolved):
         cfg = apply_overrides(base, combo_flat)
-        cfg = apply_overrides(cfg, fixed)
         finalize_backtest_config(cfg)
         try:
             strat.validate_config(cfg)

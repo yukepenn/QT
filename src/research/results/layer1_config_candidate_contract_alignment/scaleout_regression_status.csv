@@ -1,0 +1,3 @@
+item,status,evidence
+remaining_qty_scale_out,confirmed,tests/test_execution_backed_hardening.py::test_scale_out_fraction_applies_to_remaining_qty; src/execution/path.py _maybe_scale_out uses qty_rem * exit_fraction
+regression_added,no_new_test,existing hardening + execution_path tests cover semantics; no change required this task

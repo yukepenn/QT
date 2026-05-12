@@ -1,0 +1,14 @@
+key,value
+git_sha_before_work,afc4461
+next_handoff_decision_before,RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD
+active_layer1_inputs,src/strategies/parameters + src/strategies/testing_parameters
+active_candidate_root,src/strategies/testing_parameters_results/l1_execution_backed_controlled
+base_config_root,src/strategies/parameters
+testing_grid_root,src/strategies/testing_parameters
+research_audit_root,src/research/results/layer1_config_candidate_contract_alignment
+gap_fixed_grid_merge,fixed (was applied after grid in validate only; runtime omitted fixed) — fixed
+gap_min_risk_policy,Layer1 did not pass min_risk to ExecutionPolicy — fixed
+gap_max_trades_alias,risk.max_trades_per_day not mapped — fixed
+gap_candidate_schema,design doc used strategy_name vs combiner strategy — aligned
+gap_promotion,no script — added run_layer1_execution_backed_controlled.py
+non_runs,"No real Layer1 sweep; no Layer2/3; no WFO; no live; no SPY; no router; no new strategies; no Archive moves; no legacy delete; no Numba; no heavy artifacts; no git add ."

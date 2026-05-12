@@ -4,11 +4,13 @@
 
 QT is a **local, in-sample intraday strategy research framework** centered on **QQQ** 1‑minute RTH bars.
 
-- **Layer 1:** per-strategy parameter sweeps → candidate library (`selected_candidates/*.yaml`).
+- **Layer 1:** per-strategy parameter sweeps → candidate library (promoted **`*.yaml`** under **`src/strategies/testing_parameters_results/l1_execution_backed_controlled/`** for the controlled execution-backed path; older bundles may use `selected_candidates/*.yaml`).
 - **Layer 2:** combiner/router that evaluates candidate sets under simple system constraints (currently **max_open_positions=1**).
 - **Layer 3:** **smoke v1** + **component diagnosis v1** + **mini-WFO v1** (`src/walkforward/`) — smoke/diagnosis use fixed frozen systems on fixed folds; **mini-WFO** runs one causal train (2023–2024) / test (2025–2026) split with train-only selection; **full** rolling WFO remains future work.
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
+
+**2026-05-11 (layer1_config_candidate_contract_alignment):** Pre-run alignment — **`fixed`/`grid`** merge + overlap guard (**`strategy_runner`**), **`params_json`** = resolved overrides; **`BacktestConfig.min_risk_per_share`** + **`max_trades_per_day`** (and related) aliases → session cap (**`engine`**); **`default_intraday_policy`** passes **`min_risk_per_share`** from **`sweep`** single-combo paths; thin **`run_layer1_execution_backed_controlled`** (promote / validate-candidates); runtime candidate root **`src/strategies/testing_parameters_results/l1_execution_backed_controlled/`** (README only until promotion); curated **`src/research/results/layer1_config_candidate_contract_alignment/`**; controlled-design docs refreshed (schema, execution policy, runner gap, run_commands). Tests **163** `pytest`. **Next:** **`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`** (actual controlled sweeps + promotion with **`--write`** after real **`runs/`**).
 
 **2026-05-11 (layer1_execution_backed_controlled design):** Curated **`src/research/results/layer1_execution_backed_controlled/`** — controlled Layer1 rebuild **design only** (QQQ repo-local data policy **2023–2024** preferred; strategies **PA / GAP / CCI**; grid caps; candidate artifact contract; execution policy notes incl. **`min_risk_per_share`** threading follow-up; runbooks; validation gates; decision **`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**). **`src/backtest/sweep.py`** adds **`if __name__ == "__main__"`** so **`python -m src.backtest.sweep`** runs **`main()`**. Tests **149** `pytest`. **Next:** **`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**.
 

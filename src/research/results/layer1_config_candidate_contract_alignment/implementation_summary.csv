@@ -1,0 +1,7 @@
+area,change_summary
+grid_fixed_merge,grid_combos_from_document merges fixed then grid; overlap raises; validate_testing_grid_for_strategy uses same combos
+engine_policy,BacktestConfig.min_risk_per_share; _bt_cfg_from_dict reads risk/backtest; max_trades aliases; run_strategy_backtest passes min_risk to default_intraday_policy
+sweep,sweep run_single_combo* default_intraday_policy includes min_risk_per_share from BacktestConfig
+loader,grid_size uses len(grid_combos_from_document) for accurate combo count
+promotion,run_layer1_execution_backed_controlled.py promote + validate-candidates; YAML matches combiner Candidate loader
+tests,tests/test_layer1_contract_alignment.py (14 tests)

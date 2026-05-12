@@ -65,12 +65,33 @@ class BacktestConfig:
     max_hold_minutes: int | None = None
     max_trades_per_session: int = 1
     cooldown_bars: int = 0
+    min_risk_per_share: float = 0.0
+
+
+def _max_trades_per_session_from_dict(backtest: dict[str, Any], risk: dict[str, Any]) -> int:
+    """Resolve session trade cap with explicit ``backtest`` keys winning over risk aliases."""
+    b = backtest
+    r = risk
+    if b.get("max_trades_per_session") is not None:
+        v = int(b["max_trades_per_session"])
+    elif b.get("max_trades_per_day") is not None:
+        v = int(b["max_trades_per_day"])
+    elif r.get("max_trades_per_session") is not None:
+        v = int(r["max_trades_per_session"])
+    elif r.get("max_trades_per_day") is not None:
+        v = int(r["max_trades_per_day"])
+    else:
+        v = 1
+    if v <= 0:
+        raise ValueError("resolved max_trades_per_session must be > 0")
+    return v
 
 
 def _bt_cfg_from_dict(d: dict[str, Any] | None) -> BacktestConfig:
     if not d:
         return BacktestConfig()
     b = d.get("backtest") or {}
+    r = d.get("risk") or {}
     mh = b.get("max_hold_minutes", None)
     max_hold: int | None
     if mh is None:
@@ -79,12 +100,18 @@ def _bt_cfg_from_dict(d: dict[str, Any] | None) -> BacktestConfig:
         max_hold = int(mh)
         if max_hold <= 0:
             raise ValueError("backtest.max_hold_minutes must be > 0 when set")
-    max_tr = int(b.get("max_trades_per_session", 1))
-    if max_tr <= 0:
-        raise ValueError("backtest.max_trades_per_session must be > 0 when set")
+    max_tr = _max_trades_per_session_from_dict(b, r)
     cd = int(b.get("cooldown_bars", 0))
     if cd < 0:
         raise ValueError("backtest.cooldown_bars must be >= 0")
+    if r.get("min_risk_per_share") is not None:
+        mrs = float(r["min_risk_per_share"])
+    elif b.get("min_risk_per_share") is not None:
+        mrs = float(b["min_risk_per_share"])
+    else:
+        mrs = 0.0
+    if mrs < 0 or mrs != mrs:
+        raise ValueError("min_risk_per_share must be a finite number >= 0")
     return BacktestConfig(
         eod_exit_minute=int(b.get("eod_exit_minute", 389)),
         quantity=float(b.get("quantity", 1.0)),
@@ -94,6 +121,7 @@ def _bt_cfg_from_dict(d: dict[str, Any] | None) -> BacktestConfig:
         max_hold_minutes=max_hold,
         max_trades_per_session=max_tr,
         cooldown_bars=cd,
+        min_risk_per_share=mrs,
     )
 
 
@@ -236,6 +264,7 @@ def run_strategy_backtest(
         slippage_per_share=cfg.slippage_per_share,
         commission_per_trade=cfg.commission_per_trade,
         eod_exit_minute=cfg.eod_exit_minute,
+        min_risk_per_share=cfg.min_risk_per_share,
     )
     validate_standard_signal_columns(df)
     work = df.sort_values(cfg.time_col).reset_index(drop=True)

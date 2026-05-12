@@ -10,6 +10,7 @@ All commands assume **repository root** as current directory. Use **`data/raw/ib
 - `START=2023-01-01`
 - `END=2024-12-31`
 - `OUT_BASE=src/research/results/layer1_execution_backed_controlled/runs`
+- `CANDIDATE_ROOT=src/strategies/testing_parameters_results/l1_execution_backed_controlled`
 
 ## 1) Preflight
 
@@ -44,29 +45,49 @@ python -m src.backtest.sweep --strategy gap_acceptance_failure --symbol QQQ --as
 python -m src.backtest.sweep --strategy cci_extreme_snapback --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/cci_extreme_snapback_focused.yaml --max-combos 32 --output-root %OUT_BASE%/cci_extreme_snapback_2023_2024_m32
 ```
 
-## 6) Postprocess / selection (next task)
+## 6) Validate empty candidate root (README-only)
 
-Not implemented in `sweep.py` — implement as small script or **`src/research/run_layer1_execution_backed_controlled.py`** in a follow-up: read `sweep_results.csv`, apply gates, emit `selected_candidates/` + summaries. **Design only** here.
+```bash
+python -m src.research.run_layer1_execution_backed_controlled validate-candidates --candidate-root %CANDIDATE_ROOT% --allow-empty
+```
 
-## 7) Artifact validation (curated roots)
+## 7) Promote — dry-run (default; inspect picks)
+
+```bash
+python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --candidate-root %CANDIDATE_ROOT% --max-per-strategy 3 --min-trades 20 --min-profit-factor-r 1.05 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_CONTROLLED_STRICT_V1
+```
+
+## 8) Promote — write YAML + CSV indices (after reviewing dry-run)
+
+```bash
+python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --candidate-root %CANDIDATE_ROOT% --max-per-strategy 3 --min-trades 20 --min-profit-factor-r 1.05 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_CONTROLLED_STRICT_V1 --write
+```
+
+## 9) Re-validate candidates (loads every `*.yaml`)
+
+```bash
+python -m src.research.run_layer1_execution_backed_controlled validate-candidates --candidate-root %CANDIDATE_ROOT%
+```
+
+## 10) Artifact validation (curated roots)
 
 ```bash
 python -m src.research.validate_research_artifacts --root src/research/results/layer1_execution_backed_controlled --csv-only --output src/research/results/layer1_execution_backed_controlled/layer1_execution_backed_controlled_artifact_validation.csv
 ```
 
-## 8) Tracked-heavy check (PowerShell)
+## 11) Tracked-heavy check (PowerShell)
 
 ```powershell
 git ls-files | Select-String -Pattern "top_runs|trades.csv|compact_trades|enriched.csv|scored_trades|trade_context_panel.csv|overlay_trade_results|local_rows|local_runs|\.npy|\.npz|\.memmap"
 ```
 
-## 9) Parquet tracking (bash style)
+## 12) Parquet tracking (bash style)
 
 ```bash
 git ls-files | grep -E "\.parquet$|data\.parquet$" || true
 ```
 
-## 10) Commit / push checklist (after run task)
+## 13) Commit / push checklist (after run task)
 
 - `git status --short`
 - Explicit `git add` on curated CSV/MD/YAML only

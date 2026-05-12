@@ -219,7 +219,9 @@ def apply_overrides(base_config: dict, flat_overrides: dict[str, Any]) -> dict:
 
 
 def grid_size(testing_config: dict) -> int:
-    return len(expand_grid(testing_config))
+    from src.backtest.strategy_runner import grid_combos_from_document
+
+    return len(grid_combos_from_document(testing_config))
 
 
 def main(argv: list[str] | None = None) -> int:

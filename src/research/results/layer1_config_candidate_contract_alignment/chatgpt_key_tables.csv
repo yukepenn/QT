@@ -1,0 +1,7 @@
+section,item,metric,value,interpretation
+Decision,label,text,RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD,contract alignment complete without real sweep
+Tests,pytest,count,163,includes 14 new contract tests
+Grid,fixed_plus_grid,overlap_policy,ValueError,prevents silent key clashes
+Policy,min_risk,threads_to_policy,yes,BacktestConfig + engine + sweep
+Promotion,script,path,src/research/run_layer1_execution_backed_controlled.py,thin CLI only
+Runtime,candidate_root,path,src/strategies/testing_parameters_results/l1_execution_backed_controlled,combiner flat yaml root

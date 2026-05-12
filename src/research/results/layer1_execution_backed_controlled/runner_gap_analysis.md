@@ -17,12 +17,12 @@
 
 2. **`engine` column = `reference`:** Sweep stamps `ENGINE_LABEL = "reference"` (historical name). **Mitigation:** Treat as “mainline path engine”; optionally rename in a tiny follow-up PR.
 
-3. **No built-in selection / YAML export:** Sweep writes **`sweep_results.csv`**, **`sweep_summary.md`**, **`sweep_meta.json`** (per existing `write_real_sweep_artifacts`). **No** `selected_candidates/` writer. **Mitigation:** **`ADD_LAYER1_CONTROLLED_RUNNER`** was considered; design decision is **`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`** because sweeps are sufficient for first pass and selection can be a **small** follow-up script in-repo without broad runner.
+3. **Selection / YAML export:** Implemented as thin **`src/research/run_layer1_execution_backed_controlled.py`** (`promote` with default dry-run; **`--write`** persists YAML + `CANDIDATE_INDEX.csv` under the active candidate root). Still **no** `--engine` on sweep.
 
-4. **`min_risk_per_share` on `ExecutionPolicy`:** `run_strategy_backtest` does not yet pass `risk.min_risk_per_share` from strategy YAML into **`default_intraday_policy`**. Combiner hardening **does** wire this. **Mitigation:** one-line policy threading in **`engine.py`** in the **run** task (documented in `execution_policy_design.csv`).
+4. **`min_risk_per_share` on `ExecutionPolicy`:** **Resolved** — `BacktestConfig` + `run_strategy_backtest` + sweep policy construction thread **`risk.min_risk_per_share`** (and backtest fallback) into **`default_intraday_policy`**.
 
 5. **Post-hoc metrics:** `trades_per_month`, exit histograms may need optional local trade export — **not** for git commit.
 
-## Proposed thin runner (not created in this design task)
+## Proposed thin runner
 
-`src/research/run_layer1_execution_backed_controlled.py` — optional if shell loops become unwieldy; should stay thin (invoke sweep + selection + validate).
+`src/research/run_layer1_execution_backed_controlled.py` — **implemented** (promote + validate-candidates); remains thin (no backtest / no PnL).
