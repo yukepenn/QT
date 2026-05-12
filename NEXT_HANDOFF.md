@@ -5,7 +5,7 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit | **`df52f35`** — `Backtest: implement canonical sweep smoke` (full: `df52f35e9da35bb984e475f8a220eedb9260dab8`) |
+| Latest commit | **`f223a09`** — `Backtest: implement canonical sweep smoke` (full: `f223a098104767ccc2fea1daba6c73cb6a47410e`) |
 | Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
 | Working tree | Stage curated paths only — **never** `git add .` |
 
