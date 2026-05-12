@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 
-from src.backtest.constants import TM_FIXED_PX, TM_FIXED_R, TM_NONE
+from src.execution.types import TM_FIXED_PX, TM_FIXED_R, TM_NONE
 
 
 def session_id_from_dates(session_date: pd.Series) -> np.ndarray:

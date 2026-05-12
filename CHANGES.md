@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Architecture:** consolidate mainline structure — monolithic `backtest/sweep.py`; grid/config helpers in `strategy_runner.py`; `BacktestConfig` on `engine.py`; `TM_*` in `execution/types.py` (strategies import there); removed `backtest` shims (`fast`, `execution`, `constants`, `sweep_*`, `config`, `backtest_config`); `prepare_backtest_arrays` on `combiner/precompute.py`; `reference_simulator` archived to `archive/legacy_combiner/`; `combiner/simulator.py` stub; tests **116** `pytest**.
+
 - **Architecture:** mainline backtest cleanup — `archive/legacy_backtest/`; modular `sweep_*`; CLI without `--legacy`; `ENGINE_LABEL` / `result_lineage`; renamed sweep artifacts; `FeatureFrameCache`; `backtest_config` / `config`; `combiner/bar_arrays`; `reference_simulator`; `execution/validators` trade-setup; engine multi-trade knobs; doc renames; tests **114** `pytest`.
 
 - **Backtest:** canonical real-symbol sweep connector — `strategy_runner.py`; `sweep.py` (`run_canonical_real_symbol_sweep`, `run_single_canonical_from_signals`, `--validate-pipeline`, `--dry-run`, `--asset`, artifact bundle, `--data-root` guard); extended `SweepResult`; docs (`CANONICAL_REAL_SWEEP_*`, integration STATUS CSV, result schema); tests (**115** `pytest`).

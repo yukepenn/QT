@@ -1,4 +1,4 @@
-"""Core dataclasses and enums for canonical execution accounting.
+"""Core dataclasses and enums for reference execution accounting.
 
 All backtest/combiner adapters should build :class:`TradeIntent` with **raw**
 signal fields (stop, optional risk, ``target_mode``, ``target_r`` and/or
@@ -12,6 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Any, Literal
+
+import numpy as np
 
 
 class Side(IntEnum):
@@ -191,3 +193,9 @@ class TradeResult:
     @property
     def has_partial(self) -> bool:
         return len(self.legs) > 1
+
+
+# Int8 codes embedded in strategy signal arrays (labels only; accounting is in execution.path).
+TM_NONE = np.int8(0)
+TM_FIXED_R = np.int8(1)
+TM_FIXED_PX = np.int8(2)

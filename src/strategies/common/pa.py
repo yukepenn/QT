@@ -12,7 +12,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from src.backtest.constants import TM_FIXED_R, TM_NONE
+from src.execution.types import TM_FIXED_R, TM_NONE
 from src.strategies.strategy.base import init_standard_signal_columns
 from src.strategies.strategy.fast_utils import (
     apply_min_risk_filter_df,

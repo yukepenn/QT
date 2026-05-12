@@ -1,20 +1,21 @@
-"""Combiner simulator re-exports reference Numba Layer 2 implementation."""
+"""Combiner simulator stub: constants only; accounting pending mainline."""
 
 import importlib.util
 from pathlib import Path
 
-import src.combiner.reference_simulator as ref
+import pytest
+
 import src.combiner.simulator as sim
 
 
-def test_simulator_docstring_describes_reference_path():
+def test_simulator_docstring_describes_pending_path():
     doc = (sim.__doc__ or "").lower()
-    assert "numba" in doc or "reference" in doc
+    assert "pending" in doc or "archive" in doc
 
 
-def test_simulator_reexports_reference_module():
-    assert sim.simulate_combiner_numba is ref.simulate_combiner_numba
-    assert sim.CombinerConfig is ref.CombinerConfig
+def test_simulator_numba_entry_raises_not_implemented():
+    with pytest.raises(NotImplementedError):
+        sim.simulate_combiner_numba()
 
 
 def test_simulator_has_no_star_export():

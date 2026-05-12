@@ -11,11 +11,20 @@ from typing import Any
 
 import yaml
 
-_ROOT = Path(__file__).resolve().parents[2]
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+_QT = Path(__file__).resolve().parents[4]
+if str(_QT) not in sys.path:
+    sys.path.insert(0, str(_QT))
 
-from src.backtest.fast import prepare_backtest_arrays, run_fast_backtest_from_arrays
+_LEGACY_FAST = _QT / "archive" / "legacy_backtest" / "fast_legacy.py"
+import importlib.util
+
+_spec = importlib.util.spec_from_file_location("fast_legacy", _LEGACY_FAST)
+assert _spec and _spec.loader
+_fast = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_fast)
+run_fast_backtest_from_arrays = _fast.run_fast_backtest_from_arrays
+
+from src.combiner.precompute import prepare_backtest_arrays
 from src.data.read_bars import read_bars
 from src.features.feature_key import build_features_from_config
 from src.strategies.loader import load_strategy

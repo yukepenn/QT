@@ -1,0 +1,12 @@
+path,current_role,target_folder,target_file,keep,merge_into,archive_to,delete_after_archive,reason,imported_by,action_this_task,notes
+src/backtest/sweep_types.py,dataclasses/labels,backtest,sweep.py,no,sweep.py,,yes,split module,,merged,
+src/backtest/sweep_grid.py,grid hash,backtest,sweep.py,no,sweep.py,,yes,split module,,merged,
+src/backtest/sweep_io.py,artifact IO,backtest,sweep.py,no,sweep.py,,yes,split module,,merged,
+src/backtest/sweep_results.py,sweep loops,backtest,sweep.py,no,sweep.py,,yes,split module,,merged,
+src/backtest/config.py,YAML/grid helpers,backtest,strategy_runner.py,no,strategy_runner.py,,yes,split module,,merged,
+src/backtest/backtest_config.py,BacktestConfig,backtest,engine.py,no,engine.py,,yes,duplicate config,,merged,
+src/backtest/constants.py,TM_* codes,execution,types.py,no,execution/types.py,,yes,execution-level labels,strategies,merged,
+src/backtest/fast.py,TM shim,archive,legacy_backtest,,,,yes,removed from active,,archived conceptually,
+src/backtest/execution.py,validator shim,execution,validators.py,no,,,,use execution.validators,tests/Archive,removed,
+src/combiner/reference_simulator.py,Numba L2,archive,legacy_combiner/reference_simulator.py,yes,,archive/legacy_combiner/,no,historical reference,none active,git mv,
+src/combiner/bar_arrays.py,ndarray prep,combiner,precompute.py,no,precompute.py,,yes,single owner,,inlined,

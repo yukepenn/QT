@@ -45,7 +45,7 @@ def test_prepare_canonical_signals_accepts_standard_frame():
 
 def test_validate_pipeline_metadata_only():
     cfg = load_strategy_config("pa_buy_sell_close_trend")
-    rep = sr.validate_canonical_pipeline(
+    rep = sr.validate_pipeline(
         strategy_name="pa_buy_sell_close_trend",
         cfg=cfg,
         asset="equity",

@@ -1,28 +1,25 @@
-"""Top-level backtest ``fast`` re-exports target-mode codes only."""
+"""Surface checks for removed shims and relocated helpers."""
 
-import pytest
+import importlib.util
 
-from src.combiner.bar_arrays import prepare_backtest_arrays
+import pandas as pd
+
+from src.combiner.precompute import prepare_backtest_arrays
+from src.execution.types import TM_FIXED_PX, TM_FIXED_R, TM_NONE
 
 
-def test_backtest_fast_exposes_only_tm_constants():
-    from src.backtest.fast import TM_FIXED_PX, TM_FIXED_R, TM_NONE
-
+def test_target_mode_codes_from_execution_types():
     assert TM_FIXED_R is not None
     assert TM_NONE is not None
     assert TM_FIXED_PX is not None
 
 
-def test_backtest_fast_rejects_unknown_attributes():
-    import src.backtest.fast as fast
-
-    with pytest.raises(AttributeError):
-        _ = fast.prepare_backtest_arrays  # type: ignore[attr-defined]
+def test_backtest_fast_module_removed():
+    spec = importlib.util.find_spec("src.backtest.fast")
+    assert spec is None
 
 
-def test_prepare_backtest_arrays_importable_from_combiner_bar_arrays():
-    import pandas as pd
-
+def test_prepare_backtest_arrays_on_precompute():
     df = pd.DataFrame(
         {
             "ts_utc": pd.date_range("2024-01-02", periods=3, freq="min", tz="UTC"),

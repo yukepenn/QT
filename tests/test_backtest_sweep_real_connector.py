@@ -30,12 +30,12 @@ def _fake_bars_qqq(*, rows: int = 220) -> pd.DataFrame:
 
 def test_run_real_symbol_sweep_dry_run_uses_monkeypatched_bars(monkeypatch):
     monkeypatch.setattr(
-        "src.backtest.sweep_results.read_bars",
+        "src.backtest.sweep.read_bars",
         lambda **kwargs: _fake_bars_qqq(),
     )
 
     cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.sweep_results.run_strategy_backtest") as eng:
+    with mock.patch("src.backtest.sweep.run_strategy_backtest") as eng:
         df = run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
@@ -57,14 +57,14 @@ def test_run_real_symbol_sweep_dry_run_uses_monkeypatched_bars(monkeypatch):
 
 def test_run_real_symbol_invokes_engine_when_not_dry_run(monkeypatch):
     monkeypatch.setattr(
-        "src.backtest.sweep_results.read_bars",
+        "src.backtest.sweep.read_bars",
         lambda **kwargs: _fake_bars_qqq(),
     )
 
     cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
     real = __import__("src.backtest.engine", fromlist=["run_strategy_backtest"]).run_strategy_backtest
 
-    with mock.patch("src.backtest.sweep_results.run_strategy_backtest", wraps=real) as spy:
+    with mock.patch("src.backtest.sweep.run_strategy_backtest", wraps=real) as spy:
         run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
@@ -83,7 +83,7 @@ def test_run_real_symbol_invokes_engine_when_not_dry_run(monkeypatch):
 
 def test_empty_bars_raises():
     cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.sweep_results.read_bars", lambda **kwargs: pd.DataFrame()):
+    with mock.patch("src.backtest.sweep.read_bars", lambda **kwargs: pd.DataFrame()):
         with pytest.raises(ValueError, match="No bars"):
             run_real_symbol_sweep(
                 strategy_name="orb_continuation",
@@ -102,13 +102,13 @@ def test_empty_bars_raises():
 
 def test_max_combos_limits_grid(tmp_path, monkeypatch):
     monkeypatch.setattr(
-        "src.backtest.sweep_results.read_bars",
+        "src.backtest.sweep.read_bars",
         lambda **kwargs: _fake_bars_qqq(),
     )
     g = tmp_path / "grid.yaml"
     g.write_text("grid:\n  risk.target_r: [1.0, 1.5, 2.0]\n", encoding="utf-8")
     cfg = SweepRunConfig(strategy="orb_continuation", symbol="QQQ", start="2024-01-02", end="2024-01-02")
-    with mock.patch("src.backtest.sweep_results.run_strategy_backtest"):
+    with mock.patch("src.backtest.sweep.run_strategy_backtest"):
         df = run_real_symbol_sweep(
             strategy_name="orb_continuation",
             symbol="QQQ",
