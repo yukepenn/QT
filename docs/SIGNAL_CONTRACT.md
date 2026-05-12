@@ -24,6 +24,7 @@ Strategies may keep internal column names during transition. Downstream adapters
 ## Adapter policy
 
 - `backtest` / `combiner` adapters read legacy `sig_*` columns and populate `TradeIntent` + `ExecutionPolicy`.
+- `src/backtest/engine.py` documents expected `sig_*` names; use `trade_results_to_frame` to inspect raw `TradeResult` rows.
 - Full strategy refactors are **out of scope** for phase 0–3; metadata must load for every registered strategy where possible.
 
 ## Metadata

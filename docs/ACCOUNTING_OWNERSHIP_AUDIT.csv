@@ -1,0 +1,6 @@
+path_pattern,classification,notes
+src/execution/**,canonical_execution,Single source of truth for new paths
+src/backtest/legacy/**,legacy_duplicate,Pre-reset Numba / loop accounting
+src/combiner/legacy/**,legacy_duplicate,Numba combiner accounting
+src/backtest/engine.py,adapter_metrics,Maps TradeResult to summary columns only
+src/research/**,research_other,Experiment harnesses — not canonical execution

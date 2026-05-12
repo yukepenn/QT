@@ -1,4 +1,8 @@
-"""Optional accelerated path (placeholder until Numba parity tests exist)."""
+"""Optional accelerated path.
+
+Delegates to :func:`src.execution.path.simulate_trade_path` until a Numba port
+exists with parity tests.
+"""
 
 
 def simulate_trade_path_fast(*args, **kwargs):

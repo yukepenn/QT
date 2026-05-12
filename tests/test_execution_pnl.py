@@ -1,6 +1,12 @@
 import pytest
 
-from src.execution.pnl import apply_commission_per_share, cost_as_r, leg_r, weighted_r
+from src.execution.pnl import (
+    apply_commission_per_share,
+    cost_as_r,
+    gross_pnl_per_share,
+    leg_r,
+    weighted_r,
+)
 from src.execution.types import ExitReason, FillLeg, Side
 
 
@@ -27,3 +33,8 @@ def test_weighted_partial():
         FillLeg(0.5, 100.0, 104.0, 4.0, ExitReason.TARGET),
     )
     assert weighted_r(legs) == pytest.approx(3.0)
+
+
+def test_gross_pnl_per_share():
+    assert gross_pnl_per_share(side=Side.LONG, entry=100.0, exit_px=103.0) == pytest.approx(3.0)
+    assert gross_pnl_per_share(side=Side.SHORT, entry=100.0, exit_px=97.0) == pytest.approx(3.0)

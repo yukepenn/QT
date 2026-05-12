@@ -17,4 +17,13 @@
 
 ## Recommended next step
 
-**`RUN_CANONICAL_EXECUTION_SMOKE`** — extend parity cases (same-bar grids, partials, trailing) before migrating Champion paths.
+**`EXPAND_EXECUTION_TEST_MATRIX`** — add more same-bar grids, commission splits,
+and combiner→execution integration once Champion mapping is specified.
+
+## 2026-05-11 — Canonical execution smoke
+
+- Reformatted / documented `src/execution/**`, management, adapters, selection/state.
+- **Trailing** default is conservative (no same-bar ratchet trigger).
+- **Scale-out** triggers on intrabar touch; fills at **close** for that leg.
+- **Tests:** expanded active suite (`pytest` at repo root).
+- **Script:** `scripts/canonical_execution_smoke.py` (synthetic OHLC only).

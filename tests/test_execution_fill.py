@@ -1,6 +1,12 @@
 import pytest
 
-from src.execution.fill import entry_fill_price, exit_fill_price
+from src.execution.fill import (
+    entry_fill_price,
+    exit_fill_price,
+    is_price_level_exit,
+    is_time_based_exit,
+    raw_exit_price_for_reason,
+)
 from src.execution.types import ExitReason, Side
 
 
@@ -30,3 +36,20 @@ def test_short_mirror_stop():
 
 def test_short_mirror_target():
     assert exit_fill_price(90.0, Side.SHORT, ExitReason.TARGET, 0.1) == pytest.approx(90.1)
+
+
+def test_raw_exit_price_for_reason():
+    r = raw_exit_price_for_reason(
+        reason=ExitReason.STOP,
+        stop_price=99.0,
+        target_price=110.0,
+        trail_price=101.0,
+        close=100.0,
+    )
+    assert r == 99.0
+
+
+def test_exit_reason_classifications():
+    assert is_price_level_exit(ExitReason.STOP)
+    assert is_time_based_exit(ExitReason.EOD)
+    assert is_time_based_exit(ExitReason.SCALE_OUT)

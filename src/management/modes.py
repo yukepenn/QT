@@ -1,4 +1,8 @@
-"""Exit management templates (not router logic)."""
+"""Exit management templates (not router logic).
+
+Each :class:`ManagementMode` maps to a generic :class:`ExitPlan` consumed by the
+canonical execution simulator. Parameters are conservative defaults only.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +24,11 @@ def exit_plan_for_mode(mode: ManagementMode) -> ExitPlan:
     if mode == ManagementMode.FIXED_R:
         return ExitPlan()
     if mode == ManagementMode.SCALP:
-        return ExitPlan(no_followthrough_bars=3, no_followthrough_min_r=0.0)
+        return ExitPlan(
+            no_followthrough_bars=3,
+            no_followthrough_min_r=0.0,
+            max_hold_bars_cap=12,
+        )
     if mode == ManagementMode.SWING:
         return ExitPlan()
     if mode == ManagementMode.RUNNER:

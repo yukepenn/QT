@@ -1,4 +1,4 @@
-"""Default execution policies (factories)."""
+"""Default :class:`ExecutionPolicy` factories for intraday research."""
 
 from __future__ import annotations
 

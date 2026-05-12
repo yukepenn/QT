@@ -5,56 +5,67 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit | Architecture reset: **`Feat(architecture): introduce canonical execution engine`** — verify SHA with `git log -1 --oneline` on `main` |
-| Remote | After push: `git ls-remote origin refs/heads/main` must match local `HEAD` |
-| Working tree | Stage only curated paths — **never** `git add .` |
+| Latest commit | **`Test(execution): harden canonical execution smoke`** — verify SHA with `git log -1 --oneline` after pull |
+| Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
+| Working tree | Stage curated paths only — **never** `git add .` |
 
 ## B. Validation
 
 | Check | Result |
 |--------|--------|
 | `python -m compileall -q src` | Run before handoff |
-| `python -m pytest -q` | **26 passed** (active `tests/`; `tests/Archive` excluded via `pytest.ini`) |
+| `python -m pytest -q` | **49 passed** (active `tests/`; `tests/Archive` excluded) |
 | `python -m src.strategies.loader --list` | **35** strategies |
-| Import smoke (`src.execution`, `management`, `backtest.engine`, `combiner.simulator`, `router`, `portfolio`) | **`imports_ok`** |
-| Tracked-heavy check | `git ls-files \| Select-String -Pattern "top_runs\|trades.csv\|..."` → **no matches** |
+| `python scripts/canonical_execution_smoke.py` | Synthetic OHLC smoke (adds repo root to `sys.path`) |
+| Tracked-heavy check | No forbidden paths in `git ls-files` |
 
-## C. Architecture reset (this cycle)
+## C. Canonical execution smoke
 
-| Topic | Status |
-|--------|--------|
-| Canonical **`src/execution/`** | **Present** — fill, exits, pnl, validators, reference `simulate_trade_path`; `fast_path` placeholder |
-| **`src/management/`** | Exit-plan templates from `ManagementMode` → `ExitPlan` (generic; not wired to router) |
-| **`src/backtest/`** | **`run_strategy_backtest`** MVP (first valid signal / session, `sig_*` columns) uses execution; **`run_backtest`** → **`legacy/engine_legacy`** |
-| **`src/combiner/`** | **`simulator.py`** re-exports **`legacy/simulator_legacy`** (Numba accounting still in legacy); **`selection.py` / `state.py`** minimal scaffolds |
-| **`src/router/`**, **`src/portfolio/`** | Scaffolds only (disabled-by-default / generic helpers) |
-| **`src/walkforward/legacy/`** | Package placeholder; main walkforward code not bulk-moved |
-| Docs | `docs/ARCHITECTURE.md`, `MODULE_OWNERSHIP.md`, `EXECUTION_SEMANTICS.md`, `SIGNAL_CONTRACT.md`, `FEATURES_CONTRACT.md`, `STRATEGIES_CONTRACT.md`, reset plan/inventory/moves/summary, audit CSVs |
+- Reference engine **`simulate_trade_path`** refactored for readability + documented exit order.
+- **Conservative trailing:** trail **checked** using prior bar’s ratcheted level; **updated** after other same-bar decisions.
+- **Scale-out:** touch-based **trigger**; **close** used as raw exit price for the scale-out leg (documented).
+- **`TradeResult`:** `REJECTED` reason; `is_win`, `total_qty_frac`, `has_partial` properties.
+- **`ExitPlan.max_hold_bars_cap`** interacts with `TradeIntent.max_hold_bars` via `min`.
 
-## D. Files moved to legacy
+## D. Execution semantics covered
 
-| Old (conceptual) | New |
-|------------------|-----|
-| `src/backtest/engine.py` | `src/backtest/legacy/engine_legacy.py` |
-| `src/backtest/fast.py` | `src/backtest/legacy/fast_legacy.py` |
-| `src/backtest/execution.py` | `src/backtest/legacy/execution_legacy.py` |
-| `src/combiner/simulator.py` | `src/combiner/legacy/simulator_legacy.py` |
+See `docs/EXECUTION_SEMANTICS.md` and `docs/CANONICAL_EXECUTION_SMOKE_SUMMARY.md` — includes: stop/target (+ ambiguity), trailing, scale-out, NFT, max-hold (+ cap), EOD, end-data, MFE/MAE, short gate, commission single charge per trade.
 
-Shims: `src/backtest/execution.py`, `src/backtest/fast.py`, `src/combiner/simulator.py` (re-exports).
+## E. Management support
 
-## E. Explicit non-runs
+- Modes still generic; **scalp** adds `max_hold_bars_cap=12` + NFT defaults.
+- Runner / reversal / swing / fixed_r plans unchanged structurally; tests assert valid `ExitPlan` objects.
 
-- No WFO / mini-WFO / live / paper / SPY / broad Layer2 / Global Layer1 grids.
-- No new trading strategies; no scalp / short research runs; no selected-candidate YAML edits.
-- No commits of raw trades, parquet, `local_rows`, `top_runs`, sweep folders, caches, logs, npy/npz/memmap.
+## F. Backtest adapter status
 
-## F. Risks / caveats
+- `run_strategy_backtest` remains **minimal** (first signal / session MVP).
+- Added **`trade_results_to_frame`** for `TradeResult` inspection.
+- Canonical **`sig_*`** column expectations documented in module docstring.
 
-- **Legacy Numba** backtest/combiner paths still contain **duplicate accounting**; they are isolated under `legacy/` but remain the default for existing sweeps until migration.
-- **`run_strategy_backtest`** is **intentionally minimal** (not full sweep parity).
-- **Numba `fast_path`** is a placeholder; parity tests target the reference engine only.
-- Prior research metrics (overlay alignment, Layer3, etc.) are **historical priors** vs new execution semantics.
+## G. Combiner status
 
-## G. Recommended next step (exactly one)
+- **`simulator.py`**: still **legacy Numba** re-export — **do not extend** for new accounting.
+- **`selection.py` / `state.py`**: deterministic priority + day/cooldown/daily-loss helpers with tests.
 
-**`RUN_CANONICAL_EXECUTION_SMOKE`**
+## H. Contract audit
+
+- `docs/FEATURES_AUDIT.csv`, `docs/STRATEGIES_AUDIT.csv` regenerated (lightweight rows).
+- `docs/SIGNAL_CONTRACT.md` — still authoritative for column naming; adapters may map legacy names.
+
+## I. Explicit non-runs
+
+No WFO, mini-WFO, live/paper, SPY, broad Layer2, Champion migration, historical sweeps, new strategies, short/scalp research, selected-candidate YAML edits, raw artifacts.
+
+## J. Risks / caveats
+
+- Legacy combiner/backtest still hold duplicate accounting.
+- Numba `fast_path` remains a delegating placeholder.
+- Scale-out fill-at-close is conservative; revisit if research needs touch fills.
+
+## K. Files changed (high level)
+
+`src/execution/*`, `src/management/modes.py`, `src/backtest/engine.py`, `src/combiner/selection.py`, `src/combiner/state.py`, `src/combiner/simulator.py` (docstring), `scripts/canonical_execution_smoke.py`, `docs/*` (smoke + semantics + audits), `tests/test_*`.
+
+## L. Recommended next step (exactly one)
+
+**`EXPAND_EXECUTION_TEST_MATRIX`**

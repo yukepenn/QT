@@ -26,11 +26,14 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **research** | Thin runners and curated results only (`src/research/`) |
 | **utils** | Config / IO / validation (`src/utils/`) |
 
-Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/ARCHITECTURE_RESET_SUMMARY.md`.
+Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/ARCHITECTURE_RESET_SUMMARY.md`, `docs/CANONICAL_EXECUTION_SMOKE_SUMMARY.md`.
+
+### Smoke check (canonical engine)
+
+- Run `python scripts/canonical_execution_smoke.py` (synthetic OHLC) and `python -m pytest -q` before resuming strategy research.
+- Trailing + exit order are documented in `docs/EXECUTION_SEMANTICS.md`.
 
 Prior Layer 1–3 research outputs and Champion benchmarks remain **historical priors**, not canonical truth for execution semantics.
-
-Deeper indexes: `PROJECT_STATUS.md`, `NEXT_HANDOFF.md`, `src/research/results/RESULTS_INDEX.md`, `src/combiner/results/RESULTS_INDEX.md` (where present).
 
 ## 3. Current Champion v0 (frozen)
 

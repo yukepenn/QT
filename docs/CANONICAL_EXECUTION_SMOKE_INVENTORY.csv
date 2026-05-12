@@ -1,0 +1,14 @@
+module,file,current_status,readability_issue,semantic_issue,test_coverage,action_required,notes
+execution,types.py,hardened,ok,enums+dataclasses,tests+imports,done,TradeResult properties; REJECTED
+execution,policy.py,hardened,ok,defaults,tests,done,factory only
+execution,fill.py,hardened,ok,slippage map,tests,done,raw_exit helpers
+execution,exits.py,hardened,ok,touch scale,tests,done,intrabar helpers
+execution,pnl.py,hardened,ok,commission doc,tests,done,gross_pnl_per_share
+execution,path.py,hardened,ok,exit order+trail,tests,done,reference engine
+execution,fast_path.py,placeholder,ok,delegates,n/a,defer,Numba later
+execution,validators.py,ok,ok,intent/bars,tests,done,minute_from_open
+management,modes.py,hardened,ok,scalp cap,tests,done,ExitPlan caps
+backtest,engine.py,hardened,ok,adapter only,tests,done,trade_results_to_frame
+combiner,simulator.py,legacy shim,n/a,legacy pnl,partial,migrate later,docstring
+combiner,selection.py,hardened,ok,priority,tests,done,deterministic ties
+combiner,state.py,hardened,ok,counters,tests,done,cooldown/day

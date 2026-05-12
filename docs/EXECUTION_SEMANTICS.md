@@ -29,24 +29,45 @@ Slippage is **per share**, applied **once** at each fill. Commission is **per ro
 - Default: **`stop_first`** (`AmbiguityPolicy.STOP_FIRST`).
 - `target_first` exists only for sensitivity analysis, not headline reporting.
 
-## Exit priority (intrabar evaluation order)
+## Exit priority (per bar, before advancing)
 
-1. Stop / target (subject to ambiguity policy)
-2. Scale-out rules (if enabled on `ExitPlan`)
-3. Trailing stop trigger (if enabled)
-4. Max hold
-5. EOD / session close
-6. End of data
+1. **Stop / target** (same-bar ambiguity via `ExecutionPolicy.same_bar_policy`; default `stop_first`).
+2. **Trailing stop** using the level **carried in from the prior bar** only (see below).
+3. **Scale-out** rules (touch-based trigger on favorable `high`/`low`; fill raw price at **bar close** for that leg — documented conservative choice).
+4. **No-followthrough** (observed closes only; never overrides an earlier stop/target exit on the same bar because those are checked first).
+5. **Max hold** (effective hold = `min(intent.max_hold_bars, exit_plan.max_hold_bars_cap)` when both set).
+6. **EOD** (`minute_from_open >= eod_exit_minute`).
+7. **End of data** (terminal close).
+
+After a bar completes **without** a full exit, the engine **ratchets** the
+trailing stop price using that bar’s range so it may trigger **starting on the
+next bar**. The current bar’s favorable extreme **does not** tighten the trail
+and then stop you on the **same** bar under this default (no trailing
+lookahead).
+
+## Trailing (default conservative)
+
+- **Check:** compare `low`/`high` to the trail stop computed from highs/lows
+  **through the previous bar** (inclusive of entry through `t-1`).
+- **Update:** after scale/NFT/max-hold/EOD checks, fold bar `t` into the best
+  favorable price and move the chandelier trail for use on bar `t+1`.
+
+## Scale-out vs stop same bar
+
+If a stop and a scale-out **touch** would both occur, **stop / target** wins
+first (step 1 before step 3).
 
 ## Max hold
 
 - Counted from **entry bar** as bar index `0` along the held path.
-- Evaluated **after** stop/target (and scale/trailing hooks) on each bar unless `ExecutionPolicy.max_hold_policy` specifies otherwise.
+- Evaluated **after** structured exits above on each bar unless
+  `ExecutionPolicy.max_hold_policy` specifies otherwise.
 
 ## PnL and R
 
-- **Gross PnL/share:** price delta × side, before commission.
-- **Net PnL/share:** gross − allocated commission / qty.
+- **Gross PnL/share:** Σ `qty_frac_i ×` signed delta per share for each leg.
+- **Net PnL/share:** gross − **one** `commission_per_trade / qty` allocation
+  for the whole trade (partials do not each pay the full round-trip again).
 - **R multiple:** net PnL per share ÷ **initial risk per share** at entry (positive risk definition).
 - **Multi-leg / partials:** total R = Σ `qty_frac_i × leg_r_i` with Σ `qty_frac_i = 1` after scaling.
 
@@ -56,7 +77,8 @@ Slippage is **per share**, applied **once** at each fill. Commission is **per ro
 
 ## Invalid trades
 
-- Invalid stop side → reject intent.
+- Invalid side → reject intent (`ExitReason.REJECTED` on `TradeResult`).
+- Short when `allow_short=False` → reject.
 - Non-positive risk → reject intent.
 - Missing target under `fixed_r` → reject unless explicit relaxed policy flags (default: reject).
 

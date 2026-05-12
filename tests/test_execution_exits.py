@@ -39,3 +39,16 @@ def test_short_stop_hit():
         ambiguity=AmbiguityPolicy.STOP_FIRST,
     )
     assert st and not tg
+
+
+def test_target_first_same_bar():
+    st, tg = intrabar_stop_target_hit(
+        side=Side.LONG,
+        high=110.0,
+        low=95.0,
+        stop=96.0,
+        target=108.0,
+        ambiguity=AmbiguityPolicy.TARGET_FIRST,
+    )
+    assert st and tg
+    assert resolve_stop_target_order(st, tg, AmbiguityPolicy.TARGET_FIRST) == ExitReason.TARGET

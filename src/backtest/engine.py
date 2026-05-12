@@ -5,6 +5,15 @@ rows to ``TradeIntent`` and calls ``execution.path.simulate_trade_path``.
 
 ``run_backtest`` delegates to ``legacy.engine_legacy`` for historical sweep
 parity until fully ported.
+
+Canonical signal columns (default :class:`BacktestConfig` maps these):
+
+- ``sig_valid``, ``sig_side``, ``sig_stop``, ``sig_target``, ``sig_target_mode``,
+  ``sig_target_r``, ``sig_risk_per_share``, ``sig_max_hold_bars`` (optional),
+  ``sig_candidate_id``, ``sig_strategy``, ``sig_management_mode`` (optional).
+
+Strategies may emit legacy names internally; map them before calling
+``run_strategy_backtest`` if needed.
 """
 
 from __future__ import annotations
@@ -18,7 +27,7 @@ from src.backtest.legacy.engine_legacy import BacktestConfig, run_backtest as ru
 from src.backtest.metrics import summarize_trades
 from src.execution.path import simulate_trade_path
 from src.execution.policy import default_intraday_policy
-from src.execution.types import ExecutionPolicy, ExitPlan, ExitReason, TradeIntent
+from src.execution.types import ExecutionPolicy, ExitPlan, ExitReason, TradeIntent, TradeResult
 from src.strategies.strategy.base import validate_standard_signal_columns
 
 
@@ -44,6 +53,7 @@ def _exit_reason_str(reason: ExitReason | None) -> str:
         ExitReason.END_SESSION: "end_session",
         ExitReason.END_DATA: "end_of_data",
         ExitReason.NO_FOLLOWTHROUGH: "no_followthrough",
+        ExitReason.REJECTED: "rejected",
     }
     return mapping.get(reason, str(reason.name).lower())
 
@@ -85,6 +95,27 @@ def trades_to_frame(trades: list[dict[str, Any]]) -> pd.DataFrame:
     if not trades:
         return pd.DataFrame()
     return pd.DataFrame(trades)
+
+
+def trade_results_to_frame(results: list[TradeResult]) -> pd.DataFrame:
+    """Flatten :class:`TradeResult` rows for inspection."""
+    rows: list[dict[str, Any]] = []
+    for r in results:
+        rows.append(
+            {
+                "ok": r.ok,
+                "reject_reason": r.reject_reason,
+                "r_multiple": r.r_multiple,
+                "net_pnl_per_share": r.net_pnl_per_share,
+                "gross_pnl_per_share": r.gross_pnl_per_share,
+                "bars_held": r.bars_held,
+                "exit_reason": _exit_reason_str(r.exit_reason),
+                "legs": len(r.legs),
+                "total_qty_frac": r.total_qty_frac,
+                "has_partial": r.has_partial,
+            }
+        )
+    return pd.DataFrame(rows)
 
 
 def run_strategy_backtest(

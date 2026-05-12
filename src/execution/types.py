@@ -1,3 +1,10 @@
+"""Core dataclasses and enums for canonical execution accounting.
+
+All backtest/combiner adapters should build :class:`TradeIntent` rows and pass
+them to :func:`src.execution.path.simulate_trade_path` rather than reimplement
+fills, stops, or R math.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -6,11 +13,15 @@ from typing import Any, Literal
 
 
 class Side(IntEnum):
+    """Position side. Long is ``+1``, short is ``-1``."""
+
     LONG = 1
     SHORT = -1
 
 
 class ExitReason(IntEnum):
+    """Why a leg (or full position) exited."""
+
     STOP = 1
     TARGET = 2
     SCALE_OUT = 3
@@ -20,9 +31,12 @@ class ExitReason(IntEnum):
     END_SESSION = 7
     END_DATA = 8
     NO_FOLLOWTHROUGH = 9
+    REJECTED = 10
 
 
 class AmbiguityPolicy(IntEnum):
+    """When stop and target both trade in the same bar."""
+
     STOP_FIRST = 0
     TARGET_FIRST = 1
 
@@ -33,6 +47,8 @@ EntryTiming = Literal["next_open"]
 
 @dataclass(frozen=True)
 class ExecutionPolicy:
+    """Global knobs for the reference simulator."""
+
     semantics_version: str = "1.0"
     slippage_per_share: float = 0.0
     commission_per_trade: float = 0.0
@@ -47,39 +63,52 @@ class ExecutionPolicy:
 
 @dataclass
 class ScaleOutRule:
-    """Scale out when unrealized R reaches trigger_r; exit fraction of remaining qty."""
+    """Scale out when unrealized R (touch-based) reaches ``trigger_r``.
+
+    ``exit_fraction`` applies to *remaining* quantity after prior scale-outs.
+    """
 
     trigger_r: float
-    exit_fraction: float  # of *remaining* position
+    exit_fraction: float
 
 
 @dataclass
 class TrailingRule:
-    """Trail stop distance measured in R from best price since entry."""
+    """Chandelier-style trail: stop sits ``distance_r`` (in initial R units)
+    behind the best favorable price since entry.
+    """
 
     distance_r: float
 
 
 @dataclass
 class TimeExitRule:
-    """Exit at session close / minute threshold."""
+    """Optional explicit time-exit rule (reserved for session templates)."""
 
     eod_exit_minute: int | None = None
 
 
 @dataclass
 class ExitPlan:
-    """Management-produced plan consumed by execution.path."""
+    """Management layer output consumed by :mod:`src.execution.path`.
+
+    ``max_hold_bars_cap`` tightens ``TradeIntent.max_hold_bars`` when both are
+    set (minimum of the two). When only the cap is set, it becomes the
+    effective max-hold.
+    """
 
     scale_outs: tuple[ScaleOutRule, ...] = ()
     trailing: TrailingRule | None = None
     no_followthrough_bars: int | None = None
-    no_followthrough_min_r: float | None = None  # exit if unrealized R below this after N bars
+    no_followthrough_min_r: float | None = None
     time_rule: TimeExitRule | None = None
+    max_hold_bars_cap: int | None = None
 
 
 @dataclass
 class TradeIntent:
+    """One trade opportunity after signals are aligned to bar indices."""
+
     candidate_id: str
     strategy: str
     side: int
@@ -100,6 +129,8 @@ class TradeIntent:
 
 @dataclass
 class FillLeg:
+    """One closed partial or full exit."""
+
     qty_frac: float
     entry_price: float
     exit_price: float
@@ -109,6 +140,8 @@ class FillLeg:
 
 @dataclass
 class TradeResult:
+    """Outcome of :func:`simulate_trade_path`."""
+
     ok: bool
     reject_reason: str
     legs: tuple[FillLeg, ...] = ()
@@ -121,3 +154,15 @@ class TradeResult:
     exit_reason: ExitReason | None = None
     entry_price: float = float("nan")
     exit_price: float = float("nan")
+
+    @property
+    def is_win(self) -> bool:
+        return self.ok and self.net_pnl_per_share > 0.0
+
+    @property
+    def total_qty_frac(self) -> float:
+        return float(sum(leg.qty_frac for leg in self.legs))
+
+    @property
+    def has_partial(self) -> bool:
+        return len(self.legs) > 1

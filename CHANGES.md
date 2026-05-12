@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Test(execution):** canonical execution smoke — hardened `src/execution` (exit order, conservative trailing, touch scale-out + close fill, NFT, `ExitPlan.max_hold_bars_cap`, `TradeResult` helpers / `REJECTED`); combiner `selection`/`state` helpers; backtest `trade_results_to_frame`; `scripts/canonical_execution_smoke.py`; docs (`CANONICAL_EXECUTION_*`, `CODE_READABILITY_CHECK`, `ACCOUNTING_OWNERSHIP_AUDIT`, `EXECUTION_SEMANTICS`, audits); expanded tests (**49** `pytest`).
+
 - **Feat(execution):** canonical **`src/execution/`** package (types, policy, fill, exits, pnl, validators, reference `path.simulate_trade_path`; `fast_path` delegates to reference). **`src/management/`**, **`src/router/`**, **`src/portfolio/`** scaffolds. **`src/data/validation.py`**, **`src/utils/io.py`** helpers.
 - **Refactor(backtest/combiner):** **`engine.py` / `fast.py` / `execution.py` / `simulator.py`** moved to **`legacy/*_legacy.py`**; root modules are shims or thin adapters; new **`run_strategy_backtest`** + intent helpers on **`src/backtest/engine.py`**; **`src/combiner/selection.py`**, **`state.py`** minimal; **`pytest.ini`** `norecursedirs` skips **`tests/Archive`**.
 - **Feat(strategies):** expanded **`metadata.py`** fallback contract + **`get_strategy_output_contract`**.

@@ -1,2 +1,36 @@
-strategy,family,allowed_sides,required_features,outputs_stop,outputs_target,outputs_risk,metadata_present,canonical_contract_ready,notes
-*,from metadata.yaml,long_only,varies,yes,yes,yes,partial,partial,see SIGNAL_CONTRACT
+strategy,family,metadata_present,allowed_sides,required_features_known,has_stop_output,has_target_output,has_risk_output,canonical_contract_ready,next_action
+adx_dmi_trend_continuation,trend_strength_continuation,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+afternoon_continuation,afternoon_trend,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+bollinger_band_fade_chop,band_mean_reversion,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+bollinger_squeeze_breakout,volatility_expansion,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+cci_extreme_snapback,oscillator_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+consecutive_bar_exhaustion,price_action_exhaustion,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+donchian_channel_breakout,rolling_channel_breakout,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+failed_orb,opening_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+gap_acceptance_failure,gap_behavior,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+intraday_ma_crossover,moving_average_trend,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+large_candle_failure,price_action_failure,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+macd_momentum_turn,macd_momentum_shift,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+midday_compression_breakout,midday_compression,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+multi_day_level_trap,multi_day_level_trap,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+orb_continuation,opening_momentum,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+orb_retest_continuation,opening_momentum,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_broad_channel_zone,pa_broad_channel,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_buy_sell_close_trend,pa_close_trend_continuation,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_climax_reversal,pa_climax_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_failed_range_breakout_trap,pa_range_breakout_failure,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_generic_breakout_pullback,pa_breakout_pullback,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_mtr_reversal,pa_major_trend_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_second_entry_pullback,pa_second_entry,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_tight_channel_pullback,pa_channel_pullback,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_trading_range_bls_hs,pa_trading_range,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+pa_wedge_reversal,pa_wedge_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+prior_close_reclaim,value_reclaim,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+prior_day_level_trap,key_level_trap,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+rsi_failure_swing,oscillator_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+sma20_reclaim_reject,moving_average_reclaim,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+stochastic_oversold_cross,oscillator_reversal,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+supertrend_atr_flip,atr_trend_following,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+vwap_reclaim_reject,vwap_reclaim,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+vwap_reversal,mean_reversion,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML
+vwap_trend_pullback,vwap_trend,yes,long_only,partial,yes,yes,yes,partial,optional per-strategy output_contract in YAML

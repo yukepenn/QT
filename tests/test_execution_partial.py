@@ -33,3 +33,4 @@ def test_scale_out_partial():
     res = simulate_trade_path(df, intent, pol, plan)
     assert res.ok
     assert len(res.legs) >= 1
+    assert abs(res.total_qty_frac - 1.0) < 1e-9

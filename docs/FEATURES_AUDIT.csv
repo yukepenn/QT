@@ -1,9 +1,20 @@
-module,outputs,depends_on_future_data,warmup_needed,safe_for_intraday_decision,notes
-src/features/build_features.py,many cols,unknown,yes,yes,audit pending
-src/features/feature_key.py,many cols,unknown,yes,yes,audit pending
-src/features/regime.py,many cols,unknown,yes,yes,audit pending
-src/features/price_action.py,many cols,unknown,yes,yes,audit pending
-src/features/vwap.py,many cols,unknown,yes,yes,audit pending
-src/features/orb.py,many cols,unknown,yes,yes,audit pending
-src/features/levels.py,many cols,unknown,yes,yes,audit pending
-src/features/indicators.py,many cols,unknown,yes,yes,audit pending
+module,role,likely_no_lookahead,warmup_needed,outputs_summary,concerns,next_action
+src/features/build_features.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/build_types.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/channels.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/feature_config.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/feature_key.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/feature_store.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/indicators.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/levels.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/orb.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/pa_brooks_enums.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/pa_magnet_columns.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/pa_swings.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/price_action.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/regime.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/time_features.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/utils.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/volatility.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/volume.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
+src/features/vwap.py,feature primitive / builder piece,yes,varies,see module,audit row-by-row later,none for smoke phase
