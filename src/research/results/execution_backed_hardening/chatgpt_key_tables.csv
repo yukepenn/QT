@@ -1,0 +1,6 @@
+section,item,metric,value,interpretation
+Smoke,QQQ Jan 2024 PA+GAP,trades,23,Unchanged count vs pre-hardening overlay baseline for same IDs/window
+Smoke,QQQ Jan 2024 PA+GAP,total_r,4.4120391216731,Aggregate sanity after semantics fixes
+Tests,pytest,count,149,All green including new hardening module
+Policy,min_risk_per_share,reject_reason,risk_too_small,Stable string from materialize_trade_path
+Scale,two_x_0.5_rules,second_leg_qty_frac,0.25,Confirms remaining-not-original semantics

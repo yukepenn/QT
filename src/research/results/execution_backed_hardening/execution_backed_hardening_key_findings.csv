@@ -1,0 +1,6 @@
+finding,severity,status
+session_crossing_next_bar_entry,high,fixed_adapter_guard
+cooldown_spanned_sessions,high,fixed_reset_day
+min_risk_only_in_validators_partially,medium,fixed_policy_plus_materialize
+scale_out_used_original_qty,medium,fixed_path_remaining_qty
+docs_out_of_sync_with_adapter,low,synced_handoff_and_architecture_docs

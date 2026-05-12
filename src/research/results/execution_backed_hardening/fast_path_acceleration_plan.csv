@@ -1,0 +1,6 @@
+pillar,rule
+reference_truth,src/execution/path.py simulate_trade_path remains Python reference
+acceleration_surface,src/execution/fast_path.py delegates to reference until Numba port exists
+parity_gate,fast path must match reference on entry stop/target same_bar max_hold EOD min_risk scale_out trailing NFT
+legacy_numba,archive reference / benchmark only not canonical PnL truth
+broad_sweeps,execution_mode=fast only after parity gates pass

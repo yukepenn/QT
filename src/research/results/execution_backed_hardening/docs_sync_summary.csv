@@ -1,0 +1,14 @@
+doc_path,summary_of_change
+NEXT_HANDOFF.md,Point to hardening complete + DESIGN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD
+PROJECT_STATUS.md,Execution-backed hardened; pytest 149
+PROGRESS.md,Entry for hardening task
+CHANGES.md,Unreleased bullet
+docs/LAYER_FLOW.md,execution_backed hardening bullets on adapter/state/policy
+docs/CANONICAL_COMBINER_DESIGN.md,Adapter session + min risk + reset_day
+docs/MODULE_OWNERSHIP.md,execution owns min_risk; combiner owns session guard
+docs/MAINLINE_STRUCTURE_SUMMARY.md,adapter note
+docs/PROJECT_STRUCTURE.md,combiner bullet expanded
+docs/EXECUTION_SEMANTICS.md,scale fraction + risk_too_small invalid
+docs/EXECUTION_TEST_MATRIX_SUMMARY.md,Hardening tests + count + next step
+README.md,Architecture paragraph tightened
+src/research/results/RESULTS_INDEX.md,Add execution_backed_hardening row

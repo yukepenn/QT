@@ -38,6 +38,8 @@ Slippage is **per share**, applied **once** at each fill. Commission is **per ro
    - **`close`** (default): bar **close** (conservative).
    - **`trigger_price`:** theoretical touch price at `entry ± trigger_r × risk` (then slippage applied).
 
+   For each rule, **`exit_fraction`** applies to **remaining** quantity after any prior scale-out legs on the same trade (not a fixed fraction of the original size).
+
 4. **No-followthrough** (observed closes only; never overrides an earlier stop/target exit on the same bar because those are checked first).
 5. **Max hold** (effective hold = `min(intent.max_hold_bars, exit_plan.max_hold_bars_cap)` when both set).
 6. **EOD** (`minute_from_open >= eod_exit_minute`).
@@ -92,6 +94,7 @@ first (step 1 before step 3).
 - Non-positive risk → reject intent.
 - Missing target under `fixed_r` → reject unless explicit relaxed policy flags (default: reject).
 - **`target_mode == "none"`** without a valid management/time exit path (per materialization rules) → reject at materialization.
+- **`ExecutionPolicy.min_risk_per_share > 0`** and materialized initial `risk_per_share` is strictly below that floor → reject at materialization with reason **`risk_too_small`** (no bar walk).
 
 ## Canonicality
 

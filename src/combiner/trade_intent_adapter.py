@@ -92,11 +92,15 @@ def build_trade_intent_from_candidate(
     )
 
 
-def execution_policy_from_combiner_cfg(cfg: Any) -> ExecutionPolicy:
+def execution_policy_from_combiner_cfg(cfg: Any, *, min_risk_per_share_floor: float = 0.0) -> ExecutionPolicy:
+    base = float(getattr(cfg, "min_risk_per_share", 0.0) or 0.0)
+    floor = float(min_risk_per_share_floor or 0.0)
+    mr = max(base, floor)
     return default_intraday_policy(
         slippage_per_share=float(getattr(cfg, "slippage_per_share", 0.0)),
         commission_per_trade=float(getattr(cfg, "commission_per_trade", 0.0)),
         eod_exit_minute=int(getattr(cfg, "eod_exit_minute", 389)),
+        min_risk_per_share=mr,
     )
 
 
@@ -112,9 +116,10 @@ def simulate_selected_trade(
     *,
     combiner_cfg: Any,
     max_hold_override: int | None = None,
+    min_risk_per_share_floor: float = 0.0,
 ) -> TradeResult:
     """Run :func:`simulate_trade_path` with policy derived from combiner YAML knobs."""
-    pol = execution_policy_from_combiner_cfg(combiner_cfg)
+    pol = execution_policy_from_combiner_cfg(combiner_cfg, min_risk_per_share_floor=min_risk_per_share_floor)
     mh = max_hold_override if max_hold_override is not None else intent.max_hold_bars
     plan = exit_plan_from_max_hold(mh)
     return simulate_trade_path(bars, intent, pol, plan)

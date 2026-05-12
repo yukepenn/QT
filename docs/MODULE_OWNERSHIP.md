@@ -19,7 +19,7 @@ This document defines **what each top-level package may do** and what is **forbi
 
 ## 4. `execution/` (canonical)
 
-**Owns:** entry and exit fill math, **materialization** of entry price, initial risk, and targets (`materialize.py`), exit ordering, ambiguity policy, gross and net PnL/R (commission as one charge per trade), `scale_fill_policy`, MFE/MAE path accounting.  
+**Owns:** entry and exit fill math, **materialization** of entry price, initial risk, and targets (`materialize.py`), exit ordering, ambiguity policy, gross and net PnL/R (commission as one charge per trade), `scale_fill_policy`, **`min_risk_per_share`** rejection (`risk_too_small`), MFE/MAE path accounting.  
 **Must not:** strategy discovery, combiner priority rules, walk-forward folds.
 
 All backtest/combiner/research replay code that needs fills must call into `execution/`.
@@ -36,7 +36,7 @@ All backtest/combiner/research replay code that needs fills must call into `exec
 
 ## 7. `combiner/`
 
-**Owns:** candidate arbitration, risk knobs (max trades, cooldown, daily loss), building `TradeIntent`, calling `execution`.  
+**Owns:** candidate arbitration, risk knobs (max trades, cooldown, daily loss), building `TradeIntent`, calling `execution`, **same-session next-bar entry** in `adapter.simulate_combiner_canonical` (no `session_date` mismatch across `signal_idx → entry_idx`).  
 **Must not:** implement fill/exit/PnL accounting in new mainline code; the legacy Numba `simulator` path is compatibility-only until migrated.
 
 ## 8. `router/` (scaffold)

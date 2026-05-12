@@ -1,0 +1,2 @@
+topic,chosen_behavior,implementation_note
+ScaleOutRule.exit_fraction,of_remaining_qty,_maybe_scale_out uses qty_rem * exit_fraction

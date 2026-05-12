@@ -1,0 +1,2 @@
+step,command_fragment,status
+hardening_smoke,python -m src.research.run_combiner_adapter_parity --try-real-smoke --bar-root data --engine execution_backed --aggregate-only,OK

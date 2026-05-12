@@ -118,6 +118,10 @@ def materialize_trade_levels(
     if not math.isfinite(risk) or risk <= 0:
         return MaterializedTrade(False, "bad_risk", entry_price=entry)
 
+    mr = float(policy.min_risk_per_share)
+    if mr > 0.0 and float(risk) + 1e-15 < mr:
+        return MaterializedTrade(False, "risk_too_small", entry_price=entry, risk_per_share=float(risk))
+
     if side == Side.LONG and not (stop < entry):
         return MaterializedTrade(False, "invalid_stop_side_long", entry_price=entry)
     if side == Side.SHORT and not (stop > entry):

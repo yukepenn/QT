@@ -1,0 +1,2 @@
+artifact,policy_field,enforcement_site,floor_rule
+ExecutionPolicy,min_risk_per_share,materialize_trade_levels,max(combiner_cfg.min_risk_per_share,min_risk_per_candidate[ci])

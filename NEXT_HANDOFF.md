@@ -10,10 +10,10 @@
 
 ## B. Validation
 
-| Check | Result (post exit-overlay diagnostic) |
-|--------|----------------------------------------|
+| Check | Result (post execution-backed hardening) |
+|--------|------------------------------------------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **142** passed |
+| `python -m pytest -q` | **149** passed |
 | `python -m src.strategies.loader --list` | OK |
 | `python -m src.backtest.sweep --smoke` | OK |
 | `python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend` | OK |
@@ -21,58 +21,53 @@
 | `python -m src.combiner.sweep --help` | OK |
 | `python -m src.research.run_combiner_adapter_parity --help` | OK |
 | `python -m src.research.run_exit_overlay_execution_path --help` | OK |
-| `python -m src.research.validate_research_artifacts --root src/research/results/exit_overlay_execution_path --csv-only` | OK → `exit_overlay_execution_path_artifact_validation.csv` |
+| `python -m src.research.validate_research_artifacts --root src/research/results/execution_backed_hardening --csv-only` | OK → `execution_backed_hardening_artifact_validation.csv` (**17** CSVs scanned) |
 
 ## C. Task scope
 
-**Exit overlay on execution path (research-only):** thin runner `src/research/run_exit_overlay_execution_path.py` + tests `tests/test_exit_overlay_execution_path.py`. **No third PnL engine** — baseline **`simulate_combiner_canonical`**; overlays **`simulate_trade_path`** with modified **`TradeIntent` / `ExitPlan`**. **No** WFO, broad Layer2, Global Layer1, live/paper, SPY, router production, scalp/short, Champion YAML edits, legacy deletion.
+**Execution-backed hardening (research / correctness):** `adapter` same-session next-bar entry; `state.reset_day` clears cooldown + open positions; **`ExecutionPolicy.min_risk_per_share`** + **`materialize`** `risk_too_small`; **`path`** scale-out uses **remaining** qty; **`tests/test_execution_backed_hardening.py`**. **No** new Numba engine, **no** WFO/broad sweeps/router/production exit-management.
 
 ## D. Data / candidate inputs
 
-- **Bars:** repo-local **`data/raw/ibkr`** (via `--bar-root data` → `resolve_ibkr_data_dir`).
-- **Candidates:** `src/research/results/Archive/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates`.
-- **Profiles / IDs:** `pa_only_mtp1_meta` → `PA_BUY_SELL_CLOSE_TREND_003`; `pa_gap_mtp2_meta` → PA + `GAP_ACCEPTANCE_FAILURE_001`. CLI supports comma-separated **`--profile`** for a single aggregate CSV batch.
+- Repo-local bars: **`data/raw/ibkr`** (optional smoke via `run_combiner_adapter_parity --try-real-smoke`).
+- Smoke reference: `src/research/results/execution_backed_hardening/smoke/` (aggregate CSV/MD only; paths repo-relative in committed CSVs).
 
-## E. Layer file map / cleanup inventory
+## E. Layer file map / cleanup
 
-- **`layer_file_map.csv` / `.md`:** Layer1/2/3 + execution/support roles; confirms only **`src/execution/`** should own accounting math.
-- **`file_cleanup_candidates.csv` / `.md`:** classify only — **no deletes**.
+- Hardening touches **`src/combiner/adapter.py`**, **`state.py`**, **`trade_intent_adapter.py`**, **`src/execution/{types,policy,materialize,path,validators}.py`** only (plus tests/docs/results).
+- Full inventories remain under **`combiner_adapter_parity/`** and **`exit_overlay_execution_path/`** from prior tasks.
 
-## F. Overlay support status
+## F. Hardening status
 
-| Overlay | Status |
-|---------|--------|
-| `baseline_execution_backed` | supported |
-| `max_hold_tighten_60` | supported |
-| `no_followthrough_exit_5bars` | supported |
-| `trend_swing_2r` | supported |
-| `trail_after_1r_simple` | **unsupported** (no arm-after-R trailing threshold in contract) |
-| `runner_after_1r_reference` | **unsupported** (no runner ladder) |
+| Item | Status |
+|------|--------|
+| Same-session next-bar entry | **done** (`adapter`) |
+| Cooldown reset on new session | **done** (`state.reset_day`) |
+| `min_risk_per_share` on policy + materialize | **done** |
+| Scale-out fraction semantics | **done** (remaining qty) |
+| Fast-path acceleration | **planned only** (`fast_path_acceleration_plan.md`) |
 
-Deduped reasons: `overlay_unsupported.csv`.
+## G. Overlay / parity context
 
-## G. Overlay results
-
-- **Smoke:** QQQ **2024-01** — see `overlay_smoke_summary.csv` (both profiles). **max_hold** and **NFT** reduce **`total_r`** vs baseline; **NFT** turns **PA+GAP** smoke **negative**; **trend_swing_2r** slightly helps PA-only smoke.
-- **Repo coverage:** full QQQ span in committed shards (**~2020–2026** on this checkout) — `overlay_repo_coverage_*`. Same qualitative pattern: **max_hold** / **NFT** haircut baseline **`total_r`**; **trend_swing_2r** near baseline.
-- **Local-only:** `_local_only/` (precompute profiles, feature stats, optional replay row CSVs) — **gitignored**.
+- **Exit overlay on execution path:** complete — did not justify immediate **`src/management/`** promotion (`exit_overlay_execution_path/`).
+- **Combiner adapter parity:** `EXECUTION_BACKED_READY_FOR_RESEARCH` unchanged as label; semantics **stricter** post-hardening (documented).
 
 ## H. Decision
 
-**`USE_EXECUTION_BACKED_FOR_RESEARCH_AND_REBUILD_LAYER1_2_3`**
+**`DESIGN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**
 
 ## I. Explicit non-runs / risks
 
-No mini/full WFO, production exit-management, inverse/side-flip research, new strategies, combiner production behavior changes, raw row-level trade commits, `top_runs` / `local_runs` (new), parquet outside `data/raw/ibkr`.
+No WFO/mini-WFO, live/paper, SPY sweeps, broad Layer1/Layer2, Global Layer1 rerun, router, production exit-management, short/scalp, Champion YAML edits, legacy delete/archive, second PnL engine, raw trade commits, `git add .`.
 
-## J. Files changed
+## J. Files changed (high level)
 
-`.gitignore` (`src/research/results/**/_local_only/`), `src/research/run_exit_overlay_execution_path.py`, `tests/test_exit_overlay_execution_path.py`, `src/research/results/exit_overlay_execution_path/**` (curated CSV/MD), `docs/LAYER_FLOW.md`, `src/research/results/RESULTS_INDEX.md`, `NEXT_HANDOFF.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`.
+`src/combiner/adapter.py`, `state.py`, `trade_intent_adapter.py`, `src/execution/types.py`, `policy.py`, `materialize.py`, `path.py`, `validators.py`, `tests/test_execution_backed_hardening.py`, `src/research/results/execution_backed_hardening/**`, docs (`LAYER_FLOW`, `CANONICAL_COMBINER_DESIGN`, `MODULE_OWNERSHIP`, `MAINLINE_STRUCTURE_SUMMARY`, `PROJECT_STRUCTURE`, `EXECUTION_SEMANTICS`, `EXECUTION_TEST_MATRIX_SUMMARY`, `README`), `RESULTS_INDEX.md`, `NEXT_HANDOFF.md`, `PROJECT_STATUS.md`, `PROGRESS.md`, `CHANGES.md`.
 
 ## K. Local-only artifacts
 
-`src/research/results/exit_overlay_execution_path/_local_only/` — precompute CSV/MD/JSON + optional **`--local-row-output`** replay tables; **not** committed.
+None required beyond standard temp dirs for combiner runs; smoke outputs under `execution_backed_hardening/smoke/` are **aggregates only** (no row-level trade dumps in this commit).
 
 ## L. Recommended next step (exactly one)
 
-**`USE_EXECUTION_BACKED_FOR_RESEARCH_AND_REBUILD_LAYER1_2_3`**
+**`DESIGN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**

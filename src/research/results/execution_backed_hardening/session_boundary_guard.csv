@@ -1,0 +1,2 @@
+component,change,test_file
+adapter.py,"require meta_arrays[""session_date""][entry_bar] == sess_day before simulate_selected_trade",tests/test_execution_backed_hardening.py

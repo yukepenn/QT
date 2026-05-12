@@ -65,6 +65,7 @@ class ExecutionPolicy:
     allow_trailing: bool = True
     allow_short: bool = False
     scale_fill_policy: ScaleFillPolicy = "close"
+    min_risk_per_share: float = 0.0
 
 
 @dataclass

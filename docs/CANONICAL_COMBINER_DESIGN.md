@@ -31,3 +31,11 @@
 
 - Execution-backed path for at least one frozen candidate set on synthetic bars.
 - Parity or explicit divergence notes vs legacy Numba for the same intents.
+
+## Execution-backed `simulate_combiner_canonical` (adapter)
+
+`src/combiner/adapter.py` walks bars sequentially, builds **`TradeIntent`**, and calls **`simulate_trade_path`**. Hardening rules (2026-05):
+
+- **Same-session next-bar entry:** `entry_idx = signal_idx + 1` must satisfy `session_date[entry_idx] == session_date[signal_idx]`; otherwise the signal is skipped (no entry on the first bar of a later calendar session).
+- **Min risk:** `ExecutionPolicy.min_risk_per_share = max(combiner_cfg.min_risk_per_share, min_risk_per_candidate[ci])`; trades below the floor fail materialization with **`risk_too_small`** (enforced in `materialize_trade_levels`, not ad-hoc PnL in Layer2).
+- **`combiner.state.reset_day`:** clears **`cooldown_until_bar`** and **`open_positions`** on a new **`session_date`** so a prior-session loss cooldown cannot block the next session’s opening bars.

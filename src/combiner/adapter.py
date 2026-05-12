@@ -64,9 +64,13 @@ def simulate_combiner_canonical(
     - Resolves same-bar conflicts only among candidates **valid on the same signal bar**;
       does not replicate every legacy rejection code path.
     - ``recompute_target`` is ignored here (execution materializes fixed-R at entry).
-    - ``min_risk_per_candidate`` is applied only when ``risk_preview`` is missing (via execution).
+    - ``min_risk_per_share`` on :class:`ExecutionPolicy` is ``max(combiner_cfg.min_risk_per_share,
+      min_risk_per_candidate[ci])``; materialization rejects trades below that floor
+      (``risk_too_small``) — no duplicate PnL math in Layer2.
+    - Next-bar entry must stay in the **same session** as the signal bar; otherwise the
+      signal is skipped (no cross-session ``cursor+1`` entries).
     """
-    del score_float, rank_int, recompute_target, min_risk_per_candidate  # parity / future use
+    del score_float, rank_int, recompute_target
     n = int(backtest_arrays["n"])
     nc = len(candidates)
     if nc == 0:
@@ -142,6 +146,9 @@ def simulate_combiner_canonical(
         if entry_bar >= n:
             cursor += 1
             continue
+        if meta_arrays["session_date"][entry_bar] != sess_day:
+            cursor += 1
+            continue
 
         side = int(side_m[ci, cursor])
         stop_px = float(stop_m[ci, cursor])
@@ -172,14 +179,21 @@ def simulate_combiner_canonical(
             cursor += 1
             continue
 
-        res = simulate_selected_trade(bars_df, intent, combiner_cfg=combiner_cfg, max_hold_override=max_hold)
+        mr_floor = float(min_risk_per_candidate[ci])
+        res = simulate_selected_trade(
+            bars_df,
+            intent,
+            combiner_cfg=combiner_cfg,
+            max_hold_override=max_hold,
+            min_risk_per_share_floor=mr_floor,
+        )
         if not res.ok:
             cursor += 1
             continue
 
         exit_bar = int(intent.entry_idx) + int(res.bars_held) - 1
         exit_bar = min(exit_bar, n - 1)
-        pol = execution_policy_from_combiner_cfg(combiner_cfg)
+        pol = execution_policy_from_combiner_cfg(combiner_cfg, min_risk_per_share_floor=mr_floor)
         st.register_trade_open()
         dtn = int(st.trades_today)
         trade_id += 1

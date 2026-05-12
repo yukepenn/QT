@@ -11,6 +11,7 @@ def default_intraday_policy(
     commission_per_trade: float = 0.0,
     eod_exit_minute: int = 389,
     allow_short: bool = False,
+    min_risk_per_share: float = 0.0,
 ) -> ExecutionPolicy:
     return ExecutionPolicy(
         slippage_per_share=slippage_per_share,
@@ -18,4 +19,5 @@ def default_intraday_policy(
         same_bar_policy=AmbiguityPolicy.STOP_FIRST,
         eod_exit_minute=eod_exit_minute,
         allow_short=allow_short,
+        min_risk_per_share=float(min_risk_per_share),
     )

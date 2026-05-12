@@ -1,0 +1,2 @@
+component,change,test_name
+state.py,reset_day clears cooldown_until_bar=-1 and open_positions=0,test_reset_day_clears_cooldown_and_open_positions

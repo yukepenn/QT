@@ -23,6 +23,8 @@ class CombinerState:
         self.current_session_day = session_day
         self.trades_today = 0
         self.day_realized_r = 0.0
+        self.cooldown_until_bar = -1
+        self.open_positions = 0
 
     def ensure_day(self, session_day: object) -> None:
         if self.current_session_day != session_day:

@@ -1,0 +1,13 @@
+check,result,notes
+compileall_src,OK,
+pytest_full,OK,149 passed
+strategies_loader_list,OK,
+backtest_sweep_smoke,OK,
+backtest_validate_pipeline_pa,OK,
+combiner_run_help,OK,
+combiner_sweep_help,OK,
+run_combiner_adapter_parity_help,OK,
+run_exit_overlay_execution_path_help,OK,
+validate_research_artifacts_hardening_root,OK,17 CSVs → execution_backed_hardening_artifact_validation.csv
+tracked_heavy_scan,NOTE,historical Archive local_runs text files may still appear in git ls-files
+parquet_tracked,data_raw_ibkr_only,expected

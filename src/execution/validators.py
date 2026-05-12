@@ -38,6 +38,8 @@ def validate_execution_policy(p: ExecutionPolicy) -> tuple[bool, str]:
         return False, "bad_commission"
     if str(p.scale_fill_policy) not in ("close", "trigger_price"):
         return False, "bad_scale_fill_policy"
+    if not is_finite_price(float(p.min_risk_per_share)) or float(p.min_risk_per_share) < 0:
+        return False, "bad_min_risk"
     return True, "ok"
 
 

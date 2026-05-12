@@ -1,0 +1,2 @@
+engine,candidate_ids,symbol,window,bars_loaded,sessions,trades,total_r,profit_factor_r,status,notes
+execution_backed,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",QQQ,2024-01-01..2024-01-31,8190,21,23,4.4120391216731,1.4521588527918943,OK,Curated copy of post-hardening smoke metrics; paths repo-relative

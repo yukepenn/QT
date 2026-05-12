@@ -1,0 +1,13 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/combiner/adapter.py,execution_backed combiner loop,yes,,no,no,session_date guard + min_risk floor passed to simulate_selected_trade
+src/combiner/state.py,day/session counters,yes,,no,no,reset_day clears cooldown + open_positions
+src/combiner/trade_intent_adapter.py,TradeIntent + policy wiring,yes,,no,no,min_risk_per_share_floor on policy factory
+src/execution/types.py,ExecutionPolicy fields,yes,,no,no,min_risk_per_share default 0
+src/execution/policy.py,default_intraday_policy,yes,,no,no,threads min_risk
+src/execution/materialize.py,materialize_trade_levels,yes,,no,no,risk_too_small gate
+src/execution/path.py,simulate_trade_path,yes,,no,no,scale qty_rem fix
+src/execution/validators.py,policy validation,yes,,no,no,min_risk >=0
+tests/test_execution_backed_hardening.py,regression tests,yes,,no,no,
+src/research/results/execution_backed_hardening/CHATGPT_REVIEW_BUNDLE.md,review narrative,yes,,yes,no,
+src/research/results/execution_backed_hardening/smoke/hardening_smoke_summary.csv,post-hardening metrics,yes,2,no,no,repo-relative paths in sibling smoke CSVs
+src/research/results/execution_backed_hardening/execution_backed_hardening_artifact_validation.csv,validate_research_artifacts scan,yes,18,no,no,17 CSVs + header; self-listed OK

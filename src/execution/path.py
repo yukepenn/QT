@@ -167,7 +167,7 @@ def _maybe_scale_out(
         trigger_r=float(rule.trigger_r),
     ):
         return None, scale_idx
-    qty_part = qty * float(rule.exit_fraction)
+    qty_part = qty_rem * float(rule.exit_fraction)
     if policy.scale_fill_policy == "trigger_price":
         raw_px = ex.scale_out_trigger_price(
             side=side, entry=entry_px, risk=risk, trigger_r=float(rule.trigger_r)
