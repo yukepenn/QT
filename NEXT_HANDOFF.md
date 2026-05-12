@@ -5,7 +5,7 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit (tip) | **`013ad52`** — `Chore(handoff): fix NEXT_HANDOFF commit SHA` (full: `013ad529375aaebfb779f2ff85c1fc7656825a96`) |
+| Latest commit (tip) | **`1f2013f`** — `Chore(handoff): pin full SHA in NEXT table` (full: `1f2013faa4145850de6783438b62fdcec13e5424`) |
 | Canonical sweep commit | **`f223a09`** — `Backtest: implement canonical sweep smoke` (full: `f223a098104767ccc2fea1daba6c73cb6a47410e`) |
 | Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
 | Working tree | Stage curated paths only — **never** `git add .` |
