@@ -6,7 +6,7 @@
 |--------|--------|
 | Branch | `main` |
 | Tip of `main` | After `git pull --ff-only`, run `git log -1 --oneline` (this handoff may add one feature commit). |
-| Feature commit | **`Backtest: wire canonical real-symbol sweep connector`** |
+| Feature commit | **`22e11f1`** — `Backtest: wire canonical real-symbol sweep connector` (full: `22e11f1c12d6362ccbecd45af266e028e0fa820d`) |
 | Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
 | Working tree | Stage curated paths only — **never** `git add .` |
 
