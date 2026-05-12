@@ -39,7 +39,7 @@ This document ties **research layers** to **module ownership** after the executi
 - **`legacy_reference` (default token `legacy`):** lazy-loads the archived Numba reference under ``archive/legacy_combiner/reference_simulator.py`` (``simulate_combiner_numba`` / ``simulate_combiner_legacy_logs``). Owns **legacy** accounting only.
 - **`execution_backed` (alias `canonical`):** ``simulate_combiner_canonical`` / ``simulate_combiner_execution_backed`` in ``src/combiner/adapter.py`` walks bars sequentially, uses ``selection`` / ``state`` for coarse guards, builds :class:`src.execution.types.TradeIntent`, and calls :func:`src.execution.path.simulate_trade_path` per selected trade.
 
-Synthetic parity and drift notes: ``src/research/results/combiner_adapter_parity/parity/`` (legacy vs execution-backed on a toy matrix is **not** exact match yet).
+Synthetic parity and drift notes: ``src/research/results/combiner_adapter_parity/parity/`` (toy matrix: legacy vs execution-backed is **not** an exact match — documented). **Real QQQ slice (Jan 2024)** dual-engine smoke + metrics use repo-local bars under ``data/raw/ibkr/`` (committed intentionally as a small reproducible dataset; see ``combiner_adapter_parity`` smoke + ``real_data_parity_*`` files).
 
 **Must not:** Implement independent intrabar fill/exit/PnL in combiner selection code.
 
@@ -52,7 +52,7 @@ Synthetic parity and drift notes: ``src/research/results/combiner_adapter_parity
 1. Load frozen Layer 2 + policy + semantics version stamps.
 2. Walkforward harness (`src/walkforward`) orchestrates runs; each trade path should go through **`simulate_trade_path`** when Layer 2 uses the **execution_backed** engine.
 
-**Current status:** Harnesses (`runner.py`, `fixed_system.py`, `folds.py`) call **`src.combiner.run.run_combiner_fixed_config`**. Default engine remains **`legacy_reference`** until parity sign-off; **imports are not blocked** by `NotImplementedError`. Layer 3 full dry-runs were **not** executed in this task (no mini-WFO).
+**Current status:** Harnesses (`runner.py`, `fixed_system.py`, `folds.py`) call **`src.combiner.run.run_combiner_fixed_config`**. Default engine may still be **`legacy_reference`** in some callers for backward compatibility; **imports are not blocked** by `NotImplementedError`. Repo-local **execution_backed** real smoke on QQQ is **green** (`combiner_adapter_parity/smoke/`). Layer 3 full dry-runs were **not** executed in this task (no mini-WFO).
 
 **Must not:** Tune parameters inside fixed OOW checks; must not own trade accounting.
 

@@ -2,14 +2,14 @@
 
 ## 1. What QT is
 
-QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-trading-hours (RTH)** intraday strategies using historical IBKR-style bars.
+QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-trading-hours (RTH)** intraday strategies using historical IBKR-style bars. **Repo-local `data/raw/ibkr/`** holds a **small committed** set of 1m equity bar shards (QQQ + SPY) for reproducible smoke and parity; do not point research runners at external `D:\` roots when a repo-local path suffices.
 
 - **Research-only:** offline backtests, sweeps, and diagnostics — not live trading, not broker execution, and not a profitability claim.
 - **Symbol focus:** QQQ is the primary complete dataset in this repo; treat other symbols as experimental unless coverage is explicitly verified.
 
 ## 2. Target architecture (reset in progress)
 
-The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** supports **`--engine legacy`** / **`legacy_reference`** (lazy-loaded archived Numba under **`archive/legacy_combiner/`**) and **`--engine execution_backed`** (alias **`canonical`**) via `simulate_combiner_canonical` → `src.execution.path.simulate_trade_path`; default remains **legacy** for compatibility until real-slice parity (`src/research/results/combiner_adapter_parity/`).
+The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** supports **`--engine legacy`** / **`legacy_reference`** (lazy-loaded archived Numba under **`archive/legacy_combiner/`**) and **`--engine execution_backed`** (alias **`canonical`**) via `simulate_combiner_canonical` → `src.execution.path.simulate_trade_path`; default CLI token remains **legacy** for compatibility. **Real QQQ slice parity** (repo-local `data/raw/ibkr`, Jan 2024) is recorded under `src/research/results/combiner_adapter_parity/` (dual-engine smoke + drift classification).
 
 | Layer | Role |
 |-------|------|
@@ -21,7 +21,7 @@ The codebase uses a **single reference execution accounting layer** under `src/e
 | **backtest** | Single-strategy adapter; Layer 1 sweep **synthetic + real-symbol MVP** (`src/backtest/`) |
 | **combiner** | Candidate arbitration — **`legacy_reference`** Numba vs **`execution_backed`** adapter (`src/combiner/`) |
 | **router** | Permission / quality scaffold (`src/router/`) |
-| **walkforward** | Layer 3 harnesses; default combiner engine remains **`legacy_reference`** until parity sign-off (`src/walkforward/`) |
+| **walkforward** | Layer 3 harnesses; default combiner engine may remain **`legacy_reference`** in some callers until explicitly migrated (`src/walkforward/`) — repo-local **execution_backed** real smoke is documented under `combiner_adapter_parity/` |
 | **portfolio** | Sizing / equity helpers (`src/portfolio/`) |
 | **research** | Thin runners and curated results only (`src/research/`) |
 | **utils** | Config / IO / validation (`src/utils/`) |

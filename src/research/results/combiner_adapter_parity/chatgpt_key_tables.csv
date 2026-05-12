@@ -1,7 +1,9 @@
 section,item,metric,value,interpretation
-validation,pytest,passed,133,Mainline tests green after parity tests added
-parity,synthetic,label,PARITY_PASS_WITH_EXPLAINED_DIFFS,Legacy vs execution-backed differ on toy matrix; documented
-smoke,real_data,status,NOT_RUN_default,No committed QQQ bars; optional local --try-real-smoke
-reachability,Layer2,NotImplementedError,absent,Simulator stub blocker removed in prior commit
-reachability,Layer3,imports,OK,runner imports combiner; default engine legacy_reference
-decision,next,label,COMPLETE_COMBINER_ADAPTER_PARITY,Need real-slice parity before exit-overlay resume
+validation,pytest,passed,135,Mainline tests green after parity runner + path tests
+parity,synthetic,label,PARITY_PASS_WITH_EXPLAINED_DIFFS,Toy matrix legacy vs execution still documented
+parity,real_data,label,REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS,Same trade counts; small total_r drift on Jan 2024 QQQ slice
+data,repo_local,path,data/raw/ibkr,104 parquet shards ~34MB committed for reproducibility
+smoke,execution_backed,status,OK,See smoke/real_execution_backed_smoke_summary.csv
+smoke,legacy_reference,status,OK,See smoke/real_legacy_reference_smoke_summary.csv
+readiness,execution_backed,label,EXECUTION_BACKED_READY_FOR_RESEARCH,See execution_backed_readiness.md
+decision,next,label,RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH,Exit overlay can use execution-backed rows; no production router

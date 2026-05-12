@@ -5,7 +5,12 @@ Layer2_legacy_reference_import,OK,simulate_combiner_numba lazy loads archive
 Layer2_execution_backed_import,OK,simulate_combiner_canonical / adapter
 Layer2_execution_backed_tiny_synthetic,OK,tests + run_combiner_adapter_parity synthetic parity
 Layer2_legacy_tiny_synthetic,PARTIAL,legacy_reference may yield zero trades on same toy matrix as execution_backed; see parity_summary
-Layer3_dry_run_import,OK,src.walkforward.runner imports combiner.run
-Layer3_fixed_profile_dry_run,NOT_RUN,no full smoke in this task
-exit_overlay_future_dependency,PARTIAL,needs_trade_rows_from_execution_path_and_parity_first
+Layer2_execution_backed_real_smoke_data,OK,Jan 2024 QQQ window; data/raw/ibkr; smoke/real_execution_backed_smoke_summary.csv
+Layer2_legacy_reference_real_smoke_data,OK,same window + candidates; smoke/real_legacy_reference_smoke_summary.csv
+Layer2_dual_engine_real_parity,OK,REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS; parity/real_data_parity_*
+Layer3_import,OK,runner imports combiner.run
+Layer3_fixed_profile_dry_run,NOT_RUN,intentionally not executed (no mini-WFO)
+Layer3_default_engine_note,PARTIAL,walkforward-style callers may still default legacy_reference until migrated explicitly
+exit_overlay_future_dependency,OK,execution_backed rows + real smoke greenlight resume on execution path (research-only)
 router_integration_future_dependency,BLOCKED,production_router_out_of_scope
+future_Layer1_2_3_rebuild_readiness,PARTIAL,execution_backed PnL path credible; rebuild is incremental and not started here

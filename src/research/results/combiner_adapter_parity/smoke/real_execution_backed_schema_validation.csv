@@ -1,0 +1,7 @@
+engine,candidate_ids,field,present,execution_backed_required,required
+execution_backed,PA_BUY_SELL_CLOSE_TREND_003,engine,yes,yes,yes
+execution_backed,PA_BUY_SELL_CLOSE_TREND_003,execution_semantics_version,yes,yes,yes
+execution_backed,PA_BUY_SELL_CLOSE_TREND_003,combiner_adapter_version,yes,yes,yes
+execution_backed,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",engine,yes,yes,yes
+execution_backed,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",execution_semantics_version,yes,yes,yes
+execution_backed,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",combiner_adapter_version,yes,yes,yes

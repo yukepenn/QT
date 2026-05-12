@@ -158,6 +158,7 @@ def run_combiner_fixed_config(
     save_equity: bool = False,
     tag: str = "fixed",
     engine: str = "legacy",
+    return_trades_df: bool = False,
 ) -> dict[str, Any]:
     """Run Layer 2 combiner for one fixed configuration and optional cost-stress slips.
 
@@ -416,7 +417,7 @@ def run_combiner_fixed_config(
     }
     (output_dir / "config_resolved.yaml").write_text(yaml.safe_dump(dump_cfg, sort_keys=False), encoding="utf-8")
 
-    return {
+    out: dict[str, Any] = {
         "metrics": metrics_base,
         "metrics_by_slippage": metrics_by_slip,
         "trades_path": trades_path,
@@ -428,6 +429,10 @@ def run_combiner_fixed_config(
         "signal_cache_root": str(sc_root),
         "use_signal_cache": use_sc,
     }
+    if return_trades_df:
+        out["trades_df"] = trades_df_out
+        out["sim_by_slippage"] = sim_by_slip
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:

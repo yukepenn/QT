@@ -10,64 +10,57 @@
 
 ## B. Validation
 
-| Check | Result (post combiner_adapter_parity) |
-|--------|----------------------------------------|
+| Check | Result (post repo-local parity) |
+|--------|----------------------------------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **133** passed |
+| `python -m pytest -q` | **135** passed |
 | `python -m src.strategies.loader --list` | OK |
 | `python -m src.backtest.sweep --smoke` | OK |
 | `python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend` | OK |
 | `python -m src.combiner.run --help` | OK — `--engine` documents `legacy` / `legacy_reference` / `canonical` / `execution_backed` |
-| `python -m src.research.run_combiner_adapter_parity` | OK — refreshes `parity/` + default `smoke/` |
+| `python -m src.research.run_combiner_adapter_parity --help` | OK — `--bar-root`, `--data-dir`, `--real-smoke-suite`, `--aggregate-only`, `--dry-run` |
 | `python -m src.research.validate_research_artifacts --root src/research/results/combiner_adapter_parity --csv-only` | OK |
 
 ## C. Task scope
 
-Narrow **`combiner_adapter_parity`** pass: verify true combiner state, align docs/handoff, add **`normalize_combiner_engine_label`**, stamp **`engine`** + semantics columns, synthetic parity bundle under **`src/research/results/combiner_adapter_parity/`**, tests in **`tests/test_combiner_adapter_parity.py`**, research runner **`run_combiner_adapter_parity.py`**. No new versioned result roots beyond that folder.
+**Repo-local `data/`** (IBKR 1m shards under `data/raw/ibkr/`, ~34 MB, 104 parquet files) is **intentionally committed** for reproducible small-window QQQ research. **`.gitignore`** negates `*.parquet` only under that subtree. **`run_combiner_adapter_parity`** gained **`resolve_ibkr_data_dir`**, **`--bar-root`**, **`--real-smoke-suite`**, real dual-engine smoke + **`parity/real_data_parity_*`**. **`run_combiner_fixed_config`** supports **`return_trades_df`** for metrics-only smoke. No new versioned result roots beyond **`combiner_adapter_parity/`**.
 
-## D. Starting architecture state
+## D. Data / bars
 
-- Prior docs still implied Layer3 blocked by a simulator **stub**; code was already **mixed** (lazy `legacy_reference` + `execution_backed` adapter).
-- CLI used `legacy|canonical` only; **`execution_backed`** / **`legacy_reference`** names were not first-class.
+- **Path:** `data/raw/ibkr` (from `--bar-root data` or default).
+- **QQQ Jan 2024 window:** **8190** bars, **21** NY sessions (see `repo_local_data_load_check.csv`).
+- **Parquet outside `data/`:** still ignored by global `*.parquet` (do not commit research parquet elsewhere).
 
-## E. Adapter / engine implementation
+## E. Real smoke / parity
 
-- **`normalize_combiner_engine_label`** in `src/combiner/simulator.py` — maps synonyms; **`ValueError`** on unknown engines.
-- **`simulate_combiner_execution_backed`** — public alias of **`simulate_combiner_canonical`** (same object in `simulator` module).
-- **`trade_result_to_combiner_row`** — adds **`engine`**, **`adapter_semantics_version`** (defaults to adapter version).
-- **`adapter.simulate_combiner_canonical`** return dict includes **`combiner_engine`** = `execution_backed`.
-- **`run.py` / `sweep.py`** — validate `--engine` with shared parser; **`run_combiner_fixed_config`** stamps **`engine=legacy_reference`** on legacy `trades_df` when missing.
+- **execution_backed** and **legacy_reference** both **OK** for 1- and 2-candidate Champion smoke (`smoke/real_*_smoke_summary.csv`).
+- **Real parity label:** **`REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS`** — identical trade counts; small `total_r` drift (`parity/real_data_parity_*`).
+- **Synthetic toy matrix:** unchanged documented drift (`parity/parity_summary.csv`).
 
-## F. Tests / smoke / parity
+## F. Execution-backed readiness
 
-- **`tests/test_combiner_adapter_parity.py`** — normalization, schema, same-bar policy, dual-engine synthetic matrices, priority selection.
-- **Synthetic parity (committed):** `parity/parity_summary.csv` → **`PARITY_PASS_WITH_EXPLAINED_DIFFS`** (toy matrix: legacy **0** trades vs execution-backed **1** — documented).
-- **Real QQQ smoke:** default **NOT_RUN** (`smoke/`); optional **`--try-real-smoke`** uses temp dir for combiner outputs, metrics only to `smoke_summary*`.
+**`EXECUTION_BACKED_READY_FOR_RESEARCH`** — see `src/research/results/combiner_adapter_parity/execution_backed_readiness.md`.
 
-## G. Layer2 / Layer3 reachability
+## G. Layer reachability
 
-- Layer2: **no** `NotImplementedError` on simulator import path (archive present).
-- Layer2 **execution_backed**: available via CLI / `engine=` kwarg.
-- Layer3: **imports OK**; default combiner engine in walkforward-style callers remains **`legacy_reference`** until parity sign-off. Full Layer3 dry-run **not** run here.
+See `combiner_adapter_parity/layer_reachability.md` — real dual-engine Layer2 smoke **OK**; exit overlay on execution path **OK** to resume (research-only); router **BLOCKED**.
 
 ## H. Decision
 
-**`COMPLETE_COMBINER_ADAPTER_PARITY`**
+**`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`**
 
 ## I. Explicit non-runs / risks
 
-No WFO, mini-WFO, live/paper, SPY, broad Layer2 sweeps, new strategies, Champion YAML edits, raw trade commits, production router/exit-management, scalp/short.
-
-**Risk:** Treating synthetic parity as sufficient — real-slice parity still required before switching Layer3 default engine or resuming exit-overlay alignment on execution rows.
+No WFO, mini-WFO, live/paper, SPY research sweeps, broad Layer2 sweeps, Global Layer1, new strategies, Champion YAML edits, raw row-level trade panels, `top_runs` / `local_runs`, caches, logs, `git add .`, production router/exit-management, scalp/short.
 
 ## J. Files changed (high level)
 
-`src/combiner/{simulator,trade_intent_adapter,adapter,run,sweep,selection}.py`, `src/research/run_combiner_adapter_parity.py`, `tests/test_combiner_adapter_parity.py`, `tests/test_combiner_adapter.py`, simulator tests, `docs/{LAYER_FLOW,MAINLINE_STRUCTURE_SUMMARY,PROJECT_STRUCTURE,FILE_OWNERSHIP}.md`, `src/research/results/combiner_adapter_parity/**`, `src/research/results/RESULTS_INDEX.md`, `src/research/run_combiner_adapter_smoke.py`, status docs.
+`.gitignore`, `data/raw/ibkr/**`, `src/combiner/run.py`, `src/research/run_combiner_adapter_parity.py`, `tests/test_combiner_adapter_parity.py`, `src/research/results/combiner_adapter_parity/**`, `docs/LAYER_FLOW.md`, handoff/status/index docs.
 
 ## K. Local-only artifacts
 
-None committed beyond small curated CSV/MD under `combiner_adapter_parity/` (detailed combiner runs use temp dirs when `--try-real-smoke`).
+Combiner full outputs still use **temp** dirs when running smoke; only **curated** CSV/MD under `combiner_adapter_parity/` plus committed **`data/`** bars.
 
 ## L. Recommended next step (exactly one)
 
-**`COMPLETE_COMBINER_ADAPTER_PARITY`**
+**`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`**

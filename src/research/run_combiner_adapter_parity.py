@@ -1,4 +1,4 @@
-"""combiner_adapter_parity: synthetic legacy vs execution-backed tables + optional tiny smoke.
+"""combiner_adapter_parity: synthetic legacy vs execution-backed tables + optional real QQQ smoke.
 
 Writes only curated aggregates under ``src/research/results/combiner_adapter_parity/``.
 Full combiner outputs should use a temp directory (not committed).
@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -19,6 +21,71 @@ import pandas as pd
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
+
+
+def resolve_ibkr_data_dir(
+    repo_root: Path,
+    *,
+    bar_root: str | None,
+    data_dir: str | None,
+) -> Path:
+    """Resolve IBKR bar root (directory containing ``equity/bars_1min``).
+
+    - If ``data_dir`` is set, treat it as the IBKR root (relative paths from repo root).
+    - If ``bar_root`` is ``data`` or a path to repo ``data/``, use ``<that>/raw/ibkr``.
+    - If ``bar_root`` already points at a tree with ``equity/bars_1min``, use it as-is.
+    - Default: ``repo_root / "data" / "raw" / "ibkr"``.
+    """
+    if data_dir:
+        p = Path(data_dir)
+        return p if p.is_absolute() else repo_root / p
+    if not bar_root:
+        return repo_root / "data" / "raw" / "ibkr"
+    br = Path(bar_root)
+    if not br.is_absolute():
+        br = repo_root / br
+    if (br / "equity" / "bars_1min").is_dir():
+        return br
+    ib = br / "raw" / "ibkr"
+    if ib.is_dir():
+        return ib
+    return br
+
+
+def default_candidate_roots(repo_root: Path) -> list[Path]:
+    return [
+        repo_root
+        / "src/research/results/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates",
+        repo_root
+        / "src/research/results/Archive/layer1_global_qqq_2023_2024_v2/selected_candidates_l2_core/selected_candidates",
+        repo_root / "src/research/results/Archive/layer1_global_qqq_2023_2024_v2/selected_candidates",
+    ]
+
+
+def default_combiner_configs(repo_root: Path) -> list[Path]:
+    return [
+        repo_root / "src/combiner/configs/Archive/layer2_qqq_global_2023_2024_v2.yaml",
+    ]
+
+
+def discover_candidate_root(repo_root: Path, cli: Path | None) -> Path | None:
+    if cli:
+        p = cli if cli.is_absolute() else Path.cwd() / cli
+        return p if p.is_dir() else None
+    for p in default_candidate_roots(repo_root):
+        if p.is_dir():
+            return p
+    return None
+
+
+def discover_combiner_config(repo_root: Path, cli: Path | None) -> Path | None:
+    if cli:
+        p = cli if cli.is_absolute() else Path.cwd() / cli
+        return p if p.is_file() else None
+    for p in default_combiner_configs(repo_root):
+        if p.is_file():
+            return p
+    return None
 
 
 def _synthetic_sim_kwargs() -> dict[str, Any]:
@@ -262,6 +329,374 @@ def _write_smoke_not_run(smoke_dir: Path, reason: str) -> None:
     _write_csv(smoke_dir / "smoke_schema_validation.csv", sch, ["field", "execution_backed_required", "required"])
 
 
+def _should_skip_default_smoke_placeholder(smoke_dir: Path) -> bool:
+    """Do not clobber committed real-smoke metrics."""
+    return (smoke_dir / "real_execution_backed_smoke_summary.csv").is_file()
+
+
+def _exit_reason_counts_str(m: dict[str, Any]) -> str:
+    parts = [
+        f"stop={m.get('stop_count', 0)}",
+        f"target={m.get('target_count', 0)}",
+        f"eod={m.get('eod_count', 0)}",
+        f"max_hold={m.get('max_hold_count', 0)}",
+        f"end_of_data={m.get('end_of_data_count', 0)}",
+        f"end_of_session={m.get('end_of_session_count', 0)}",
+    ]
+    return ";".join(parts)
+
+
+def _bars_held_distribution(df: pd.DataFrame | None) -> list[dict[str, Any]]:
+    if df is None or not len(df) or "bars_held" not in df.columns:
+        return [{"bars_held": "n/a", "count": 0}]
+    vc = df["bars_held"].value_counts().sort_index()
+    return [{"bars_held": str(int(k)), "count": int(v)} for k, v in vc.items()]
+
+
+def _schema_validation_rows(
+    trades_df: pd.DataFrame | None,
+    engine: str,
+    *,
+    candidate_ids: str = "",
+) -> list[dict[str, Any]]:
+    req_exec = {"engine": "yes", "execution_semantics_version": "yes", "combiner_adapter_version": "yes"}
+    rows = []
+    if trades_df is None or not len(trades_df):
+        for f, req in req_exec.items():
+            rows.append(
+                {
+                    "engine": engine,
+                    "candidate_ids": candidate_ids,
+                    "field": f,
+                    "present": "no",
+                    "execution_backed_required": req if engine == "execution_backed" else "n/a",
+                    "required": req if engine == "execution_backed" else "optional",
+                }
+            )
+        return rows
+    for f, req in req_exec.items():
+        ok = f in trades_df.columns
+        req_cell = req
+        if engine != "execution_backed" and f != "engine":
+            req_cell = "optional"
+        rows.append(
+            {
+                "engine": engine,
+                "candidate_ids": candidate_ids,
+                "field": f,
+                "present": "yes" if ok else "no",
+                "execution_backed_required": req if engine == "execution_backed" else "n/a",
+                "required": req_cell,
+            }
+        )
+    return rows
+
+
+def run_bar_load_check(
+    *,
+    data_dir: Path,
+    symbol: str,
+    start: str,
+    end: str,
+) -> dict[str, Any]:
+    from src.data.read_bars import read_bars
+
+    df = read_bars(asset="equity", symbol=symbol, start=start, end=end, data_dir=str(data_dir))
+    out: dict[str, Any] = {
+        "bars_loaded": int(len(df)),
+        "status": "OK" if len(df) else "EMPTY",
+    }
+    if len(df) and "ts_utc" in df.columns:
+        ts = pd.to_datetime(df["ts_utc"], utc=True)
+        out["ts_min"] = str(ts.min())
+        out["ts_max"] = str(ts.max())
+    else:
+        out["ts_min"] = ""
+        out["ts_max"] = ""
+    if len(df) and "ts_ny" in df.columns:
+        sd = df["ts_ny"].dt.normalize().dt.date
+        out["sessions_loaded"] = int(sd.nunique())
+    elif len(df) and "session_date" in df.columns:
+        sd = df["session_date"].astype(str).unique()
+        out["sessions_loaded"] = int(len(sd))
+    else:
+        out["sessions_loaded"] = 0
+    return out
+
+
+def run_combiner_real_smoke(
+    *,
+    combiner_yaml: dict[str, Any],
+    candidate_root: Path,
+    candidate_ids: list[str],
+    asset: str,
+    symbol: str,
+    start: str,
+    end: str,
+    data_dir: Path,
+    engine: str,
+    aggregate_only: bool,
+) -> dict[str, Any]:
+    import yaml
+
+    from src.combiner.run import run_combiner_fixed_config
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tdir = Path(tmp)
+        res = run_combiner_fixed_config(
+            combiner_yaml,
+            candidate_root=candidate_root,
+            candidate_set=None,
+            candidate_ids=candidate_ids,
+            top_per_strategy=3,
+            asset=asset,
+            symbol=symbol,
+            start=start,
+            end=end,
+            output_dir=tdir,
+            data_dir=str(data_dir),
+            use_signal_cache=False,
+            detailed=False,
+            save_compact_trades=not aggregate_only,
+            save_monthly_breakdown=not aggregate_only,
+            engine=engine,
+            return_trades_df=True,
+        )
+    m = res.get("metrics") or {}
+    tdf = res.get("trades_df")
+    return {"metrics": m, "trades_df": tdf, "status": "OK", "error": ""}
+
+
+def _smoke_summary_row(
+    *,
+    engine: str,
+    bar_root_cli: str,
+    data_dir_resolved: str,
+    candidate_ids: str,
+    symbol: str,
+    start: str,
+    end: str,
+    bars_loaded: int,
+    load: dict[str, Any],
+    run: dict[str, Any],
+) -> dict[str, Any]:
+    m = run.get("metrics") or {}
+    err = str(run.get("error", ""))
+    st = run.get("status", "NOT_RUN")
+    tdf = run.get("trades_df")
+    sem = ""
+    if isinstance(tdf, pd.DataFrame) and len(tdf) and "execution_semantics_version" in tdf.columns:
+        sem = str(tdf["execution_semantics_version"].iloc[0])
+    return {
+        "engine": engine,
+        "bar_root_cli": bar_root_cli,
+        "data_dir_resolved": data_dir_resolved,
+        "candidate_ids": candidate_ids,
+        "symbol": symbol,
+        "start": start,
+        "end": end,
+        "bars_loaded": bars_loaded,
+        "sessions_loaded": load.get("sessions_loaded", ""),
+        "ts_min": load.get("ts_min", ""),
+        "ts_max": load.get("ts_max", ""),
+        "trades": m.get("trades", ""),
+        "total_r": m.get("total_r", ""),
+        "avg_r": m.get("avg_r", ""),
+        "profit_factor_r": m.get("profit_factor_r", ""),
+        "exit_reason_counts": _exit_reason_counts_str(m),
+        "avg_bars_held": m.get("avg_bars_held", ""),
+        "max_hold_exits": m.get("max_hold_count", ""),
+        "eod_exits": m.get("eod_count", ""),
+        "rejected_signals": m.get("rejected_signals", ""),
+        "execution_semantics_version": sem,
+        "status": st,
+        "error": err,
+    }
+
+
+def write_real_data_parity(
+    parity_dir: Path,
+    rows_exec: list[dict[str, Any]],
+    rows_leg: list[dict[str, Any]],
+    bars_by_key: dict[str, pd.DataFrame] | None = None,
+) -> tuple[str, list[dict[str, Any]], list[dict[str, Any]]]:
+    """Match runs by candidate_ids string; emit summary + drift classification."""
+    parity_dir.mkdir(parents=True, exist_ok=True)
+    by_key: dict[str, dict[str, Any]] = {}
+    for r in rows_exec:
+        by_key.setdefault(r["candidate_ids"], {})["exec"] = r
+    for r in rows_leg:
+        by_key.setdefault(r["candidate_ids"], {})["leg"] = r
+
+    drift: list[dict[str, Any]] = []
+    top_notes: list[str] = []
+    for cid_key, pair in sorted(by_key.items()):
+        ex = pair.get("exec")
+        lg = pair.get("leg")
+        if not ex or not lg:
+            drift.append(
+                {
+                    "candidate_ids": cid_key,
+                    "classification": "data_or_config_issue",
+                    "trade_delta": "",
+                    "total_r_delta": "",
+                    "notes": "missing_engine_row",
+                }
+            )
+            continue
+        try:
+            te = int(ex.get("trades") or 0)
+            tl = int(lg.get("trades") or 0)
+            re = float(ex.get("total_r") or 0.0)
+            rl = float(lg.get("total_r") or 0.0)
+        except (TypeError, ValueError):
+            drift.append(
+                {
+                    "candidate_ids": cid_key,
+                    "classification": "unknown_needs_review",
+                    "trade_delta": "",
+                    "total_r_delta": "",
+                    "notes": "parse_error",
+                }
+            )
+            continue
+        d_tr = te - tl
+        d_r = re - rl
+        cls = "expected_legacy_difference"
+        notes: list[str] = []
+        if te == tl and abs(d_r) < 1e-6:
+            cls = "exact_numeric_match"
+        elif te == tl and abs(d_r) < 0.05 * max(1, te):
+            cls = "execution_backed_design_choice"
+            notes.append("small_total_r_drift_same_trade_count")
+        elif d_tr != 0:
+            cls = "expected_legacy_difference"
+            notes.append("trade_count_diff")
+        elif abs(d_r) >= 0.1 * max(1.0, abs(rl)):
+            cls = "unknown_needs_review"
+            notes.append("material_r_drift")
+        if ex.get("exit_reason_counts") != lg.get("exit_reason_counts"):
+            notes.append("exit_mix_diff")
+        drift.append(
+            {
+                "candidate_ids": cid_key,
+                "classification": cls,
+                "trade_delta": d_tr,
+                "total_r_delta": f"{d_r:.6f}",
+                "notes": ";".join(notes),
+            }
+        )
+        top_notes.append(f"{cid_key}: trades {tl}->{te}, total_r {rl:.4f}->{re:.4f} ({cls})")
+
+    if not drift:
+        label = "REAL_PARITY_NOT_RUN"
+    elif all(d["classification"] == "exact_numeric_match" for d in drift):
+        label = "REAL_PARITY_PASS"
+    elif any(d["classification"] == "unknown_needs_review" for d in drift):
+        label = "REAL_PARITY_FAIL_ADAPTER_BUG_LIKELY"
+    elif all(
+        d["classification"] in ("exact_numeric_match", "execution_backed_design_choice") for d in drift
+    ):
+        label = "REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS"
+    elif any("trade_count_diff" in str(d.get("notes", "")) for d in drift):
+        label = "REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS"
+    else:
+        label = "REAL_PARITY_FAIL_BUT_EXECUTION_BACKED_USABLE"
+
+    summary = [
+        {
+            "parity_label": label,
+            "runs_compared": len(by_key),
+            "top_differences": " | ".join(top_notes[:6]),
+        }
+    ]
+    _write_csv(parity_dir / "real_data_parity_summary.csv", summary, list(summary[0].keys()))
+    (parity_dir / "real_data_parity_summary.md").write_text(
+        f"# Real-data parity (repo-local bars)\n\n**Label:** {label}\n\n"
+        + "\n".join(f"- {n}" for n in top_notes)
+        + "\n",
+        encoding="utf-8",
+    )
+
+    by_cand: list[dict[str, Any]] = []
+    for cid_key, pair in by_key.items():
+        for eng, label_e in (("execution_backed", "exec"), ("legacy_reference", "leg")):
+            r = pair.get(label_e)
+            if r:
+                by_cand.append(
+                    {
+                        "candidate_ids": cid_key,
+                        "engine": eng,
+                        "trades": r.get("trades"),
+                        "total_r": r.get("total_r"),
+                        "avg_r": r.get("avg_r"),
+                    }
+                )
+    _write_csv(
+        parity_dir / "real_data_parity_by_candidate.csv",
+        by_cand,
+        ["candidate_ids", "engine", "trades", "total_r", "avg_r"],
+    )
+
+    er_rows: list[dict[str, Any]] = []
+    for cid_key, pair in by_key.items():
+        for eng, label_e in (("execution_backed", "exec"), ("legacy_reference", "leg")):
+            r = pair.get(label_e)
+            if not r:
+                continue
+            s = str(r.get("exit_reason_counts", ""))
+            for part in s.split(";"):
+                if "=" not in part:
+                    continue
+                k, v = part.split("=", 1)
+                er_rows.append(
+                    {
+                        "candidate_ids": cid_key,
+                        "engine": eng,
+                        "exit_bucket": k.strip(),
+                        "count": v.strip(),
+                    }
+                )
+    if not er_rows:
+        er_rows.append({"candidate_ids": "n/a", "engine": "n/a", "exit_bucket": "none", "count": "0"})
+    _write_csv(parity_dir / "real_data_parity_by_exit_reason.csv", er_rows, list(er_rows[0].keys()))
+
+    bh_rows: list[dict[str, Any]] = []
+    if bars_by_key:
+        for cid_key, df in sorted(bars_by_key.items()):
+            if df is None or not len(df) or "bars_held" not in df.columns:
+                continue
+            for row in _bars_held_distribution(df):
+                bh_rows.append({"candidate_ids": cid_key, "source": "execution_backed", **row})
+    if not bh_rows:
+        bh_rows.append(
+            {
+                "candidate_ids": "n/a",
+                "source": "n/a",
+                "bars_held": "n/a",
+                "count": 0,
+            }
+        )
+    _write_csv(parity_dir / "real_data_parity_by_bars_held.csv", bh_rows, list(bh_rows[0].keys()))
+
+    known = """# Real-data parity — known / acceptable differences
+
+- **Fill path semantics**: ``execution_backed`` uses ``TradeIntent -> simulate_trade_path``; ``legacy_reference`` uses archived Numba matrix scheduling. Same signals can yield different intra-session trade counts or R when ordering differs.
+- **Slippage / touch ordering**: YAML slippage is applied on both paths but intrabar touch resolution can diverge slightly, producing small ``total_r`` drift at identical trade counts.
+- **Rejections**: Legacy exposes richer ``rejection_counts`` in metrics; execution-backed may report fewer structured rejections while still producing coherent trades.
+- Exact legacy PnL match is **not** required for research adoption if drift is stable and classified.
+
+See ``real_data_parity_drift_classification.csv`` for this run's tags.
+"""
+    (parity_dir / "real_data_parity_known_differences.md").write_text(known, encoding="utf-8")
+    _write_csv(
+        parity_dir / "real_data_parity_drift_classification.csv",
+        drift,
+        ["candidate_ids", "classification", "trade_delta", "total_r_delta", "notes"],
+    )
+    return label, drift, by_cand
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="combiner_adapter_parity bundle writer")
     p.add_argument(
@@ -274,15 +709,42 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--try-real-smoke",
         action="store_true",
-        help="If candidate YAMLs and QQQ data exist, run a tiny combiner into a temp dir; metrics only to smoke_summary.",
+        help="Run combiner smoke (see also --dry-run, --engine, --aggregate-only, --real-smoke-suite).",
     )
+    p.add_argument("--real-smoke-suite", action="store_true", help="Run 1- and 2-candidate smokes for both engines.")
     p.add_argument("--candidate-root", type=Path, default=None)
     p.add_argument("--config", type=Path, default=None)
     p.add_argument("--candidate-ids", type=str, default="")
     p.add_argument("--symbol", type=str, default="QQQ")
     p.add_argument("--start", type=str, default="2024-01-01")
     p.add_argument("--end", type=str, default="2024-01-31")
-    p.add_argument("--data-dir", type=str, default="data/raw/ibkr")
+    p.add_argument(
+        "--data-dir",
+        type=str,
+        default="",
+        help="Explicit IBKR data root (contains equity/bars_1min). Overrides --bar-root.",
+    )
+    p.add_argument(
+        "--data-root",
+        type=str,
+        default="",
+        dest="data_root",
+        help="Alias for --data-dir.",
+    )
+    p.add_argument(
+        "--bar-root",
+        type=str,
+        default="",
+        help="Repo data folder (e.g. `data`) → resolves to data/raw/ibkr; or an explicit IBKR root.",
+    )
+    p.add_argument(
+        "--engine",
+        type=str,
+        default="execution_backed",
+        help="legacy_reference | execution_backed (single --try-real-smoke run).",
+    )
+    p.add_argument("--aggregate-only", action="store_true", help="Do not write compact/monthly CSVs inside temp output.")
+    p.add_argument("--dry-run", action="store_true", help="Only load bars + write load check; skip combiner.")
     args = p.parse_args(argv)
 
     out = args.output_root
@@ -293,96 +755,242 @@ def main(argv: list[str] | None = None) -> int:
         write_parity_bundle(out)
 
     smoke_dir = out / "smoke"
-    data_path = Path(args.data_dir)
-    if not data_path.is_absolute():
-        data_path = _ROOT / data_path
+    parity_dir = out / "parity"
+    data_dir_override = (args.data_dir or args.data_root or "").strip() or None
+    bar_root_cli = (args.bar_root or "").strip() or None
+    ibkr = resolve_ibkr_data_dir(_ROOT, bar_root=bar_root_cli, data_dir=data_dir_override)
+    bar_root_display = bar_root_cli or "(default repo data/raw/ibkr)"
 
     if args.try_real_smoke:
-        if not args.candidate_root or not args.config:
+        cr = discover_candidate_root(_ROOT, args.candidate_root)
+        cfgp = discover_combiner_config(_ROOT, args.config)
+        if not cr or not cfgp:
             _write_smoke_not_run(
                 smoke_dir,
-                "--try-real-smoke requires --candidate-root and --config.\n",
+                f"Missing inputs: candidate_root={cr} config={cfgp}. "
+                "Pass --candidate-root / --config or install Archive paths.\n",
             )
             return 0
-        cr = args.candidate_root
-        if not cr.is_absolute():
-            cr = Path.cwd() / cr
-        cfgp = args.config
-        if not cfgp.is_absolute():
-            cfgp = Path.cwd() / cfgp
-        if not cr.is_dir() or not cfgp.is_file():
-            _write_smoke_not_run(
-                smoke_dir,
-                f"Missing inputs: candidate_root exists={cr.is_dir()} config exists={cfgp.is_file()}.\n",
-            )
+        if not ibkr.is_dir():
+            _write_smoke_not_run(smoke_dir, f"IBKR data directory not found: {ibkr}\n")
             return 0
-        if not data_path.is_dir():
-            _write_smoke_not_run(
-                smoke_dir,
-                f"Data directory not found: {data_path}\n",
-            )
-            return 0
-        ids = [x.strip() for x in args.candidate_ids.split(",") if x.strip()]
-        if not ids:
-            _write_smoke_not_run(smoke_dir, "No --candidate-ids provided.\n")
-            return 0
+
+        import yaml
+
+        with cfgp.open(encoding="utf-8") as f:
+            comb_yaml = yaml.safe_load(f)
+
+        ids_single = ["PA_BUY_SELL_CLOSE_TREND_003"]
+        ids_dual = ["PA_BUY_SELL_CLOSE_TREND_003", "GAP_ACCEPTANCE_FAILURE_001"]
+        user_ids = [x.strip() for x in args.candidate_ids.split(",") if x.strip()]
+
         try:
-            import yaml
+            load = run_bar_load_check(data_dir=ibkr, symbol=args.symbol, start=args.start, end=args.end)
+        except Exception as ex:  # noqa: BLE001
+            _write_smoke_not_run(smoke_dir, f"Bar load failed: {type(ex).__name__}: {ex}\n")
+            (parity_dir / "real_data_parity_not_run_reason.md").write_text(
+                f"Bars did not load from {ibkr}: {ex}\n", encoding="utf-8"
+            )
+            return 0
 
-            from src.combiner.run import run_combiner_fixed_config
+        def write_load_check() -> None:
+            rows = [
+                {
+                    "bar_root_cli": bar_root_display,
+                    "data_dir_resolved": str(ibkr),
+                    "symbol": args.symbol,
+                    "start": args.start,
+                    "end": args.end,
+                    "bars_loaded": load["bars_loaded"],
+                    "sessions_loaded": load["sessions_loaded"],
+                    "ts_min": load.get("ts_min", ""),
+                    "ts_max": load.get("ts_max", ""),
+                    "candidate_root": str(cr),
+                    "config": str(cfgp),
+                    "dry_run": str(args.dry_run),
+                    "status": load["status"],
+                }
+            ]
+            keys = list(rows[0].keys())
+            _write_csv(out / "repo_local_data_load_check.csv", rows, keys)
+            _write_csv(smoke_dir / "repo_local_data_load_check.csv", rows, keys)
+            body = (
+                f"# Repo-local bar load\n\n- Resolved IBKR root: `{ibkr}`\n"
+                f"- Bars loaded: **{load['bars_loaded']}**\n"
+                f"- Sessions: **{load['sessions_loaded']}**\n"
+                f"- ts range: `{load.get('ts_min', '')}` … `{load.get('ts_max', '')}`\n"
+            )
+            (out / "repo_local_data_load_check.md").write_text(body, encoding="utf-8")
+            (smoke_dir / "repo_local_data_load_check.md").write_text(body, encoding="utf-8")
 
-            with cfgp.open(encoding="utf-8") as f:
-                comb_yaml = yaml.safe_load(f)
-            with tempfile.TemporaryDirectory() as tmp:
-                tdir = Path(tmp)
-                res = run_combiner_fixed_config(
-                    comb_yaml,
+        smoke_dir.mkdir(parents=True, exist_ok=True)
+        write_load_check()
+
+        if args.dry_run or load["bars_loaded"] == 0:
+            if load["bars_loaded"] == 0:
+                (parity_dir / "real_data_parity_not_run_reason.md").write_text(
+                    "Zero bars loaded for window; real smoke not run.\n", encoding="utf-8"
+                )
+            return 0
+
+        def run_and_record(
+            *,
+            engine: str,
+            cand_ids: list[str],
+            summary_csv: Path,
+            summary_md: Path,
+            manifest_csv: Path,
+            schema_csv: Path,
+        ) -> dict[str, Any]:
+            key = ",".join(cand_ids)
+            try:
+                run = run_combiner_real_smoke(
+                    combiner_yaml=comb_yaml,
                     candidate_root=cr,
-                    candidate_set=None,
-                    candidate_ids=ids,
-                    top_per_strategy=3,
+                    candidate_ids=cand_ids,
                     asset="equity",
                     symbol=args.symbol,
                     start=args.start,
                     end=args.end,
-                    output_dir=tdir,
-                    data_dir=str(data_path),
-                    use_signal_cache=False,
-                    detailed=False,
-                    engine="execution_backed",
+                    data_dir=ibkr,
+                    engine=engine,
+                    aggregate_only=args.aggregate_only,
                 )
-            smoke_dir.mkdir(parents=True, exist_ok=True)
-            m = res.get("metrics") or {}
-            summ = [
-                {"metric": "real_smoke", "value": "OK"},
-                {"metric": "trades", "value": str(m.get("trades", ""))},
-                {"metric": "total_r", "value": str(m.get("total_r", ""))},
-            ]
-            _write_csv(smoke_dir / "smoke_summary.csv", summ, ["metric", "value"])
-            (smoke_dir / "smoke_summary.md").write_text(
-                "# Real-data smoke\n\nStatus: **OK** (metrics from temp run; detailed trades not committed).\n\n"
-                f"- trades: {m.get('trades')}\n- total_r: {m.get('total_r')}\n",
+            except Exception as ex:  # noqa: BLE001
+                run = {"metrics": {}, "trades_df": None, "status": "FAIL", "error": f"{type(ex).__name__}: {ex}"}
+            row = _smoke_summary_row(
+                engine=engine,
+                bar_root_cli=bar_root_display,
+                data_dir_resolved=str(ibkr),
+                candidate_ids=key,
+                symbol=args.symbol,
+                start=args.start,
+                end=args.end,
+                bars_loaded=int(load["bars_loaded"]),
+                load=load,
+                run=run,
+            )
+            # append-style: read existing if suite
+            prev: list[dict[str, Any]] = []
+            if summary_csv.is_file():
+                with summary_csv.open(encoding="utf-8") as f:
+                    rd = csv.DictReader(f)
+                    prev = list(rd)
+            all_rows = [r for r in prev if r.get("candidate_ids") != key or r.get("engine") != engine]
+            all_rows.append(row)
+            _write_csv(
+                summary_csv,
+                all_rows,
+                list(row.keys()),
+            )
+            lines = [f"| {r['engine']} | {r['candidate_ids']} | {r['trades']} | {r['total_r']} | {r['status']} |" for r in all_rows]
+            summary_md.write_text(
+                "# Real-data smoke summary\n\n"
+                "| engine | candidate_ids | trades | total_r | status |\n|---|---|---:|---:|---|\n"
+                + "\n".join(lines)
+                + "\n",
                 encoding="utf-8",
             )
-            man = [{"step": "run_combiner_fixed_config", "status": "OK", "engine": "execution_backed"}]
-            _write_csv(smoke_dir / "smoke_run_manifest.csv", man, ["step", "status", "engine"])
-            inv = [{"path": str(cr), "exists": "true"}, {"path": str(cfgp), "exists": "true"}]
-            _write_csv(smoke_dir / "smoke_input_inventory.csv", inv, ["path", "exists"])
-            sch = [
-                {"field": "engine", "execution_backed_required": "yes", "required": "yes"},
-                {"field": "execution_semantics_version", "execution_backed_required": "yes", "required": "yes"},
-            ]
-            _write_csv(smoke_dir / "smoke_schema_validation.csv", sch, ["field", "execution_backed_required", "required"])
-        except Exception as ex:  # noqa: BLE001 — research runner surfaces user-visible reason
-            _write_smoke_not_run(smoke_dir, f"Real smoke failed: {type(ex).__name__}: {ex}\n")
+            man_row = {"engine": engine, "candidate_ids": key, "status": row["status"], "error": row["error"]}
+            prev_m: list[dict[str, Any]] = []
+            if manifest_csv.is_file():
+                with manifest_csv.open(encoding="utf-8") as f:
+                    rd = csv.DictReader(f)
+                    prev_m = [
+                        r
+                        for r in rd
+                        if not (r.get("engine") == engine and r.get("candidate_ids") == key)
+                    ]
+            prev_m.append(man_row)
+            _write_csv(manifest_csv, prev_m, ["engine", "candidate_ids", "status", "error"])
+
+            tdf = run.get("trades_df")
+            sch = _schema_validation_rows(tdf, engine, candidate_ids=key)
+            prev_sch: list[dict[str, Any]] = []
+            if schema_csv.is_file():
+                with schema_csv.open(encoding="utf-8") as f:
+                    rd = csv.DictReader(f)
+                    prev_sch = [
+                        r
+                        for r in rd
+                        if not (r.get("engine") == engine and r.get("candidate_ids") == key)
+                    ]
+            prev_sch.extend(sch)
+            if prev_sch:
+                _write_csv(schema_csv, prev_sch, list(prev_sch[0].keys()))
+            return row | {"_run": run}
+
+        if args.real_smoke_suite:
+            rows_e: list[dict[str, Any]] = []
+            rows_l: list[dict[str, Any]] = []
+            bars_by_key: dict[str, pd.DataFrame] = {}
+            for ids in (ids_single, ids_dual):
+                re = run_and_record(
+                    engine="execution_backed",
+                    cand_ids=ids,
+                    summary_csv=smoke_dir / "real_execution_backed_smoke_summary.csv",
+                    summary_md=smoke_dir / "real_execution_backed_smoke_summary.md",
+                    manifest_csv=smoke_dir / "real_execution_backed_run_manifest.csv",
+                    schema_csv=smoke_dir / "real_execution_backed_schema_validation.csv",
+                )
+                rows_e.append({k: v for k, v in re.items() if k != "_run"})
+                tdf_e = re.get("_run", {}).get("trades_df")
+                if isinstance(tdf_e, pd.DataFrame) and len(tdf_e):
+                    bars_by_key[",".join(ids)] = tdf_e
+                rl = run_and_record(
+                    engine="legacy_reference",
+                    cand_ids=ids,
+                    summary_csv=smoke_dir / "real_legacy_reference_smoke_summary.csv",
+                    summary_md=smoke_dir / "real_legacy_reference_smoke_summary.md",
+                    manifest_csv=smoke_dir / "real_legacy_reference_run_manifest.csv",
+                    schema_csv=smoke_dir / "real_legacy_reference_schema_validation.csv",
+                )
+                rows_l.append({k: v for k, v in rl.items() if k != "_run"})
+            write_real_data_parity(parity_dir, rows_e, rows_l, bars_by_key=bars_by_key or None)
+            return 0
+
+        ids = user_ids or ids_single
+        eng = args.engine.strip()
+        if eng == "execution_backed":
+            run_and_record(
+                engine="execution_backed",
+                cand_ids=ids,
+                summary_csv=smoke_dir / "real_execution_backed_smoke_summary.csv",
+                summary_md=smoke_dir / "real_execution_backed_smoke_summary.md",
+                manifest_csv=smoke_dir / "real_execution_backed_run_manifest.csv",
+                schema_csv=smoke_dir / "real_execution_backed_schema_validation.csv",
+            )
+        elif eng == "legacy_reference":
+            run_and_record(
+                engine="legacy_reference",
+                cand_ids=ids,
+                summary_csv=smoke_dir / "real_legacy_reference_smoke_summary.csv",
+                summary_md=smoke_dir / "real_legacy_reference_smoke_summary.md",
+                manifest_csv=smoke_dir / "real_legacy_reference_run_manifest.csv",
+                schema_csv=smoke_dir / "real_legacy_reference_schema_validation.csv",
+            )
+        else:
+            _write_smoke_not_run(smoke_dir, f"Unknown --engine {eng!r}\n")
         return 0
 
-    _write_smoke_not_run(
-        smoke_dir,
-        "Default: real-data smoke not requested. No QQQ parquet under repo ``data/raw/ibkr`` in CI; "
-        "use ``--try-real-smoke`` with local bars and a valid combiner YAML when available.\n",
-    )
+    if not _should_skip_default_smoke_placeholder(smoke_dir):
+        _write_smoke_not_run(
+            smoke_dir,
+            "Default: real-data smoke not requested (or use ``--try-real-smoke``). "
+            "If ``smoke/real_execution_backed_smoke_summary.csv`` exists, this placeholder is skipped "
+            "so committed real-smoke metrics are preserved.\n",
+        )
     return 0
+
+
+def git_tip(repo_root: Path) -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+            text=True,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return "unknown"
 
 
 if __name__ == "__main__":

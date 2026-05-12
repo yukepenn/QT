@@ -27,8 +27,9 @@ Thumbs.db
 data/cache/
 PROJECT_STRUCTURE_AND_SCRIPTS.txt
 
-# Data
-data/raw/
+# Data: repo-local `data/raw/ibkr/` bars (QQQ/SPY partitions) are committed intentionally for
+# reproducible small-window research (May 2026). Do not widen this exception casually.
+# (Former blanket `data/raw/` ignore removed — see explicit `!` overrides at end of file.)
 
 # Heavy combiner outputs (keep curated CSV/MD via negation below)
 src/combiner/results/benchmarks/
@@ -449,3 +450,8 @@ src/combiner/results/layer2_qqq_v2_batch1_tuned_2023_2024_v1_diagnostics_local/
 !src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_climax_reversal/
 !src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_second_entry_pullback/
 !src/research/results/layer1_pa_batch_bc_tuned_qqq_2023_2024_v2/sweep_pa_wedge_reversal/
+
+# ---------------------------------------------------------------------------
+# Repo-local IBKR bar parquet (shard layout under data/raw/ibkr). Small dataset
+# committed intentionally (May 2026). Overrides global `*.parquet` for this subtree only.
+!data/raw/ibkr/**/*.parquet

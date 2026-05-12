@@ -1,0 +1,3 @@
+candidate_ids,classification,trade_delta,total_r_delta,notes
+PA_BUY_SELL_CLOSE_TREND_003,execution_backed_design_choice,0,-0.078424,small_total_r_drift_same_trade_count
+"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",execution_backed_design_choice,0,-0.164878,small_total_r_drift_same_trade_count

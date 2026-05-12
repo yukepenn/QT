@@ -1,0 +1,2 @@
+ignored_before,gitignore_change_needed,files_to_stage,files_excluded,rationale
+"*.parquet; data/raw/ (removed)",yes,"data/raw/ibkr/**/*.parquet (104 files)","data/cache; local_runs; top_runs; sweeps; logs; heavy artifacts","reproducible small IBKR bar dataset in-repo"

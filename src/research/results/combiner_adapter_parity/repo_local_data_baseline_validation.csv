@@ -1,0 +1,10 @@
+check,result
+compileall,OK
+pytest,135 passed
+strategies_loader_list,OK
+backtest_sweep_smoke,OK
+backtest_validate_pipeline_pa_buy_sell_close_trend,OK
+combiner_run_help,OK
+combiner_sweep_help,OK
+run_combiner_adapter_parity_help,OK
+validate_research_artifacts_combiner_adapter_parity,OK

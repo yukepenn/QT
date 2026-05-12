@@ -1,0 +1,8 @@
+key,value
+git_tip_before_work,c2e94bf0ac08ebd216185a0759ac039e63490943
+prior_next_handoff_decision,COMPLETE_COMBINER_ADAPTER_PARITY
+interrupted_artifacts_found,no
+action_on_interrupted,n/a
+result_root,src/research/results/combiner_adapter_parity/
+repo_local_data_path,data/ (resolved IBKR root data/raw/ibkr)
+non_goals,"no WFO; no live; no SPY research; no broad L2; no git add .; no local_runs/top_runs/trade panels"

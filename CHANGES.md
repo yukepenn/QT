@@ -1,6 +1,6 @@
 ### [Unreleased] – 2026-05-11
 
-- **Research(combiner):** `combiner_adapter_parity` — `normalize_combiner_engine_label`, `execution_backed` / `legacy_reference` CLI tokens, trade-row `engine` + `adapter_semantics_version`, `run_combiner_adapter_parity` bundle, `tests/test_combiner_adapter_parity.py`; docs (`LAYER_FLOW`, structure summaries); tests **133** `pytest`.
+- **Research(combiner):** repo-local **`data/raw/ibkr`** parquet committed (~34 MB); **`.gitignore`** negates `*.parquet` only under that tree; **`run_combiner_adapter_parity`** — **`--bar-root`**, **`--real-smoke-suite`**, **`resolve_ibkr_data_dir`**, real dual-engine QQQ Jan 2024 smoke + **`parity/real_data_parity_*`**; **`run_combiner_fixed_config(..., return_trades_df=...)`**; inventory/audit/baseline/readiness CSV+MD; **`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`** decision; **`EXECUTION_BACKED_READY_FOR_RESEARCH`**; tests **135** `pytest`; docs (`LAYER_FLOW`, `README`, `NEXT_HANDOFF`, `PROJECT_STATUS`, `RESULTS_INDEX`, bundle).
 
 - **Research(combiner):** canonical Layer2 adapter v1 — `trade_intent_adapter.py`, `adapter.py` (`simulate_combiner_canonical`), lazy legacy in `simulator.py`, `run`/`sweep` `--engine legacy|canonical` + `--dry-run`, `validate_research_artifacts.py`, curated `combiner_adapter_v1/`; tests **125** `pytest`.
 

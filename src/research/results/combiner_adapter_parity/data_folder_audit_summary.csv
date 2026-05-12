@@ -1,0 +1,2 @@
+exists,file_count,total_mb,largest_file,largest_mb,parquet_files,qqq_paths,spy_paths,safe_to_commit,rationale
+yes,104,34.264,data\raw\ibkr\equity\bars_1min\symbol=SPY\year=2020\month=03\data.parquet,0.406868,104,76,28,yes,All files under 95MB; IBKR 1m bar shards only; data/cache not included

@@ -1,0 +1,3 @@
+engine,candidate_ids,status,error
+execution_backed,PA_BUY_SELL_CLOSE_TREND_003,OK,
+execution_backed,"PA_BUY_SELL_CLOSE_TREND_003,GAP_ACCEPTANCE_FAILURE_001",OK,

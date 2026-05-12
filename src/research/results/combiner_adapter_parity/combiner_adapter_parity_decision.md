@@ -1,21 +1,21 @@
-# Decision — combiner_adapter_parity
+# Decision — combiner_adapter_parity (repo-local real smoke)
 
 ## Label (exactly one)
 
-**`COMPLETE_COMBINER_ADAPTER_PARITY`**
+**`RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH`**
 
 ## Rationale
 
-- Synthetic parity run shows **legacy_reference vs execution_backed drift** on the shared toy matrix (`parity_summary.csv`: trade counts differ); this must be reconciled before treating parity as production-grade.
-- Real QQQ **execution_backed** smoke was **not** run in-repo (no `data/raw/ibkr` bars committed); only default `smoke/NOT_RUN` plus optional local `--try-real-smoke`.
-- **Exit overlay on execution path** should wait until parity is understood on real slices or a dedicated harness exists — not `RESUME_EXIT_OVERLAY_ON_EXECUTION_PATH` yet.
-- Layer3 imports succeed; default combiner engine remains **legacy_reference** by design until parity sign-off.
-- Naming discipline: no new `*_v2` / `*_v3` roots; only `combiner_adapter_parity/` added as specified.
+- Repo-local **`data/raw/ibkr`** is audited, small, and safe to commit; QQQ bars load for the January 2024 smoke window (**8190** rows, **21** sessions).
+- **`execution_backed`** real combiner smoke **passes** for Champion candidates (`PA_BUY_SELL_CLOSE_TREND_003` and two-candidate with `GAP_ACCEPTANCE_FAILURE_001`) with stable non-empty metrics and stamped semantics columns.
+- **`legacy_reference`** runs the **same** slices successfully; dual-engine comparison is **`REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS`** — identical trade counts, small **`total_r`** drift classified as **`execution_backed_design_choice`** (fill / path semantics), not silent adapter failure.
+- **`execution_backed`** is suitable as the **future research accounting path**; exact legacy PnL parity is **not** required when differences are explained and bounded on real data.
+- Naming discipline preserved: only **`src/research/results/combiner_adapter_parity/`** as the formal parity root — no `canonical_v2` / `combiner_adapter_v2` / `exit_overlay_v3`.
 
 ## Recommended next step
 
-Build a **small real-data parity harness** (same bars, same candidates, both engines) and reconcile the top drift drivers (cursor semantics, rejection mapping, target materialization) — still **no WFO**, **no router production**, **no exit-management production**.
+**Resume exit-overlay work using execution-backed combiner trade rows** (diagnostics / alignment harnesses), still **without** production router or production exit-management, **without** WFO or live trading.
 
 ## Explicit non-runs (this task)
 
-No WFO, mini-WFO, live/paper, SPY research, broad Layer2 sweeps, new strategies, Champion YAML edits, raw trade commits, production router/exit-management, scalp/short work.
+No WFO, mini-WFO, live/paper, SPY research sweeps, broad Layer2 sweeps, Global Layer1, new strategies, Champion YAML edits, raw row-level trade panels, `top_runs` / `local_runs`, `git add .`, production router, production exit-management, scalp/short research.

@@ -4,8 +4,13 @@ src/combiner/trade_intent_adapter.py,TradeIntent + row stamps,yes,,no,,engine ad
 src/combiner/adapter.py,execution_backed sequential loop,yes,,no,,combiner_engine on result dict
 src/combiner/run.py,CLI + fixed_config engine branch,yes,,no,,stamps legacy_reference trades_df
 src/combiner/sweep.py,Grid sweep engine branch,yes,,no,,
-src/research/run_combiner_adapter_parity.py,Parity/smoke bundle writer,yes,,no,,optional --try-real-smoke
-tests/test_combiner_adapter_parity.py,Synthetic parity + schema tests,yes,,no,,
+src/research/run_combiner_adapter_parity.py,Parity + repo-local real smoke bundle,yes,,no,,--bar-root --real-smoke-suite --aggregate-only
+tests/test_combiner_adapter_parity.py,Synthetic parity + resolve_ibkr_data_dir,yes,,no,,
+data/raw/ibkr/**/*.parquet,Reproducible IBKR 1m bar shards (QQQ+SPY),yes,104,yes,no,gitignored globally except this subtree
+src/research/results/combiner_adapter_parity/smoke/real_execution_backed_smoke_summary.csv,Real smoke metrics execution_backed,yes,2,no,,
+src/research/results/combiner_adapter_parity/smoke/real_legacy_reference_smoke_summary.csv,Real smoke metrics legacy,yes,2,no,,
+src/research/results/combiner_adapter_parity/parity/real_data_parity_summary.csv,Real dual-engine parity label,yes,1,no,,
+src/research/results/combiner_adapter_parity/data_folder_audit.csv,Per-file data audit,yes,104,no,,
 src/research/results/combiner_adapter_parity/parity/parity_summary.csv,Synthetic parity metrics,yes,1,no,,
-src/research/results/combiner_adapter_parity/layer_reachability.csv,Reachability matrix,yes,10,no,,
+src/research/results/combiner_adapter_parity/layer_reachability.csv,Reachability matrix,yes,14,no,,
 docs/LAYER_FLOW.md,Layer1/2/3 narrative,yes,,no,,execution_backed wording

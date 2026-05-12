@@ -20,6 +20,7 @@ from src.combiner.trade_intent_adapter import (
     simulate_selected_trade,
     trade_result_to_combiner_row,
 )
+from src.research.run_combiner_adapter_parity import resolve_ibkr_data_dir
 from src.execution.types import ExitReason, TM_FIXED_R
 
 
@@ -44,6 +45,22 @@ def _candidate(*, cid: str = "C_PARITY_001", priority: int = 10) -> Candidate:
         default_active_end_minute=389,
         warning="",
     )
+
+
+def test_resolve_ibkr_data_dir_bar_root_data():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    ib = resolve_ibkr_data_dir(repo, bar_root="data", data_dir=None)
+    assert ib == repo / "data" / "raw" / "ibkr"
+
+
+def test_resolve_ibkr_data_dir_explicit_data_dir():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    ib = resolve_ibkr_data_dir(repo, bar_root=None, data_dir="data/raw/ibkr")
+    assert ib == repo / "data" / "raw" / "ibkr"
 
 
 def test_normalize_engine_synonyms():

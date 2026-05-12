@@ -1,0 +1,2 @@
+bar_root_cli,data_dir_resolved,symbol,start,end,bars_loaded,sessions_loaded,ts_min,ts_max,candidate_root,config,dry_run,status
+data,D:\OneDrive - Washington University in St. Louis\QT\data\raw\ibkr,QQQ,2024-01-01,2024-01-31,8190,21,2024-01-02 14:30:00+00:00,2024-01-31 20:59:00+00:00,D:\OneDrive - Washington University in St. Louis\QT\src\research\results\Archive\layer1_global_qqq_2023_2024_v2\selected_candidates_l2_core\selected_candidates,D:\OneDrive - Washington University in St. Louis\QT\src\combiner\configs\Archive\layer2_qqq_global_2023_2024_v2.yaml,False,OK

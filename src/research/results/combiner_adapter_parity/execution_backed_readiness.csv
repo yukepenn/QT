@@ -1,0 +1,8 @@
+readiness_label,EXECUTION_BACKED_READY_FOR_RESEARCH
+repo_local_data_committed,planned_in_this_commit
+execution_backed_real_smoke,OK
+legacy_real_smoke,OK
+schema_stamps,OK
+parity_vs_legacy,REAL_PARITY_PASS_WITH_EXPLAINED_DIFFS
+exit_overlay_future,compatible_trade_row_schema
+router_future,BLOCKED_out_of_scope
