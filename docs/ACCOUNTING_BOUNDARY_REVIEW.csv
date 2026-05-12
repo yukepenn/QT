@@ -7,9 +7,10 @@ src/execution/pnl.py,canonical PnL/R helpers,no,no,yes,no,keep,Gross/net; commis
 src/execution/validators.py,intent/bars validation,no,no,no,no,keep,No price path accounting
 src/backtest/engine.py,adapter + legacy re-export,no,no,no,no (adapter),keep,run_strategy_backtest delegates accounting to execution; run_backtest legacy
 src/backtest/metrics.py,aggregation only,no,no,no,no,keep,summarize_trades sums columns; total_gross_r optional
-src/backtest/sweep.py,legacy CLI grid,no,yes,yes,yes,mark legacy,Numba fast engine; docstring states non-canonical
+src/backtest/sweep.py,Layer1 placeholder CLI + compat wrappers,no,no,no,no,keep,Default exit≠0; --legacy → legacy/sweep_legacy
+src/backtest/legacy/sweep_legacy.py,legacy Numba grid sweep,no,yes,yes,yes,keep,Full former sweep; engine=legacy_numba_fast
 src/backtest/legacy/fast_legacy.py,legacy Numba kernel,yes,yes,yes,yes,keep legacy,Do not extend for new semantics
 src/backtest/legacy/engine_legacy.py,legacy full backtest,yes,yes,yes,yes,keep legacy,Pre-reset accounting
-src/combiner/simulator.py,legacy re-export,no,yes,yes,yes,document only,Points at legacy Numba stack
+src/combiner/simulator.py,explicit legacy re-export,no,yes,yes,yes,keep shim,Named imports from legacy.simulator_legacy only
 src/combiner/selection.py,candidate ordering,no,no,no,no,keep,No fills
 src/combiner/state.py,day state / guards,no,no,no,no,keep,No fills

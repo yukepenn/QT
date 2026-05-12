@@ -31,8 +31,8 @@ All backtest/combiner/research replay code that needs fills must call into `exec
 
 ## 6. `backtest/`
 
-**Owns:** single-strategy adapter: validate signal columns, map rows to **raw** `TradeIntent` (no adapter-side entry fill, risk, or fixed-R target math) → `execution.path.simulate_trade_path`; `metrics.py` **aggregates** canonical trade columns only (`r_multiple`, `net_pnl`, optional `gross_r_multiple`).  
-**Must not:** compute entry fill price, execution risk from fill, fixed-R target from entry/risk, or per-trade exit PnL/R from OHLC (legacy engines under `backtest/legacy/` and **Numba sweep** remain non-canonical; see `src/backtest/sweep.py` docstring).
+**Owns:** single-strategy adapter: validate signal columns, map rows to **raw** `TradeIntent` → `execution.path.simulate_trade_path`; `metrics.py` aggregates canonical trade columns only. **Placeholder** Layer 1 sweep CLI (`sweep.py`): canonical sweep not implemented; `--legacy` delegates to `legacy/sweep_legacy.py`. **`fast.py`** exposes only legacy `TM_*` signal-array codes — not `prepare_backtest_arrays` / `run_fast_backtest_from_arrays` (those live in `legacy.fast_legacy`).  
+**Must not:** compute entry fill, execution risk, or fixed-R targets in the adapter; must not imply Numba sweep is canonical (use docs + CLI messaging).
 
 ## 7. `combiner/`
 

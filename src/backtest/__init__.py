@@ -1,4 +1,4 @@
-"""Backtest package. Import from ``src.backtest.engine``, ``src.backtest.fast``, etc."""
+"""Backtest package. Prefer ``src.backtest.engine`` for canonical runs; legacy Numba under ``src.backtest.legacy``."""
 
 from __future__ import annotations
 

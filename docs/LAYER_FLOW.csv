@@ -1,0 +1,4 @@
+layer,purpose,canonical_entry_modules,current_legacy_surface,future_blocker_notes
+1,candidate factory,"data, features, strategies, backtest.engine, execution.path, backtest.metrics",backtest.legacy.sweep_legacy + legacy.fast_legacy,canonical grid sweep + optional execution.fast_path parity
+2,combiner competition,"combiner.selection, combiner.state, execution.path (target)",combiner.legacy.simulator_legacy via combiner.simulator re-exports,TradeIntent + execution-backed combiner loop
+3,fixed profile / WFO,"walkforward.*, combiner.run (today)",combiner.run → legacy Numba,rewire run to execution-backed simulator

@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Architecture:** clarify canonical layer connectivity — `docs/LAYER_FLOW.md` (+ CSV), `CANONICAL_SWEEP_DESIGN.md`, `CANONICAL_COMBINER_DESIGN.md`, `LAYER3_VALIDATION_DESIGN.md`, `WALKFORWARD_STATUS.*`, `FEATURE_STRATEGY_CONNECTIVITY.*`, `LEGACY_RESULTS_POLICY.md`, `MAINLINE_LEGACY_SURGERY_*`; backtest `sweep.py` placeholder + `legacy/sweep_legacy.py`; `fast.py` TM-only + reject Numba prepare/run; `precompute` → `legacy.fast_legacy`; combiner `simulator` legacy-only doc; tests (**85** `pytest`).
+
 - **Test(execution):** expand accounting boundary matrix — `materialize.py` (entry/risk/target + targetless guards); gross/net R on `TradeResult`; `scale_fill_policy` (`close` / `trigger_price`); backtest adapter boundary (raw `TradeIntent` only); metrics `total_gross_r`; sweep legacy banner; docs (`EXECUTION_SEMANTICS`, boundary review + test matrix summary, ownership audit); tests (**68** `pytest`).
 
 - **Test(execution):** canonical execution smoke — hardened `src/execution` (exit order, conservative trailing, touch scale-out + close fill, NFT, `ExitPlan.max_hold_bars_cap`, `TradeResult` helpers / `REJECTED`); combiner `selection`/`state` helpers; backtest `trade_results_to_frame`; `scripts/canonical_execution_smoke.py`; docs (`CANONICAL_EXECUTION_*`, `CODE_READABILITY_CHECK`, `ACCOUNTING_OWNERSHIP_AUDIT`, `EXECUTION_SEMANTICS`, audits); expanded tests (**49** `pytest`).

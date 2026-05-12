@@ -5,7 +5,7 @@
 | Field | Value |
 |--------|--------|
 | Branch | `main` |
-| Latest commit | **`Test(execution): expand accounting boundary matrix`** — verify SHA with `git log -1 --oneline` after pull/push |
+| Latest commit | **`Architecture: clarify canonical layer connectivity`** — verify SHA with `git log -1 --oneline` after pull/push |
 | Remote | `git ls-remote origin refs/heads/main` must match local `HEAD` after push |
 | Working tree | Stage curated paths only — **never** `git add .` |
 
@@ -13,57 +13,53 @@
 
 | Check | Result |
 |--------|--------|
-| `python -m compileall -q src` | Pass (run locally before push) |
-| `python -m pytest -q` | **68 passed** (active `tests/`; `tests/Archive` excluded) |
-| `python -m src.strategies.loader --list` | Run before handoff |
-| Import smoke (`src.execution`, `src.backtest.engine`, `src.backtest.metrics`, combiner, router, portfolio) | `imports_ok` |
-| `python scripts/canonical_execution_smoke.py` | Synthetic OHLC smoke |
-| Tracked-heavy check | No forbidden paths in `git ls-files` |
+| `python -m compileall -q src` | Run before handoff |
+| `python -m pytest -q` | **85 passed** |
+| `python -m src.strategies.loader --list` | **35** strategies |
+| Import smoke (execution, management, backtest engine/metrics, combiner selection/state, router, portfolio) | `imports_ok` |
+| `import src.backtest.legacy.fast_legacy` | `legacy_fast_import_ok` |
+| `python -m src.backtest.sweep --help` | Placeholder CLI + `--legacy` documented |
+| `python scripts/canonical_execution_smoke.py` | Synthetic OHLC |
+| Tracked-heavy check | Clean |
 
-## C. Accounting boundary resolution
+## C. Legacy surface cleanup
 
-- **`src/execution/materialize.py`:** canonical entry fill, initial risk, target (`fixed_r` / `fixed_price` / `none`), targetless exit-path guard (EOD sentinel `eod_exit_minute >= 500` disables EOD for validation only; scale-out without trailing rejected).
-- **`src/backtest/engine.py`:** raw `sig_*` → `TradeIntent` only; no adapter-side fill/risk/target math; `run_backtest` remains legacy Numba entry.
-- **`src/backtest/metrics.py`:** aggregates `r_multiple` / `net_pnl` / optional `gross_r_multiple`; does not recompute trade R from OHLC.
+- **`src/backtest/sweep.py`:** canonical **placeholder** CLI; default exit ≠ 0 with guidance; **`--legacy`** delegates to **`src/backtest/legacy/sweep_legacy.py`** (prints `engine=legacy_numba_fast`).
+- **`src/backtest/fast.py`:** **only** `TM_*` constants; `__getattr__` rejects `prepare_backtest_arrays` / `run_fast_backtest_from_arrays` (use **`legacy.fast_legacy`** explicitly).
+- **`src/combiner/precompute.py`:** imports **`legacy.fast_legacy`** for `prepare_backtest_arrays`.
+- **`src/combiner/simulator.py`:** explicit named re-exports from **`legacy.simulator_legacy`**; docstring states legacy-only (no `import *`).
 
-## D. Execution semantics updates
+## D. Layer 1 / 2 / 3 connectivity
 
-- Documented exit order matches `src/execution/path.py` (stop/target → prior trailing → scale-out → NFT → max-hold → EOD → end data → trail ratchet).
-- **`scale_fill_policy`:** `close` vs `trigger_price` for scale-out raw fill.
-- Gross vs net R on `TradeResult`; `r_multiple` aliases net R.
+- **Layer 1:** Documented in **`docs/LAYER_FLOW.md`** / **`docs/LAYER_FLOW.csv`**; canonical path = signals → adapter → execution; grid sweep = future + **`docs/CANONICAL_SWEEP_DESIGN.md`**.
+- **Layer 2:** **`docs/CANONICAL_COMBINER_DESIGN.md`** — selection/state → `TradeIntent` → execution (target); today’s Numba sim is legacy.
+- **Layer 3:** **`docs/LAYER3_VALIDATION_DESIGN.md`**, **`docs/WALKFORWARD_STATUS.md`** — harnesses depend on legacy combiner until adapter lands.
 
-## E. Backtest adapter changes
+## E. Canonical sweep status
 
-- `signals_to_trade_intents` — no `entry_price` / precomputed risk / `tgt_px` parameters; passes `target_mode`, `target_r`, optional `target_price`, optional `risk_per_share`.
-- MVP unchanged: first valid signal per session → one `simulate_trade_path` call.
+- **Not implemented** on reference engine; placeholder + **`run_canonical_sweep_placeholder`** raises `NotImplementedError`.
 
-## F. Metrics / R multiple changes
+## F. Canonical combiner status
 
-- `summarize_trades`: `total_r` = sum of `r_multiple` (net); `total_net_pnl` = sum of `net_pnl`; `total_gross_r` when `gross_r_multiple` column exists.
+- **Legacy** Numba re-export only; do not extend with new accounting.
 
-## G. Legacy sweep status
+## G. Walkforward status
 
-- **`src/backtest/sweep.py`** module docstring: **legacy Numba fast**, not canonical execution.
-- Canonical sweep on reference engine: **deferred**.
+- **`docs/WALKFORWARD_STATUS.csv`**: runner / mini_wfo depend on legacy combiner; safe to keep; migrate when execution-backed combiner exists.
 
-## H. Test matrix coverage
+## H. Feature / strategy connectivity
 
-- Materialization, targetless (trailing, EOD path, scale+trail, rejections), exit-priority same-bar cases, scale fill policies, commission gross vs net, metrics aggregation, legacy boundary / import hygiene.
+- **`docs/FEATURE_STRATEGY_CONNECTIVITY.md`** + CSV; loader **35** strategies; Champion-related IDs load (`pa_buy_sell_close_trend`, `gap_acceptance_failure`, `cci_extreme_snapback`).
 
 ## I. Explicit non-runs
 
-No WFO, mini-WFO, live/paper, SPY, broad Layer2, Champion migration, historical sweeps, new strategies, short/scalp research, selected-candidate YAML edits, raw artifacts.
+No WFO, mini-WFO, live/paper, SPY, broad Layer2, Champion migration, historical sweeps, new strategies, short/scalp research, selected YAML edits, performance claims.
 
 ## J. Risks / caveats
 
-- Targetless validation uses an **EOD minute sentinel** (`>= 500`); consider a dedicated policy flag later.
-- Combiner simulator remains legacy Numba.
-- No canonical sweep / Numba parity harness yet.
+- Archive scripts under `src/research/results/Archive/` may still `import src.backtest.fast` for prepare/run — update to **`legacy.fast_legacy`** when touched.
+- `python -m src.backtest.sweep` requires **`--legacy` first** for Numba grid (not discoverable from old habits alone — docs mitigate).
 
-## K. Files changed (high level)
+## K. Recommended next step (exactly one)
 
-`src/execution/*` (incl. `materialize.py`, `__init__.py` exports), `src/backtest/engine.py`, `src/backtest/metrics.py`, `src/backtest/sweep.py`, `tests/test_execution_*.py`, `tests/test_backtest_*`, `tests/test_legacy_boundary.py`, `docs/EXECUTION_SEMANTICS.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.*`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`, `docs/ACCOUNTING_OWNERSHIP_AUDIT.md`, `CHANGES.md`, `PROGRESS.md`, `NEXT_HANDOFF.md`.
-
-## L. Recommended next step (exactly one)
-
-**`HOLD_AND_REVIEW`**
+**`COMPLETE_CANONICAL_BACKTEST_SWEEP`**

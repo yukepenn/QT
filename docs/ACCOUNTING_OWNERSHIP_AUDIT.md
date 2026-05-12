@@ -20,9 +20,12 @@ Ripgrep over `src/**/*.py` for symbols associated with trade accounting
 
 Mainline **non-legacy** Python should **not** implement a second intrabar fill
 loop for production paths. **`run_strategy_backtest`** now delegates fill /
-risk / target / PnL to **`simulate_trade_path`** only; remaining duplicate
-accounting risk is **`src/backtest/legacy`**, **`src/backtest/sweep.py`**
-(Numba fast), and **`src/combiner/simulator.py`** until migrated.
+risk / target / PnL to **`simulate_trade_path`** only; top-level **`sweep.py`**
+is a placeholder unless ``--legacy`` (see **`legacy/sweep_legacy.py`**).
+**`fast.py`** exposes only ``TM_*`` constants; Numba kernels stay in
+**`legacy.fast_legacy`**. Remaining duplicate accounting risk is
+**`src/backtest/legacy`**, **`src/combiner/legacy`**, and explicit combiner
+simulator re-exports until migrated.
 
 See `docs/ACCOUNTING_OWNERSHIP_AUDIT.csv` for sample rows. See also
 `docs/ACCOUNTING_BOUNDARY_REVIEW.md` and `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.

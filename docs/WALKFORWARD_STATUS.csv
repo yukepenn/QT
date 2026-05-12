@@ -1,0 +1,7 @@
+file,role,depends_on_legacy_combiner,depends_on_legacy_backtest,safe_to_keep,should_migrate_later,notes
+runner.py,Layer3 smoke CLI / orchestration,yes,yes,yes,yes,calls src.combiner.run
+fixed_system.py,Load frozen system YAML / paths,yes,no,yes,yes,combiner configs
+folds.py,Smoke fold definitions,no,no,yes,no,pure data shapes
+reports.py,Markdown / interpretation helpers,no,no,yes,maybe,formatting only
+mini_wfo.py,Mini-WFO harness,yes,yes,yes,yes,do not run in this task
+metrics.py,Walkforward metrics helpers,maybe,no,yes,yes,aggregates inputs from runs

@@ -1,0 +1,6 @@
+edge,source,target,contract_doc,notes
+bars_to_features,data.read_bars,features.FeatureStore,FEATURES_CONTRACT.md,no lookahead
+features_to_strategy,FeatureStore,strategy.generate_*,SIGNAL_CONTRACT.md,required_features enforced at config validate
+strategy_to_backtest,strategy signals,backtest.engine.run_strategy_backtest,SIGNAL_CONTRACT.md,maps to TradeIntent + execution
+strategy_to_combiner,signal matrices,combiner.precompute / signal_cache,SIGNAL_CONTRACT.md,cache only
+metadata_to_router,metadata.yaml,router (future),STRATEGIES_CONTRACT.md,fallback keys when missing
