@@ -207,6 +207,7 @@ def simulate_combiner_canonical(
                 priority=float(priority_float[ci]),
                 daily_trade_number=dtn,
                 policy=pol,
+                engine="execution_backed",
             )
         )
 
@@ -234,4 +235,5 @@ def simulate_combiner_canonical(
         "rejected_signals_df": pd.DataFrame(),
         "rejection_counts": np.zeros(32, dtype=np.int64),
         "combiner_adapter_version": COMBINER_ADAPTER_VERSION,
+        "combiner_engine": "execution_backed",
     }

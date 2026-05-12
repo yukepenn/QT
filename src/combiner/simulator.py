@@ -1,8 +1,9 @@
-"""Combiner simulation: legacy Numba reference (lazy) + execution-backed canonical adapter.
+"""Combiner simulation: legacy_reference Numba (lazy) + execution-backed adapter.
 
 Legacy accounting lives in ``archive/legacy_combiner/reference_simulator.py`` and is loaded
-on demand. Mainline Layer 2 trades should use :func:`simulate_combiner_canonical`, which
-delegates exits to :func:`src.execution.path.simulate_trade_path`.
+on demand. Execution-backed Layer 2 uses :func:`simulate_combiner_canonical` (alias
+:func:`simulate_combiner_execution_backed`), which delegates fills and exits to
+:func:`src.execution.path.simulate_trade_path` — no silent fallback to Numba.
 """
 
 from __future__ import annotations
@@ -71,6 +72,26 @@ REJ_NAMES: dict[int, str] = {
 PRIORITY_METADATA_ONLY = 1
 PRIORITY_SCORE_ADJUSTED = 2
 
+_LEGACY_ENGINE_SYNONYMS = frozenset({"legacy", "legacy_reference", "numba"})
+_EXECUTION_BACKED_SYNONYMS = frozenset({"canonical", "execution_backed"})
+
+
+def normalize_combiner_engine_label(engine: str) -> str:
+    """Map CLI / API engine tokens to ``legacy_reference`` or ``execution_backed``.
+
+    ``canonical`` is retained as an alias for ``execution_backed`` (compatibility only).
+    Raises ``ValueError`` for unknown tokens so mis-typed engines fail loudly.
+    """
+    e = str(engine).lower().strip().replace("-", "_")
+    if e in _LEGACY_ENGINE_SYNONYMS:
+        return "legacy_reference"
+    if e in _EXECUTION_BACKED_SYNONYMS:
+        return "execution_backed"
+    raise ValueError(
+        f"unknown combiner engine {engine!r}; expected one of "
+        f"{sorted(_LEGACY_ENGINE_SYNONYMS | _EXECUTION_BACKED_SYNONYMS)}"
+    )
+
 
 @dataclass
 class CombinerConfig:
@@ -127,6 +148,9 @@ def simulate_combiner_canonical(**kwargs: Any) -> Any:
     return _fn(**kwargs)
 
 
+simulate_combiner_execution_backed = simulate_combiner_canonical
+
+
 __all__ = [
     "CombinerConfig",
     "EXIT_NAMES",
@@ -156,7 +180,9 @@ __all__ = [
     "REJ_RISK_TOO_SMALL",
     "REJ_SESSION_BOUNDARY_NO_ENTRY",
     "REJ_WRONG_TIME_WINDOW",
+    "normalize_combiner_engine_label",
     "simulate_combiner_canonical",
+    "simulate_combiner_execution_backed",
     "simulate_combiner_legacy_logs",
     "simulate_combiner_legacy_numba",
     "simulate_combiner_numba",

@@ -1,0 +1,11 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/combiner/simulator.py,Engine tokens + lazy legacy + execution export,yes,,no,,normalize_combiner_engine_label
+src/combiner/trade_intent_adapter.py,TradeIntent + row stamps,yes,,no,,engine adapter_semantics_version
+src/combiner/adapter.py,execution_backed sequential loop,yes,,no,,combiner_engine on result dict
+src/combiner/run.py,CLI + fixed_config engine branch,yes,,no,,stamps legacy_reference trades_df
+src/combiner/sweep.py,Grid sweep engine branch,yes,,no,,
+src/research/run_combiner_adapter_parity.py,Parity/smoke bundle writer,yes,,no,,optional --try-real-smoke
+tests/test_combiner_adapter_parity.py,Synthetic parity + schema tests,yes,,no,,
+src/research/results/combiner_adapter_parity/parity/parity_summary.csv,Synthetic parity metrics,yes,1,no,,
+src/research/results/combiner_adapter_parity/layer_reachability.csv,Reachability matrix,yes,10,no,,
+docs/LAYER_FLOW.md,Layer1/2/3 narrative,yes,,no,,execution_backed wording

@@ -1,8 +1,8 @@
 """Generic candidate arbitration (no fills, no PnL).
 
 Selection helpers pick **which** candidate fires when several are active on
-the same bar. The canonical simulator still lives under ``legacy/`` until the
-execution-backed combiner loop is complete.
+the same bar. They are shared by the legacy_reference Numba path and the
+execution-backed combiner loop.
 """
 
 from __future__ import annotations

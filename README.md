@@ -9,7 +9,7 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 
 ## 2. Target architecture (reset in progress)
 
-The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** supports **`--engine legacy`** (lazy-loaded archived Numba reference under **`archive/legacy_combiner/`**) and **`--engine canonical`** (`simulate_combiner_canonical` → `execution.path`); default remains **legacy** for compatibility until parity hardening.
+The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** supports **`--engine legacy`** / **`legacy_reference`** (lazy-loaded archived Numba under **`archive/legacy_combiner/`**) and **`--engine execution_backed`** (alias **`canonical`**) via `simulate_combiner_canonical` → `src.execution.path.simulate_trade_path`; default remains **legacy** for compatibility until real-slice parity (`src/research/results/combiner_adapter_parity/`).
 
 | Layer | Role |
 |-------|------|
@@ -19,16 +19,16 @@ The codebase uses a **single reference execution accounting layer** under `src/e
 | **execution** | Canonical fills, exits, PnL (`src/execution/`) |
 | **management** | Exit-plan templates (`src/management/`) |
 | **backtest** | Single-strategy adapter; Layer 1 sweep **synthetic + real-symbol MVP** (`src/backtest/`) |
-| **combiner** | Candidate arbitration (legacy sim today; target = execution adapter) (`src/combiner/`) |
+| **combiner** | Candidate arbitration — **`legacy_reference`** Numba vs **`execution_backed`** adapter (`src/combiner/`) |
 | **router** | Permission / quality scaffold (`src/router/`) |
-| **walkforward** | Layer 3 harnesses (orchestration; not canonical until combiner uses execution) (`src/walkforward/`) |
+| **walkforward** | Layer 3 harnesses; default combiner engine remains **`legacy_reference`** until parity sign-off (`src/walkforward/`) |
 | **portfolio** | Sizing / equity helpers (`src/portfolio/`) |
 | **research** | Thin runners and curated results only (`src/research/`) |
 | **utils** | Config / IO / validation (`src/utils/`) |
 
 Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/LAYER_FLOW.md`, `docs/EXECUTION_SEMANTICS.md`, `docs/SIGNAL_CONTRACT.md`, `docs/BACKTEST_SWEEP_DESIGN.md`, `docs/CANONICAL_COMBINER_DESIGN.md`, `docs/LEGACY_RESULTS_POLICY.md`, `docs/MAINLINE_LEGACY_SURGERY_PLAN.md`, `docs/ACCOUNTING_BOUNDARY_REVIEW.md`, `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
-### Smoke check (canonical engine)
+### Smoke check (Layer 1 + execution)
 
 - Run `python scripts/canonical_execution_smoke.py` (synthetic OHLC) and `python -m pytest -q` before resuming strategy research.
 - Run `python -m src.backtest.sweep --smoke` to exercise the canonical sweep + `run_strategy_backtest` path without QQQ parquet.

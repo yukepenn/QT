@@ -145,6 +145,8 @@ def trade_result_to_combiner_row(
     priority: float,
     daily_trade_number: int,
     policy: ExecutionPolicy,
+    engine: str = "execution_backed",
+    adapter_semantics_version: str | None = None,
 ) -> dict[str, Any]:
     """Stable trade dict aligned with legacy combiner columns where possible."""
     return {
@@ -176,5 +178,7 @@ def trade_result_to_combiner_row(
         "daily_trade_number": int(daily_trade_number),
         "execution_semantics_version": str(policy.semantics_version),
         "combiner_adapter_version": COMBINER_ADAPTER_VERSION,
+        "adapter_semantics_version": str(adapter_semantics_version or COMBINER_ADAPTER_VERSION),
         "result_lineage": "mainline_layer2",
+        "engine": str(engine),
     }

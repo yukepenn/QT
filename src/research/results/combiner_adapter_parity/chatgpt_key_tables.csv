@@ -1,0 +1,7 @@
+section,item,metric,value,interpretation
+validation,pytest,passed,133,Mainline tests green after parity tests added
+parity,synthetic,label,PARITY_PASS_WITH_EXPLAINED_DIFFS,Legacy vs execution-backed differ on toy matrix; documented
+smoke,real_data,status,NOT_RUN_default,No committed QQQ bars; optional local --try-real-smoke
+reachability,Layer2,NotImplementedError,absent,Simulator stub blocker removed in prior commit
+reachability,Layer3,imports,OK,runner imports combiner; default engine legacy_reference
+decision,next,label,COMPLETE_COMBINER_ADAPTER_PARITY,Need real-slice parity before exit-overlay resume

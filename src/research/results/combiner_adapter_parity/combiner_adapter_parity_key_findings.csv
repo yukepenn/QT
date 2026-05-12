@@ -1,0 +1,6 @@
+metric,value
+pytest_total,133
+new_tests_file,tests/test_combiner_adapter_parity.py
+synthetic_parity_label,PARITY_PASS_WITH_EXPLAINED_DIFFS
+real_data_smoke,NOT_RUN_default
+decision_label,COMPLETE_COMBINER_ADAPTER_PARITY

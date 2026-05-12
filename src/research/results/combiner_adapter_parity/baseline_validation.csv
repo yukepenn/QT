@@ -1,0 +1,9 @@
+check,status,notes
+python_m_compileall_src,OK,
+python_m_pytest_q,OK,133 passed
+python_m_src_strategies_loader_list,OK,RuntimeWarning may appear on Windows
+python_m_src_backtest_sweep_smoke,OK,
+python_m_src_backtest_sweep_validate_pipeline,OK,pa_buy_sell_close_trend
+python_m_src_combiner_run_help,OK,shows ENGINE legacy|legacy_reference|canonical|execution_backed
+python_m_src_combiner_sweep_help,OK,
+tracked_heavy_git_ls_files,no_new_violations_this_commit,Archive CSVs remain historical

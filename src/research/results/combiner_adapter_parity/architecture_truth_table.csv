@@ -1,0 +1,17 @@
+file,current_role,owns_accounting_yes_no,should_own_accounting_yes_no,imports_execution_path,imports_legacy,current_status,desired_status,action_needed
+src/execution/types.py,TradeIntent_TradeResult_types,no,no,no,no,OK,OK,none
+src/execution/path.py,simulate_trade_path_reference,yes,yes,no,no,OK,OK,none
+src/backtest/engine.py,strategy_backtest_orchestration,no,no,yes,no,OK,OK,none
+src/backtest/strategy_runner.py,bars_to_signals_pipeline,no,no,yes,no,OK,OK,none
+src/backtest/sweep.py,Layer1_sweep_CLI,no,no,yes,optional_archive,OK,OK,none
+src/combiner/precompute.py,signal_matrices_cache_only,no,no,no,yes_legacy_helpers,OK,OK,none
+src/combiner/selection.py,same_bar_priority,no,no,no,no,OK,OK,docstring_cleanup_done
+src/combiner/state.py,session_guards,no,no,no,no,OK,OK,none
+src/combiner/simulator.py,legacy_lazyload_plus_execution_export,no,no,yes_lazy_canonical,yes_lazy_archive,mixed_explicit,mixed_explicit,engine_normalize_alias_done
+src/combiner/adapter.py,execution_backed_sequential_loop,no,no,yes,no,partial_semantics,execution_backed_only,parity_followup
+src/combiner/trade_intent_adapter.py,intent_build_row_map,no,no,yes,no,OK,OK,engine_stamps_done
+src/combiner/run.py,Layer2_CLI_and_fixed_config,no,no,yes_when_execution,yes_when_legacy,OK,OK,engine_CLI_done
+src/combiner/sweep.py,Layer2_grid_sweep,no,no,yes_when_execution,yes_when_legacy,OK,OK,engine_CLI_done
+archive/legacy_combiner/reference_simulator.py,legacy_reference_numba,yes_for_legacy_path,no_for_mainline,no,yes_internal,reference_only,reference_only,preserve_until_parity
+src/combiner/legacy/simulator_legacy.py,not_present_primary,N/A,N/A,unknown,unknown,absent,absent,none
+src/walkforward/runner.py,Layer3_smoke_orchestration,no,no,via_combiner_run,yes_default_engine,OK,OK,document_default_legacy_reference

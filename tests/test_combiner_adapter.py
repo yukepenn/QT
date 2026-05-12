@@ -242,9 +242,12 @@ def test_trade_row_schema_has_version_stamps():
         priority=10.0,
         daily_trade_number=1,
         policy=pol,
+        engine="execution_backed",
     )
     assert row["combiner_adapter_version"] == COMBINER_ADAPTER_VERSION
+    assert row["adapter_semantics_version"] == COMBINER_ADAPTER_VERSION
     assert row["result_lineage"] == "mainline_layer2"
+    assert row["engine"] == "execution_backed"
     assert "execution_semantics_version" in row
 
 
@@ -298,6 +301,9 @@ def test_simulate_combiner_canonical_smoke_one_candidate():
     df = out["trades_df"]
     assert len(df) >= 1
     assert "combiner_adapter_version" in out
+    assert out.get("combiner_engine") == "execution_backed"
+    if len(df) and "engine" in df.columns:
+        assert (df["engine"] == "execution_backed").all()
 
 
 def test_legacy_numba_still_callable_with_minimal_stub():

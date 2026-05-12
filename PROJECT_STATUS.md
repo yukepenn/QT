@@ -10,7 +10,9 @@ QT is a **local, in-sample intraday strategy research framework** centered on **
 
 **Non-goals:** live trading, broker execution, portfolio optimizer, ML pipelines, SPY robustness, or profitability claims.
 
-**2026-05-11 (combiner canonical adapter v1):** Added **`src/combiner/trade_intent_adapter.py`** + **`src/combiner/adapter.py`** (`simulate_combiner_canonical` → **`simulate_trade_path`**); **`simulator.py`** lazy-loads **`archive/legacy_combiner/reference_simulator.py`** (with **`sys.modules`** registration) and keeps **`simulate_combiner_numba`** as a **legacy** alias; **`run.py` / `sweep.py`** gain **`--engine legacy|canonical`** and **`--dry-run`**; **`run_combiner_fixed_config(..., engine="legacy")`**; tests **125** `pytest`; curated **`src/research/results/combiner_adapter_v1/`**. **Next:** **`COMPLETE_COMBINER_ADAPTER_V2`**.
+**2026-05-11 (combiner_adapter_parity):** First-class engine labels — **`normalize_combiner_engine_label`** (`legacy` / `legacy_reference` / `numba` → **`legacy_reference`**; `canonical` / `execution_backed` → **`execution_backed`**); trade rows include **`engine`**, **`adapter_semantics_version`**; `run.py` / `sweep.py` validate `--engine`; **`src/research/run_combiner_adapter_parity.py`** writes synthetic parity under **`src/research/results/combiner_adapter_parity/`**; tests **133** `pytest`. **Next:** **`COMPLETE_COMBINER_ADAPTER_PARITY`** (real-slice parity harness).
+
+**2026-05-11 (combiner canonical adapter v1):** Added **`trade_intent_adapter.py`**, **`adapter.py`**, lazy legacy in **`simulator.py`**, CLI **`--engine`** (legacy|canonical) on **`run`/`sweep`**; curated **`combiner_adapter_v1/`**; tests **125** at v1 tip. **Next:** (superseded label) parity follow-up.
 
 **2026-05-11 (structure consolidation):** `src/backtest` six-file layout; `reference_simulator` archived; interim simulator stub superseded by adapter v1; tests **116** at consolidation tip. **Next:** (superseded) **`COMPLETE_COMBINER_ADAPTER`**.
 

@@ -6,7 +6,7 @@
 - **execution** — fill, exit, PnL accounting; reference `path.py`; `types.py` holds `TM_*` signal-array labels; future `fast_path.py` after parity.
 - **management** — exit plans and trade-management modes.
 - **backtest** — exactly six Python modules: `__init__.py`, `engine.py`, `sweep.py`, `strategy_runner.py`, `signal_adapter.py`, `metrics.py`.
-- **combiner** — candidate competition; **legacy** engine = lazy-loaded archived Numba; **canonical** engine = `adapter.simulate_combiner_canonical` → `execution.path`; reference under `archive/legacy_combiner/`.
+- **combiner** — candidate competition; **legacy_reference** engine = lazy-loaded archived Numba; **execution_backed** engine = `adapter.simulate_combiner_canonical` → `execution.path` (`canonical` remains a CLI alias). Reference: `archive/legacy_combiner/`.
 - **router / walkforward / portfolio / research / utils** — unchanged intent from architecture docs.
 - **archive** — historical code and deprecated sweep/combiner paths.
 

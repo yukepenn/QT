@@ -34,14 +34,14 @@ This document ties **research layers** to **module ownership** after the executi
 4. (Future) router adjusts allowed / priority / `management_mode`.
 5. Build `TradeIntent` → **`simulate_trade_path`** → aggregate `TradeResult`.
 
-**Current status:** Mainline Layer 2 has **two simulation engines**, selectable at CLI / API:
+**Current status:** Mainline Layer 2 has **two simulation engines**, selectable at CLI / API via `normalize_combiner_engine_label`:
 
-- **`legacy` (default):** lazy-loads the archived Numba reference under ``archive/legacy_combiner/reference_simulator.py`` (``simulate_combiner_numba`` / ``simulate_combiner_legacy_logs``).
-- **`canonical`:** ``simulate_combiner_canonical`` in ``src/combiner/adapter.py`` walks bars sequentially, uses ``selection`` / ``state`` for coarse guards, builds :class:`src.execution.types.TradeIntent`, and calls :func:`src.execution.path.simulate_trade_path` per selected trade.
+- **`legacy_reference` (default token `legacy`):** lazy-loads the archived Numba reference under ``archive/legacy_combiner/reference_simulator.py`` (``simulate_combiner_numba`` / ``simulate_combiner_legacy_logs``). Owns **legacy** accounting only.
+- **`execution_backed` (alias `canonical`):** ``simulate_combiner_canonical`` / ``simulate_combiner_execution_backed`` in ``src/combiner/adapter.py`` walks bars sequentially, uses ``selection`` / ``state`` for coarse guards, builds :class:`src.execution.types.TradeIntent`, and calls :func:`src.execution.path.simulate_trade_path` per selected trade.
 
-Parity between legacy matrix semantics and the sequential canonical adapter is **not** claimed yet (see ``src/research/results/combiner_adapter_v1/parity/``).
+Synthetic parity and drift notes: ``src/research/results/combiner_adapter_parity/parity/`` (legacy vs execution-backed on a toy matrix is **not** exact match yet).
 
-**Must not:** Implement independent intrabar fill/exit/PnL.
+**Must not:** Implement independent intrabar fill/exit/PnL in combiner selection code.
 
 ## Layer 3 — Fixed profile / OOW / WFO validation
 
@@ -50,9 +50,9 @@ Parity between legacy matrix semantics and the sequential canonical adapter is *
 **Pipeline (mainline target):**
 
 1. Load frozen Layer 2 + policy + semantics version stamps.
-2. Walkforward harness (`src/walkforward`) orchestrates runs; each trade path should go through **`simulate_trade_path`** once the Layer 2 adapter exists.
+2. Walkforward harness (`src/walkforward`) orchestrates runs; each trade path should go through **`simulate_trade_path`** when Layer 2 uses the **execution_backed** engine.
 
-**Current status:** Harnesses (`runner.py`, `fixed_system.py`, `folds.py`) still call **`src.combiner.run`**, which depends on the combiner simulator. Until Layer 2 is reimplemented, those entry points are **blocked** by the simulator stub. Layer 3 is pending Layer 2 migration.
+**Current status:** Harnesses (`runner.py`, `fixed_system.py`, `folds.py`) call **`src.combiner.run.run_combiner_fixed_config`**. Default engine remains **`legacy_reference`** until parity sign-off; **imports are not blocked** by `NotImplementedError`. Layer 3 full dry-runs were **not** executed in this task (no mini-WFO).
 
 **Must not:** Tune parameters inside fixed OOW checks; must not own trade accounting.
 

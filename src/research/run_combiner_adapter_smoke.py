@@ -1,4 +1,4 @@
-"""Optional tiny combiner smoke (canonical engine). Requires user paths."""
+"""Optional tiny combiner smoke (execution-backed engine). Requires user paths."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ if str(_ROOT) not in sys.path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Thin wrapper: forward to src.combiner.run with canonical + dry-run.")
+    p = argparse.ArgumentParser(description="Thin wrapper: forward to src.combiner.run with execution_backed + dry-run.")
     p.add_argument("--candidate-root", type=Path, required=True)
     p.add_argument("--config", type=Path, required=True)
     p.add_argument("--symbol", default="QQQ")
@@ -39,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
         "--data-dir",
         args.data_dir,
         "--engine",
-        "canonical",
+        "execution_backed",
         "--dry-run",
         "--no-save",
     ]

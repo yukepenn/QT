@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Research(combiner):** `combiner_adapter_parity` — `normalize_combiner_engine_label`, `execution_backed` / `legacy_reference` CLI tokens, trade-row `engine` + `adapter_semantics_version`, `run_combiner_adapter_parity` bundle, `tests/test_combiner_adapter_parity.py`; docs (`LAYER_FLOW`, structure summaries); tests **133** `pytest`.
+
 - **Research(combiner):** canonical Layer2 adapter v1 — `trade_intent_adapter.py`, `adapter.py` (`simulate_combiner_canonical`), lazy legacy in `simulator.py`, `run`/`sweep` `--engine legacy|canonical` + `--dry-run`, `validate_research_artifacts.py`, curated `combiner_adapter_v1/`; tests **125** `pytest`.
 
 - **Architecture:** consolidate mainline structure — monolithic `backtest/sweep.py`; grid/config helpers in `strategy_runner.py`; `BacktestConfig` on `engine.py`; `TM_*` in `execution/types.py` (strategies import there); removed `backtest` shims (`fast`, `execution`, `constants`, `sweep_*`, `config`, `backtest_config`); `prepare_backtest_arrays` on `combiner/precompute.py`; `reference_simulator` archived to `archive/legacy_combiner/`; `combiner/simulator.py` stub; tests **116** `pytest**.

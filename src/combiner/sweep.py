@@ -35,7 +35,11 @@ from src.combiner.precompute import (
 )
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
-from src.combiner.simulator import simulate_combiner_canonical, simulate_combiner_numba
+from src.combiner.simulator import (
+    normalize_combiner_engine_label,
+    simulate_combiner_canonical,
+    simulate_combiner_numba,
+)
 from src.utils.config_validation import validate_common_combiner_config
 
 
@@ -88,6 +92,11 @@ def _apply_combo_to_cfg(
     return out
 
 
+def _parse_engine_cli(s: str) -> str:
+    normalize_combiner_engine_label(s)
+    return str(s).strip()
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Layer 2 combiner sweep.")
     p.add_argument("--candidate-root", required=True)
@@ -105,7 +114,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--use-signal-cache", action="store_true")
     p.add_argument("--signal-cache-root", default=None)
     p.add_argument("--refresh-signal-cache", action="store_true")
-    p.add_argument("--engine", choices=("legacy", "canonical"), default="legacy")
+    p.add_argument(
+        "--engine",
+        type=_parse_engine_cli,
+        default="legacy",
+        metavar="ENGINE",
+        help="legacy|legacy_reference|canonical|execution_backed (default: legacy).",
+    )
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -236,7 +251,7 @@ def main(argv: list[str] | None = None) -> int:
         selected = select_candidate_set(raw_eligible, profile, top_per_strategy=tps)
         enabled = build_enabled_mask(universe, selected)
 
-        if str(args.engine).lower().strip() == "canonical":
+        if normalize_combiner_engine_label(args.engine) == "execution_backed":
             sim_out = simulate_combiner_canonical(
                 backtest_arrays=bt_arr,
                 candidate_arrays=mats,

@@ -36,12 +36,28 @@ from src.combiner.precompute import (
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.simulator import (
     CombinerConfig,
+    normalize_combiner_engine_label,
     simulate_combiner_canonical,
     simulate_combiner_legacy_logs,
     simulate_combiner_numba,
 )
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
 from src.utils.config_validation import validate_common_combiner_config
+
+def _parse_engine_cli(s: str) -> str:
+    normalize_combiner_engine_label(s)
+    return str(s).strip()
+
+
+def _stamp_legacy_engine_column(trades_df: Any) -> Any:
+    if not isinstance(trades_df, pd.DataFrame) or len(trades_df) == 0:
+        return trades_df
+    if "engine" in trades_df.columns:
+        return trades_df
+    out = trades_df.copy()
+    out["engine"] = "legacy_reference"
+    return out
+
 
 _COMPACT_TRADE_COLS_PREFERRED = [
     "session_date",
@@ -235,8 +251,8 @@ def run_combiner_fixed_config(
         comb_cfg = _combiner_cfg_from_yaml(mc)
         max_hold_s, recomp_s, qty_s, min_risk_s = _build_execution_arrays(merged, mc, comb_cfg)
 
-        eng = str(engine).lower().strip()
-        if eng == "canonical":
+        branch = normalize_combiner_engine_label(engine)
+        if branch == "execution_backed":
             sim_out = simulate_combiner_canonical(
                 backtest_arrays=bt_arr,
                 candidate_arrays=mats,
@@ -290,6 +306,10 @@ def run_combiner_fixed_config(
             )
 
         trades_df = sim_out["trades_df"]
+        if branch == "legacy_reference":
+            trades_df = _stamp_legacy_engine_column(trades_df)
+            sim_out = dict(sim_out)
+            sim_out["trades_df"] = trades_df
         log_df = sim_out["candidate_signal_log_df"]
         rej_df = sim_out["rejected_signals_df"]
         rej_counts = sim_out.get("rejection_counts")
@@ -442,7 +462,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Ignore existing on-disk signal cache entries and overwrite.",
     )
-    p.add_argument("--engine", choices=("legacy", "canonical"), default="legacy")
+    p.add_argument(
+        "--engine",
+        type=_parse_engine_cli,
+        default="legacy",
+        metavar="ENGINE",
+        help="legacy|legacy_reference|canonical|execution_backed (default: legacy). "
+        "execution_backed uses simulate_trade_path; legacy_reference uses archived Numba.",
+    )
     p.add_argument(
         "--dry-run",
         action="store_true",
@@ -598,8 +625,8 @@ def main(argv: list[str] | None = None) -> int:
     }
     meta = csm.meta_arrays
 
-    eng = str(args.engine).lower().strip()
-    if eng == "canonical":
+    branch = normalize_combiner_engine_label(args.engine)
+    if branch == "execution_backed":
         sim_out = simulate_combiner_canonical(
             backtest_arrays=bt_arr,
             candidate_arrays=mats,
@@ -633,6 +660,8 @@ def main(argv: list[str] | None = None) -> int:
             min_risk_per_candidate=min_risk,
             enabled_mask=enabled,
         )
+        sim_out = dict(sim_out)
+        sim_out["trades_df"] = _stamp_legacy_engine_column(sim_out["trades_df"])
     else:
         sim_out = simulate_combiner_numba(
             backtest_arrays=bt_arr,
@@ -651,6 +680,8 @@ def main(argv: list[str] | None = None) -> int:
             active_start=ast,
             active_end=aen,
         )
+        sim_out = dict(sim_out)
+        sim_out["trades_df"] = _stamp_legacy_engine_column(sim_out["trades_df"])
 
     trades_df = sim_out["trades_df"]
     equity_df = sim_out["equity_df"]

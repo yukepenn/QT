@@ -1,0 +1,2 @@
+parity_label,legacy_trade_count,execution_trade_count,legacy_total_r,execution_total_r,notes
+PARITY_PASS_WITH_EXPLAINED_DIFFS,0,1,0.000000,2.000000,Synthetic single-candidate uptrend; structural differences documented in parity_known_differences.md
