@@ -1,0 +1,7 @@
+component,owns_accounting,delegates_to,notes
+precompute,no,read_bars+features+signals,signal matrices only
+selection,no,n/a,priority only
+state,no,n/a,counts and cooldown indices
+adapter,no,execution.path,TradeIntent build + row map
+legacy_numba,yes,self contained Numba,archive reference only
+canonical_path,no,simulate_trade_path,reference semantics

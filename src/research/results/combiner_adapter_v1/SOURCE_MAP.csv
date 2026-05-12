@@ -1,0 +1,8 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+src/combiner/adapter.py,Canonical Layer2 loop,yes,,no,no,Sequential simulate_combiner_canonical
+src/combiner/trade_intent_adapter.py,TradeIntent bridge,yes,,no,no,No PnL math
+src/combiner/simulator.py,Legacy lazy + exports,yes,,no,no,Registers legacy module in sys.modules
+src/combiner/run.py,CLI + fixed config,yes,,no,yes for full run,needs local parquet for real runs
+src/combiner/sweep.py,Layer2 sweep,yes,,no,yes for full run,
+tests/test_combiner_adapter.py,Synthetic tests,yes,,no,no,
+src/research/results/combiner_adapter_v1/*.md,Decision + design,yes,,yes,no,Curated in git

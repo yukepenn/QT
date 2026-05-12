@@ -34,7 +34,12 @@ This document ties **research layers** to **module ownership** after the executi
 4. (Future) router adjusts allowed / priority / `management_mode`.
 5. Build `TradeIntent` → **`simulate_trade_path`** → aggregate `TradeResult`.
 
-**Current status:** Mainline Layer 2 accounting is **not implemented** yet. `src/combiner/simulator.py` exposes rejection/exit code constants and raises **`NotImplementedError`** for `simulate_combiner_numba` / `simulate_combiner_legacy_logs`. The historical Numba implementation is archived as **`archive/legacy_combiner/reference_simulator.py`**.
+**Current status:** Mainline Layer 2 has **two simulation engines**, selectable at CLI / API:
+
+- **`legacy` (default):** lazy-loads the archived Numba reference under ``archive/legacy_combiner/reference_simulator.py`` (``simulate_combiner_numba`` / ``simulate_combiner_legacy_logs``).
+- **`canonical`:** ``simulate_combiner_canonical`` in ``src/combiner/adapter.py`` walks bars sequentially, uses ``selection`` / ``state`` for coarse guards, builds :class:`src.execution.types.TradeIntent`, and calls :func:`src.execution.path.simulate_trade_path` per selected trade.
+
+Parity between legacy matrix semantics and the sequential canonical adapter is **not** claimed yet (see ``src/research/results/combiner_adapter_v1/parity/``).
 
 **Must not:** Implement independent intrabar fill/exit/PnL.
 

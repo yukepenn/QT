@@ -1,0 +1,8 @@
+check,status,notes
+compileall,OK,
+pytest,OK,125 passed post-change
+loader_list,OK,35 strategies
+backtest_sweep_smoke,OK,
+validate_pipeline,OK,
+combiner_run_help,OK,engine+dry-run flags
+tracked_heavy,OK,no matches

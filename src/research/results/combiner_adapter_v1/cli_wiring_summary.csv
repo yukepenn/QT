@@ -1,0 +1,5 @@
+entrypoint,flag,default,canonical_behavior
+combiner.run,--engine,legacy,simulate_combiner_canonical
+combiner.run,--dry-run,off,skip disk writes
+combiner.sweep,--engine,legacy,per combo simulation
+run_combiner_fixed_config,engine kwarg,legacy,optional canonical

@@ -8,65 +8,66 @@
 | Tip | After push, verify `git log -1 --oneline` matches `origin/main`. |
 | Working tree | Stage curated paths only — **never** `git add .` |
 
-## B. Structure consolidation
+## B. Validation
 
-- Folded **`sweep_types`**, **`sweep_grid`**, **`sweep_io`**, **`sweep_results`**, **`config`**, **`backtest_config`** into **`src/backtest/sweep.py`** and **`strategy_runner.py`** / **`engine.py`** as needed.
-- **`TM_*`** live in **`src/execution/types.py`**; strategies import from there.
-- Removed **`src/backtest/fast.py`**, **`execution.py`**, **`constants.py`** from active tree.
-- **`prepare_backtest_arrays`** inlined into **`src/combiner/precompute.py`**; deleted **`src/combiner/bar_arrays.py`**.
-- **`src/combiner/reference_simulator.py`** → **`archive/legacy_combiner/reference_simulator.py`**.
-- **`src/combiner/simulator.py`** is a **stub** (`NotImplementedError` for Numba entry points).
-
-## C. Active `src/backtest` files
-
-`__init__.py`, `engine.py`, `sweep.py`, `signal_adapter.py`, `strategy_runner.py`, `metrics.py` only.
-
-## D. Archived files
-
-- **`archive/legacy_combiner/reference_simulator.py`** — historical Numba Layer 2 simulator.
-
-## E. Backtest / sweep
-
-- CLI: `--help` (via no-args), `--smoke`, `--pipeline-help`, `--validate-pipeline`, `--strategy`, `--symbol`, `--asset`, `--start`, `--end`, `--data-root`, `--config`, `--grid`, `--output-root`, `--max-combos`, `--no-save`, `--dry-run`.
-- Artifacts: **`sweep_results.csv`**, **`sweep_summary.md`**, **`sweep_smoke.csv`**, **`sweep_meta.json`** (real runs: manifest merged into **`sweep_meta.json`**; no separate **`run_manifest.json`**).
-- Schema: **`result_lineage=mainline`**, **`engine=reference`**, **`execution_semantics_version`**, metrics columns per **`tests/test_sweep_result_schema.py`**.
-
-## F. Strategy runner
-
-- **`FeatureFrameCache`**, grid/YAML merge helpers, **`validate_pipeline`** (alias **`validate_canonical_pipeline`** kept for compatibility); pipeline report key **`pipeline_signal_ready`** (replaces **`canonical_signal_ready`** in new output).
-
-## G. Combiner
-
-- **`simulate_combiner_numba`** / **`simulate_combiner_legacy_logs`** raise **`NotImplementedError`** until Layer 2 is rebuilt on **`execution.path`**.
-- **`run.py`**, **`sweep.py`**, **`postprocess.py`** still import simulator symbols; runtime combiner runs will fail until adapter work lands.
-
-## H. Docs renamed / added
-
-- Added **`docs/STRUCTURE_CONSOLIDATION_PLAN.md`**, **`docs/STRUCTURE_CONSOLIDATION_INVENTORY.csv`**.
-- Updated **`docs/PROJECT_STRUCTURE.md`**, **`docs/FILE_OWNERSHIP.md`**, **`docs/MAINLINE_STRUCTURE_SUMMARY.md`**, **`docs/LAYER_FLOW.md`**.
-
-## I. Validation
-
-| Check | Result |
-|--------|--------|
+| Check | Result (post combiner adapter v1) |
+|--------|-------------------------------------|
 | `python -m compileall -q src` | OK |
-| `python -m pytest -q` | **116 passed** |
-| `python -m src.strategies.loader --list` | **35** strategies (unchanged contract) |
+| `python -m pytest -q` | **125** passed |
+| `python -m src.strategies.loader --list` | **35** strategies |
 | `python -m src.backtest.sweep --smoke` | OK |
 | `python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend` | exit 0 |
-| `tests/test_backtest_package_layout.py` | backtest dir allowlist |
-| `tests/test_mainline_no_legacy_imports.py` | skips `src/**/Archive/**` |
+| `python -m src.combiner.run --help` | shows `--engine`, `--dry-run` |
 
-## J. Explicit non-runs
+## C. Task scope
 
-No WFO, mini-WFO, live/paper, SPY research, broad Layer 2/3, Champion migration, broad historical sweeps, new strategies, short/scalp research, performance claims, trade-level artifact commits.
+Execution-backed **Layer 2 combiner adapter** (`TradeIntent` → `simulate_trade_path`) with **lazy legacy** Numba compatibility; CLI `--engine`; synthetic tests; curated research bundle under `src/research/results/combiner_adapter_v1/`.
 
-## K. Risks / caveats
+## D. Starting architecture state
 
-- **`src/combiner/`** still contains **`postprocess.py`**, **`behavior.py`**, **`diagnostics.py`** beyond the long-term ten-file target; trimming is a follow-up.
-- Walkforward / combiner **`run`** paths are blocked until simulator is reimplemented.
-- Real-symbol sweep optional smoke against local QQQ parquet was **not** run in CI.
+- Prior: `simulate_combiner_numba` stubbed → `NotImplementedError` blocked `run.py` / `sweep.py`.
+- Legacy reference only on disk under `archive/legacy_combiner/reference_simulator.py`.
+
+## E. Adapter implementation
+
+- `src/combiner/trade_intent_adapter.py` — build intent, policy bridge, `trade_result_to_combiner_row`.
+- `src/combiner/adapter.py` — `simulate_combiner_canonical` (sequential loop + selection/state).
+- `src/combiner/simulator.py` — lazy legacy load (`sys.modules` registration for dataclasses); `simulate_combiner_numba` → legacy alias; `simulate_combiner_canonical` export.
+- `src/combiner/run.py`, `src/combiner/sweep.py` — `--engine legacy|canonical`; `run_combiner_fixed_config(..., engine="legacy")` default.
+- `src/research/validate_research_artifacts.py` — lightweight CSV scan helper.
+- `src/research/run_combiner_adapter_smoke.py` — thin canonical+dry-run forwarder.
+
+## F. Tests / smoke / parity
+
+- `tests/test_combiner_adapter.py` — synthetic target/stop/max-hold, schema stamps, minimal canonical combiner smoke.
+- Simulator tests updated for lazy legacy + canonical export.
+- Real QQQ smoke: **not run** (`smoke_not_run_reason.md`).
+- Parity legacy vs canonical: **PARITY_NOT_RUN** (`parity/`).
+
+## G. Layer2 / Layer3 reachability
+
+- Layer2 legacy path **restored** (no `NotImplementedError` on import/call when archive present).
+- Layer2 canonical path **available** via `--engine canonical` or `engine=` kwarg.
+- Layer3 / mini-WFO: **not run**; walkforward still defaults to **legacy** engine until parity.
+
+## H. Decision
+
+**`COMPLETE_COMBINER_ADAPTER_V2`**
+
+## I. Explicit non-runs / risks
+
+No WFO, mini-WFO, live/paper, SPY, broad Layer2 sweeps, new strategies, Champion YAML edits, raw trade commits, production router/exit-management.
+
+Risks: canonical sequential adapter **does not** replicate full legacy matrix semantics; switching Layer3 to canonical without parity is unsafe.
+
+## J. Files changed (high level)
+
+`src/combiner/{adapter,trade_intent_adapter,simulator,run,sweep}.py`, `tests/test_combiner_adapter.py`, simulator tests, `docs/{LAYER_FLOW,FILE_OWNERSHIP,MAINLINE_STRUCTURE_SUMMARY,PROJECT_STRUCTURE}.md`, `src/research/*`, `src/research/results/combiner_adapter_v1/**`, status docs.
+
+## K. Local-only artifacts
+
+None committed beyond small curated CSV/MD under `combiner_adapter_v1/`.
 
 ## L. Recommended next step (exactly one)
 
-**`COMPLETE_COMBINER_ADAPTER`**
+**`COMPLETE_COMBINER_ADAPTER_V2`**

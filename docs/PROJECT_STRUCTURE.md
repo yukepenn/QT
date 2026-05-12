@@ -6,7 +6,7 @@
 - **execution** — fill, exit, PnL accounting; reference `path.py`; `types.py` holds `TM_*` signal-array labels; future `fast_path.py` after parity.
 - **management** — exit plans and trade-management modes.
 - **backtest** — exactly six Python modules: `__init__.py`, `engine.py`, `sweep.py`, `strategy_runner.py`, `signal_adapter.py`, `metrics.py`.
-- **combiner** — candidate competition; mainline Layer 2 simulator pending (`simulator.py` stub); archived Numba reference under `archive/legacy_combiner/`.
+- **combiner** — candidate competition; **legacy** engine = lazy-loaded archived Numba; **canonical** engine = `adapter.simulate_combiner_canonical` → `execution.path`; reference under `archive/legacy_combiner/`.
 - **router / walkforward / portfolio / research / utils** — unchanged intent from architecture docs.
 - **archive** — historical code and deprecated sweep/combiner paths.
 
@@ -16,4 +16,4 @@ Only the six files above. Anything else must merge into one of them, move to `ex
 
 ## Policy: `src/combiner` (active mainline)
 
-Target set: `__init__.py`, `candidate.py`, `precompute.py`, `signal_cache.py`, `selection.py`, `state.py`, `simulator.py`, `run.py`, `sweep.py`, `metrics.py`. Extra modules (for example `postprocess.py`, `behavior.py`, `diagnostics.py`) remain until a follow-up migration; they must not import `archive/` or legacy packages.
+Target set: `__init__.py`, `candidate.py`, `precompute.py`, `signal_cache.py`, `selection.py`, `state.py`, `simulator.py`, `run.py`, `sweep.py`, `metrics.py`, plus **`adapter.py`** and **`trade_intent_adapter.py`** for the execution-backed Layer 2 path. Extra modules (for example `postprocess.py`, `behavior.py`, `diagnostics.py`) remain until a follow-up migration; active `src/` must not `import archive` as a package root pattern.

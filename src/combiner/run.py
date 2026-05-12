@@ -34,7 +34,12 @@ from src.combiner.precompute import (
     resolve_precompute_signal_cache_settings,
 )
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
-from src.combiner.simulator import CombinerConfig, simulate_combiner_legacy_logs, simulate_combiner_numba
+from src.combiner.simulator import (
+    CombinerConfig,
+    simulate_combiner_canonical,
+    simulate_combiner_legacy_logs,
+    simulate_combiner_numba,
+)
 from src.strategies.strategy.fast_utils import get_min_risk_per_share
 from src.utils.config_validation import validate_common_combiner_config
 
@@ -136,6 +141,7 @@ def run_combiner_fixed_config(
     save_monthly_breakdown: bool = True,
     save_equity: bool = False,
     tag: str = "fixed",
+    engine: str = "legacy",
 ) -> dict[str, Any]:
     """Run Layer 2 combiner for one fixed configuration and optional cost-stress slips.
 
@@ -229,7 +235,26 @@ def run_combiner_fixed_config(
         comb_cfg = _combiner_cfg_from_yaml(mc)
         max_hold_s, recomp_s, qty_s, min_risk_s = _build_execution_arrays(merged, mc, comb_cfg)
 
-        if detailed:
+        eng = str(engine).lower().strip()
+        if eng == "canonical":
+            sim_out = simulate_combiner_canonical(
+                backtest_arrays=bt_arr,
+                candidate_arrays=mats,
+                candidates=merged,
+                meta_arrays=meta,
+                combiner_cfg=comb_cfg,
+                enabled_mask=enabled,
+                max_hold_per_candidate=max_hold_s,
+                recompute_target=recomp_s,
+                quantity_per_candidate=qty_s,
+                min_risk_per_candidate=min_risk_s,
+                priority_float=pri,
+                score_float=score,
+                rank_int=rank,
+                active_start=ast,
+                active_end=aen,
+            )
+        elif detailed:
             sim_out = simulate_combiner_legacy_logs(
                 backtest_arrays=bt_arr,
                 candidate_arrays=mats,
@@ -417,6 +442,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Ignore existing on-disk signal cache entries and overwrite.",
     )
+    p.add_argument("--engine", choices=("legacy", "canonical"), default="legacy")
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run simulation and print metrics; skip writing trades/metrics to disk.",
+    )
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -531,7 +562,7 @@ def main(argv: list[str] | None = None) -> int:
 
     run_dir: Path | None = None
     profile_csv: Path | None = None
-    if not args.no_save:
+    if not args.no_save and not args.dry_run:
         ts_pre = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         tag_pre = _safe_tag(args.tag) if args.tag else "run"
         run_dir = out_root / f"run_{ts_pre}_{tag_pre}"
@@ -567,7 +598,26 @@ def main(argv: list[str] | None = None) -> int:
     }
     meta = csm.meta_arrays
 
-    if args.detailed:
+    eng = str(args.engine).lower().strip()
+    if eng == "canonical":
+        sim_out = simulate_combiner_canonical(
+            backtest_arrays=bt_arr,
+            candidate_arrays=mats,
+            candidates=merged,
+            meta_arrays=meta,
+            combiner_cfg=comb_cfg,
+            enabled_mask=enabled,
+            max_hold_per_candidate=max_hold,
+            recompute_target=recomp,
+            quantity_per_candidate=qty,
+            min_risk_per_candidate=min_risk,
+            priority_float=pri,
+            score_float=score,
+            rank_int=rank,
+            active_start=ast,
+            active_end=aen,
+        )
+    elif args.detailed:
         sim_out = simulate_combiner_legacy_logs(
             backtest_arrays=bt_arr,
             candidate_arrays=mats,
@@ -621,7 +671,7 @@ def main(argv: list[str] | None = None) -> int:
         execution_config=exec_cfg,
     )
 
-    if not args.no_save:
+    if not args.no_save and not args.dry_run:
         assert run_dir is not None
         trades_df.to_csv(run_dir / "trades.csv", index=False)
         equity_df.to_csv(run_dir / "equity.csv", index=False)
@@ -671,7 +721,7 @@ def main(argv: list[str] | None = None) -> int:
         "rejected_by_reason_json",
     )
     print("metrics:", json.dumps({k: metrics.get(k) for k in pick_keys}, indent=2, default=str), flush=True)
-    if not args.no_save:
+    if not args.no_save and not args.dry_run:
         print("output:", run_dir.resolve(), flush=True)
     return 0
 

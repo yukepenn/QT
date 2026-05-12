@@ -1,0 +1,6 @@
+key,value
+git_tip_before,4da3ed1
+next_handoff_step_before,COMPLETE_COMBINER_ADAPTER
+simulator_state_before,stub_NotImplementedError_then_restored
+legacy_path,archive/legacy_combiner/reference_simulator.py
+pytest_count_before,116

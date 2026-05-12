@@ -1,0 +1,3 @@
+metric,value
+artifact_rows_scanned,0
+note,only_csv_under_combiner_adapter_v1_at_commit_time

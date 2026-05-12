@@ -9,7 +9,7 @@ QT is a **local, research-only** codebase for studying **QQQ 1-minute regular-tr
 
 ## 2. Target architecture (reset in progress)
 
-The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** accounting is **pending**; `src/combiner/simulator.py` is a stub, and the historical Numba simulator is archived under **`archive/legacy_combiner/reference_simulator.py`**.
+The codebase uses a **single reference execution accounting layer** under `src/execution/` (including **materialization** of entry fill, initial risk, and targets from raw `TradeIntent`). The **backtest** package provides `run_strategy_backtest` (reference single-strategy adapter) and a **Layer 1 sweep** entrypoint (`python -m src.backtest.sweep`): **`--smoke`** runs a deterministic synthetic grid; **`--validate-pipeline`** checks wiring without accounting. Historical Numba sweep/backtest code lives under **`archive/legacy_backtest/`** (not imported by mainline). **Layer 2 combiner** supports **`--engine legacy`** (lazy-loaded archived Numba reference under **`archive/legacy_combiner/`**) and **`--engine canonical`** (`simulate_combiner_canonical` → `execution.path`); default remains **legacy** for compatibility until parity hardening.
 
 | Layer | Role |
 |-------|------|

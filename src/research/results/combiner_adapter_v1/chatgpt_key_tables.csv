@@ -1,0 +1,5 @@
+section,item,metric,value,interpretation
+git,tip,sha,4da3ed1,baseline before adapter commit
+tests,pytest,count,125,includes new adapter tests
+engine,cli,flags,--engine legacy|canonical,user-selectable Layer2 path
+parity,harness,status,PARITY_NOT_RUN,needs shared slice harness

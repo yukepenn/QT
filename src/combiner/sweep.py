@@ -35,7 +35,7 @@ from src.combiner.precompute import (
 )
 from src.combiner.metrics import execution_config_from_parts, summarize_combiner
 from src.combiner.run import _build_execution_arrays, _combiner_cfg_from_yaml, _safe_tag
-from src.combiner.simulator import simulate_combiner_legacy_logs, simulate_combiner_numba
+from src.combiner.simulator import simulate_combiner_canonical, simulate_combiner_numba
 from src.utils.config_validation import validate_common_combiner_config
 
 
@@ -105,6 +105,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--use-signal-cache", action="store_true")
     p.add_argument("--signal-cache-root", default=None)
     p.add_argument("--refresh-signal-cache", action="store_true")
+    p.add_argument("--engine", choices=("legacy", "canonical"), default="legacy")
     args = p.parse_args(argv)
 
     cwd = Path.cwd()
@@ -235,23 +236,42 @@ def main(argv: list[str] | None = None) -> int:
         selected = select_candidate_set(raw_eligible, profile, top_per_strategy=tps)
         enabled = build_enabled_mask(universe, selected)
 
-        sim_out = simulate_combiner_numba(
-            backtest_arrays=bt_arr,
-            candidate_arrays=mats,
-            candidates=universe,
-            meta_arrays=meta,
-            combiner_cfg=comb_cfg,
-            enabled_mask=enabled,
-            max_hold_per_candidate=max_hold,
-            recompute_target=recomp,
-            quantity_per_candidate=qty,
-            min_risk_per_candidate=min_risk,
-            priority_float=pri,
-            score_float=score,
-            rank_int=rank,
-            active_start=ast,
-            active_end=aen,
-        )
+        if str(args.engine).lower().strip() == "canonical":
+            sim_out = simulate_combiner_canonical(
+                backtest_arrays=bt_arr,
+                candidate_arrays=mats,
+                candidates=universe,
+                meta_arrays=meta,
+                combiner_cfg=comb_cfg,
+                enabled_mask=enabled,
+                max_hold_per_candidate=max_hold,
+                recompute_target=recomp,
+                quantity_per_candidate=qty,
+                min_risk_per_candidate=min_risk,
+                priority_float=pri,
+                score_float=score,
+                rank_int=rank,
+                active_start=ast,
+                active_end=aen,
+            )
+        else:
+            sim_out = simulate_combiner_numba(
+                backtest_arrays=bt_arr,
+                candidate_arrays=mats,
+                candidates=universe,
+                meta_arrays=meta,
+                combiner_cfg=comb_cfg,
+                enabled_mask=enabled,
+                max_hold_per_candidate=max_hold,
+                recompute_target=recomp,
+                quantity_per_candidate=qty,
+                min_risk_per_candidate=min_risk,
+                priority_float=pri,
+                score_float=score,
+                rank_int=rank,
+                active_start=ast,
+                active_end=aen,
+            )
         trades_df = sim_out["trades_df"]
         rej_counts = sim_out.get("rejection_counts")
         empty_log = pd.DataFrame()

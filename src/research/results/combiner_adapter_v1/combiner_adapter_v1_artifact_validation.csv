@@ -1,0 +1,11 @@
+path,status,notes
+adapter_design.csv,OK,
+baseline_inventory.csv,OK,
+baseline_validation.csv,OK,
+chatgpt_key_tables.csv,OK,
+cli_wiring_summary.csv,OK,
+combiner_adapter_v1_artifact_validation.csv,OK,
+combiner_adapter_v1_key_findings.csv,OK,
+layer_reachability.csv,OK,
+parity\parity_summary.csv,OK,
+SOURCE_MAP.csv,OK,

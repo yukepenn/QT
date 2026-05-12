@@ -1,13 +1,16 @@
-"""Combiner simulation (mainline pending).
+"""Combiner simulation: legacy Numba reference (lazy) + execution-backed canonical adapter.
 
-Archived Numba reference implementation lives under ``archive/legacy_combiner/``.
-New Layer 2 accounting should use :class:`src.execution.types.TradeIntent` and
-:func:`src.execution.path.simulate_trade_path`.
+Legacy accounting lives in ``archive/legacy_combiner/reference_simulator.py`` and is loaded
+on demand. Mainline Layer 2 trades should use :func:`simulate_combiner_canonical`, which
+delegates exits to :func:`src.execution.path.simulate_trade_path`.
 """
 
 from __future__ import annotations
 
+import importlib.util
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 # Rejection reason codes (signal evaluation)
@@ -85,19 +88,43 @@ class CombinerConfig:
     min_risk_per_share: float = 0.0
 
 
-def _pending_msg() -> str:
-    return (
-        "Layer 2 combiner Numba simulator is not in mainline src; see "
-        "archive/legacy_combiner/reference_simulator.py for the historical reference."
-    )
+_LEGACY_PATH = Path(__file__).resolve().parents[2] / "archive" / "legacy_combiner" / "reference_simulator.py"
+_legacy_spec = importlib.util.spec_from_file_location("combiner_reference_simulator", _LEGACY_PATH)
+_legacy_mod: Any = None
 
 
-def simulate_combiner_numba(*_args: Any, **_kwargs: Any) -> Any:
-    raise NotImplementedError(_pending_msg())
+def _legacy_reference() -> Any:
+    global _legacy_mod
+    if _legacy_mod is None:
+        if not _LEGACY_PATH.is_file():
+            raise FileNotFoundError(f"legacy combiner reference missing: {_LEGACY_PATH}")
+        assert _legacy_spec and _legacy_spec.loader
+        _legacy_mod = importlib.util.module_from_spec(_legacy_spec)
+        sys.modules[str(_legacy_spec.name)] = _legacy_mod
+        _legacy_spec.loader.exec_module(_legacy_mod)
+    return _legacy_mod
 
 
-def simulate_combiner_legacy_logs(*_args: Any, **_kwargs: Any) -> Any:
-    raise NotImplementedError(_pending_msg())
+def simulate_combiner_legacy_numba(**kwargs: Any) -> Any:
+    """Archived Numba path (metrics-oriented)."""
+    return _legacy_reference().simulate_combiner_numba(**kwargs)
+
+
+def simulate_combiner_legacy_logs(**kwargs: Any) -> Any:
+    """Archived detailed logs path."""
+    return _legacy_reference().simulate_combiner_legacy_logs(**kwargs)
+
+
+def simulate_combiner_numba(**kwargs: Any) -> Any:
+    """Backward-compatible alias for :func:`simulate_combiner_legacy_numba`."""
+    return simulate_combiner_legacy_numba(**kwargs)
+
+
+def simulate_combiner_canonical(**kwargs: Any) -> Any:
+    """Execution-backed Layer 2 loop (import lazy to avoid cycles)."""
+    from src.combiner.adapter import simulate_combiner_canonical as _fn
+
+    return _fn(**kwargs)
 
 
 __all__ = [
@@ -129,6 +156,8 @@ __all__ = [
     "REJ_RISK_TOO_SMALL",
     "REJ_SESSION_BOUNDARY_NO_ENTRY",
     "REJ_WRONG_TIME_WINDOW",
+    "simulate_combiner_canonical",
     "simulate_combiner_legacy_logs",
+    "simulate_combiner_legacy_numba",
     "simulate_combiner_numba",
 ]

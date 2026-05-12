@@ -1,0 +1,7 @@
+layer,status,notes
+Layer1_canonical_sweep_smoke,OK,pytest + CLI
+Layer2_canonical_adapter_smoke,OK,tests/test_combiner_adapter.py
+Layer2_legacy_import,OK,lazy legacy module load
+Layer3_dry_run,NOT_RUN,no mini-WFO per constraints
+walkforward_import,OK,runner imports run_combiner_fixed_config
+exit_overlay_v3,NOT_RUN,depends on canonical trade panels + policy alignment later
