@@ -1,0 +1,14 @@
+key,value
+git_tip_before_work,fce5dda
+branch,main
+next_handoff_decision_before,DESIGN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD
+execution_backed_status,"Hardened Layer2 (session_date guard, cooldown reset, min_risk_per_share policy, scale-out remaining qty); mainline Layer1 uses simulate_trade_path via engine.run_strategy_backtest"
+layer1_sweep_cli,src/backtest/sweep.py
+layer1_engine,src/backtest/engine.py
+layer1_runner,src/backtest/strategy_runner.py
+data_root_repo_local,data/raw/ibkr
+qqq_parquet_years,"2020,2021,2022,2023,2024,2025,2026 (partial through committed months)"
+strategy_loader_count,35
+pytest_collected,149
+result_root_this_task,src/research/results/layer1_execution_backed_controlled
+non_goals,"No broad Layer1/Layer2/Layer3; no WFO/mini/full; no live/paper; no SPY sweeps; no router; no new strategy families; no signal semantic edits; no YAML champion edits; no legacy delete; no Numba fast_path impl; no second PnL engine; no D: or external data roots in artifacts; no raw trades/top_runs/local_rows commits"

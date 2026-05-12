@@ -1,0 +1,9 @@
+artifact,required_in_git,purpose
+sweep_results.csv,yes,per-combo metrics from sweep writer
+selected_candidates_summary.csv,yes,post-selection aggregate
+selected_candidates/*.yaml,yes (next run),frozen configs only after gates
+selected_candidates_index.csv,yes,candidate_id to path
+candidate_rejects_summary.csv,yes,gate failures
+feature_config_inventory.csv,yes,dedup feature hashes
+strategy_grid_inventory.csv,yes,grid file + sha
+execution_policy_inventory.csv,yes,policy parameters + semantics version

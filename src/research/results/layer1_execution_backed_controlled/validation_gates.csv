@@ -1,0 +1,14 @@
+gate_id,phase,criterion,severity
+pre_compile,pre,compileall OK,blocker
+pre_pytest,pre,pytest OK,blocker
+pre_loader,pre,loader lists PA GAP CCI,blocker
+pre_data,pre,data/raw/ibkr readable for QQQ window,blocker
+pre_dry_run,pre,sweep --dry-run succeeds for each strategy short window,blocker
+run_no_heavy_git,run,no forbidden paths staged,blocker
+run_output_small,run,use runs/ subdir + max-combos caps,warning
+run_complete_or_clear,run,each sweep exits 0 or documented error,blocker
+post_schema,post,sweep_results columns include semantics + hashes,blocker
+post_stamp,post,candidate YAML includes execution + data stamps (next task),blocker
+post_no_archive_active,post,no new candidate depends on Archive as live source,blocker
+post_no_d_paths,post,no D: in committed text,blocker
+post_artifact_validate,post,validate_research_artifacts on curated root,blocker

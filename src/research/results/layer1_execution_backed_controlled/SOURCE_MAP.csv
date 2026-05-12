@@ -1,0 +1,34 @@
+file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
+baseline_inventory.md,baseline narrative,yes,,yes,no,
+baseline_inventory.csv,baseline keys,yes,11,no,no,
+baseline_validation.md,validation narrative,yes,,yes,no,
+baseline_validation.csv,validation matrix,yes,13,no,no,
+layer1_pipeline_state.md,pipeline prose,yes,,yes,no,
+layer1_pipeline_state.csv,pipeline map,yes,13,no,no,
+data_design.md,data policy,yes,,yes,no,
+data_design.csv,data window,yes,2,no,no,
+strategy_selection_design.md,3 strategies,yes,,yes,no,
+strategy_selection_design.csv,strategy table,yes,4,no,no,
+grid_design.md,grid caps,yes,,yes,no,
+grid_design.csv,grid table,yes,4,no,no,
+candidate_artifact_schema.md,YAML contract,yes,,yes,no,
+candidate_artifact_schema.csv,artifact list,yes,8,no,no,
+execution_policy_design.md,policy alignment,yes,,yes,no,
+execution_policy_design.csv,policy table,yes,11,no,no,
+run_commands.md,command reference,yes,,yes,no,
+run_commands.ps1,PowerShell runbook,yes,,no,no,real sweeps commented out
+run_commands.sh,bash runbook,yes,,no,no,run from repo root
+cli_capability_check.md,CLI Q&A,yes,,yes,no,
+cli_capability_check.csv,CLI matrix,yes,7,no,no,
+runner_gap_analysis.md,gap narrative,yes,,yes,no,
+validation_gates.md,gates prose,yes,,yes,no,
+validation_gates.csv,gates matrix,yes,12,no,no,
+layer1_execution_backed_controlled_decision.md,decision,yes,,yes,no,
+layer1_execution_backed_controlled_summary.md,executive summary,yes,,yes,no,
+layer1_execution_backed_controlled_key_findings.csv,findings,yes,7,no,no,
+CHATGPT_REVIEW_BUNDLE.md,external review,yes,,yes,no,
+chatgpt_key_tables.csv,key metrics,yes,,no,no,
+SOURCE_MAP.csv,this table,yes,28,no,no,row_count excludes self
+selected_candidates/README.md,reserved dir,yes,,yes,no,
+layer1_execution_backed_controlled_artifact_validation.csv,artifact validator output,yes,15,no,no,14 listed paths + header
+src/backtest/sweep.py,Layer1 sweep CLI + real-symbol sweep,yes,,no,no,__main__ guard invokes main() for python -m

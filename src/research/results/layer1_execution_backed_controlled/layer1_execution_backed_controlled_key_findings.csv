@@ -1,0 +1,7 @@
+finding_id,severity,summary
+F001,info,Layer1 backtest uses simulate_trade_path exclusively via engine.py
+F002,low,sweep CSV engine column is literal reference not execution_backed label
+F003,medium,engine.run_strategy_backtest should thread risk.min_risk_per_share into default_intraday_policy for parity with combiner hardening
+F004,info,Focused YAML grids for PA and GAP exceed 64 combos raw; caps required
+F005,info,CCI focused grid is 32 combos fits full first pass
+F006,low,sweep.py lacked __main__ guard so python -m did not run main; fixed in this session

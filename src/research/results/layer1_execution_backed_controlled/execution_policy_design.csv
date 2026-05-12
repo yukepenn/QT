@@ -1,0 +1,12 @@
+field,controlled_value,source_module,notes
+entry_timing,next_bar_open,src/backtest/engine.py,signal bar i enter i+1 same session
+same_bar_policy,STOP_FIRST,src/execution/policy.py,AmbiguityPolicy.STOP_FIRST
+slippage_per_share,from strategy YAML backtest,src/backtest/engine.py,passed to default_intraday_policy
+commission_per_trade,from strategy YAML backtest,src/backtest/engine.py,passed
+eod_exit_minute,389 typical,src/backtest/engine.py,from BacktestConfig
+min_risk_per_share,0.0 default unless threaded from risk YAML,src/execution/policy.py,gap: wire in run task for parity with combiner hardening
+scale_out_default,disabled (no ExitPlan),src/backtest/engine.py,exit_plan None
+trailing_default,disabled,,same
+no_followthrough_default,disabled,,same
+target_type,fixed_r via sig_*,strategies + engine,signal contract
+side_support,long_only MVP,strategies,allow_short False

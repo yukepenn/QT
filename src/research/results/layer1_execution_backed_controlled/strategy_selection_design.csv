@@ -1,0 +1,4 @@
+strategy_key,strategy_file,loader_ok,testing_yaml_primary,estimated_combos,trade_style,reason,risk,should_run_first_controlled
+pa_buy_sell_close_trend,src/strategies/strategy/pa_buy_sell_close_trend.py,yes,src/strategies/testing_parameters/pa_buy_sell_close_trend_focused.yaml,432,long PA bull-trend continuation,core PA + pipeline validation reference,grid explosion without max-combos,true
+gap_acceptance_failure,src/strategies/strategy/gap_acceptance_failure.py,yes,src/strategies/testing_parameters/gap_acceptance_failure_focused.yaml,192,long gap failure / reclaim,complements PA; different microstructure,opening data / grid size,true
+cci_extreme_snapback,src/strategies/strategy/cci_extreme_snapback.py,yes,src/strategies/testing_parameters/cci_extreme_snapback_focused.yaml,32,long CCI oversold snapback,small grid; indicator family diversity,cci column set vs window, true

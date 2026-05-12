@@ -1,0 +1,15 @@
+check,result,notes
+compileall_src,OK,post sweep __main__ guard
+pytest_full,OK,149 passed
+strategies_loader_list,OK,35 strategies
+backtest_sweep_help,OK,python -m src.backtest.sweep --help
+backtest_sweep_smoke,OK,python -m src.backtest.sweep --smoke
+backtest_validate_pipeline_pa,OK,python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend
+combiner_run_help,OK,python -m src.combiner.run --help
+combiner_sweep_help,OK,python -m src.combiner.sweep --help
+run_combiner_adapter_parity_help,OK,python -m src.research.run_combiner_adapter_parity --help
+run_exit_overlay_execution_path_help,OK,python -m src.research.run_exit_overlay_execution_path --help
+sweep_dry_run_pa_qqq,OK,python -m src.backtest.sweep --dry-run ... max-combos 1
+tracked_heavy_scan,NOTE,Archive local_runs + enriched/scored CSVs may still be tracked historically
+parquet_tracked,data_raw_ibkr_only,expected
+validate_research_artifacts_layer1_root,OK,14 paths in layer1_execution_backed_controlled_artifact_validation.csv

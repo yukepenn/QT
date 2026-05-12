@@ -1,0 +1,15 @@
+file_path,current_role,target_role,active_status,owns_accounting_yes_no,should_own_accounting_yes_no,imports_execution_path_yes_no,notes,action_needed_before_layer1_run
+src/data/read_bars.py,Load IBKR 1m parquet partitions into DataFrame,Same,active,no,no,no,NY bounds + UTC range filter; equity symbol=QQQ tree,None
+src/data/store.py,N/A (file not present),Optional future cache layer,unknown,no,no,no,No central store module today,None if using read_bars only
+src/features/build_features.py,Build feature columns from strategy feature config,Same,active,no,no,no,Delegates feature_key / builders; no PnL,None
+src/features/feature_config.py,Feature config types/helpers,Same,active,no,no,no,,None
+src/features/feature_store.py,Optional FeatureStore / cache hooks (if used by runner),Same / cache,active,no,no,no,strategy_runner uses fingerprint cache in sweep path,None
+src/strategies/loader.py,Registry + load_strategy + grid expand,Same,active,no,no,no,,None
+src/strategies/metadata.py,Strategy metadata helpers (if present),Same,active,no,no,no,Present under src/strategies/metadata.py,None
+src/backtest/signal_adapter.py,Canonical sig_* mapping + validation,Same,active,no,no,no,,None
+src/backtest/strategy_runner.py,Bars→features→signals→canonical frame,Same,active,no,no,no,No simulate_trade_path import here,None
+src/backtest/engine.py,TradeIntent + simulate_trade_path + summarize_trades,Same,active,no,yes,yes,Only backtest module that calls path; no duplicate R math,None
+src/backtest/metrics.py,summarize_trades aggregates on TradeResult-derived rows,Same,active,no,no,no,Consumes engine output; not a second simulator,None
+src/backtest/sweep.py,CLI + real-symbol sweep + synthetic smoke,Same; clarify engine label vs combiner vocabulary,active,no,no,no (sweep imports engine which imports path),ENGINE_LABEL is literal 'reference' but path is canonical — document stamp for candidates,Optional: rename ENGINE_LABEL or add --engine alias in a later thin runner
+src/execution/path.py,simulate_trade_path reference truth,Same,active,yes,yes,n/a,Single accounting path for Layer1 backtest,None
+src/execution/fast_path.py,Placeholder / future parity acceleration,Parity-tested accelerator only,active,no,no,TBD,Not accounting truth until parity gates,Do not use for Layer1 run until parity suite exists

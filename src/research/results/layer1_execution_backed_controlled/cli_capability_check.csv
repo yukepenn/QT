@@ -1,0 +1,8 @@
+question,answer,evidence
+execution_backed_layer1_via_sweep,yes,run_real_symbol_sweep calls run_strategy_backtest which calls simulate_trade_path
+repo_local_data_root,yes,--data-root data/raw/ibkr with strategy symbol start end
+single_strategy,yes,--strategy flag
+output_root,yes,--output-root
+dry_run,yes,--dry-run verified PA QQQ 2024-01-02..2024-01-05 max-combos 1
+engine_flag,no,not in argparse; engine column uses ENGINE_LABEL reference
+built_in_yaml_selection,no,sweep writes sweep_results only; selection is follow-up

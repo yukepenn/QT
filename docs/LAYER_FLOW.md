@@ -16,7 +16,7 @@ This document ties **research layers** to **module ownership** after the executi
 4. **`run_strategy_backtest`** (`src/backtest/engine.py`) maps rows → `TradeIntent` → **`simulate_trade_path`** (`src/execution/path.py`).
 5. Aggregate metrics (`src/backtest/metrics.py`); emit configs / YAML / metadata for Layer 2.
 
-**Current status:** Layer 1 is the **mainline** path: `read_bars` → `strategy_runner` → `run_strategy_backtest` → `simulate_trade_path` → `metrics`. Parameter sweep and CLI live in **`src/backtest/sweep.py`** (synthetic `--smoke`, real-symbol sweep, `--validate-pipeline`). Historical Numba sweep code is under **`archive/legacy_backtest/`** (not a mainline import).
+**Current status:** Layer 1 is the **mainline** path: `read_bars` → `strategy_runner` → `run_strategy_backtest` → `simulate_trade_path` → `metrics`. Parameter sweep and CLI live in **`src/backtest/sweep.py`** (synthetic `--smoke`, real-symbol sweep, `--validate-pipeline`; **`python -m src.backtest.sweep`** invokes **`main()`**). **Controlled rebuild design** lives under **`src/research/results/layer1_execution_backed_controlled/`** (decision **`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**). Historical Numba sweep code is under **`archive/legacy_backtest/`** (not a mainline import).
 
 **Future acceleration:** Numba only under `src.execution.fast_path` **after** parity tests vs `simulate_trade_path` — never a second PnL definition in `backtest.fast`.
 

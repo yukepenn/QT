@@ -1,0 +1,2 @@
+symbol,bar_size,data_root,design_window_start,design_window_end,fallback_window_start,fallback_window_end,stretch_note
+QQQ,1m,data/raw/ibkr,2023-01-01,2024-12-31,2024-01-01,2024-06-30,2020-01-01 through last committed 2026 month only with strict max-combos after gates pass

@@ -703,3 +703,9 @@ def _metrics_row(**kwargs: Any) -> dict[str, Any]:
     from src.backtest.strategy_runner import sweep_metrics_row
 
     return sweep_metrics_row(**kwargs)
+
+
+if __name__ == "__main__":
+    import sys
+
+    raise SystemExit(main())

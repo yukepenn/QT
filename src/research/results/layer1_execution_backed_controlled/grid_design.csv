@@ -1,0 +1,4 @@
+strategy_key,grid_file,max_raw_combos,first_pass_max_combos,runtime_band,strict_gates_summary,notes
+pa_buy_sell_close_trend,src/strategies/testing_parameters/pa_buy_sell_close_trend_focused.yaml,432,64,medium,"min trades; PF_R; maxDD_R tier; no tiny-N",use --grid path; order-preserving truncation with --max-combos
+gap_acceptance_failure,src/strategies/testing_parameters/gap_acceptance_failure_focused.yaml,192,64,medium,same + gap-specific month concentration,same
+cci_extreme_snapback,src/strategies/testing_parameters/cci_extreme_snapback_focused.yaml,32,32,small,same; can run full grid,same
