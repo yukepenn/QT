@@ -18,7 +18,7 @@ The codebase is moving to a **single canonical execution accounting layer** unde
 | **strategies** | Raw candidate signals (`src/strategies/`) |
 | **execution** | Canonical fills, exits, PnL (`src/execution/`) |
 | **management** | Exit-plan templates (`src/management/`) |
-| **backtest** | Single-strategy adapter; canonical sweep **smoke** + explicit `--legacy` grid (`src/backtest/`) |
+| **backtest** | Single-strategy adapter; canonical sweep **synthetic + real-symbol MVP** + explicit `--legacy` grid (`src/backtest/`) |
 | **combiner** | Candidate arbitration (legacy sim today; target = execution adapter) (`src/combiner/`) |
 | **router** | Permission / quality scaffold (`src/router/`) |
 | **walkforward** | Layer 3 harnesses (orchestration; not canonical until combiner uses execution) (`src/walkforward/`) |
@@ -32,6 +32,7 @@ Design references: `docs/ARCHITECTURE.md`, `docs/MODULE_OWNERSHIP.md`, `docs/LAY
 
 - Run `python scripts/canonical_execution_smoke.py` (synthetic OHLC) and `python -m pytest -q` before resuming strategy research.
 - Run `python -m src.backtest.sweep --smoke` to exercise the canonical sweep + `run_strategy_backtest` path without QQQ parquet.
+- Run `python -m src.backtest.sweep --validate-pipeline --strategy <name>` for metadata-only wiring checks; add `--symbol` / `--start` / `--end` / `--data-root` for full pipeline validation when local parquet exists.
 - Trailing, exit order, scale fill policy, and gross vs net R are documented in `docs/EXECUTION_SEMANTICS.md` and `docs/EXECUTION_TEST_MATRIX_SUMMARY.md`.
 
 Prior Layer 1–3 research outputs and Champion benchmarks remain **historical priors** (see `docs/LEGACY_RESULTS_POLICY.md`), **not** current canonical truth for execution semantics until regenerated under `src/execution`.

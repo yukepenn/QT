@@ -1,6 +1,6 @@
 # Canonical Layer 1 sweep (design)
 
-**Status:** **Synthetic canonical sweep implemented** in `src/backtest/sweep.py` (`--smoke`, `run_canonical_sweep`, `run_synthetic_canonical_smoke`). Real-symbol bar/feature wiring is **future** (see `docs/CANONICAL_SWEEP_IMPLEMENTATION_PLAN.md`). Mainline CLI: `python -m src.backtest.sweep`; **`--legacy` must be the first argv token** to run the Numba reference grid (`src/backtest/legacy/sweep_legacy.py`).
+**Status:** **Synthetic + real-symbol MVP implemented** in `src/backtest/sweep.py` (`--smoke`, `run_canonical_real_symbol_sweep`, `--validate-pipeline`, `--dry-run`). Real runs require `read_bars` partitions for the requested window. **`--legacy` must be the first argv token** for Numba (`src/backtest/legacy/sweep_legacy.py`).
 
 ## Canonical responsibilities
 

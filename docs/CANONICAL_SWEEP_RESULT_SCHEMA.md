@@ -26,9 +26,31 @@ Rows are produced by `run_canonical_sweep` / `run_synthetic_canonical_smoke` as 
 | `execution_semantics_version` | str | From `ExecutionPolicy.semantics_version` |
 | `engine` | str | **`canonical_reference`** |
 | `canonical_or_legacy` | str | **`canonical`** |
-| `notes` | str | e.g. `synthetic_smoke` |
+| `notes` | str | e.g. `synthetic_smoke`, `dry_run` |
+| `asset` | str | `equity` or `futures` (passed to `read_bars`) |
+| `data_source` | str | `synthetic_builtin`, `ibkr_parquet:<resolved_path>`, etc. |
+| `feature_config_hash` | str | Short fingerprint of `feature_key_from_config(cfg)` (empty for synthetic-only rows) |
+| `signal_contract_version` | str | e.g. `standard_sig_v1` (`STANDARD_SIGNAL_CONTRACT_VERSION`) |
 
-## Legacy sweep labeling
+## `run_manifest.json` (real-symbol runs with `--output-root`)
+
+| Field | Description |
+|--------|-------------|
+| `git_sha` | `git rev-parse HEAD` when available |
+| `command` | Joined argv |
+| `timestamp` | UTC ISO8601 |
+| `engine` | `canonical_reference` |
+| `execution_semantics_version` | Policy stamp |
+| `symbols` | Symbol string |
+| `strategy` | Strategy id |
+| `start` / `end` | NY calendar window |
+| `config_path` / `grid_path` | CLI paths (may be empty) |
+| `no_save` / `dry_run` | Booleans |
+| `canonical_or_legacy` | `canonical` |
+| `asset` | Asset class |
+| `data_root` | Data directory |
+
+Missing optional values are stored as empty strings.
 
 When using `python -m src.backtest.sweep --legacy …`:
 

@@ -1,5 +1,7 @@
 ### [Unreleased] – 2026-05-11
 
+- **Backtest:** canonical real-symbol sweep connector — `strategy_runner.py`; `sweep.py` (`run_canonical_real_symbol_sweep`, `run_single_canonical_from_signals`, `--validate-pipeline`, `--dry-run`, `--asset`, artifact bundle, `--data-root` guard); extended `SweepResult`; docs (`CANONICAL_REAL_SWEEP_*`, integration STATUS CSV, result schema); tests (**115** `pytest`).
+
 - **Backtest:** canonical Layer 1 sweep smoke — `sweep.py` (`expand_param_grid`, `config_hash`, `run_canonical_sweep`, `run_single_canonical_combo`, `run_synthetic_canonical_smoke`, CLI `--smoke` / `--canonical-help`, legacy `argv[0] == "--legacy"` delegation); `signal_adapter.py`; tests (**100** `pytest`); docs (`CANONICAL_SWEEP_*`, implementation plan + inventory CSV, strategy integration plan, result schema, smoke summary, `SIGNAL_CONTRACT`, `LAYER_FLOW`, `LEGACY_RESULTS_POLICY`); status files.
 
 - **Architecture:** clarify canonical layer connectivity — `docs/LAYER_FLOW.md` (+ CSV), `CANONICAL_SWEEP_DESIGN.md`, `CANONICAL_COMBINER_DESIGN.md`, `LAYER3_VALIDATION_DESIGN.md`, `WALKFORWARD_STATUS.*`, `FEATURE_STRATEGY_CONNECTIVITY.*`, `LEGACY_RESULTS_POLICY.md`, `MAINLINE_LEGACY_SURGERY_*`; backtest `sweep.py` placeholder + `legacy/sweep_legacy.py`; `fast.py` TM-only + reject Numba prepare/run; `precompute` → `legacy.fast_legacy`; combiner `simulator` legacy-only doc; tests (**85** `pytest`).

@@ -24,6 +24,10 @@ REQUIRED = {
     "end",
     "params_json",
     "notes",
+    "asset",
+    "data_source",
+    "feature_config_hash",
+    "signal_contract_version",
 }
 
 

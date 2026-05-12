@@ -46,4 +46,4 @@ These three are the first **single-strategy** candidates for wiring `read_bars` 
 
 ## Conclusion
 
-No `output_contract` renames required for these three today; `infer_signal_mapping` may stay empty. Next engineering work is **data + feature pipeline into `run_canonical_sweep`**, not signal math refactors.
+No `output_contract` renames required for these three today; `infer_signal_mapping` may stay empty. Machine-readable status rows: **`docs/CANONICAL_STRATEGY_INTEGRATION_STATUS.csv`**. The real-symbol connector (`strategy_runner` + `run_canonical_real_symbol_sweep`) now covers the data → feature → signal → backtest path; broaden coverage after Champion migration planning.

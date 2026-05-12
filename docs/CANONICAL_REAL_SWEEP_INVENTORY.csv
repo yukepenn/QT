@@ -1,0 +1,13 @@
+file,current_role,needed_for_real_symbol_sweep,implemented,gap,action_this_task,risk,notes
+src/backtest/sweep.py,CLI + synthetic + real sweep orchestration,yes,yes,,Wire validate/real paths,Med,Must never delegate to legacy except argv0 --legacy
+src/backtest/strategy_runner.py,Data/feature/signal bridge,yes,yes,,New module,Low,No accounting
+src/backtest/engine.py,Canonical adapter,yes,yes,,None,Low,
+src/backtest/signal_adapter.py,Rename + assert canonical,yes,yes,,None,Low,
+src/backtest/metrics.py,summarize_trades,yes,yes,,None,Low,
+src/data/read_bars.py,Parquet bar load,yes,yes,,None,Med,Empty window returns DF 0 rows → clear error
+src/features/build_features.py,Full feature stack,yes,yes,,Heavy for tiny windows,Med,Used via feature_key_from_config
+src/features/feature_store.py,Optional cache,yes,partial,Not used in sweep loop yet,Future: reuse across combos,Low,
+src/features/feature_key.py,Feature key + build from config,yes,yes,,None,Low,
+src/strategies/loader.py,apply_overrides / expand_grid,yes,yes,,None,Low,
+src/strategies/metadata.yaml,output_contract hints,yes,yes,Mostly empty contracts,infer_signal_mapping ready,Low,
+docs/CANONICAL_STRATEGY_INTEGRATION_PLAN.md,Champion trio design,yes,yes,,Point to STATUS CSV,Low,

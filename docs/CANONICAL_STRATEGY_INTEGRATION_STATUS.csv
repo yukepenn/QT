@@ -1,0 +1,4 @@
+strategy,loads,required_features_known,config_load_path,generates_dataframe_signals,generates_array_signals,emits_sig_valid,emits_sig_side,emits_sig_stop,emits_sig_target_mode,emits_sig_target,emits_sig_target_r,emits_sig_risk_per_share,emits_sig_max_hold_bars,canonical_mapping,can_run_real_symbol_smoke_now,blocker,next_action
+pa_buy_sell_close_trend,yes,yes,src/strategies/parameters/pa_buy_sell_close_trend.yaml,yes,yes_internal_ctx,yes,yes,yes,yes,yes,yes,yes,optional_via_config,identity,yes,,tiny_local_QQQ_window
+gap_acceptance_failure,yes,yes,src/strategies/parameters/gap_acceptance_failure.yaml,yes,yes_internal_ctx,yes,yes,yes,yes,yes,yes,yes,optional_via_config,identity,yes,,needs_gap_columns_in_features
+cci_extreme_snapback,yes,yes,src/strategies/parameters/cci_extreme_snapback.yaml,yes,yes_internal_ctx,yes,yes,yes,yes,yes,yes,yes,optional_via_config,identity,yes,,align_features_cci_window
