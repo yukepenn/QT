@@ -1,0 +1,5 @@
+phase,scope,parity_case,owner
+1,long_only fixed_r next_open_entry,simple_win,fast_path vs path
+1,min_risk_rejection,risk_too_small,materialize parity
+1,max_hold,EOD vs max_hold ordering,path reference
+2,scale_out_trailing,defer_until_parity_covered,not in phase1

@@ -1,34 +1,66 @@
 file_path,purpose,required_for_review,row_count_if_csv,markdown_mirror_available,local_only_dependency,notes
 baseline_inventory.md,baseline narrative,yes,,yes,no,
-baseline_inventory.csv,baseline keys,yes,11,no,no,
+baseline_inventory.csv,baseline keys,yes,13,no,no,
 baseline_validation.md,validation narrative,yes,,yes,no,
-baseline_validation.csv,validation matrix,yes,13,no,no,
+baseline_validation.csv,validation matrix,yes,14,no,no,
 layer1_pipeline_state.md,pipeline prose,yes,,yes,no,
-layer1_pipeline_state.csv,pipeline map,yes,13,no,no,
+layer1_pipeline_state.csv,pipeline map,yes,14,no,no,
 data_design.md,data policy,yes,,yes,no,
-data_design.csv,data window,yes,2,no,no,
+data_design.csv,data window,yes,1,no,no,
 strategy_selection_design.md,3 strategies,yes,,yes,no,
-strategy_selection_design.csv,strategy table,yes,4,no,no,
-grid_design.md,grid caps,yes,,yes,no,
-grid_design.csv,grid table,yes,4,no,no,
+strategy_selection_design.csv,strategy table,yes,3,no,no,
+grid_design.md,grid caps (legacy focused),yes,,yes,no,
+grid_design.csv,grid table,yes,3,no,no,
 candidate_artifact_schema.md,YAML contract,yes,,yes,no,
-candidate_artifact_schema.csv,artifact list,yes,8,no,no,
+candidate_artifact_schema.csv,artifact list,yes,7,no,no,
 execution_policy_design.md,policy alignment,yes,,yes,no,
-execution_policy_design.csv,policy table,yes,11,no,no,
-run_commands.md,command reference,yes,,yes,no,
-run_commands.ps1,PowerShell runbook,yes,,no,no,real sweeps commented out
+execution_policy_design.csv,policy table,yes,12,no,no,
+run_commands.md,command reference,yes,,yes,no,minimal proof + checkpoint + promote filter
+run_commands.ps1,PowerShell runbook,yes,,no,no,minimal proof sweeps + promote examples
 run_commands.sh,bash runbook,yes,,no,no,run from repo root
 cli_capability_check.md,CLI Q&A,yes,,yes,no,
 cli_capability_check.csv,CLI matrix,yes,7,no,no,
 runner_gap_analysis.md,gap narrative,yes,,yes,no,
 validation_gates.md,gates prose,yes,,yes,no,
-validation_gates.csv,gates matrix,yes,12,no,no,
+validation_gates.csv,gates matrix,yes,13,no,no,
 layer1_execution_backed_controlled_decision.md,decision,yes,,yes,no,
 layer1_execution_backed_controlled_summary.md,executive summary,yes,,yes,no,
-layer1_execution_backed_controlled_key_findings.csv,findings,yes,7,no,no,
+layer1_execution_backed_controlled_key_findings.csv,findings,yes,8,no,no,
 CHATGPT_REVIEW_BUNDLE.md,external review,yes,,yes,no,
-chatgpt_key_tables.csv,key metrics,yes,,no,no,
-SOURCE_MAP.csv,this table,yes,28,no,no,row_count excludes self
+chatgpt_key_tables.csv,key metrics,yes,18,no,no,
+interrupted_run_inventory.md,interrupted full-run log,yes,,yes,no,
+interrupted_run_inventory.csv,interrupted rows,yes,4,no,no,
+minimal_proof_inventory.md,minimal proof inventory,yes,,yes,no,
+minimal_proof_inventory.csv,inventory rows,yes,6,no,no,
+minimal_proof_baseline_validation.md,baseline validation narrative,yes,,yes,no,
+minimal_proof_baseline_validation.csv,baseline matrix,yes,7,no,no,
+checkpoint_resume_design.md,checkpoint design,yes,,yes,no,
+checkpoint_resume_design.csv,checkpoint rows,yes,6,no,no,
+minimal_grid_design.md,minimal grid rationale,yes,,yes,no,
+minimal_grid_design.csv,grid sizing,yes,3,no,no,
+minimal_dry_run_smoke.md,dry-run smoke,yes,,yes,no,
+minimal_dry_run_smoke.csv,dry-run rows,yes,3,no,no,
+minimal_sweep_summary.md,sweep aggregates,yes,,yes,no,
+minimal_sweep_summary.csv,sweep summary table,yes,4,no,no,
+minimal_sweep_output_validation.md,output checks,yes,,yes,no,
+minimal_sweep_output_validation.csv,validation rows,yes,3,no,no,
+minimal_promotion_dry_run.md,promotion narrative,yes,,yes,no,
+minimal_promotion_dry_run.csv,promotion rows,yes,1,no,no,
+minimal_candidate_root_validation.md,candidate root checks,yes,,yes,no,
+minimal_candidate_root_validation.csv,candidate matrix,yes,6,no,no,
+fast_path_numba_readiness.md,Numba parity plan,yes,,yes,no,no Numba code
+fast_path_numba_readiness.csv,readiness rows,yes,4,no,no,
+minimal_layer1_interpretation.md,interpretation,yes,,yes,no,
+minimal_layer1_interpretation.csv,interpretation table,yes,5,no,no,
 selected_candidates/README.md,reserved dir,yes,,yes,no,
-layer1_execution_backed_controlled_artifact_validation.csv,artifact validator output,yes,15,no,no,14 listed paths + header
-src/backtest/sweep.py,Layer1 sweep CLI + real-symbol sweep,yes,,no,no,__main__ guard invokes main() for python -m
+layer1_execution_backed_controlled_artifact_validation.csv,artifact validator output,yes,29,no,no,29 path rows (excluding CSV header)
+runs/pa_buy_sell_close_trend_2023_2024_minimal_proof/sweep_results.csv,PA minimal sweep rows,yes,16,no,no,curated research output
+runs/gap_acceptance_failure_2023_2024_minimal_proof/sweep_results.csv,GAP minimal sweep rows,yes,16,no,no,
+runs/cci_extreme_snapback_2023_2024_minimal_proof/sweep_results.csv,CCI minimal sweep rows,yes,8,no,no,
+src/backtest/sweep.py,Layer1 sweep CLI + checkpoint,yes,,no,no,reference execution path
+src/research/run_layer1_execution_backed_controlled.py,promote/validate CLI,yes,,no,no,include-run-name filter + L1M IDs
+tests/test_sweep_checkpoint.py,checkpoint/resume tests,yes,,no,no,
+src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml,PA minimal grid,yes,,no,no,16 combos
+src/strategies/testing_parameters/gap_acceptance_failure_minimal_proof.yaml,GAP minimal grid,yes,,no,no,16 combos
+src/strategies/testing_parameters/cci_extreme_snapback_minimal_proof.yaml,CCI minimal grid,yes,,no,no,8 combos
+SOURCE_MAP.csv,this table,yes,65,no,no,row_count = data rows excluding header

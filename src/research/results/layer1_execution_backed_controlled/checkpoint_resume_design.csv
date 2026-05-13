@@ -1,0 +1,7 @@
+component,implemented,notes
+partial_csv_atomic,yes,temp+replace
+progress_json,yes,temp+replace
+resume_skip_combo_id,yes,reads partial CSV
+timing_columns,yes,all real-symbol combos
+delete_partial_on_complete,yes,no partial after success
+dry_run_checkpoint,no,no files when dry-run

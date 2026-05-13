@@ -5,3 +5,5 @@ F003,medium,engine.run_strategy_backtest should thread risk.min_risk_per_share i
 F004,info,Focused YAML grids for PA and GAP exceed 64 combos raw; caps required
 F005,info,CCI focused grid is 32 combos fits full first pass
 F006,low,sweep.py lacked __main__ guard so python -m did not run main; fixed in this session
+F007,info,sweep checkpoint partial CSV + progress JSON + --resume skip completed combo_id; partial removed on status completed
+F008,info,explicit minimal_proof YAML grids avoid prefix-biased --max-combos for research selection

@@ -1,0 +1,2 @@
+gate_label,max_per_strategy,min_trades,min_pf_r,candidates_selected,strategies_with_candidates,notes
+L1_EXECUTION_BACKED_MINIMAL_PROOF,2,10,1.02,4,"cci_extreme_snapback;gap_acceptance_failure",PA excluded max PF 1.014 < 1.02

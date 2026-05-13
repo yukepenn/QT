@@ -1,0 +1,30 @@
+{
+  "completed_combo_ids": [
+    "combo_0000",
+    "combo_0001",
+    "combo_0002",
+    "combo_0003",
+    "combo_0004",
+    "combo_0005",
+    "combo_0006",
+    "combo_0007",
+    "combo_0008",
+    "combo_0009",
+    "combo_0010",
+    "combo_0011",
+    "combo_0012",
+    "combo_0013",
+    "combo_0014",
+    "combo_0015"
+  ],
+  "end": "2024-12-31",
+  "git_sha": "f9e26520c2958b8a3dbdf54d3727c94b78fd3e97",
+  "grid_path": "src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml",
+  "last_completed_at_utc": "2026-05-12T23:44:20.917334+00:00",
+  "output_root": "D:\\OneDrive - Washington University in St. Louis\\QT\\src\\research\\results\\layer1_execution_backed_controlled\\runs\\pa_buy_sell_close_trend_2023_2024_minimal_proof",
+  "start": "2023-01-01",
+  "status": "completed",
+  "strategy": "pa_buy_sell_close_trend",
+  "symbol": "QQQ",
+  "total_combos": 16
+}

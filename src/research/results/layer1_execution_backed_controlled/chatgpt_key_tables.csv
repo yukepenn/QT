@@ -1,14 +1,21 @@
 section,item,metric,value,interpretation
-Git,tip,sha,fce5dda,pre-design sync point recorded in baseline_inventory
-Validation,pytest,count,149,full suite green at design time
-Data,QQQ,years,2020-2026,committed parquet partitions under data/raw/ibkr
-Data,design_window,calendar,2023-01-01 to 2024-12-31,preferred controlled Layer1 span
-Strategies,controlled,count,3,PA GAP CCI only for first factory pass
-Grids,pa_buy_sell_close_trend,max_raw_combos,432,must cap with max-combos 64 first pass
-Grids,gap_acceptance_failure,max_raw_combos,192,must cap with max-combos 64 first pass
-Grids,cci_extreme_snapback,max_raw_combos,32,can run full grid under cap 32
-CLI,dry_run,supported,yes,verified short-window PA QQQ
-CLI,engine_flag,present,no,use YAML stamping execution_backed; see runner_gap_analysis
-CLI,sweep_python_m,invokes_main,yes,sweep.py __main__ guard added with design package
-Validation,artifact_scan,path_rows,14,validate_research_artifacts on design root
-Decision,label,text,RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD,ready for capped sweeps plus small follow-ups
+Git,branch,text,main,working branch for minimal proof task
+Git,pre_task_tip,sha,f9e2652,last origin-aligned tip before minimal-proof commit series
+Validation,pytest,count,165,full suite incl test_sweep_checkpoint
+Sweep,minimal_combos,total,40,16 PA + 16 GAP + 8 CCI
+Sweep,wall_clock_sec,aggregate,1121.3,sequential three-strategy minimal proof on reference path
+Sweep,avg_combo_elapsed_sec,aggregate,19.7,from minimal_sweep_summary ALL row
+Sweep,max_combo_elapsed_sec,worst,29.142,CCI slowest combo
+Metrics,pa_best_profit_factor_r,max,1.0144,below promote gate 1.02 on minimal slice
+Metrics,gap_best_total_r,max,11.8191,promotable under gates
+Metrics,cci_best_total_r,max,12.5791,promotable under gates
+Promotion,gate_label,text,L1_EXECUTION_BACKED_MINIMAL_PROOF,explicit non-final selection
+Promotion,candidates_written,count,4,GAP x2 + CCI x2 L1M YAMLs
+Promotion,pa_candidates,count,0,PF gate excludes PA on this grid
+CLI,sweep_checkpoint,flags,"--checkpoint-every --resume",long-run safety
+CLI,promote_filter,flag,--include-run-name-contains,avoids mixed runs/ folders
+Data,data_root,text,data/raw/ibkr,repo-local parquet only
+Data,window,calendar,2023-01-01 to 2024-12-31,minimal proof span
+Decision,label,text,RUN_CONTROLLED_LAYER2_ON_MINIMAL_CANDIDATES,next single recommended step
+FastPath,implementation,text,none,this task design doc only
+FastPath,next_engineering,text,DESIGN_FAST_PATH_NUMBA_PARITY,parallel unblock for larger Layer1

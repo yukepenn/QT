@@ -1,0 +1,97 @@
+candidate_id: CCI_EXTREME_SNAPBACK_L1M_001
+strategy: cci_extreme_snapback
+symbol: QQQ
+asset: equity
+candidate_rank: 1
+config:
+  strategy: cci_extreme_snapback
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 20
+    - 30
+    price_action_windows:
+    - 3
+    - 5
+    - 10
+    - 20
+    - 30
+    - 60
+    volume_windows:
+    - 20
+    - 30
+    indicators:
+      ema_windows: []
+      sma_windows: []
+      rsi_windows: []
+      macd_tuples: []
+      stochastic_tuples: []
+      cci_windows:
+      - 14
+      - 20
+      - 30
+      adx_windows: []
+      supertrend_tuples: []
+    channels: {}
+    regime: {}
+    cci_window: 20
+    swing_lookback: 10
+  signal:
+    side: long_only
+    atr_column: atr_like_20
+    entry_start_minute: 60
+    entry_end_minute: 270
+    oversold_level: -150
+    trigger_mode: cross_above_zero
+    require_price_confirmation: true
+    require_vwap_filter: false
+  risk:
+    stop_mode: swing_low
+    target_mode: fixed_r
+    target_r: 1.0
+    atr_buffer_mult: 0.35
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30
+metrics:
+  trade_count: 289
+  total_r: 12.57908411543286
+  profit_factor_r: 1.1222350587048635
+  max_drawdown_r: -9.170014892013128
+  avg_r: 0.0435262426139545
+  win_rate: 0.5363321799307958
+  config_hash: 54fdbf1d789bf62e4c8b
+  combo_id: combo_0005
+metadata:
+  family: cci
+  setup_type: cci_extreme_snapback
+  conflict_group: QQQ_directional
+  default_priority: 50
+  default_active_start_minute: 60
+  default_active_end_minute: 270
+  allowed_sides: long_only
+  default_management_mode: fixed_r
+  promotion_notes: minimal_proof_grid_not_full_focused
+selection:
+  gate_label: L1_EXECUTION_BACKED_MINIMAL_PROOF
+  candidate_kind: minimal_proof
+  score: 12.57908411543286
+  warning: nan
+source:
+  results_csv: src/research/results/layer1_execution_backed_controlled/runs/cci_extreme_snapback_2023_2024_minimal_proof/sweep_results.csv
+  sweep_folder: src/research/results/layer1_execution_backed_controlled/runs/cci_extreme_snapback_2023_2024_minimal_proof
+execution:
+  execution_engine: execution_backed
+  execution_semantics_version: '1.0'
+  signal_contract_version: standard_sig_v1

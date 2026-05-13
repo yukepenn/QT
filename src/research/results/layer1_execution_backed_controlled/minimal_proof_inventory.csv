@@ -1,0 +1,7 @@
+key,value
+git_sha_before_work,f9e26520c2958b8a3dbdf54d3727c94b78fd3e97
+reason_change,full_focused_reference_path_too_slow_without_fast_path
+data_root,data/raw/ibkr
+strategies,"pa_buy_sell_close_trend;gap_acceptance_failure;cci_extreme_snapback"
+minimal_grids_committed,3
+total_minimal_combos,40

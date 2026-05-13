@@ -1,0 +1,20 @@
+{
+  "asset": "equity",
+  "checkpoint_every": 1,
+  "command": "D:\\OneDrive - Washington University in St. Louis\\QT\\src\\backtest\\sweep.py --strategy pa_buy_sell_close_trend --symbol QQQ --asset equity --start 2023-01-01 --end 2024-12-31 --data-root data/raw/ibkr --grid src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml --output-root src/research/results/layer1_execution_backed_controlled/runs/pa_buy_sell_close_trend_2023_2024_minimal_proof --checkpoint-every 1",
+  "config_path": "",
+  "data_root": "data/raw/ibkr",
+  "dry_run": false,
+  "end": "2024-12-31",
+  "engine": "reference",
+  "execution_semantics_version": "1.0",
+  "git_sha": "f9e26520c2958b8a3dbdf54d3727c94b78fd3e97",
+  "grid_path": "src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml",
+  "no_save": false,
+  "result_lineage": "mainline",
+  "resume": false,
+  "start": "2023-01-01",
+  "strategy": "pa_buy_sell_close_trend",
+  "symbols": "QQQ",
+  "timestamp": "2026-05-12T23:44:21.040982+00:00"
+}

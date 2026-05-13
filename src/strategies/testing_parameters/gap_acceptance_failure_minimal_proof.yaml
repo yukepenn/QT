@@ -1,0 +1,27 @@
+strategy: gap_acceptance_failure
+
+grid:
+  signal.entry_start_minute: [5, 10]
+  signal.entry_end_minute: [60, 90]
+  signal.min_gap_norm: [0.2, 0.3]
+  signal.require_vwap_side: [false, true]
+  signal.confirm_mode: [reclaim_vwap]
+  risk.stop_mode: [failed_extreme]
+  risk.target_mode: [fixed_r]
+  risk.target_r: [1.25]
+  backtest.max_hold_minutes: [30]
+
+fixed:
+  features.opening_hold_minutes: 10
+  signal.side: long_only
+  signal.mode: gap_failure
+  signal.require_open_hold: true
+  signal.atr_column: atr_like_15
+  risk.open_buffer_atr: 0.10
+  risk.min_risk_per_share: 0.03
+  risk.max_trades_per_day: 1
+  backtest.eod_exit_minute: 389
+  backtest.quantity: 1.0
+  backtest.commission_per_trade: 0.0
+  backtest.slippage_per_share: 0.01
+  backtest.recompute_target_from_entry: true

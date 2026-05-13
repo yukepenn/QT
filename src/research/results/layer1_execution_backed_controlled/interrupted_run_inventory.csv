@@ -1,0 +1,5 @@
+artifact,status,notes
+full_focused_pa_run_folder,removed_local_not_committed,superseded by minimal proof policy; avoid large Layer1 commit
+full_focused_gap_run_folder,removed_local_not_committed,same
+full_focused_cci_run_folder,removed_local_not_committed,same
+minimal_proof_run_folders,retained_for_commit,pa/gap/cci minimal grids 2023-2024

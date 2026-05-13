@@ -1,0 +1,20 @@
+{
+  "asset": "equity",
+  "checkpoint_every": 1,
+  "command": "D:\\OneDrive - Washington University in St. Louis\\QT\\src\\backtest\\sweep.py --strategy gap_acceptance_failure --symbol QQQ --asset equity --start 2023-01-01 --end 2024-12-31 --data-root data/raw/ibkr --grid src/strategies/testing_parameters/gap_acceptance_failure_minimal_proof.yaml --output-root src/research/results/layer1_execution_backed_controlled/runs/gap_acceptance_failure_2023_2024_minimal_proof --checkpoint-every 1",
+  "config_path": "",
+  "data_root": "data/raw/ibkr",
+  "dry_run": false,
+  "end": "2024-12-31",
+  "engine": "reference",
+  "execution_semantics_version": "1.0",
+  "git_sha": "f9e26520c2958b8a3dbdf54d3727c94b78fd3e97",
+  "grid_path": "src/strategies/testing_parameters/gap_acceptance_failure_minimal_proof.yaml",
+  "no_save": false,
+  "result_lineage": "mainline",
+  "resume": false,
+  "start": "2023-01-01",
+  "strategy": "gap_acceptance_failure",
+  "symbols": "QQQ",
+  "timestamp": "2026-05-12T23:52:30.507855+00:00"
+}

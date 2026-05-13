@@ -1,0 +1,4 @@
+run_folder,sweep_results_csv,sweep_meta_json,sweep_progress_json,timing_columns,params_json_merged,data_source_relative,no_raw_trades,status
+pa_buy_sell_close_trend_2023_2024_minimal_proof,yes,yes,yes,yes,yes,ibkr_parquet:data/raw/ibkr,yes,OK
+gap_acceptance_failure_2023_2024_minimal_proof,yes,yes,yes,yes,yes,ibkr_parquet:data/raw/ibkr,yes,OK
+cci_extreme_snapback_2023_2024_minimal_proof,yes,yes,yes,yes,yes,ibkr_parquet:data/raw/ibkr,yes,OK

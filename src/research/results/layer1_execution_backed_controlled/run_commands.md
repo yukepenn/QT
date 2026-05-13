@@ -1,6 +1,12 @@
-# Run commands — controlled Layer1 (next task; **do not execute** full sweeps here)
+# Run commands — Layer1 execution-backed controlled
 
 All commands assume **repository root** as current directory. Use **`data/raw/ibkr`** only.
+
+**Preferred minimal proof (balanced grids, no `--max-combos` truncation)**
+
+- Grids: `src/strategies/testing_parameters/*_minimal_proof.yaml`
+- Sweeps: add **`--checkpoint-every 1`**; use **`--resume`** to continue after interrupt.
+- Promotion: filter with **`--include-run-name-contains minimal_proof`** and gate **`L1_EXECUTION_BACKED_MINIMAL_PROOF`** (candidate IDs **`*_L1M_*`**).
 
 **Environment template**
 
@@ -27,23 +33,17 @@ python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_tr
 python -m src.backtest.sweep --strategy pa_buy_sell_close_trend --symbol QQQ --start 2024-01-02 --end 2024-01-05 --data-root data/raw/ibkr --dry-run --max-combos 1
 ```
 
-## 3) PA — controlled sweep (real accounting; capped)
+## 3) PA — minimal proof sweep (40 combos total across PA/GAP/CCI)
 
 ```bash
-python -m src.backtest.sweep --strategy pa_buy_sell_close_trend --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/pa_buy_sell_close_trend_focused.yaml --max-combos 64 --output-root %OUT_BASE%/pa_buy_sell_close_trend_2023_2024_m64
+python -m src.backtest.sweep --strategy pa_buy_sell_close_trend --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml --output-root %OUT_BASE%/pa_buy_sell_close_trend_2023_2024_minimal_proof --checkpoint-every 1
+python -m src.backtest.sweep --strategy gap_acceptance_failure --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/gap_acceptance_failure_minimal_proof.yaml --output-root %OUT_BASE%/gap_acceptance_failure_2023_2024_minimal_proof --checkpoint-every 1
+python -m src.backtest.sweep --strategy cci_extreme_snapback --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/cci_extreme_snapback_minimal_proof.yaml --output-root %OUT_BASE%/cci_extreme_snapback_2023_2024_minimal_proof --checkpoint-every 1
 ```
 
-## 4) GAP — controlled sweep
+## 4) GAP — minimal proof (see §3)
 
-```bash
-python -m src.backtest.sweep --strategy gap_acceptance_failure --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/gap_acceptance_failure_focused.yaml --max-combos 64 --output-root %OUT_BASE%/gap_acceptance_failure_2023_2024_m64
-```
-
-## 5) CCI — controlled sweep (full grid fits cap)
-
-```bash
-python -m src.backtest.sweep --strategy cci_extreme_snapback --symbol QQQ --asset equity --start %START% --end %END% --data-root %DATA_ROOT% --grid src/strategies/testing_parameters/cci_extreme_snapback_focused.yaml --max-combos 32 --output-root %OUT_BASE%/cci_extreme_snapback_2023_2024_m32
-```
+## 5) CCI — minimal proof (see §3)
 
 ## 6) Validate empty candidate root (README-only)
 
@@ -51,16 +51,16 @@ python -m src.backtest.sweep --strategy cci_extreme_snapback --symbol QQQ --asse
 python -m src.research.run_layer1_execution_backed_controlled validate-candidates --candidate-root %CANDIDATE_ROOT% --allow-empty
 ```
 
-## 7) Promote — dry-run (default; inspect picks)
+## 7) Promote — dry-run (minimal proof runs only)
 
 ```bash
-python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --candidate-root %CANDIDATE_ROOT% --max-per-strategy 3 --min-trades 20 --min-profit-factor-r 1.05 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_CONTROLLED_STRICT_V1
+python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --include-run-name-contains minimal_proof --candidate-root %CANDIDATE_ROOT% --max-per-strategy 2 --min-trades 10 --min-profit-factor-r 1.02 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_MINIMAL_PROOF
 ```
 
-## 8) Promote — write YAML + CSV indices (after reviewing dry-run)
+## 8) Promote — write YAML + CSV indices
 
 ```bash
-python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --candidate-root %CANDIDATE_ROOT% --max-per-strategy 3 --min-trades 20 --min-profit-factor-r 1.05 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_CONTROLLED_STRICT_V1 --write
+python -m src.research.run_layer1_execution_backed_controlled promote --runs-root %OUT_BASE% --include-run-name-contains minimal_proof --candidate-root %CANDIDATE_ROOT% --max-per-strategy 2 --min-trades 10 --min-profit-factor-r 1.02 --min-total-r 0.0 --gate-label L1_EXECUTION_BACKED_MINIMAL_PROOF --write
 ```
 
 ## 9) Re-validate candidates (loads every `*.yaml`)

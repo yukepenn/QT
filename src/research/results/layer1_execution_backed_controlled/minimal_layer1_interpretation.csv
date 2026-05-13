@@ -1,0 +1,6 @@
+topic,finding
+PA_minimal_under_gate,all 16 combos fail min_profit_factor_r_1_02 (max PF ~1.014)
+GAP_minimal,stronger PF headroom vs PA minimal slice
+CCI_minimal,healthy trade_count and PF on best rows
+runtime_extrapolation,40 combos ~1121s implies 656 combos many hours on reference path
+next_engineering,DESIGN_FAST_PATH_NUMBA_PARITY before broad Layer1

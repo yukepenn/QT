@@ -1,0 +1,4 @@
+strategy,exit_code,notes
+pa_buy_sell_close_trend,0,2024-01-02..2024-01-05 dry-run max-combos 1
+gap_acceptance_failure,0,same
+cci_extreme_snapback,0,same

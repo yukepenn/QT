@@ -1,0 +1,8 @@
+check,result
+compileall,OK
+pytest,165 passed
+sweep_help,OK
+sweep_smoke,OK
+validate_pipeline,OK
+promote_help,OK
+validate_candidates_allow_empty,OK

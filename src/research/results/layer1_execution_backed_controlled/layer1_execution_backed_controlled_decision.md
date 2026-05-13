@@ -1,22 +1,21 @@
-# Decision — Layer1 execution-backed controlled (design package)
+# Layer1 execution-backed controlled — decision (minimal proof)
 
-## Label (exactly one)
+## Decision label
 
-**`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**
+**`RUN_CONTROLLED_LAYER2_ON_MINIMAL_CANDIDATES`**
 
-## Rationale (3–6 bullets)
+## Rationale
 
-- **Design package complete:** pipeline map, data window, three-strategy scope, grids with caps, artifact schema, execution policy alignment, runbooks, validation gates, CLI capability documented.
-- **Current `backtest.sweep` can execute** real-symbol capped sweeps with **`--data-root data/raw/ibkr`**, per-strategy **`--grid`**, and **`--output-root`**; **`--dry-run`** verified.
-- **Accounting path is correct:** **`simulate_trade_path`** is the sole simulator for Layer1 backtests; no second engine required for the run.
-- **`sweep.py` CLI entry fixed:** **`python -m src.backtest.sweep`** now invokes **`main()`**, matching README/tests.
-- **Minor gaps are non-blocking:** sweep omits `--engine` flag and uses `engine=reference` label; candidate stamping and optional **`min_risk_per_share`** policy threading are small follow-ups inside the **run** task, not reasons to block the first sweep.
-- **No new broad runner required** for first pass; optional thin `run_layer1_execution_backed_controlled.py` only if shell orchestration becomes painful.
+- Minimal proof sweeps (**40** combos, QQQ 2023–2024) completed with checkpointed outputs.
+- `sweep_results.csv` / `sweep_meta.json` / `sweep_progress.json` validate; timing columns present; `data_source` repo-relative.
+- Promotion with **`L1_EXECUTION_BACKED_MINIMAL_PROOF`** wrote **four** combiner-loadable YAMLs (`*_L1M_*`) plus index/summary CSVs.
+- PA minimal grid produced **no** candidates at PF ≥ **1.02** (expected under narrow minimal slice); CCI/GAP sufficient for a **tiny** Layer2 smoke.
+- Full focused / balanced64 reference sweeps remain **blocked on runtime** until fast-path parity (parallel engineering track).
 
-## Recommended next step (exactly one)
+## Recommended next step
 
-**`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**
+**`RUN_CONTROLLED_LAYER2_ON_MINIMAL_CANDIDATES`**
 
-## Explicit non-runs (this design task)
+## Explicit non-runs
 
-No real Layer1 sweeps, no broad Layer2/Layer3, no WFO, no live/paper, no SPY sweeps, no router, no new strategy families, no signal semantic edits, no champion YAML edits, no legacy delete/archive, no Numba fast path implementation, no raw trade / heavy artifact commits.
+No full focused Layer1, no broad Layer1, no Layer3, no WFO, no live/paper, no SPY research, no router, no Numba implementation, no new strategy families.

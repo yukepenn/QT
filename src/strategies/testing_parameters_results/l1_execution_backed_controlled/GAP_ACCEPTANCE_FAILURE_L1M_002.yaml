@@ -1,0 +1,72 @@
+candidate_id: GAP_ACCEPTANCE_FAILURE_L1M_002
+strategy: gap_acceptance_failure
+symbol: QQQ
+asset: equity
+candidate_rank: 2
+config:
+  strategy: gap_acceptance_failure
+  features:
+    orb_open_minutes: 15
+    vwap_bands:
+    - 1.0
+    - 2.0
+    vol_windows:
+    - 5
+    - 15
+    - 30
+    opening_hold_minutes: 10
+  signal:
+    side: long_only
+    mode: gap_failure
+    entry_start_minute: 5
+    entry_end_minute: 90
+    min_gap_norm: 0.2
+    require_vwap_side: true
+    confirm_mode: reclaim_vwap
+    require_open_hold: true
+    atr_column: atr_like_15
+  risk:
+    stop_mode: failed_extreme
+    open_buffer_atr: 0.1
+    target_mode: fixed_r
+    target_r: 1.25
+    min_risk_per_share: 0.03
+    max_trades_per_day: 1
+  backtest:
+    eod_exit_minute: 389
+    quantity: 1.0
+    commission_per_trade: 0.0
+    slippage_per_share: 0.01
+    recompute_target_from_entry: true
+    max_hold_minutes: 30
+metrics:
+  trade_count: 131
+  total_r: 11.819081014150322
+  profit_factor_r: 1.2338707416648578
+  max_drawdown_r: -8.100504399871161
+  avg_r: 0.0902219924744299
+  win_rate: 0.549618320610687
+  config_hash: 916a21694bb4ac6b1479
+  combo_id: combo_0005
+metadata:
+  family: gap
+  setup_type: gap_acceptance_failure
+  conflict_group: QQQ_directional
+  default_priority: 50
+  default_active_start_minute: 5
+  default_active_end_minute: 90
+  allowed_sides: long_only
+  default_management_mode: fixed_r
+  promotion_notes: minimal_proof_grid_not_full_focused
+selection:
+  gate_label: L1_EXECUTION_BACKED_MINIMAL_PROOF
+  candidate_kind: minimal_proof
+  score: 11.819081014150322
+  warning: nan
+source:
+  results_csv: src/research/results/layer1_execution_backed_controlled/runs/gap_acceptance_failure_2023_2024_minimal_proof/sweep_results.csv
+  sweep_folder: src/research/results/layer1_execution_backed_controlled/runs/gap_acceptance_failure_2023_2024_minimal_proof
+execution:
+  execution_engine: execution_backed
+  execution_semantics_version: '1.0'
+  signal_contract_version: standard_sig_v1

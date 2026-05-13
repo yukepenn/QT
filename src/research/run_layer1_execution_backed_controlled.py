@@ -96,6 +96,7 @@ def run_promote(
     gate_label: str,
     dry_run: bool,
     cwd: Path | None = None,
+    include_run_name_contains: str | None = None,
 ) -> None:
     cwd = cwd or Path.cwd()
     runs_root = runs_root.resolve()
@@ -103,7 +104,8 @@ def run_promote(
     if not runs_root.is_dir():
         raise FileNotFoundError(runs_root)
 
-    run_dirs = sorted(d for d in runs_root.iterdir() if d.is_dir())
+    needle = (include_run_name_contains or "").strip()
+    run_dirs = sorted(d for d in runs_root.iterdir() if d.is_dir() and (not needle or needle in d.name))
     selected_rows: list[dict[str, Any]] = []
     reject_rows: list[dict[str, Any]] = []
 
@@ -145,7 +147,9 @@ def run_promote(
     final: list[dict[str, Any]] = []
     for s in sorted(by_s.keys()):
         rows = sorted(by_s[s], key=_rank_key)
-        final.extend(rows[: max(1, int(max_per_strategy))])
+        take = max(0, int(max_per_strategy))
+        if take:
+            final.extend(rows[:take])
 
     if dry_run:
         print(f"[dry-run] would write {len(final)} candidate(s) to {candidate_root}", flush=True)
@@ -155,6 +159,8 @@ def run_promote(
 
     candidate_root.mkdir(parents=True, exist_ok=True)
     rank_by_strategy: dict[str, int] = {}
+    id_suffix = "L1M" if ("MINIMAL" in gate_label.upper() or "_L1M_" in gate_label.upper()) else "L1E"
+    minimal = id_suffix == "L1M"
 
     for r in final:
         strategy = str(r["_strategy"])
@@ -162,7 +168,7 @@ def run_promote(
         rd = Path(r["_run_dir"])
         rank_by_strategy[strategy] = rank_by_strategy.get(strategy, 0) + 1
         rk = rank_by_strategy[strategy]
-        cid = f"{_slug(strategy)}_L1E_{rk:03d}"
+        cid = f"{_slug(strategy)}_{id_suffix}_{rk:03d}"
 
         cfg_path = str(meta.get("config_path") or "").strip()
         base = merge_strategy_config(strategy, Path(cfg_path) if cfg_path else None, None)
@@ -181,6 +187,8 @@ def run_promote(
             "combo_id": str(r.get("combo_id", "")),
         }
         meta_out = _default_metadata_from_cfg(strategy, cfg)
+        if minimal:
+            meta_out["promotion_notes"] = "minimal_proof_grid_not_full_focused"
         sem = str(r.get("execution_semantics_version") or meta.get("execution_semantics_version") or "")
         sigv = str(r.get("signal_contract_version") or "")
         sym = str(meta.get("symbols") or meta.get("symbol") or "QQQ")
@@ -195,6 +203,7 @@ def run_promote(
             "metadata": meta_out,
             "selection": {
                 "gate_label": gate_label,
+                "candidate_kind": "minimal_proof" if minimal else "layer1_execution_backed",
                 "score": float(metrics["total_r"]),
                 "warning": str(r.get("notes", "") or ""),
             },
@@ -243,6 +252,12 @@ def _build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--min-profit-factor-r", type=float, default=1.05)
     pr.add_argument("--min-total-r", type=float, default=0.0)
     pr.add_argument("--gate-label", type=str, default="L1_EXECUTION_BACKED_CONTROLLED_STRICT_V1")
+    pr.add_argument(
+        "--include-run-name-contains",
+        type=str,
+        default="",
+        help="Only consider run subfolders whose name contains this substring (e.g. minimal_proof).",
+    )
     pr.add_argument("--write", action="store_true", help="Write YAML/CSVs (default is dry-run).")
     pr.set_defaults(handler="promote")
 
@@ -275,6 +290,7 @@ def main(argv: list[str] | None = None) -> int:
                 min_total_r=float(args.min_total_r),
                 gate_label=str(args.gate_label),
                 dry_run=not bool(args.write),
+                include_run_name_contains=str(args.include_run_name_contains or "") or None,
             )
         except Exception as e:
             print(f"ERROR: {e}", file=sys.stderr)

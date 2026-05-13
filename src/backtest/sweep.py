@@ -8,7 +8,8 @@ import itertools
 import json
 import subprocess
 import sys
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -78,6 +79,11 @@ class SweepResult:
     data_source: str = ""
     feature_config_hash: str = ""
     signal_contract_version: str = ""
+    combo_elapsed_sec: float = 0.0
+    combo_started_at_utc: str = ""
+    combo_finished_at_utc: str = ""
+    combo_index: int = 0
+    combo_count_total: int = 0
 
 
 @dataclass
@@ -93,6 +99,8 @@ class SweepRunConfig:
     backtest: BacktestConfig | None = None
     policy: ExecutionPolicy | None = None
     asset: str = "equity"
+    checkpoint_every: int = 1
+    resume: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -156,6 +164,35 @@ def write_real_sweep_artifacts(df: pd.DataFrame, out_dir: Path, manifest: dict[s
     (out_dir / "sweep_summary.md").write_text("\n".join(lines), encoding="utf-8")
 
 
+SWEEP_PARTIAL_CSV = "sweep_results_partial.csv"
+SWEEP_PROGRESS_JSON = "sweep_progress.json"
+
+
+def _atomic_write_csv_df(df: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    df.to_csv(tmp, index=False)
+    tmp.replace(path)
+
+
+def _atomic_write_json(path: Path, payload: Mapping[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(dict(payload), indent=2, sort_keys=True, default=str), encoding="utf-8")
+    tmp.replace(path)
+
+
+def _load_partial_checkpoint(out_dir: Path) -> tuple[pd.DataFrame, set[str]]:
+    """Load ``sweep_results_partial.csv`` if present; return rows and completed ``combo_id`` set."""
+    partial = out_dir / SWEEP_PARTIAL_CSV
+    if not partial.is_file():
+        return pd.DataFrame(), set()
+    df = pd.read_csv(partial)
+    if df.empty or "combo_id" not in df.columns:
+        return df, set()
+    return df, set(df["combo_id"].astype(str))
+
+
 def write_smoke_artifacts(df: pd.DataFrame, out_dir: Path, *, execution_semantics_version: str) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_dir / "sweep_smoke.csv", index=False)
@@ -191,6 +228,8 @@ def default_run_manifest(
         "result_lineage": "mainline",
         "asset": getattr(args, "asset", "equity"),
         "data_root": getattr(args, "data_root", "") or "",
+        "checkpoint_every": getattr(args, "checkpoint_every", 1),
+        "resume": bool(getattr(args, "resume", False)),
     }
 
 
@@ -397,6 +436,17 @@ def run_single_combo_from_signals(
     )
 
 
+def _data_source_stamp(data_dir: str | Path) -> str:
+    """Prefer repo-relative paths in sweep tables for portable commits."""
+    p = Path(data_dir).resolve()
+    cwd = Path.cwd().resolve()
+    try:
+        rel = p.relative_to(cwd)
+        return f"ibkr_parquet:{rel.as_posix()}"
+    except ValueError:
+        return f"ibkr_parquet:{p.as_posix()}"
+
+
 def run_real_symbol_sweep(
     *,
     strategy_name: str,
@@ -424,15 +474,63 @@ def run_real_symbol_sweep(
             f"No bars for symbol={symbol!r} start={start!r} end={end!r} data_dir={data_dir!r}. "
             "Install IBKR parquet partitions or adjust the date window."
         )
-    data_source = f"ibkr_parquet:{Path(data_dir).resolve()}"
-    rows: list[dict[str, Any]] = []
+    data_source = _data_source_stamp(data_dir)
+    total_n = len(combos)
+    ck_dir: Path | None = None
+    if sweep_cfg.output_root is not None and not dry_run:
+        ck_dir = Path(sweep_cfg.output_root)
+    ck_every = max(1, int(getattr(sweep_cfg, "checkpoint_every", 1) or 1))
+    do_resume = bool(getattr(sweep_cfg, "resume", False)) and ck_dir is not None
+
+    accumulated: list[dict[str, Any]] = []
+    done_ids: set[str] = set()
+    if ck_dir:
+        ck_dir.mkdir(parents=True, exist_ok=True)
+        if do_resume:
+            prev_df, done_ids = _load_partial_checkpoint(ck_dir)
+            if not prev_df.empty:
+                accumulated = prev_df.to_dict(orient="records")
+        else:
+            for fn in (SWEEP_PARTIAL_CSV, SWEEP_PROGRESS_JSON):
+                p = ck_dir / fn
+                if p.exists():
+                    p.unlink()
+
+    def _flush_progress(status: str) -> None:
+        if not ck_dir:
+            return
+        ids = sorted({str(r.get("combo_id", "")) for r in accumulated if r.get("combo_id")})
+        payload = {
+            "strategy": strategy_name,
+            "symbol": symbol,
+            "start": start,
+            "end": end,
+            "grid_path": grid_path or "",
+            "output_root": str(ck_dir.resolve()),
+            "total_combos": int(total_n),
+            "completed_combo_ids": ids,
+            "last_completed_at_utc": datetime.now(timezone.utc).isoformat(),
+            "status": status,
+            "git_sha": git_sha(),
+        }
+        _atomic_write_json(ck_dir / SWEEP_PROGRESS_JSON, payload)
+        if accumulated and status != "completed":
+            _atomic_write_csv_df(pd.DataFrame(accumulated), ck_dir / SWEEP_PARTIAL_CSV)
+
+    if ck_dir:
+        _flush_progress("running")
+
     inner_cache = feature_cache if feature_cache is not None else FeatureFrameCache(bars)
     for i, combo in enumerate(combos):
+        cid = f"combo_{i:04d}"
+        if cid in done_ids:
+            continue
         cfg = apply_overrides(base_cfg, combo)
         finalize_backtest_config(cfg)
         fch = feature_config_fingerprint(cfg)
         _, canon = inner_cache.build_signals(strategy_name, cfg, asset, symbol, start, end, data_dir)
-        cid = f"combo_{i:04d}"
+        t0 = time.perf_counter()
+        iso_start = datetime.now(timezone.utc).isoformat()
         sr = run_single_combo_from_signals(
             canon,
             combo_id=cid,
@@ -446,8 +544,34 @@ def run_real_symbol_sweep(
             dry_run=dry_run,
             strategy_cfg=cfg,
         )
-        rows.append(sr.__dict__)
-    return pd.DataFrame(rows)
+        iso_end = datetime.now(timezone.utc).isoformat()
+        elapsed = round(time.perf_counter() - t0, 6)
+        sr2 = replace(
+            sr,
+            combo_elapsed_sec=elapsed,
+            combo_started_at_utc=iso_start,
+            combo_finished_at_utc=iso_end,
+            combo_index=i,
+            combo_count_total=total_n,
+        )
+        accumulated.append(sr2.__dict__)
+        if ck_dir and ((i + 1) % ck_every == 0 or (i + 1) == total_n):
+            _flush_progress("running")
+
+    accumulated.sort(key=lambda r: str(r.get("combo_id", "")))
+    complete = len(accumulated) == total_n and total_n > 0
+    if not complete and total_n == 0:
+        complete = True
+    if ck_dir:
+        if complete and accumulated:
+            partial = ck_dir / SWEEP_PARTIAL_CSV
+            if partial.is_file():
+                partial.unlink()
+            _flush_progress("completed")
+        elif not complete:
+            _flush_progress("interrupted_unknown")
+
+    return pd.DataFrame(accumulated)
 
 
 def run_param_sweep(
@@ -493,6 +617,8 @@ __all__ = [
     "SweepCombo",
     "SweepResult",
     "SweepRunConfig",
+    "SWEEP_PARTIAL_CSV",
+    "SWEEP_PROGRESS_JSON",
     "apply_combo_to_signal_row",
     "config_hash",
     "expand_param_grid",
@@ -547,6 +673,17 @@ def sweep_main(argv: list[str] | None) -> int:
         help="Directory for sweep_results.csv, sweep_summary.md, sweep_meta.json.",
     )
     p.add_argument("--max-combos", type=int, default=None)
+    p.add_argument(
+        "--checkpoint-every",
+        type=int,
+        default=1,
+        help="When saving to --output-root (non-dry-run), rewrite sweep_results_partial.csv every N combos.",
+    )
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from sweep_results_partial.csv under --output-root (skip completed combo_* ids).",
+    )
     p.add_argument("--no-save", action="store_true", help="Skip writing files even if --output-root set.")
     p.add_argument("--dry-run", action="store_true", help="Real-symbol sweep: build signals but skip backtest accounting.")
     p.add_argument(
@@ -648,6 +785,8 @@ def sweep_main(argv: list[str] | None) -> int:
             max_combos=args.max_combos,
             no_save=bool(args.no_save),
             asset=args.asset,
+            checkpoint_every=int(args.checkpoint_every),
+            resume=bool(args.resume),
         )
         try:
             df = run_real_symbol_sweep(

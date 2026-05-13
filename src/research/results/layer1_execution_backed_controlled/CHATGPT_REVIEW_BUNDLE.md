@@ -1,67 +1,87 @@
-# CHATGPT_REVIEW_BUNDLE — Layer1 execution-backed controlled (design)
+# CHATGPT_REVIEW_BUNDLE — Layer1 execution-backed controlled (minimal proof)
+
+External review pack for **`RUN_MINIMAL_LAYER1_EXECUTION_BACKED_PROOF_AND_PREP_FASTPATH`**. Accounting truth remains **`src/execution/path.py`** (`simulate_trade_path`); **`fast_path.py`** is not canonical until parity tests exist.
 
 ## 1. Git / validation
 
-- **Branch:** `main` (at design time aligned with `origin/main`).
-- **`python -m compileall -q src`:** OK (design-time).
-- **`python -m pytest -q`:** **149** passed.
-- **`python -m src.backtest.sweep --help` / `--smoke` / `--validate-pipeline`:** OK (`__main__` guard).
-- **Combiner / research `--help`:** OK (see `baseline_validation.csv`).
-- **`python -m src.backtest.sweep --dry-run`:** PA + QQQ short window + `--max-combos 1` OK.
-- **`validate_research_artifacts`** on this result root: OK (**14** path rows in `layer1_execution_backed_controlled_artifact_validation.csv`).
+- **Branch:** `main`.
+- **`python -m compileall -q src`:** OK.
+- **`python -m pytest -q`:** **165** passed (includes **`tests/test_sweep_checkpoint.py`**).
+- **`python -m src.strategies.loader --list`:** OK.
+- **`python -m src.backtest.sweep --help`:** OK (**`--checkpoint-every`**, **`--resume`**).
+- **`python -m src.backtest.sweep --smoke`:** OK.
+- **`python -m src.backtest.sweep --validate-pipeline --strategy pa_buy_sell_close_trend --symbol QQQ --start 2024-01-02 --end 2024-01-05 --data-root data/raw/ibkr`:** OK.
+- **`python -m src.research.run_layer1_execution_backed_controlled --help`:** OK (**`--include-run-name-contains`**).
+- **`validate-candidates`** on active root: OK (see **`minimal_candidate_root_validation.*`**).
+- **`python -m src.research.validate_research_artifacts --root .../layer1_execution_backed_controlled --csv-only`:** OK (**29** path rows in **`layer1_execution_backed_controlled_artifact_validation.csv`**).
 
-## 2. Why this design is needed
+## 2. Why full focused run was interrupted / abandoned for now
 
-Controlled Layer1 must become the **new candidate factory** without broad sweeps, duplicate PnL engines, or ambiguous data roots. This package pins **three** strategies, **repo-local QQQ** windows, **grid caps**, **artifact schema**, and **validation gates** before any real run.
+- Full focused Cartesian product (**~656** combos) on the **Python reference** execution path is too slow for a single uninterrupted session; prior run had **no** resumable **`sweep_results.csv`**, so progress was not recoverable.
+- **New policy:** use **explicit small balanced YAML grids** (full Cartesian product **without** prefix-biased **`--max-combos`**) plus **checkpoint/resume** so long runs can continue after interrupt.
 
-## 3. Current execution-backed status
+## 3. Checkpoint / resume implementation
 
-Layer2 combiner **`execution_backed`** is hardened. Layer1 **mainline** already uses **`simulate_trade_path`**; **`fast_path.py`** remains non-canonical until parity.
+- **`src/backtest/sweep.py`:** per-combo append path uses **atomic** write (temp file → replace) for **`sweep_results_partial.csv`** and **`sweep_progress.json`** when **`output_root`** is set and not **`--dry-run`**.
+- **`sweep_progress.json`:** strategy, symbol, dates, grid path, output root, total combos, completed **`combo_id`** set, **`last_completed_at_utc`**, **`status`**, git SHA when available.
+- **`--resume`:** skips combos whose **`combo_id`** already appears in the partial CSV.
+- **Successful completion:** final **`sweep_results.csv`** + **`sweep_meta.json`** + **`sweep_summary.md`**; partial CSV **removed** on **`completed`** so stale partials do not confuse reviewers.
+- **Timing columns on each row:** **`combo_elapsed_sec`**, **`combo_started_at_utc`**, **`combo_finished_at_utc`**, **`combo_index`**, **`combo_count_total`**, **`combo_id`** (see **`checkpoint_resume_design.*`**).
 
-## 4. Layer1 pipeline state
+## 4. Minimal balanced grid design
 
-`read_bars` → `strategy_runner` → **`run_strategy_backtest`** → **`simulate_trade_path`** → **`summarize_trades`**. Only **`src/execution`** owns accounting. Details: `layer1_pipeline_state.md` / `.csv`.
+- **`pa_buy_sell_close_trend_minimal_proof.yaml`:** **16** combos — fixed execution/backtest fields aligned with production YAMLs; small PA signal + risk grid.
+- **`gap_acceptance_failure_minimal_proof.yaml`:** **16** combos — keys aligned with **`gap_acceptance_failure`** validator (see focused YAML for naming).
+- **`cci_extreme_snapback_minimal_proof.yaml`:** **8** combos.
+- **Total:** **40** combos — **`minimal_grid_design.*`**.
 
-## 5. Data design
+## 5. Minimal sweep results
 
-**`data/raw/ibkr`** only; QQQ partitions **2020–2026** committed. Preferred run window **2023-01-01..2024-12-31** with **2024 H1** fallback. `data_design.md`.
+- **Outputs:** `src/research/results/layer1_execution_backed_controlled/runs/{pa_buy_sell_close_trend,gap_acceptance_failure,cci_extreme_snapback}_2023_2024_minimal_proof/`.
+- Each run: **`sweep_results.csv`**, **`sweep_meta.json`**, **`sweep_progress.json`** (**`status: completed`**), **`sweep_summary.md`**; **`data_source`** stamped **`ibkr_parquet:data/raw/ibkr`** when run from repo root.
+- **No** raw trade files committed.
+- Summary metrics: **`minimal_sweep_summary.*`**.
 
-## 6. Strategy selection
+## 6. Runtime profile (from timing columns)
 
-**`pa_buy_sell_close_trend`**, **`gap_acceptance_failure`**, **`cci_extreme_snapback`** only for first controlled run. `strategy_selection_design.md`.
+- **Aggregate wall clock** (three sweeps sequential): ~**1121 s** for **40** combos (~**28 s** / combo average).
+- **Per-strategy max combo elapsed (approx.):** PA ~**18 s**; GAP ~**26 s**; CCI ~**29 s** — reference path is the bottleneck for larger grids; see **`fast_path_numba_readiness.*`**.
 
-## 7. Grid design
+## 7. Promotion / candidate root
 
-Use **`--max-combos`** (**64** PA/GAP, **32** CCI) against focused YAMLs. `grid_design.md`.
+- **Promotion filter:** **`--include-run-name-contains minimal_proof`** so interrupted **`*_full_focused`** folders (if any reappear) are not mixed into selection.
+- **Gate label:** **`L1_EXECUTION_BACKED_MINIMAL_PROOF`**.
+- **Candidate IDs:** **`*_L1M_*`** plus **`selection.candidate_kind: minimal_proof`** in YAML metadata where supported.
+- **Write result:** **4** YAMLs (**GAP**×2, **CCI**×2); **PA** had no row meeting **PF_R ≥ 1.02** on this minimal slice (max ~**1.014**).
+- **Indices:** **`CANDIDATE_INDEX.csv`**, **`selected_candidates_summary.csv`**, **`candidate_rejects_summary.csv`**.
+- Details: **`minimal_promotion_dry_run.*`**, candidate root **`README.md`**.
 
-## 8. Candidate schema
+## 8. Candidate validation
 
-Future **`selected_candidates/*.yaml`** + indices + `sweep_results.csv`; no real YAML in this design commit. `candidate_artifact_schema.md`.
+- **`validate-candidates`** on **`src/strategies/testing_parameters_results/l1_execution_backed_controlled`:** OK — schema, repo-relative paths, execution stamp, metrics block. See **`minimal_candidate_root_validation.*`**.
 
-## 9. Execution policy
+## 9. Fast-path Numba readiness
 
-Default intraday policy: **STOP_FIRST**, slippage/commission from YAML, EOD minute; note **`min_risk_per_share`** threading gap in `engine.py` for run task. `execution_policy_design.md`.
+- **No Numba implementation** in this task.
+- **`fast_path_numba_readiness.*`** defines phase-1 scope (long-only, fixed-R, min risk, next-open, stop/target ambiguity, max-hold, EOD), proposed API **`simulate_trade_path_fast(...)`**, and parity cases (simple win/stop, same-bar ambiguity, min-risk reject, max-hold, EOD, no-trade session, gap edge if needed).
+- **Rule:** broad / full focused sweeps should switch to fast path **only after** parity vs **`simulate_trade_path`** passes.
 
-## 10. Run commands
+## 10. Decision
 
-`run_commands.md`, `run_commands.ps1`, `run_commands.sh` — preflight + sweep templates (**real sweeps commented** in shell scripts).
+**`RUN_CONTROLLED_LAYER2_ON_MINIMAL_CANDIDATES`**
 
-## 11. CLI capability / runner gaps
+Minimal sweeps and artifact validation succeeded; **4** minimal-proof YAMLs are combiner-loadable for a **tiny** Layer2 smoke; PA remains under PF gate on this narrow grid — do **not** treat **`L1M`** files as full-focused champions.
 
-`cli_capability_check.md` + `runner_gap_analysis.md` — no `--engine` on sweep; no built-in YAML selection.
+## 11. Explicit non-runs
 
-## 12. Validation gates
+- No full focused **~656** sweep, no broad Layer1, no Layer3, no WFO, no live/paper, no SPY research, no router, no new strategy families, no Numba as canonical PnL, no raw trades / panels / caches / logs / npy in git.
 
-`validation_gates.md` / `.csv`.
+## 12. Recommended next step
 
-## 13. Decision
+**`RUN_CONTROLLED_LAYER2_ON_MINIMAL_CANDIDATES`** — point combiner Layer2 smoke at **`l1_execution_backed_controlled`** with **`execution_backed`** and validate combiner metrics on **minimal_proof** candidates only; in parallel, schedule **`DESIGN_FAST_PATH_NUMBA_PARITY`** implementation when ready to unblock larger Layer1.
 
-**`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**
+## Navigation
 
-## 14. Explicit non-runs
-
-No real Layer1 sweep in this task, no broad Layer2/Layer3, WFO, live, SPY sweeps, router, new strategies, semantics edits, legacy delete, Numba accounting, heavy artifacts.
-
-## 15. Recommended next step
-
-**`RUN_CONTROLLED_LAYER1_EXECUTION_BACKED_REBUILD`**
+- **`SOURCE_MAP.csv`** — file index.
+- **`chatgpt_key_tables.csv`** — key numeric fields.
+- **`layer1_execution_backed_controlled_key_findings.csv`** — short findings list.

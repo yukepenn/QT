@@ -1,0 +1,5 @@
+strategy,grid_path,combo_count,rows_csv,wall_clock_sec,avg_combo_elapsed_sec,max_combo_elapsed_sec,best_total_r,best_profit_factor_r,best_trade_count,status
+pa_buy_sell_close_trend,src/strategies/testing_parameters/pa_buy_sell_close_trend_minimal_proof.yaml,16,16,NA,15.507,18.079,3.4275,1.0144,469,OK
+gap_acceptance_failure,src/strategies/testing_parameters/gap_acceptance_failure_minimal_proof.yaml,16,16,NA,23.528,25.979,11.8191,1.0765,131,OK
+cci_extreme_snapback,src/strategies/testing_parameters/cci_extreme_snapback_minimal_proof.yaml,8,8,NA,24.953,29.142,12.5791,1.0765,383,OK
+ALL,NA,40,40,1121.3,19.7,29.142,12.5791,NA,NA,OK
